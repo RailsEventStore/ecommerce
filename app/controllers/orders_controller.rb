@@ -1,6 +1,4 @@
 class OrdersController < ApplicationController
-  include CommandHandlers
-
   # GET /orders
   # GET /orders.json
   def index
