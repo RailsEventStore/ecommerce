@@ -5,3 +5,15 @@
 #
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
+
+['BigCorp Ltd', 'MegaTron Gmbh', 'Arkency'].each do |name|
+  Customer.create(name: name)
+end
+
+['Fearless Refactoring: Rails controllers',
+ 'Rails meets React.js',
+ 'Developers Oriented Project Management',
+ 'Blogging for busy programmers']
+.each do |name|
+  Product.create(name: name)
+end
