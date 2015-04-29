@@ -1,0 +1,29 @@
+<p id="notice"><%= notice %></p>
+<h1>Order: <%= @order.number %></h1>
+<p>
+Customer: <%= @order.customer %><br/>
+State: <%= @order.state %>
+</p>
+
+<h2>Orders lines</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Product</th>
+      <th>Quantity</th>
+    </tr>
+  </thead>
+
+  <tbody>
+  <% @order_lines.each do |item| %>
+    <tr>
+    <td><%= item.product_name %></td>
+    <td><%= item.quantity %></td>
+  </tr>
+<% end %>
+  </tbody>
+</table>
+
+<br/>
+<%= link_to 'Back', orders_path %>

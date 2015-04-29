@@ -1,0 +1,33 @@
+<h1>New Order</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Product</th>
+      <th/>
+      <th/>
+    </tr>
+  </thead>
+
+  <tbody>
+  <% @products.each do |product| %>
+    <tr>
+      <td><%= product.name %></td>
+      <td><%= link_to "Add", add_item_order_path(id: @order_id, product_id: product.id),
+        {method: :post, remote: true} %></td>
+      <td><%= link_to "Remove", remove_item_order_path(id: @order_id, product_id: product.id),
+        {method: :post, remote: true} %></td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
+
+<%= form_tag({controller: "orders", action: "create"}, method: "post") do %>
+  <%= hidden_field_tag(:order_id, @order_id) %>
+  <p>Customer:
+    <%= select_tag(:customer_id, options_from_collection_for_select(@customers, :id, :name)) %>
+  </p>
+
+  <%= submit_tag("Place order") %>
+  <%= link_to 'Back', orders_path %>
+<% end %>
