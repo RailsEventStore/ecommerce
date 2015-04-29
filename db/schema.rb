@@ -11,7 +11,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150429222352) do
+ActiveRecord::Schema.define(version: 20150429224746) do
+
+  create_table "customers", force: :cascade do |t|
+    t.string   "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "event_store_events", force: :cascade do |t|
     t.string   "stream",     null: false
@@ -25,5 +31,25 @@ ActiveRecord::Schema.define(version: 20150429222352) do
 
   add_index "event_store_events", ["event_id"], name: "index_event_store_events_on_event_id"
   add_index "event_store_events", ["stream"], name: "index_event_store_events_on_stream"
+
+  create_table "order_lines", force: :cascade do |t|
+    t.string  "order_uid"
+    t.integer "product_id"
+    t.string  "product_name"
+    t.integer "quantity"
+  end
+
+  create_table "orders", force: :cascade do |t|
+    t.string "uid"
+    t.string "number"
+    t.string "customer"
+    t.string "state"
+  end
+
+  create_table "products", force: :cascade do |t|
+    t.string   "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
 end
