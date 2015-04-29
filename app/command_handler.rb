@@ -33,5 +33,6 @@ module CommandHandler
 
   def event_store
     @event_store ||= RailsEventStore::Client.new
+    @event_store.subscribe(Denirmalizers::Router.new)
   end
 end
