@@ -1,6 +1,6 @@
 module CommandHandlers
   class CreateOrder
-    include Domain::ServicesInjector
+    include Injectors::ServicesInjector
     include CommandHandler
 
     def call(command)
