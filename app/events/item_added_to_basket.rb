@@ -9,7 +9,7 @@ module Events
     end
 
     def self.create(order_id, product_id)
-      new({order_id: order_id, product_id: product_id})
+      new({data: {order_id: order_id, product_id: product_id}})
     end
   end
 end
