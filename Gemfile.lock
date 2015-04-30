@@ -1,3 +1,9 @@
+GIT
+  remote: git@github.com:arkency/rails_event_store.git
+  revision: bf7c2a07a5961ee2274b50c211552c16b78aea5a
+  specs:
+    rails_event_store (0.1.1)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -96,7 +102,6 @@ GEM
       rails-deprecated_sanitizer (>= 1.0.1)
     rails-html-sanitizer (1.0.2)
       loofah (~> 2.0)
-    rails_event_store (0.1.1)
     railties (4.2.0)
       actionpack (= 4.2.0)
       activesupport (= 4.2.0)
@@ -148,7 +153,7 @@ DEPENDENCIES
   jbuilder (~> 2.0)
   jquery-rails
   rails (= 4.2.0)
-  rails_event_store
+  rails_event_store!
   sass-rails (~> 5.0)
   sdoc (~> 0.4.0)
   spring
