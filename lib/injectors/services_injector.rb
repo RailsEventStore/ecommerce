@@ -1,5 +1,5 @@
 module Injectors
-  class ServicesInjector
+  module ServicesInjector
     def number_generator
       Domain::Services::NumberGenerator.new
     end
