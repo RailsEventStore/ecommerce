@@ -21,9 +21,10 @@ module CommandHandler
   end
 
   def recreate_event(event)
-    event.event_type.constantize.new(event_id: event.event_id,
-                                     data: event.data,
-                                     metadata: event.metadata)
+    event_class = "Events::#{event.event_type}"
+    event_class.constantize.new(event_id: event.event_id,
+                                data: event.data,
+                                metadata: event.metadata)
   end
 
   def publish(events, stream)
