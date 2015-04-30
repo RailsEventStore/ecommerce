@@ -17,22 +17,24 @@ module CommandHandler
 
   def load_events(aggregate_id)
     events = event_store.read_all_events(aggregate_id)
-    events.map(&:recreate_event)
+    events.map{|ev| recreate_event(ev) }
   end
 
   def recreate_event(event)
-    event_class = "Events::#{event.event_type}".constantize
-    event_class.new(event.data)
+    event.event_type.constantize.new(event_id: event.event_id,
+                                     data: event.data,
+                                     metadata: event.metadata)
   end
 
   def publish(events, stream)
     Array.wrap(events).each do |event|
-      event_store.publish(event, stream)
+      event_store.publish_event(event, stream)
     end
   end
 
   def event_store
-    @event_store ||= RailsEventStore::Client.new
-    @event_store.subscribe(Denirmalizers::Router.new)
+    @event_store ||= RailsEventStore::Client.new.tap do |es|
+      es.subscribe(Denormalizers::Router.new)
+    end
   end
 end

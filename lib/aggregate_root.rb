@@ -9,8 +9,6 @@ module AggregateRoot
   end
 
   def rebuild(events)
-    events.each do |event|
-      apply(event, false)
-    end
+    events.each { |event| apply(event, false) } if events
   end
 end
