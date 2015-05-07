@@ -21,8 +21,7 @@ module CommandHandler
   end
 
   def recreate_event(event)
-    event_class = "Events::#{event.event_type}"
-    event_class.constantize.new(event_id: event.event_id,
+    event.event_type.constantize.new(event_id: event.event_id,
                                 data: event.data,
                                 metadata: event.metadata)
   end
@@ -35,7 +34,7 @@ module CommandHandler
 
   def event_store
     @event_store ||= RailsEventStore::Client.new.tap do |es|
-      es.subscribe(Denormalizers::Router.new)
+      es.subscribe_to_all_events(Denormalizers::Router.new)
     end
   end
 end
