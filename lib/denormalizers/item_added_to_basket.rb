@@ -1,16 +1,10 @@
 module Denormalizers
-  class OrderLine
-    def item_added_to_basket(event)
+  class ItemAddedToBasket
+    def handle_event(event)
       item = find(event.order_id, event.product_id) ||
              create(event.order_id, event.product_id)
       item.quantity += 1
       item.save!
-    end
-
-    def item_removed_from_basket(event)
-      item = find(event.order_id, event.product_id)
-      item.quantity -= 1
-      item.quantity > 0 ? item.save! : item.destroy!
     end
 
     private
