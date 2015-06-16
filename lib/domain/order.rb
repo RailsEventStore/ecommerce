@@ -1,13 +1,17 @@
 module Domain
   class Order
-    include AggregateRoot
+    include RailsEventStore::AggregateRoot
 
     AlreadyCreated        = Class.new(StandardError)
     MissingCustomer       = Class.new(StandardError)
 
-    def initialize(id = SecureRandom.uuid)
+    def initialize(id = generate_uuid)
       @id = id
       @state = :draft
+    end
+
+    def id
+      @id
     end
 
     def create(order_number, customer_id)
@@ -30,17 +34,17 @@ module Domain
       apply Events::ItemRemovedFromBasket.create(@id, product_id)
     end
 
-    def apply_order_created(event)
+    def apply_events_order_created(event)
       @customer_id = event.customer_id
       @number = event.order_number
       @state = :created
     end
 
-    def apply_order_expired(event)
+    def apply_events_order_expired(event)
       @state = :expired
     end
 
-    def apply_item_added_to_basket(event)
+    def apply_events_item_added_to_basket(event)
       product_id = event.product_id
       order_line = find_order_line(product_id)
       unless order_line
@@ -50,7 +54,7 @@ module Domain
       order_line.increase_quantity
     end
 
-    def apply_item_removed_from_basket(event)
+    def apply_events_item_removed_from_basket(event)
       product_id = event.product_id
       order_line = find_order_line(product_id)
       return unless order_line
@@ -59,7 +63,7 @@ module Domain
     end
 
     private
-    attr_accessor :id, :customer_id, :order_number, :state
+    attr_accessor :customer_id, :order_number, :state
 
     def order_lines
       @order_lines ||= []
