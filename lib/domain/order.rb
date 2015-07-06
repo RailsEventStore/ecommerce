@@ -8,31 +8,32 @@ module Domain
     def initialize(id = generate_uuid)
       @id = id
       @state = :draft
-    end
-
-    def id
-      @id
+      @order_lines = []
     end
 
     def create(order_number, customer_id)
       raise AlreadyCreated unless state == :draft
       raise MissingCustomer unless customer_id
-      apply Events::OrderCreated.create(@id, order_number, customer_id)
+      apply Events::OrderCreated.create(id, order_number, customer_id)
     end
 
     def expire
-      apply Events::OrderExpired.create(@id)
+      apply Events::OrderExpired.create(id)
     end
 
     def add_item(product_id)
       raise AlreadyCreated unless state == :draft
-      apply Events::ItemAddedToBasket.create(@id, product_id)
+      apply Events::ItemAddedToBasket.create(id, product_id)
     end
 
     def remove_item(product_id)
       raise AlreadyCreated unless state == :draft
-      apply Events::ItemRemovedFromBasket.create(@id, product_id)
+      apply Events::ItemRemovedFromBasket.create(id, product_id)
     end
+
+    attr_reader :id
+    private
+    attr_accessor :state, :customer_id, :number, :order_lines
 
     def apply_events_order_created(event)
       @customer_id = event.customer_id
@@ -49,7 +50,7 @@ module Domain
       order_line = find_order_line(product_id)
       unless order_line
         order_line = create_order_line(product_id)
-        order_lines << order_line
+        @order_lines << order_line
       end
       order_line.increase_quantity
     end
@@ -62,15 +63,8 @@ module Domain
       remove_order_line(order_line) if order_line.empty?
     end
 
-    private
-    attr_accessor :customer_id, :order_number, :state
-
-    def order_lines
-      @order_lines ||= []
-    end
-
     def find_order_line(product_id)
-      order_lines.select{|line| line.product_id == product_id}.first
+      @order_lines.select{|line| line.product_id == product_id}.first
     end
 
     def create_order_line(product_id)
@@ -78,7 +72,7 @@ module Domain
     end
 
     def remove_order_line(order_line)
-      order_lines.delete(order_line)
+      @order_lines.delete(order_line)
     end
   end
 end
