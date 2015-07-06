@@ -1,7 +1,7 @@
 module CommandHandlers
   class CreateOrder
     include Injectors::ServicesInjector
-    include CommandHandler
+    include Commands::Handler
 
     def call(command)
       with_aggregate(command.aggregate_id) do |order|

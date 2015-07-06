@@ -16,7 +16,7 @@ module CommandHandlers
 
     test 'could not create order where customer is not given' do
       with_aggregate do |id, event_store|
-        assert_raises(Command::ValidationError) do
+        assert_raises(Commands::ValidationError) do
           act(event_store, Commands::CreateOrder.new(order_id: id, customer_id: nil))
         end
         assert_no_changes(event_store)

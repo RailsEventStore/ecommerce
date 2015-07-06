@@ -1,6 +1,6 @@
 module CommandHandlers
   class RemoveItemFromBasket
-    include CommandHandler
+    include Commands::Handler
 
     def call(command)
       with_aggregate(command.aggregate_id) do |order|
