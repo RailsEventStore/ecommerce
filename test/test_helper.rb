@@ -20,9 +20,16 @@ class FakeEventStore
   end
 end
 
+class FakeNumberGenerator
+  def call
+    "123/08/2015"
+  end
+end
+
 class ActiveSupport::TestCase
   # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
   fixtures :all
+  include Command::Execute
 
   # Add more helper methods to be used by all tests here...
   def with_aggregate
@@ -36,10 +43,7 @@ class ActiveSupport::TestCase
   end
 
   def act(event_store, command)
-    command.validate!
-    handler = "CommandHandlers::#{command.class.name.demodulize}"
-    repository = RailsEventStore::Repositories::AggregateRepository.new(event_store)
-    handler.constantize.new(repository).call(command)
+    execute(command, **dependencies(event_store))
   end
 
   def assert_changes(event_store, expected)
@@ -50,5 +54,13 @@ class ActiveSupport::TestCase
 
   def assert_no_changes(event_store)
     assert_empty(event_store.published)
+  end
+
+  private
+  def dependencies(event_store)
+    {
+      repository:       RailsEventStore::Repositories::AggregateRepository.new(event_store),
+      number_generator: FakeNumberGenerator.new
+    }
   end
 end

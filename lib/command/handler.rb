@@ -1,9 +1,10 @@
 module Command
-  module Handler
-    def initialize(repository)
+  class Handler
+    def initialize(repository:, **_)
       @repository = repository
     end
 
+    protected
     def with_aggregate(aggregate_id)
       aggregate = build(aggregate_id)
       yield aggregate
