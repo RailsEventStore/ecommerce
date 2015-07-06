@@ -3,6 +3,7 @@ module Domain
     include RailsEventStore::AggregateRoot
 
     AlreadyCreated        = Class.new(StandardError)
+    OrderExpired          = Class.new(StandardError)
     MissingCustomer       = Class.new(StandardError)
 
     def initialize(id = generate_uuid)
@@ -12,12 +13,14 @@ module Domain
     end
 
     def create(order_number, customer_id)
-      raise AlreadyCreated unless state == :draft
+      raise AlreadyCreated if state == :created
+      raise OrderExpired if state == :expired
       raise MissingCustomer unless customer_id
       apply Events::OrderCreated.create(id, order_number, customer_id)
     end
 
     def expire
+      raise AlreadyCreated unless state == :draft
       apply Events::OrderExpired.create(id)
     end
 
