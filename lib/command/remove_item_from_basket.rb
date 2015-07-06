@@ -1,5 +1,5 @@
-module Commands
-  class AddItemToBasket < Command
+module Command
+  class RemoveItemFromBasket < Base
     attr_accessor :order_id
     attr_accessor :product_id
 

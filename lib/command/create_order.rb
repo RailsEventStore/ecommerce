@@ -1,5 +1,5 @@
-module Commands
-  class CreateOrder < Command
+module Command
+  class CreateOrder < Base
     attr_accessor :order_id
     attr_accessor :customer_id
 

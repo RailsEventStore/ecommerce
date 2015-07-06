@@ -1,6 +1,6 @@
 module CommandHandlers
   class SetOrderAsExpired
-    include Commands::Handler
+    include Command::Handler
 
     def call(command)
       with_aggregate(command.aggregate_id) do |order|

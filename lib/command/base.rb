@@ -1,5 +1,5 @@
-module Commands
-  class Command
+module Command
+  class Base
     include ActiveModel::Model
     include ActiveModel::Validations
     include ActiveModel::Conversion

@@ -21,7 +21,7 @@ class OrdersController < ApplicationController
 
   # POST /orders/:id/add_item
   def add_item
-    cmd = Commands::AddItemToBasket.new(product_params)
+    cmd = Command::AddItemToBasket.new(product_params)
     execute(cmd)
 
     head :ok
@@ -29,7 +29,7 @@ class OrdersController < ApplicationController
 
   # POST /orders/:id/remove_item
   def remove_item
-    cmd = Commands::RemoveItemFromBasket.new(product_params)
+    cmd = Command::RemoveItemFromBasket.new(product_params)
     execute(cmd)
 
     head :ok
@@ -38,7 +38,7 @@ class OrdersController < ApplicationController
   # POST /orders
   # POST /orders.json
   def create
-    cmd = Commands::CreateOrder.new(order_params)
+    cmd = Command::CreateOrder.new(order_params)
     execute(cmd)
 
     redirect_to Order.find_by_uid(cmd.order_id), notice: 'Order was successfully created.'

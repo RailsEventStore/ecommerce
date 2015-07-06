@@ -1,4 +1,4 @@
-module Commands
+module Command
   module Handler
     def initialize(repository)
       @repository = repository

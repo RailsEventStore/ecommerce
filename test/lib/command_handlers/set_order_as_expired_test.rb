@@ -7,7 +7,7 @@ module CommandHandlers
         product_id = 102
         arrange(event_store, Events::ItemAddedToBasket.create(id, product_id))
 
-        act(event_store, Commands::SetOrderAsExpired.new(order_id: id))
+        act(event_store, Command::SetOrderAsExpired.new(order_id: id))
 
         assert_changes(event_store, Events::OrderExpired.create(id))
       end
@@ -20,7 +20,7 @@ module CommandHandlers
         arrange(event_store, Events::OrderCreated.create(id, order_number, customer_id))
 
         assert_raises(Domain::Order::AlreadyCreated) do
-          act(event_store, Commands::SetOrderAsExpired.new(order_id: id))
+          act(event_store, Command::SetOrderAsExpired.new(order_id: id))
         end
         assert_no_changes(event_store)
       end

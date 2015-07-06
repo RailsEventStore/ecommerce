@@ -5,7 +5,7 @@ module CommandHandlers
     test 'item is added to draft order' do
       with_aggregate do |id, event_store|
         product_id = 102
-        act(event_store, Commands::AddItemToBasket.new(order_id: id, product_id: product_id))
+        act(event_store, Command::AddItemToBasket.new(order_id: id, product_id: product_id))
         assert_changes(event_store, Events::ItemAddedToBasket.create(id, product_id))
       end
     end
@@ -18,7 +18,7 @@ module CommandHandlers
         arrange(event_store, Events::OrderCreated.create(id, order_number, customer_id))
 
         assert_raises(Domain::Order::AlreadyCreated) do
-          act(event_store, Commands::AddItemToBasket.new(order_id: id, product_id: product_id))
+          act(event_store, Command::AddItemToBasket.new(order_id: id, product_id: product_id))
         end
         assert_no_changes(event_store)
       end
