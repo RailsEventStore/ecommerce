@@ -1,8 +1,9 @@
 GIT
   remote: git@github.com:arkency/rails_event_store.git
-  revision: 563fba20b00fbb0405a80e3b6280630723f46d4e
+  revision: 8158490ff07004d7ec803ddea94d614c3f8210f4
   specs:
     rails_event_store (0.1.2)
+      activemodel (>= 3.0)
       activesupport (>= 3.0)
       ruby_event_store
 
