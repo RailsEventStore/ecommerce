@@ -71,7 +71,7 @@ module Domain
     end
 
     def create_order_line(product_id)
-      OrderLine.new(product_id)
+      Domain::OrderLine.new(product_id)
     end
 
     def remove_order_line(order_line)
