@@ -31,13 +31,6 @@ class ActiveSupport::TestCase
   fixtures :all
   include Command::Execute
 
-  # Add more helper methods to be used by all tests here...
-  def with_aggregate
-    id = SecureRandom.uuid
-    event_store = FakeEventStore.new
-    yield id, event_store
-  end
-
   def arrange(event_store, events)
     event_store.events.concat(Array.wrap(events))
   end
