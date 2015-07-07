@@ -9,11 +9,11 @@ module CommandHandlers
       aggregate_id = SecureRandom.uuid
       customer_id = 1
       order_number = "123/08/2015"
-      arrange(event_store, Events::ItemAddedToBasket.create(aggregate_id, customer_id))
+      arrange(event_store, [Events::ItemAddedToBasket.create(aggregate_id, customer_id)])
 
       act(event_store, Command::CreateOrder.new(order_id: aggregate_id, customer_id: customer_id))
 
-      assert_changes(event_store, Events::OrderCreated.create(aggregate_id, order_number, customer_id))
+      assert_changes(event_store, [Events::OrderCreated.create(aggregate_id, order_number, customer_id)])
     end
 
     test 'could not create order where customer is not given' do
@@ -31,7 +31,7 @@ module CommandHandlers
       customer_id = 1
       order_number = "123/08/2015"
       another_customer_id = 2
-      arrange(event_store, Events::OrderCreated.create(aggregate_id, order_number, customer_id))
+      arrange(event_store, [Events::OrderCreated.create(aggregate_id, order_number, customer_id)])
 
       assert_raises(Domain::Order::AlreadyCreated) do
         act(event_store, Command::CreateOrder.new(order_id: aggregate_id, customer_id: another_customer_id))
@@ -43,7 +43,7 @@ module CommandHandlers
       event_store = FakeEventStore.new
       aggregate_id = SecureRandom.uuid
       customer_id = 1
-      arrange(event_store, Events::OrderExpired.create(aggregate_id))
+      arrange(event_store, [Events::OrderExpired.create(aggregate_id)])
 
       assert_raises(Domain::Order::OrderExpired) do
         act(event_store, Command::CreateOrder.new(order_id: aggregate_id, customer_id: customer_id))

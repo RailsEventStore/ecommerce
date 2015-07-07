@@ -9,7 +9,7 @@ module CommandHandlers
       aggregate_id = SecureRandom.uuid
       product_id = 102
       act(event_store, Command::RemoveItemFromBasket.new(order_id: aggregate_id, product_id: product_id))
-      assert_changes(event_store, Events::ItemRemovedFromBasket.create(aggregate_id, product_id))
+      assert_changes(event_store, [Events::ItemRemovedFromBasket.create(aggregate_id, product_id)])
     end
 
     test 'no remove allowed to created order' do
@@ -18,7 +18,7 @@ module CommandHandlers
       customer_id = 1
       order_number = "123/08/2015"
       product_id = 102
-      arrange(event_store, Events::OrderCreated.create(aggregate_id, order_number, customer_id))
+      arrange(event_store, [Events::OrderCreated.create(aggregate_id, order_number, customer_id)])
 
       assert_raises(Domain::Order::AlreadyCreated) do
         act(event_store, Command::RemoveItemFromBasket.new(order_id: aggregate_id, product_id: product_id))

@@ -27,7 +27,7 @@ module CommandHandlers
     include Command::Execute
 
     def arrange(event_store, events)
-      event_store.events.concat(Array.wrap(events))
+      event_store.events.concat(events)
     end
 
     def act(event_store, command)
@@ -36,7 +36,7 @@ module CommandHandlers
 
     def assert_changes(event_store, expected)
       actuals = event_store.published.map(&:data)
-      expects = Array.wrap(expected).map(&:data)
+      expects = expected.map(&:data)
       assert_equal(actuals, expects)
     end
 
