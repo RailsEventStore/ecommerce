@@ -2,6 +2,8 @@ require 'test_helper'
 
 module CommandHandlers
   class AddItemToBasketTest < ActiveSupport::TestCase
+    include CommandHandlers::TestCase
+
     test 'item is added to draft order' do
       event_store = FakeEventStore.new
       aggregate_id = SecureRandom.uuid

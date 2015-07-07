@@ -2,6 +2,8 @@ require 'test_helper'
 
 module CommandHandlers
   class SetOrderAsExpiredTest < ActiveSupport::TestCase
+    include CommandHandlers::TestCase
+
     test 'draft order will expire' do
       event_store = FakeEventStore.new
       aggregate_id = SecureRandom.uuid

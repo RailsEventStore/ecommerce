@@ -2,6 +2,8 @@ require 'test_helper'
 
 module CommandHandlers
   class RemoveItemFromBasketTest < ActiveSupport::TestCase
+    include CommandHandlers::TestCase
+
     test 'item is removed from draft order' do
       event_store = FakeEventStore.new
       aggregate_id = SecureRandom.uuid
