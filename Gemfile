@@ -44,4 +44,4 @@ group :development, :test do
   gem 'spring'
 end
 
-gem 'rails_event_store', '>= 0.1.3'
+gem 'rails_event_store', git: 'git@github.com:arkency/rails_event_store.git', :branch => 'better-event'
