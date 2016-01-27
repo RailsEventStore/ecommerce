@@ -16,22 +16,22 @@ module Domain
       raise AlreadyCreated if state == :created
       raise OrderExpired if state == :expired
       raise MissingCustomer unless customer_id
-      apply Events::OrderCreated.create(id, order_number, customer_id)
+      apply Events::OrderCreated.new(order_id: id, order_number: order_number, customer_id: customer_id)
     end
 
     def expire
       raise AlreadyCreated unless state == :draft
-      apply Events::OrderExpired.create(id)
+      apply Events::OrderExpired.new(order_id: id)
     end
 
     def add_item(product_id)
       raise AlreadyCreated unless state == :draft
-      apply Events::ItemAddedToBasket.create(id, product_id)
+      apply Events::ItemAddedToBasket.new(order_id: id, product_id: product_id)
     end
 
     def remove_item(product_id)
       raise AlreadyCreated unless state == :draft
-      apply Events::ItemRemovedFromBasket.create(id, product_id)
+      apply Events::ItemRemovedFromBasket.new(order_id: id, product_id: product_id)
     end
 
     attr_reader :id
