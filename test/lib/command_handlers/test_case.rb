@@ -47,7 +47,7 @@ module CommandHandlers
     private
     def dependencies(event_store)
       {
-        repository:       RailsEventStore::Repositories::AggregateRepository.new(event_store),
+        repository:       AggregateRoot::Repository.new(event_store),
         number_generator: FakeNumberGenerator.new
       }
     end
