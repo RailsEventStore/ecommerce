@@ -1,6 +1,6 @@
 module Domain
   class Order
-    include RailsEventStore::AggregateRoot
+    include AggregateRoot::Base
 
     AlreadyCreated        = Class.new(StandardError)
     OrderExpired          = Class.new(StandardError)

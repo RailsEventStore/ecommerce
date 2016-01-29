@@ -8,7 +8,7 @@ class ApplicationController < ActionController::Base
   protected
   def dependencies
     {
-      repository:       RailsEventStore::Repositories::AggregateRepository.new(event_store),
+      repository:       AggregateRoot::Repository.new(event_store),
       number_generator: Domain::Services::NumberGenerator.new
     }
   end
