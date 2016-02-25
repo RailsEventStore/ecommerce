@@ -44,4 +44,4 @@ group :development, :test do
   gem 'spring'
 end
 
-gem 'aggregate_root'
+gem 'rails_event_store', '>= 0.2.2'

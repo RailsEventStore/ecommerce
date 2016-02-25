@@ -1,6 +1,7 @@
 require File.expand_path('../boot', __FILE__)
 
 require 'rails/all'
+require 'aggregate_root'
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
@@ -25,4 +26,8 @@ module CqrsEsSampleWithRes
     config.autoload_paths += Dir["#{config.root}/lib/**/"]
     config.active_record.raise_in_transactional_callbacks = true
   end
+end
+
+AggregateRoot.configure do |config|
+  config.default_event_store = RailsEventStore::Client.new
 end
