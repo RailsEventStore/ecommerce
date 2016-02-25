@@ -1,6 +1,8 @@
 language: ruby
 rvm:
   - 2.1.6
+script:
+  - RAILS_ENV=test bundle exec rake --trace db:migrate test
 addons:
   code_climate:
     repo_token: 39879a394d7657473e714a7ec32e2baabf7b4932cfe2d2acfd51b5426b2c8dde
