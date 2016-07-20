@@ -12,7 +12,7 @@ module CommandHandlers
       published << event
     end
 
-    def read_all_events(aggregate_id)
+    def read_stream_events_forward(aggregate_id)
       events
     end
   end

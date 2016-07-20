@@ -9,11 +9,11 @@ module Denormalizers
       customer = Customer.create(name: 'dummy')
       order_id = SecureRandom.uuid
       order_number = "123/08/2015"
-      event_store.publish_event(Events::OrderCreated.new(order_id: order_id, order_number: order_number, customer_id: customer.id))
-      event_store.publish_event(Events::ItemAddedToBasket.new(order_id: order_id, product_id: product.id))
-      event_store.publish_event(Events::ItemAddedToBasket.new(order_id: order_id, product_id: product.id))
+      event_store.publish_event(Events::OrderCreated.new(data: {order_id: order_id, order_number: order_number, customer_id: customer.id}))
+      event_store.publish_event(Events::ItemAddedToBasket.new(data: {order_id: order_id, product_id: product.id}))
+      event_store.publish_event(Events::ItemAddedToBasket.new(data: {order_id: order_id, product_id: product.id}))
 
-      event_store.publish_event(Events::ItemRemovedFromBasket.new(order_id: order_id, product_id: product.id))
+      event_store.publish_event(Events::ItemRemovedFromBasket.new(data: {order_id: order_id, product_id: product.id}))
 
       assert_equal(::OrderLine.count, 1)
       order_line = OrderLine.find_by(order_uid: order_id)
@@ -27,10 +27,10 @@ module Denormalizers
       customer = Customer.create(name: 'dummy')
       order_id = SecureRandom.uuid
       order_number = "123/08/2015"
-      event_store.publish_event(Events::OrderCreated.new(order_id: order_id, order_number: order_number, customer_id: customer.id))
-      event_store.publish_event(Events::ItemAddedToBasket.new(order_id: order_id, product_id: product.id))
+      event_store.publish_event(Events::OrderCreated.new(data: {order_id: order_id, order_number: order_number, customer_id: customer.id}))
+      event_store.publish_event(Events::ItemAddedToBasket.new(data: {order_id: order_id, product_id: product.id}))
 
-      event_store.publish_event(Events::ItemRemovedFromBasket.new(order_id: order_id, product_id: product.id))
+      event_store.publish_event(Events::ItemRemovedFromBasket.new(data: {order_id: order_id, product_id: product.id}))
 
       assert_equal(::OrderLine.count, 0)
     end
@@ -41,12 +41,12 @@ module Denormalizers
       customer = Customer.create(name: 'dummy')
       order_id = SecureRandom.uuid
       order_number = "123/08/2015"
-      event_store.publish_event(Events::OrderCreated.new(order_id: order_id, order_number: order_number, customer_id: customer.id))
-      event_store.publish_event(Events::ItemAddedToBasket.new(order_id: order_id, product_id: product.id))
-      event_store.publish_event(Events::ItemAddedToBasket.new(order_id: order_id, product_id: product.id))
-      event_store.publish_event(Events::ItemAddedToBasket.new(order_id: order_id, product_id: another_product.id))
+      event_store.publish_event(Events::OrderCreated.new(data: {order_id: order_id, order_number: order_number, customer_id: customer.id}))
+      event_store.publish_event(Events::ItemAddedToBasket.new(data: {order_id: order_id, product_id: product.id}))
+      event_store.publish_event(Events::ItemAddedToBasket.new(data: {order_id: order_id, product_id: product.id}))
+      event_store.publish_event(Events::ItemAddedToBasket.new(data: {order_id: order_id, product_id: another_product.id}))
 
-      event_store.publish_event(Events::ItemRemovedFromBasket.new(order_id: order_id, product_id: another_product.id))
+      event_store.publish_event(Events::ItemRemovedFromBasket.new(data: {order_id: order_id, product_id: another_product.id}))
 
       assert_equal(::OrderLine.count, 1)
       order_lines = OrderLine.where(order_uid: order_id)
