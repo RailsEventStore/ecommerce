@@ -1,5 +1,5 @@
 source 'https://rubygems.org'
-gem "codeclimate-test-reporter", group: :test, require: nil
+gem 'codeclimate-test-reporter', group: :test, require: nil
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.2.0'
@@ -46,4 +46,4 @@ group :development, :test do
   gem 'spring'
 end
 
-gem 'rails_event_store', '~> 0.5.0'
+gem 'rails_event_store', '~> 0.11.0'

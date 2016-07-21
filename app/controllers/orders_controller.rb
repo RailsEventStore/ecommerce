@@ -1,25 +1,19 @@
 class OrdersController < ApplicationController
-  # GET /orders
-  # GET /orders.json
   def index
     @orders = Order.all
   end
 
-  # GET /orders/1
-  # GET /orders/1.json
   def show
     @order = Order.find(params[:id])
     @order_lines = OrderLine.where(order_uid: @order.uid)
   end
 
-  # GET /orders/new
   def new
     @order_id = SecureRandom.uuid
     @products = Product.all
     @customers = Customer.all
   end
 
-  # POST /orders/:id/add_item
   def add_item
     cmd = Command::AddItemToBasket.new(product_params)
     execute(cmd)
@@ -27,7 +21,6 @@ class OrdersController < ApplicationController
     head :ok
   end
 
-  # POST /orders/:id/remove_item
   def remove_item
     cmd = Command::RemoveItemFromBasket.new(product_params)
     execute(cmd)
@@ -35,8 +28,6 @@ class OrdersController < ApplicationController
     head :ok
   end
 
-  # POST /orders
-  # POST /orders.json
   def create
     cmd = Command::CreateOrder.new(order_params)
     execute(cmd)

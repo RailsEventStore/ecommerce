@@ -1,6 +1,7 @@
 *.rbc
 capybara-*.html
 .rspec
+.byebug_history
 
 # Ignore all logfiles and tempfiles.
 /log/*
