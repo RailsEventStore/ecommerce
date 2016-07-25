@@ -7,7 +7,7 @@ State: <%= @order.state %>
 
 <h2>Orders lines</h2>
 
-<table>
+<table class="table">
   <thead>
     <tr>
       <th>Product</th>
@@ -26,4 +26,4 @@ State: <%= @order.state %>
 </table>
 
 <br/>
-<%= link_to 'Back', orders_path %>
+<%= link_to 'Back', orders_path, class: "btn btn-default" %>
