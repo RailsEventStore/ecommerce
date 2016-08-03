@@ -1,6 +1,6 @@
 <h1>New Order</h1>
 
-<table>
+<table class="table">
   <thead>
     <tr>
       <th>Product</th>
@@ -28,6 +28,6 @@
     <%= select_tag(:customer_id, options_from_collection_for_select(@customers, :id, :name)) %>
   </p>
 
-  <%= submit_tag("Place order") %>
-  <%= link_to 'Back', orders_path %>
+  <%= submit_tag("Place order", class: "btn btn-primary") %>
+  <%= link_to 'Back', orders_path, class: "btn btn-default" %>
 <% end %>
