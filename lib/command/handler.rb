@@ -1,23 +1,10 @@
 module Command
-  class Handler
-    def initialize(repository:, **_)
-      @repository = repository
-    end
-
-    protected
-    def with_aggregate(aggregate_id)
-      aggregate = build(aggregate_id)
+  module Handler
+    def with_aggregate(aggregate_class, aggregate_id)
+      stream = "#{aggregate_class.name}$#{aggregate_id}"
+      aggregate = aggregate_class.new(aggregate_id).load(stream)
       yield aggregate
-      repository.store(aggregate)
-    end
-
-    private
-    attr_accessor :repository
-
-    def build(aggregate_id)
-      aggregate_class.new(aggregate_id).tap do |aggregate|
-        repository.load(aggregate)
-      end
+      aggregate.store
     end
   end
 end
