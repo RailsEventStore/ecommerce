@@ -28,6 +28,6 @@
     <%= select_tag(:customer_id, options_from_collection_for_select(@customers, :id, :name)) %>
   </p>
 
-  <%= submit_tag("Place order", class: "btn btn-primary") %>
+  <%= submit_tag("Submit order", class: "btn btn-primary") %>
   <%= link_to 'Back', orders_path, class: "btn btn-default" %>
 <% end %>
