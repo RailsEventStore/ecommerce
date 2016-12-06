@@ -111,13 +111,13 @@ GEM
       rails-deprecated_sanitizer (>= 1.0.1)
     rails-html-sanitizer (1.0.3)
       loofah (~> 2.0)
-    rails_event_store (0.14.0)
+    rails_event_store (0.14.3)
       activemodel (>= 3.0)
       activesupport (>= 3.0)
       aggregate_root (~> 0.4.0)
-      rails_event_store_active_record (~> 0.6.9)
+      rails_event_store_active_record (~> 0.6.10)
       ruby_event_store (~> 0.13.0)
-    rails_event_store_active_record (0.6.9)
+    rails_event_store_active_record (0.6.10)
       activemodel (>= 3.0)
       activesupport (>= 3.0)
       ruby_event_store (~> 0.13.0)
@@ -182,7 +182,7 @@ DEPENDENCIES
   jquery-rails
   pry
   rails (= 4.2.0)
-  rails_event_store (= 0.14.0)
+  rails_event_store (= 0.14.3)
   sass-rails (~> 5.0)
   sdoc (~> 0.4.0)
   spring
