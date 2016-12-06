@@ -1,6 +1,6 @@
 module Domain
   class Order
-    include AggregateRoot::Base
+    include AggregateRoot
 
     AlreadyCreated        = Class.new(StandardError)
     OrderExpired          = Class.new(StandardError)

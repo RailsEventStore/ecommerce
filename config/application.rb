@@ -25,9 +25,6 @@ module CqrsEsSampleWithRes
     config.autoload_paths += Dir["#{config.root}/app/**/"]
     config.autoload_paths += Dir["#{config.root}/lib/**/"]
     config.active_record.raise_in_transactional_callbacks = true
+    config.event_store = RailsEventStore::Client.new
   end
-end
-
-AggregateRoot.configure do |config|
-  config.default_event_store = RailsEventStore::Client.new
 end
