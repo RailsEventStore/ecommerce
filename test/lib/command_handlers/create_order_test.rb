@@ -1,10 +1,10 @@
 require 'test_helper'
 
 module CommandHandlers
-  class CreateOrderTest < ActiveSupport::TestCase
+  class SubmitOrderTest < ActiveSupport::TestCase
     include CommandHandlers::TestCase
 
-    test 'order is created' do
+    test 'order is submitted' do
       aggregate_id = SecureRandom.uuid
       stream = "Domain::Order$#{aggregate_id}"
       customer = Customer.create(name: 'test')
@@ -12,16 +12,16 @@ module CommandHandlers
       order_number = "123/08/2015"
       arrange(stream, [Events::ItemAddedToBasket.new(data: {order_id: aggregate_id, product_id: product.id})])
 
-      published = act(stream, Command::CreateOrder.new(order_id: aggregate_id, customer_id: customer.id))
+      published = act(stream, Command::SubmitOrder.new(order_id: aggregate_id, customer_id: customer.id))
 
-      assert_changes(published, [Events::OrderCreated.new(data: {order_id: aggregate_id, order_number: order_number, customer_id: customer.id})])
+      assert_changes(published, [Events::OrderSubmitted.new(data: {order_id: aggregate_id, order_number: order_number, customer_id: customer.id})])
     end
 
     test 'could not create order where customer is not given' do
       aggregate_id = SecureRandom.uuid
       stream = "Domain::Order$#{aggregate_id}"
       assert_raises(Command::ValidationError) do
-        act(stream, Command::CreateOrder.new(order_id: aggregate_id, customer_id: nil))
+        act(stream, Command::SubmitOrder.new(order_id: aggregate_id, customer_id: nil))
       end
     end
 
@@ -35,10 +35,10 @@ module CommandHandlers
 
       arrange(stream, [
         Events::ItemAddedToBasket.new(data: {order_id: aggregate_id, product_id: product.id}),
-        Events::OrderCreated.new(data: {order_id: aggregate_id, order_number: order_number, customer_id: customer.id})])
+        Events::OrderSubmitted.new(data: {order_id: aggregate_id, order_number: order_number, customer_id: customer.id})])
 
-      assert_raises(Domain::Order::AlreadyCreated) do
-        act(stream, Command::CreateOrder.new(order_id: aggregate_id, customer_id: another_customer.id))
+      assert_raises(Domain::Order::AlreadySubmitted) do
+        act(stream, Command::SubmitOrder.new(order_id: aggregate_id, customer_id: another_customer.id))
       end
     end
 
@@ -52,7 +52,7 @@ module CommandHandlers
         Events::OrderExpired.new(data: {order_id: aggregate_id})])
 
       assert_raises(Domain::Order::OrderExpired) do
-        act(stream, Command::CreateOrder.new(order_id: aggregate_id, customer_id: customer.id))
+        act(stream, Command::SubmitOrder.new(order_id: aggregate_id, customer_id: customer.id))
       end
     end
   end

@@ -1,5 +1,5 @@
 module CommandHandlers
-  class CreateOrder
+  class SubmitOrder
     include Command::Handler
 
     def initialize(number_generator:)
@@ -9,7 +9,7 @@ module CommandHandlers
     def call(command)
       with_aggregate(Domain::Order, command.aggregate_id) do |order|
         order_number = number_generator.call
-        order.create(order_number, command.customer_id)
+        order.submit(order_number, command.customer_id)
       end
     end
 

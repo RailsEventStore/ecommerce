@@ -2,7 +2,7 @@ module Domain
   class Order
     include AggregateRoot
 
-    AlreadyCreated        = Class.new(StandardError)
+    AlreadySubmitted      = Class.new(StandardError)
     OrderExpired          = Class.new(StandardError)
     MissingCustomer       = Class.new(StandardError)
 
@@ -12,25 +12,25 @@ module Domain
       @order_lines = []
     end
 
-    def create(order_number, customer_id)
-      raise AlreadyCreated if state == :created
+    def submit(order_number, customer_id)
+      raise AlreadySubmitted if state == :submitted
       raise OrderExpired if state == :expired
       raise MissingCustomer unless customer_id
-      apply Events::OrderCreated.new(data: {order_id: id, order_number: order_number, customer_id: customer_id})
+      apply Events::OrderSubmitted.new(data: {order_id: id, order_number: order_number, customer_id: customer_id})
     end
 
     def expire
-      raise AlreadyCreated unless state == :draft
+      raise AlreadySubmitted unless state == :draft
       apply Events::OrderExpired.new(data: {order_id: id})
     end
 
     def add_item(product_id)
-      raise AlreadyCreated unless state == :draft
+      raise AlreadySubmitted unless state == :draft
       apply Events::ItemAddedToBasket.new(data: {order_id: id, product_id: product_id})
     end
 
     def remove_item(product_id)
-      raise AlreadyCreated unless state == :draft
+      raise AlreadySubmitted unless state == :draft
       apply Events::ItemRemovedFromBasket.new(data: {order_id: id, product_id: product_id})
     end
 
@@ -38,10 +38,10 @@ module Domain
     private
     attr_accessor :state, :customer_id, :number, :order_lines
 
-    def apply_order_created(event)
+    def apply_order_submitted(event)
       @customer_id = event.data[:customer_id]
       @number = event.data[:order_number]
-      @state = :created
+      @state = :submitted
     end
 
     def apply_order_expired(event)

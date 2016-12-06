@@ -1,5 +1,5 @@
 module Command
-  class CreateOrder < Base
+  class SubmitOrder < Base
     attr_accessor :order_id
     attr_accessor :customer_id
 

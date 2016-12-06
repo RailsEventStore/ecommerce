@@ -3,7 +3,7 @@ def instance_of(klass, *args)
 end
 
 Rails.application.config.event_store.tap do |es|
-  es.subscribe(instance_of(Denormalizers::OrderCreated), [Events::OrderCreated])
+  es.subscribe(instance_of(Denormalizers::OrderSubmitted), [Events::OrderSubmitted])
   es.subscribe(instance_of(Denormalizers::OrderExpired), [Events::OrderExpired])
   es.subscribe(instance_of(Denormalizers::ItemAddedToBasket), [Events::ItemAddedToBasket])
   es.subscribe(instance_of(Denormalizers::ItemRemovedFromBasket), [Events::ItemRemovedFromBasket])

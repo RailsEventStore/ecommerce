@@ -12,7 +12,7 @@ module CommandHandlers
       assert_changes(published, [Events::ItemAddedToBasket.new(data: {order_id: aggregate_id, product_id: product.id})])
     end
 
-    test 'no add allowed to created order' do
+    test 'no add allowed to submitted order' do
       aggregate_id = SecureRandom.uuid
       stream = "Domain::Order$#{aggregate_id}"
       customer = Customer.create(name: 'test')
@@ -20,9 +20,9 @@ module CommandHandlers
       order_number = "123/08/2015"
       arrange(stream, [
         Events::ItemAddedToBasket.new(data: {order_id: aggregate_id, product_id: product.id}),
-        Events::OrderCreated.new(data: {order_id: aggregate_id, order_number: order_number, customer_id: customer.id})])
+        Events::OrderSubmitted.new(data: {order_id: aggregate_id, order_number: order_number, customer_id: customer.id})])
 
-      assert_raises(Domain::Order::AlreadyCreated) do
+      assert_raises(Domain::Order::AlreadySubmitted) do
         act(stream, Command::AddItemToBasket.new(order_id: aggregate_id, product_id: product.id))
       end
     end

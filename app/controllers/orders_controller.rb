@@ -29,10 +29,10 @@ class OrdersController < ApplicationController
   end
 
   def create
-    cmd = Command::CreateOrder.new(order_params)
+    cmd = Command::SubmitOrder.new(order_params)
     execute(cmd)
 
-    redirect_to Order.find_by_uid(cmd.order_id), notice: 'Order was successfully created.'
+    redirect_to Order.find_by_uid(cmd.order_id), notice: 'Order was successfully submitted.'
   end
 
   private

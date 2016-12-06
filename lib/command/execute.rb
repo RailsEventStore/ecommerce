@@ -8,7 +8,7 @@ module Command
     private
     def handler_for(command)
       {
-        Command::CreateOrder          => CommandHandlers::CreateOrder.new(
+        Command::SubmitOrder          => CommandHandlers::SubmitOrder.new(
           number_generator: dependencies.fetch(:number_generator)
         ),
         Command::SetOrderAsExpired    => CommandHandlers::SetOrderAsExpired.new,
