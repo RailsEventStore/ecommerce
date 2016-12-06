@@ -1,13 +1,10 @@
 module Denormalizers
   class OrderCreated
     def call(event)
-      return if Order.where(uid: event.data.order_id).exists?
-      order = ::Order.new.tap do |o|
-        o.uid = event.data.order_id
-        o.number = event.data.order_number
-        o.customer = Customer.find(event.data.customer_id).name
-        o.state = "Created"
-      end
+      order = Order.find_by(uid: event.data[:order_id])
+      order.number = event.data[:order_number]
+      order.customer = Customer.find(event.data[:customer_id]).name
+      order.state = "Created"
       order.save!
     end
   end

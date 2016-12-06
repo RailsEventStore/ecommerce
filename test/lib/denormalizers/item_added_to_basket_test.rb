@@ -2,14 +2,11 @@ require 'test_helper'
 
 module Denormalizers
   class ItemAddedToBasketTest < ActiveSupport::TestCase
-    include EventStoreSetup
-
     test 'add new item' do
+      event_store = Rails.application.config.event_store
+
       product = Product.create(name: 'something')
-      customer = Customer.create(name: 'dummy')
       order_id = SecureRandom.uuid
-      order_number = "123/08/2015"
-      event_store.publish_event(Events::OrderCreated.new(data: {order_id: order_id, order_number: order_number, customer_id: customer.id}))
 
       event_store.publish_event(Events::ItemAddedToBasket.new(data: {order_id: order_id, product_id: product.id}))
 
@@ -18,14 +15,19 @@ module Denormalizers
       assert_equal(order_line.product_id, product.id)
       assert_equal(order_line.product_name, 'something')
       assert_equal(order_line.quantity , 1)
+
+      assert_equal(::Order.count, 1)
+      order = Order.find_by(uid: order_id)
+      assert_equal(order.state, "Draft")
+      assert_equal(order.customer, nil)
+      assert_equal(order.number, nil)
     end
 
     test 'add the same item 2nd time' do
+      event_store = Rails.application.config.event_store
+
       product = Product.create(name: 'something')
-      customer = Customer.create(name: 'dummy')
       order_id = SecureRandom.uuid
-      order_number = "123/08/2015"
-      event_store.publish_event(Events::OrderCreated.new(data: {order_id: order_id, order_number: order_number, customer_id: customer.id}))
       event_store.publish_event(Events::ItemAddedToBasket.new(data: {order_id: order_id, product_id: product.id}))
 
       event_store.publish_event(Events::ItemAddedToBasket.new(data: {order_id: order_id, product_id: product.id}))
@@ -35,15 +37,20 @@ module Denormalizers
       assert_equal(order_line.product_id, product.id)
       assert_equal(order_line.product_name, 'something')
       assert_equal(order_line.quantity , 2)
+
+      assert_equal(::Order.count, 1)
+      order = Order.find_by(uid: order_id)
+      assert_equal(order.state, "Draft")
+      assert_equal(order.customer, nil)
+      assert_equal(order.number, nil)
     end
 
     test 'add another item' do
+      event_store = Rails.application.config.event_store
+
       product = Product.create(name: 'something')
       another_product = Product.create(name: '2nd one')
-      customer = Customer.create(name: 'dummy')
       order_id = SecureRandom.uuid
-      order_number = "123/08/2015"
-      event_store.publish_event(Events::OrderCreated.new(data: {order_id: order_id, order_number: order_number, customer_id: customer.id}))
       event_store.publish_event(Events::ItemAddedToBasket.new(data: {order_id: order_id, product_id: product.id}))
 
       event_store.publish_event(Events::ItemAddedToBasket.new(data: {order_id: order_id, product_id: another_product.id}))
@@ -57,6 +64,12 @@ module Denormalizers
       assert_equal(order_lines[1].product_id, another_product.id)
       assert_equal(order_lines[1].product_name, '2nd one')
       assert_equal(order_lines[1].quantity , 1)
+
+      assert_equal(::Order.count, 1)
+      order = Order.find_by(uid: order_id)
+      assert_equal(order.state, "Draft")
+      assert_equal(order.customer, nil)
+      assert_equal(order.number, nil)
     end
   end
 end

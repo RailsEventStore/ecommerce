@@ -1,13 +1,22 @@
 module Denormalizers
   class ItemAddedToBasket
     def call(event)
-      item = find(event.data.order_id, event.data.product_id) ||
-             create(event.data.order_id, event.data.product_id)
+      create_draft_order(event.data[:order_id])
+      item = find(event.data[:order_id], event.data[:product_id]) ||
+             create(event.data[:order_id], event.data[:product_id])
       item.quantity += 1
       item.save!
     end
 
     private
+    def create_draft_order(uid)
+      return if ::Order.where(uid: uid).exists?
+      ::Order.create!(
+        uid: uid,
+        state: "Draft",
+      )
+    end
+
     def find(order_uid, product_id)
       ::OrderLine.where({order_uid: order_uid, product_id: product_id}).first
     end

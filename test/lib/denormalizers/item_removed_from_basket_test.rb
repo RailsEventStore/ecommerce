@@ -2,16 +2,16 @@ require 'test_helper'
 
 module Denormalizers
   class ItemRemovedFromBasketTest < ActiveSupport::TestCase
-    include EventStoreSetup
-
     test 'remove item when quantity > 1' do
+      event_store = Rails.application.config.event_store
+
       product = Product.create(name: 'something')
       customer = Customer.create(name: 'dummy')
       order_id = SecureRandom.uuid
       order_number = "123/08/2015"
+      event_store.publish_event(Events::ItemAddedToBasket.new(data: {order_id: order_id, product_id: product.id}))
+      event_store.publish_event(Events::ItemAddedToBasket.new(data: {order_id: order_id, product_id: product.id}))
       event_store.publish_event(Events::OrderCreated.new(data: {order_id: order_id, order_number: order_number, customer_id: customer.id}))
-      event_store.publish_event(Events::ItemAddedToBasket.new(data: {order_id: order_id, product_id: product.id}))
-      event_store.publish_event(Events::ItemAddedToBasket.new(data: {order_id: order_id, product_id: product.id}))
 
       event_store.publish_event(Events::ItemRemovedFromBasket.new(data: {order_id: order_id, product_id: product.id}))
 
@@ -23,12 +23,14 @@ module Denormalizers
     end
 
     test 'remove item when quantity = 1' do
+      event_store = Rails.application.config.event_store
+
       product = Product.create(name: 'something')
       customer = Customer.create(name: 'dummy')
       order_id = SecureRandom.uuid
       order_number = "123/08/2015"
-      event_store.publish_event(Events::OrderCreated.new(data: {order_id: order_id, order_number: order_number, customer_id: customer.id}))
       event_store.publish_event(Events::ItemAddedToBasket.new(data: {order_id: order_id, product_id: product.id}))
+      event_store.publish_event(Events::OrderCreated.new(data: {order_id: order_id, order_number: order_number, customer_id: customer.id}))
 
       event_store.publish_event(Events::ItemRemovedFromBasket.new(data: {order_id: order_id, product_id: product.id}))
 
@@ -36,15 +38,17 @@ module Denormalizers
     end
 
     test 'remove item when there is another item' do
+      event_store = Rails.application.config.event_store
+
       product = Product.create(name: 'something')
       another_product = Product.create(name: '2nd one')
       customer = Customer.create(name: 'dummy')
       order_id = SecureRandom.uuid
       order_number = "123/08/2015"
-      event_store.publish_event(Events::OrderCreated.new(data: {order_id: order_id, order_number: order_number, customer_id: customer.id}))
       event_store.publish_event(Events::ItemAddedToBasket.new(data: {order_id: order_id, product_id: product.id}))
       event_store.publish_event(Events::ItemAddedToBasket.new(data: {order_id: order_id, product_id: product.id}))
       event_store.publish_event(Events::ItemAddedToBasket.new(data: {order_id: order_id, product_id: another_product.id}))
+      event_store.publish_event(Events::OrderCreated.new(data: {order_id: order_id, order_number: order_number, customer_id: customer.id}))
 
       event_store.publish_event(Events::ItemRemovedFromBasket.new(data: {order_id: order_id, product_id: another_product.id}))
 

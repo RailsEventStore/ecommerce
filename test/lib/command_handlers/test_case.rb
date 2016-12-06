@@ -1,22 +1,4 @@
 module CommandHandlers
-  class FakeEventStore
-    def initialize
-      @events = []
-      @published = []
-    end
-
-    attr_reader :events, :published
-
-    def publish_event(event, aggregate_id)
-      events << event
-      published << event
-    end
-
-    def read_stream_events_forward(aggregate_id)
-      events
-    end
-  end
-
   class FakeNumberGenerator
     def call
       "123/08/2015"
@@ -26,28 +8,33 @@ module CommandHandlers
   module TestCase
     include Command::Execute
 
-    def arrange(event_store, events)
-      event_store.events.concat(events)
+    def arrange(stream,  events)
+      events.each{|e| event_store.publish_event(e, stream_name: stream)}
     end
 
-    def act(event_store, command)
-      execute(command, **dependencies(event_store))
+    def act(stream, command)
+      before = event_store.read_stream_events_forward(stream)
+      execute(command)
+      after = event_store.read_stream_events_forward(stream)
+      after.reject{|a| before.any?{|b| a.event_id == b.event_id}}
     end
 
-    def assert_changes(event_store, expected)
-      actuals = event_store.published.map(&:data)
+    def assert_changes(actuals, expected)
       expects = expected.map(&:data)
-      assert_equal(actuals, expects)
+      assert_equal(actuals.map(&:data), expects)
     end
 
-    def assert_no_changes(event_store)
-      assert_empty(event_store.published)
+    def assert_no_changes(actuals)
+      assert_empty(actuals)
+    end
+
+    def event_store
+      Rails.application.config.event_store
     end
 
     private
-    def dependencies(event_store)
+    def dependencies
       {
-        repository:       AggregateRoot::Repository.new(event_store),
         number_generator: FakeNumberGenerator.new
       }
     end

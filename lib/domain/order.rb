@@ -6,7 +6,7 @@ module Domain
     OrderExpired          = Class.new(StandardError)
     MissingCustomer       = Class.new(StandardError)
 
-    def initialize(id = generate_uuid)
+    def initialize(id)
       @id = id
       @state = :draft
       @order_lines = []
@@ -38,18 +38,18 @@ module Domain
     private
     attr_accessor :state, :customer_id, :number, :order_lines
 
-    def apply_events_order_created(event)
-      @customer_id = event.data.customer_id
-      @number = event.data.order_number
+    def apply_order_created(event)
+      @customer_id = event.data[:customer_id]
+      @number = event.data[:order_number]
       @state = :created
     end
 
-    def apply_events_order_expired(event)
+    def apply_order_expired(event)
       @state = :expired
     end
 
-    def apply_events_item_added_to_basket(event)
-      product_id = event.data.product_id
+    def apply_item_added_to_basket(event)
+      product_id = event.data[:product_id]
       order_line = find_order_line(product_id)
       unless order_line
         order_line = create_order_line(product_id)
@@ -58,8 +58,8 @@ module Domain
       order_line.increase_quantity
     end
 
-    def apply_events_item_removed_from_basket(event)
-      product_id = event.data.product_id
+    def apply_item_removed_from_basket(event)
+      product_id = event.data[:product_id]
       order_line = find_order_line(product_id)
       return unless order_line
       order_line.decrease_quantity
