@@ -35,6 +35,15 @@ class OrdersController < ApplicationController
     redirect_to Order.find_by_uid(cmd.order_id), notice: 'Order was successfully submitted.'
   end
 
+  def expire
+    ::Order.where(state: "Draft").find_each do |order|
+      cmd = Command::SetOrderAsExpired.new(order_id: order.uid)
+      execute(cmd)
+    end
+
+    redirect_to root_path
+  end
+
   private
   def product_params
     args = params.permit(:id, :product_id)
