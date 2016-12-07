@@ -1,0 +1,29 @@
+<h1>Order: <%= @order.number %></h1>
+<h3>Stream: <%= @stream %></h3>
+
+<h2>Events</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Event</th>
+      <th>Id</th>
+      <th>Data</th>
+      <th>Metadata</th>
+    </tr>
+  </thead>
+
+  <tbody>
+  <% @events.each do |ev| %>
+    <tr>
+      <td><%= ev.class %></td>
+      <td><%= ev.event_id %></td>
+      <td><%= ev.data.inspect %></td>
+      <td><%= ev.metadata %></td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<br/>
+<%= link_to 'Back', orders_path, class: "btn btn-default" %>

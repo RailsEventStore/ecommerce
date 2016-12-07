@@ -44,6 +44,12 @@ class OrdersController < ApplicationController
     redirect_to root_path
   end
 
+  def history
+    @order  = Order.find(params[:id])
+    @stream = "Domain::Order$#{@order.uid}"
+    @events = Rails.application.config.event_store.read_events_backward(@stream)
+  end
+
   private
   def product_params
     args = params.permit(:id, :product_id)
