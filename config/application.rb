@@ -16,4 +16,8 @@ module CqrsEsSampleWithRes
     config.autoload_paths += Dir["#{config.root}/lib/**/"]
     config.event_store = RailsEventStore::Client.new
   end
+
+  AggregateRoot.configure do |config|
+    config.default_event_store = Rails.application.config.event_store
+  end
 end
