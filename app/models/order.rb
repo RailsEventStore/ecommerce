@@ -1,2 +1,2 @@
-class Order < ActiveRecord::Base
+class Order < ApplicationRecord
 end

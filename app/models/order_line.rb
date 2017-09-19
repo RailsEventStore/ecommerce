@@ -1,2 +1,2 @@
-class OrderLine < ActiveRecord::Base
+class OrderLine < ApplicationRecord
 end
