@@ -14,7 +14,13 @@ module CqrsEsSampleWithRes
     # -- all .rb files in that directory are automatically loaded.
     config.autoload_paths += Dir["#{config.root}/app/**/"]
     config.autoload_paths += Dir["#{config.root}/lib/**/"]
-    config.event_store = RailsEventStore::Client.new
+    config.event_store = RailsEventStore::Client.new(
+       event_broker: RailsEventStore::EventBroker.new(
+         dispatcher: RailsEventStore::ActiveJobDispatcher.new(
+           proxy_strategy: RailsEventStore::AsyncProxyStrategy::Inline.new
+         )
+       )
+    )
   end
 
   AggregateRoot.configure do |config|
