@@ -45,4 +45,4 @@ group :development, :test do
   gem 'spring'
 end
 
-gem 'rails_event_store', '0.14.3'
+gem 'rails_event_store', :git => "git@github.com:mpraglowski/rails_event_store.git", :branch => "active_job_dispatcher"
