@@ -19,8 +19,8 @@ module Denormalizers
       assert_equal(::Order.count, 1)
       order = Order.find_by(uid: order_id)
       assert_equal(order.state, "Draft")
-      assert_equal(order.customer, nil)
-      assert_equal(order.number, nil)
+      assert_nil(order.customer)
+      assert_nil(order.number)
     end
 
     test 'add the same item 2nd time' do
@@ -41,8 +41,8 @@ module Denormalizers
       assert_equal(::Order.count, 1)
       order = Order.find_by(uid: order_id)
       assert_equal(order.state, "Draft")
-      assert_equal(order.customer, nil)
-      assert_equal(order.number, nil)
+      assert_nil(order.customer)
+      assert_nil(order.number)
     end
 
     test 'add another item' do
@@ -68,8 +68,8 @@ module Denormalizers
       assert_equal(::Order.count, 1)
       order = Order.find_by(uid: order_id)
       assert_equal(order.state, "Draft")
-      assert_equal(order.customer, nil)
-      assert_equal(order.number, nil)
+      assert_nil(order.customer)
+      assert_nil(order.number)
     end
   end
 end
