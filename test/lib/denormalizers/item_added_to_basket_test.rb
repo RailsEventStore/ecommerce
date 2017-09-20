@@ -1,7 +1,7 @@
 require 'test_helper'
 
 module Denormalizers
-  class ItemAddedToBasketTest < ActiveSupport::TestCase
+  class ItemAddedToBasketTest < ActiveJob::TestCase
     test 'add new item' do
       event_store = Rails.application.config.event_store
 

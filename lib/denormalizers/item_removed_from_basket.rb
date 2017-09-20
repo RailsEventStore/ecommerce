@@ -1,5 +1,12 @@
 module Denormalizers
-  class ItemRemovedFromBasket
+  class ItemRemovedFromBasket < ApplicationJob
+    queue_as :default
+
+    def perform(*args)
+      call(YAML.load(args.first))
+    end
+
+    private
     def call(event)
       item = find(event.data[:order_id], event.data[:product_id])
       item.quantity -= 1

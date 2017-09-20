@@ -1,7 +1,7 @@
 require 'test_helper'
 
 module Denormalizers
-  class ItemRemovedFromBasketTest < ActiveSupport::TestCase
+  class ItemRemovedFromBasketTest < ActiveJob::TestCase
     test 'remove item when quantity > 1' do
       event_store = Rails.application.config.event_store
 

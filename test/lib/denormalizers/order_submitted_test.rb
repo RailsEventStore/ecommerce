@@ -1,7 +1,7 @@
 require 'test_helper'
 
 module Denormalizers
-  class OrderSubmittedTest < ActiveSupport::TestCase
+  class OrderSubmittedTest < ActiveJob::TestCase
     test 'create when not exists' do
       event_store = Rails.application.config.event_store
 

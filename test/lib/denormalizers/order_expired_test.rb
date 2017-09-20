@@ -1,7 +1,7 @@
 require 'test_helper'
 
 module Denormalizers
-  class OrderExpiredTest < ActiveSupport::TestCase
+  class OrderExpiredTest < ActiveJob::TestCase
     test 'expire created order' do
       event_store = Rails.application.config.event_store
 
