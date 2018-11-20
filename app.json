@@ -1,5 +1,5 @@
 {
-  "name": "CQRS/ES Sample with RailsEventStore",
+  "name": "CQRS/ES with RailsEventStore",
   "description": "Sample application featuring RailsEventStore usage",
   "repository": "https://github.com/RailsEventStore/cqrs-es-sample-with-res",
   "keywords": ["rails", "ruby", "rails_event_store", "ruby_event_store", "cqrs", "event-sourcing", "ddd"]
