@@ -2,11 +2,11 @@ source 'https://rubygems.org'
 gem 'codeclimate-test-reporter', group: :test, require: nil
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '5.1'
+gem 'rails', '5.2'
 # Use sqlite3 as the database for Active Record
 gem 'sqlite3'
-# Use SCSS for stylesheets
-gem 'sass-rails'
+# Use SCSSC for stylesheets
+gem 'sassc-rails'
 # Use Uglifier as compressor for JavaScript assets
 gem 'uglifier'
 # See https://github.com/sstephenson/execjs#readme for more supported runtimes
@@ -25,8 +25,7 @@ gem 'sdoc', group: :doc
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 
-# Use Unicorn as the app server
-# gem 'unicorn'
+gem 'puma'
 
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
@@ -34,6 +33,10 @@ gem 'sdoc', group: :doc
 group :development do
   # Access an IRB console on exception pages or by using <%= console %> in views
   gem 'web-console'
+end
+
+group :test do
+  gem 'rspec-core'
 end
 
 group :development, :test do
@@ -45,4 +48,4 @@ group :development, :test do
   gem 'spring'
 end
 
-gem 'rails_event_store', :git => "git@github.com:mpraglowski/rails_event_store.git", :branch => "active_job_dispatcher"
+gem 'rails_event_store', github: 'RailsEventStore/rails_event_store'

@@ -1,12 +1,5 @@
 module Denormalizers
-  class ItemAddedToBasket < ApplicationJob
-    queue_as :default
-
-    def perform(*args)
-      call(YAML.load(args.first))
-    end
-
-    private
+  class ItemAddedToBasket
     def call(event)
       create_draft_order(event.data[:order_id])
       item = find(event.data[:order_id], event.data[:product_id]) ||
@@ -15,6 +8,7 @@ module Denormalizers
       item.save!
     end
 
+    private
     def create_draft_order(uid)
       return if ::Order.where(uid: uid).exists?
       ::Order.create!(

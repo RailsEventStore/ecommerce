@@ -9,13 +9,13 @@ module CommandHandlers
     include Command::Execute
 
     def arrange(stream,  events)
-      events.each{|e| event_store.publish_event(e, stream_name: stream)}
+      events.each{|e| event_store.publish(e, stream_name: stream)}
     end
 
     def act(stream, command)
-      before = event_store.read_stream_events_forward(stream)
+      before = event_store.read.stream(stream).each.to_a
       execute(command)
-      after = event_store.read_stream_events_forward(stream)
+      after = event_store.read.stream(stream).each.to_a
       after.reject{|a| before.any?{|b| a.event_id == b.event_id}}
     end
 

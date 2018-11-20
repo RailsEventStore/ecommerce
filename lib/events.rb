@@ -1,6 +1,11 @@
 module Events
-  ItemAddedToBasket = Class.new(RailsEventStore::Event)
-  ItemRemovedFromBasket = Class.new(RailsEventStore::Event)
-  OrderSubmitted = Class.new(RailsEventStore::Event)
-  OrderExpired = Class.new(RailsEventStore::Event)
+  class Base < RailsEventStore::Event
+    def data
+      super.symbolize_keys
+    end
+  end
+  ItemAddedToBasket = Class.new(Base)
+  ItemRemovedFromBasket = Class.new(Base)
+  OrderSubmitted = Class.new(Base)
+  OrderExpired = Class.new(Base)
 end

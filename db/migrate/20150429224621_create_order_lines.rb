@@ -1,4 +1,4 @@
-class CreateOrderLines < ActiveRecord::Migration
+class CreateOrderLines < ActiveRecord::Migration[5.1]
   def change
     create_table :order_lines do |t|
       t.string    :order_uid

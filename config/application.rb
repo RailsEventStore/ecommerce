@@ -1,7 +1,6 @@
 require_relative 'boot'
 
 require 'rails/all'
-require 'aggregate_root'
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
@@ -14,16 +13,15 @@ module CqrsEsSampleWithRes
     # -- all .rb files in that directory are automatically loaded.
     config.autoload_paths += Dir["#{config.root}/app/**/"]
     config.autoload_paths += Dir["#{config.root}/lib/**/"]
-    config.event_store = RailsEventStore::Client.new(
-       event_broker: RailsEventStore::EventBroker.new(
-         dispatcher: RailsEventStore::ActiveJobDispatcher.new(
-           proxy_strategy: RailsEventStore::AsyncProxyStrategy::Inline.new
-         )
-       )
-    )
-  end
-
-  AggregateRoot.configure do |config|
-    config.default_event_store = Rails.application.config.event_store
+    config.to_prepare do
+      Rails.configuration.event_store = RailsEventStore::Client.new(
+        mapper: RubyEventStore::Mappers::Default.new(serializer: JSON)
+      ).tap do |es|
+        es.subscribe(Denormalizers::OrderSubmitted, to: [Events::OrderSubmitted])
+        es.subscribe(Denormalizers::OrderExpired, to: [Events::OrderExpired])
+        es.subscribe(Denormalizers::ItemAddedToBasket, to: [Events::ItemAddedToBasket])
+        es.subscribe(Denormalizers::ItemRemovedFromBasket, to: [Events::ItemRemovedFromBasket])
+      end
+    end
   end
 end

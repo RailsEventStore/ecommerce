@@ -1,12 +1,5 @@
 module Denormalizers
-  class OrderSubmitted < ApplicationJob
-    queue_as :default
-
-    def perform(*args)
-      call(YAML.load(args.first))
-    end
-
-    private
+  class OrderSubmitted
     def call(event)
       order = Order.find_by(uid: event.data[:order_id])
       order.number = event.data[:order_number]

@@ -19,7 +19,7 @@
       <td><%= ev.class %></td>
       <td><%= ev.event_id %></td>
       <td><%= ev.data.inspect %></td>
-      <td><%= ev.metadata %></td>
+      <td><%= ev.metadata.to_h %></td>
     </tr>
 <% end %>
   </tbody>

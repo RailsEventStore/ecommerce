@@ -1,3 +1,5 @@
+require 'aggregate_root'
+
 module Domain
   class Order
     include AggregateRoot

@@ -47,7 +47,7 @@ class OrdersController < ApplicationController
   def history
     @order  = Order.find(params[:id])
     @stream = "Domain::Order$#{@order.uid}"
-    @events = Rails.application.config.event_store.read_events_backward(@stream)
+    @events = Rails.configuration.event_store.read.stream(@stream).backward
   end
 
   private
