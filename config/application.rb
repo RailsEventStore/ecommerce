@@ -12,28 +12,24 @@ module CqrsEsSampleWithRes
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded.
-
     config.paths.add "lib", eager_load: true
 
     config.to_prepare do
       Rails.configuration.event_store = RailsEventStore::Client.new(
         mapper: RubyEventStore::Mappers::Default.new(serializer: JSON)
-      ).tap do |es|
-        es.subscribe(Denormalizers::OrderSubmitted, to: [Events::OrderSubmitted])
-        es.subscribe(Denormalizers::OrderExpired, to: [Events::OrderExpired])
-        es.subscribe(Denormalizers::ItemAddedToBasket, to: [Events::ItemAddedToBasket])
-        es.subscribe(Denormalizers::ItemRemovedFromBasket, to: [Events::ItemRemovedFromBasket])
+      ).tap do |store|
+        store.subscribe(Denormalizers::OrderSubmitted, to: [Events::OrderSubmitted])
+        store.subscribe(Denormalizers::OrderExpired, to: [Events::OrderExpired])
+        store.subscribe(Denormalizers::ItemAddedToBasket, to: [Events::ItemAddedToBasket])
+        store.subscribe(Denormalizers::ItemRemovedFromBasket, to: [Events::ItemRemovedFromBasket])
       end
 
       command_bus = Arkency::CommandBus.new.tap do |bus|
-        register = bus.method(:register)
-        { Command::SubmitOrder => CommandHandlers::SubmitOrder.new(number_generator: Rails.configuration.number_generator),
-          Command::SetOrderAsExpired => CommandHandlers::SetOrderAsExpired.new,
-          Command::AddItemToBasket => CommandHandlers::AddItemToBasket.new,
-          Command::RemoveItemFromBasket => CommandHandlers::RemoveItemFromBasket.new,
-        }.map(&register)
+        bus.register(Command::SubmitOrder, CommandHandlers::SubmitOrder.new(number_generator: Rails.configuration.number_generator))
+        bus.register(Command::SetOrderAsExpired, CommandHandlers::SetOrderAsExpired.new)
+        bus.register(Command::AddItemToBasket, CommandHandlers::AddItemToBasket.new)
+        bus.register(Command::RemoveItemFromBasket, CommandHandlers::RemoveItemFromBasket.new)
       end
-
       Rails.configuration.command_bus = ->(command) do
         command.validate!
         command_bus.(command)
