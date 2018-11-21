@@ -27,8 +27,7 @@ module CqrsEsSampleWithRes
 
       command_bus = Arkency::CommandBus.new.tap do |bus|
         register = bus.method(:register)
-        { Command::SubmitOrder => CommandHandlers::SubmitOrder.new(
-          number_generator: Domain::Services::NumberGenerator.new),
+        { Command::SubmitOrder => CommandHandlers::SubmitOrder.new(number_generator: Rails.configuration.number_generator),
           Command::SetOrderAsExpired => CommandHandlers::SetOrderAsExpired.new,
           Command::AddItemToBasket => CommandHandlers::AddItemToBasket.new,
           Command::RemoveItemFromBasket => CommandHandlers::RemoveItemFromBasket.new,

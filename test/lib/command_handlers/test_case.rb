@@ -1,10 +1,4 @@
 module CommandHandlers
-  class FakeNumberGenerator
-    def call
-      "123/08/2015"
-    end
-  end
-
   module TestCase
     def arrange(stream,  events)
       events.each{|e| event_store.publish(e, stream_name: stream)}
@@ -32,13 +26,6 @@ module CommandHandlers
 
     def command_bus
       Rails.configuration.command_bus
-    end
-
-    private
-    def dependencies
-      {
-        number_generator: FakeNumberGenerator.new
-      }
     end
   end
 end
