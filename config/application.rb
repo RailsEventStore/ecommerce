@@ -25,7 +25,7 @@ module CqrsEsSampleWithRes
         es.subscribe(Denormalizers::ItemRemovedFromBasket, to: [Events::ItemRemovedFromBasket])
       end
 
-      Rails.configuration.command_bus = Arkency::CommandBus.new.tap do |bus|
+      command_bus = Arkency::CommandBus.new.tap do |bus|
         register = bus.method(:register)
         { Command::SubmitOrder => CommandHandlers::SubmitOrder.new(
           number_generator: Domain::Services::NumberGenerator.new),
@@ -33,6 +33,11 @@ module CqrsEsSampleWithRes
           Command::AddItemToBasket => CommandHandlers::AddItemToBasket.new,
           Command::RemoveItemFromBasket => CommandHandlers::RemoveItemFromBasket.new,
         }.map(&register)
+      end
+
+      Rails.configuration.command_bus = ->(command) do
+        command.validate!
+        command_bus.(command)
       end
     end
   end
