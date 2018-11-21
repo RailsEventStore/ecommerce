@@ -51,6 +51,10 @@ class OrdersController < ApplicationController
   end
 
   private
+  def execute(cmd)
+    Rails.configuration.command_bus.call(cmd)
+  end
+
   def product_params
     args = params.permit(:id, :product_id)
     {order_id: args[:id], product_id: args[:product_id]}

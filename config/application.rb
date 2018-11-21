@@ -1,6 +1,7 @@
 require_relative 'boot'
 
 require 'rails/all'
+require 'arkency/command_bus'
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
@@ -22,6 +23,16 @@ module CqrsEsSampleWithRes
         es.subscribe(Denormalizers::OrderExpired, to: [Events::OrderExpired])
         es.subscribe(Denormalizers::ItemAddedToBasket, to: [Events::ItemAddedToBasket])
         es.subscribe(Denormalizers::ItemRemovedFromBasket, to: [Events::ItemRemovedFromBasket])
+      end
+
+      Rails.configuration.command_bus = Arkency::CommandBus.new.tap do |bus|
+        register = bus.method(:register)
+        { Command::SubmitOrder => CommandHandlers::SubmitOrder.new(
+          number_generator: Domain::Services::NumberGenerator.new),
+          Command::SetOrderAsExpired => CommandHandlers::SetOrderAsExpired.new,
+          Command::AddItemToBasket => CommandHandlers::AddItemToBasket.new,
+          Command::RemoveItemFromBasket => CommandHandlers::RemoveItemFromBasket.new,
+        }.map(&register)
       end
     end
   end
