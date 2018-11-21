@@ -11,6 +11,9 @@ module CqrsEsSampleWithRes
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded.
+
+    config.paths.add "lib", eager_load: true
+
     config.to_prepare do
       Rails.configuration.event_store = RailsEventStore::Client.new(
         mapper: RubyEventStore::Mappers::Default.new(serializer: JSON)
