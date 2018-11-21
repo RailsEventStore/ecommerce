@@ -4,6 +4,7 @@ module Events
       super.symbolize_keys
     end
   end
+  
   ItemAddedToBasket = Class.new(Base)
   ItemRemovedFromBasket = Class.new(Base)
   OrderSubmitted = Class.new(Base)
