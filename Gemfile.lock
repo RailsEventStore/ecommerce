@@ -89,6 +89,7 @@ GEM
     ffi (1.9.25)
     globalid (0.4.1)
       activesupport (>= 4.2.0)
+    honeybadger (4.1.0)
     i18n (1.1.1)
       concurrent-ruby (~> 1.0)
     jbuilder (2.8.0)
@@ -212,6 +213,7 @@ DEPENDENCIES
   bootstrap-sass
   byebug
   codeclimate-test-reporter
+  honeybadger (~> 4.0)
   jbuilder
   jquery-rails
   pg

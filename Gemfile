@@ -48,4 +48,5 @@ group :production do
   gem 'pg'
 end
 
+gem 'honeybadger', '~> 4.0'
 gem 'rails_event_store', github: 'RailsEventStore/rails_event_store'
