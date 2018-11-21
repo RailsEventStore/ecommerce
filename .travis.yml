@@ -1,6 +1,6 @@
 language: ruby
 rvm:
-  - 2.1.6
+  - 2.5.3
 script:
   - RAILS_ENV=test bundle exec rake db:migrate test
 addons:
