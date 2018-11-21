@@ -6,15 +6,13 @@ module CommandHandlers
   end
 
   module TestCase
-    include Command::Execute
-
     def arrange(stream,  events)
       events.each{|e| event_store.publish(e, stream_name: stream)}
     end
 
     def act(stream, command)
       before = event_store.read.stream(stream).each.to_a
-      execute(command)
+      command_bus.(command)
       after = event_store.read.stream(stream).each.to_a
       after.reject{|a| before.any?{|b| a.event_id == b.event_id}}
     end
@@ -30,6 +28,10 @@ module CommandHandlers
 
     def event_store
       Rails.application.config.event_store
+    end
+
+    def command_bus
+      Rails.configuration.command_bus
     end
 
     private
