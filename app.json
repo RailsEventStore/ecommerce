@@ -4,6 +4,6 @@
   "repository": "https://github.com/RailsEventStore/cqrs-es-sample-with-res",
   "keywords": ["rails", "ruby", "rails_event_store", "ruby_event_store", "cqrs", "event-sourcing", "ddd"],
   "scripts": {
-    "postdeploy": "bundle exec rake db:setup"
+    "postdeploy": "bundle exec rake db:migrate"
   }
 }
