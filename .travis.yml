@@ -1,8 +1,11 @@
 language: ruby
 rvm:
-  - 2.5.3
+- 2.5.3
 script:
-  - RAILS_ENV=test bundle exec rake db:migrate test
+- RAILS_ENV=test bundle exec rake db:migrate test
 addons:
   code_climate:
     repo_token: 39879a394d7657473e714a7ec32e2baabf7b4932cfe2d2acfd51b5426b2c8dde
+notifications:
+  slack:
+    secure: MHZY4LKUJ06P8cLtiXACL+oeP7VHIMd3tqnPAQE8zOotmEVHchshHDF3k9BvS0qIAcKkKdIfCAIxYXKPM/QZ0hdbqIY8nMiFtMimLPpK6C+uzaVMdrqJHgPY5K0u0xtBqXo/ZZ+nqeZOEgW1Ep2qJwUcrwANZNz/o4BffaqDj/w=
