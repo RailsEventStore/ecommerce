@@ -1,4 +1,4 @@
-module Denormalizers
+module Orders
   class OrderSubmitted
     def call(event)
       order = Order.find_by(uid: event.data[:order_id])

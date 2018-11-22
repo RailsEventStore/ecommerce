@@ -18,10 +18,10 @@ module CqrsEsSampleWithRes
       Rails.configuration.event_store = RailsEventStore::Client.new(
         mapper: RubyEventStore::Mappers::Default.new(serializer: JSON)
       ).tap do |store|
-        store.subscribe(Denormalizers::OrderSubmitted, to: [Events::OrderSubmitted])
-        store.subscribe(Denormalizers::OrderExpired, to: [Events::OrderExpired])
-        store.subscribe(Denormalizers::ItemAddedToBasket, to: [Events::ItemAddedToBasket])
-        store.subscribe(Denormalizers::ItemRemovedFromBasket, to: [Events::ItemRemovedFromBasket])
+        store.subscribe(Orders::OrderSubmitted, to: [Events::OrderSubmitted])
+        store.subscribe(Orders::OrderExpired, to: [Events::OrderExpired])
+        store.subscribe(Orders::ItemAddedToBasket, to: [Events::ItemAddedToBasket])
+        store.subscribe(Orders::ItemRemovedFromBasket, to: [Events::ItemRemovedFromBasket])
       end
 
       command_bus = Arkency::CommandBus.new.tap do |bus|

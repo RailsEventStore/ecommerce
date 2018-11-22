@@ -1,4 +1,4 @@
-module Denormalizers
+module Orders
   class ItemRemovedFromBasket
     def call(event)
       item = find(event.data[:order_id], event.data[:product_id])
@@ -8,7 +8,7 @@ module Denormalizers
 
     private
     def find(order_uid, product_id)
-      ::OrderLine.where({order_uid: order_uid, product_id: product_id}).first
+      OrderLine.where({order_uid: order_uid, product_id: product_id}).first
     end
   end
 end

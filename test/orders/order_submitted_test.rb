@@ -1,6 +1,6 @@
 require 'test_helper'
 
-module Denormalizers
+module Orders
   class OrderSubmittedTest < ActiveJob::TestCase
     test 'create when not exists' do
       event_store = Rails.configuration.event_store
@@ -13,7 +13,7 @@ module Denormalizers
       event_store.publish(Events::ItemAddedToBasket.new(data: {order_id: order_id, product_id: product.id}))
       event_store.publish(Events::OrderSubmitted.new(data: {order_id: order_id, order_number: order_number, customer_id: customer.id}))
 
-      assert_equal(::Order.count, 1)
+      assert_equal(Order.count, 1)
       order = Order.find_by(uid: order_id)
       assert_equal(order.state, 'Submitted')
       assert_equal(order.number, order_number)
@@ -32,7 +32,7 @@ module Denormalizers
 
       event_store.publish(Events::OrderSubmitted.new(data: {order_id: order_id, order_number: order_number, customer_id: customer.id}))
 
-      assert_equal(::Order.count, 1)
+      assert_equal(Order.count, 1)
       order = Order.find_by(uid: order_id)
       assert_equal(order.state, 'Submitted')
       assert_equal(order.number, order_number)

@@ -1,6 +1,6 @@
 require 'test_helper'
 
-module Denormalizers
+module Orders
   class OrderExpiredTest < ActiveJob::TestCase
     test 'expire created order' do
       event_store = Rails.configuration.event_store
@@ -14,7 +14,7 @@ module Denormalizers
 
       event_store.publish(Events::OrderExpired.new(data: {order_id: order_id}))
 
-      assert_equal(::Order.count, 1)
+      assert_equal(Order.count, 1)
       order = Order.find_by(uid: order_id)
       assert_equal(order.state, 'Expired')
     end
