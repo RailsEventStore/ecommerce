@@ -1,11 +1,11 @@
 class OrdersController < ApplicationController
   def index
-    @orders = Order.all
+    @orders = Orders::Order.all
   end
 
   def show
-    @order       = Order.find(params[:id])
-    @order_lines = OrderLine.where(order_uid: @order.uid)
+    @order       = Orders::Order.find(params[:id])
+    @order_lines = Orders::OrderLine.where(order_uid: @order.uid)
   end
 
   def new
@@ -15,30 +15,30 @@ class OrdersController < ApplicationController
   end
 
   def add_item
-    command_bus.(AddItemToBasket.new(product_params))
+    command_bus.(Ordering::AddItemToBasket.new(product_params))
     head :ok
   end
 
   def remove_item
-    command_bus.(RemoveItemFromBasket.new(product_params))
+    command_bus.(Ordering::RemoveItemFromBasket.new(product_params))
     head :ok
   end
 
   def create
-    cmd = SubmitOrder.new(order_params)
+    cmd = Ordering::SubmitOrder.new(order_params)
     command_bus.(cmd)
-    redirect_to Order.find_by_uid(cmd.order_id), notice: 'Order was successfully submitted.'
+    redirect_to order_path(Orders::Order.find_by_uid(cmd.order_id)), notice: 'Order was successfully submitted.'
   end
 
   def expire
-    Order.where(state: "Draft").find_each do |order|
-      command_bus.(SetOrderAsExpired.new(order_id: order.uid))
+    Orders::Order.where(state: "Draft").find_each do |order|
+      command_bus.(Ordering::SetOrderAsExpired.new(order_id: order.uid))
     end
     redirect_to root_path
   end
 
   def history
-    @order  = Order.find(params[:id])
+    @order  = Orders::Order.find(params[:id])
     @stream = "Order$#{@order.uid}"
     @events = event_store.read.stream(@stream).backward
   end

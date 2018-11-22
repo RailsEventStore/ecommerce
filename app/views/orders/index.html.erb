@@ -15,7 +15,7 @@
   <tbody>
     <% @orders.each do |order| %>
       <tr>
-        <td><%= link_to order.number || 'Not submitted', order %></td>
+        <td><%= link_to order.number || 'Not submitted', order_path(order) %></td>
         <td><%= order.customer %></td>
         <td><%= order.state %></td>
         <td><%= link_to 'History', history_order_path(order) %></td>
