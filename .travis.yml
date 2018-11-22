@@ -1,12 +1,18 @@
 language: ruby
 cache: bundler
 rvm:
-- 2.5.3
-script:
-- RAILS_ENV=test bundle exec rake db:migrate test
-addons:
-  code_climate:
-    repo_token: 39879a394d7657473e714a7ec32e2baabf7b4932cfe2d2acfd51b5426b2c8dde
+  - 2.5.3
 notifications:
   slack:
     secure: MHZY4LKUJ06P8cLtiXACL+oeP7VHIMd3tqnPAQE8zOotmEVHchshHDF3k9BvS0qIAcKkKdIfCAIxYXKPM/QZ0hdbqIY8nMiFtMimLPpK6C+uzaVMdrqJHgPY5K0u0xtBqXo/ZZ+nqeZOEgW1Ep2qJwUcrwANZNz/o4BffaqDj/w=
+env:
+  global:
+    - CC_TEST_REPORTER_ID=957fa7b7d88d5482dede502364d2fff8763ea30ee7d1de53000c14288a76ed4c
+before_script:
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+  - ./cc-test-reporter before-build
+script:
+  - RAILS_ENV=test bundle exec rake db:migrate test
+after_script:
+  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
