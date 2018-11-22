@@ -39,7 +39,7 @@ class OrdersController < ApplicationController
 
   def history
     @order  = Orders::Order.find(params[:id])
-    @stream = "Order$#{@order.uid}"
+    @stream = "Ordering::Order$#{@order.uid}"
     @events = event_store.read.stream(@stream).backward
   end
 
