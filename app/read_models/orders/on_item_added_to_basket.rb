@@ -1,5 +1,5 @@
 module Orders
-  class ItemAddedToBasket
+  class OnItemAddedToBasket
     def call(event)
       create_draft_order(event.data[:order_id])
       item = find(event.data[:order_id], event.data[:product_id]) ||

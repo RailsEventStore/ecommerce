@@ -1,0 +1,1 @@
+OrderExpired = Class.new(Event)

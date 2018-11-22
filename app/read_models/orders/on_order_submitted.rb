@@ -1,5 +1,5 @@
 module Orders
-  class OrderSubmitted
+  class OnOrderSubmitted
     def call(event)
       order = Order.find_by(uid: event.data[:order_id])
       order.number = event.data[:order_number]

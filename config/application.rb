@@ -18,17 +18,17 @@ module CqrsEsSampleWithRes
       Rails.configuration.event_store = RailsEventStore::Client.new(
         mapper: RubyEventStore::Mappers::Default.new(serializer: JSON)
       ).tap do |store|
-        store.subscribe(Orders::OrderSubmitted, to: [Events::OrderSubmitted])
-        store.subscribe(Orders::OrderExpired, to: [Events::OrderExpired])
-        store.subscribe(Orders::ItemAddedToBasket, to: [Events::ItemAddedToBasket])
-        store.subscribe(Orders::ItemRemovedFromBasket, to: [Events::ItemRemovedFromBasket])
+        store.subscribe(Orders::OnOrderSubmitted, to: [OrderSubmitted])
+        store.subscribe(Orders::OnOrderExpired, to: [OrderExpired])
+        store.subscribe(Orders::OnItemAddedToBasket, to: [ItemAddedToBasket])
+        store.subscribe(Orders::OnItemRemovedFromBasket, to: [ItemRemovedFromBasket])
       end
 
       command_bus = Arkency::CommandBus.new.tap do |bus|
-        bus.register(Command::SubmitOrder, CommandHandlers::SubmitOrder.new(number_generator: Rails.configuration.number_generator))
-        bus.register(Command::SetOrderAsExpired, CommandHandlers::SetOrderAsExpired.new)
-        bus.register(Command::AddItemToBasket, CommandHandlers::AddItemToBasket.new)
-        bus.register(Command::RemoveItemFromBasket, CommandHandlers::RemoveItemFromBasket.new)
+        bus.register(SubmitOrder, OnSubmitOrder.new(number_generator: Rails.configuration.number_generator))
+        bus.register(SetOrderAsExpired, OnSetOrderAsExpired.new)
+        bus.register(AddItemToBasket, OnAddItemToBasket.new)
+        bus.register(RemoveItemFromBasket, OnRemoveItemFromBasket.new)
       end
       Rails.configuration.command_bus = ->(command) do
         command.validate!

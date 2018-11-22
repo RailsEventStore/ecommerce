@@ -15,31 +15,31 @@ class OrdersController < ApplicationController
   end
 
   def add_item
-    command_bus.(Command::AddItemToBasket.new(product_params))
+    command_bus.(AddItemToBasket.new(product_params))
     head :ok
   end
 
   def remove_item
-    command_bus.(Command::RemoveItemFromBasket.new(product_params))
+    command_bus.(RemoveItemFromBasket.new(product_params))
     head :ok
   end
 
   def create
-    cmd = Command::SubmitOrder.new(order_params)
+    cmd = SubmitOrder.new(order_params)
     command_bus.(cmd)
     redirect_to Order.find_by_uid(cmd.order_id), notice: 'Order was successfully submitted.'
   end
 
   def expire
     Order.where(state: "Draft").find_each do |order|
-      command_bus.(Command::SetOrderAsExpired.new(order_id: order.uid))
+      command_bus.(SetOrderAsExpired.new(order_id: order.uid))
     end
     redirect_to root_path
   end
 
   def history
     @order  = Order.find(params[:id])
-    @stream = "Domain::Order$#{@order.uid}"
+    @stream = "Order$#{@order.uid}"
     @events = event_store.read.stream(@stream).backward
   end
 

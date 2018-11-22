@@ -52,5 +52,5 @@ Rails.application.configure do
   # routes, locales, etc. This feature depends on the listen gem.
   # config.file_watcher = ActiveSupport::EventedFileUpdateChecker
 
-  config.number_generator = Domain::Services::NumberGenerator.new
+  config.number_generator = NumberGenerator.new
 end
