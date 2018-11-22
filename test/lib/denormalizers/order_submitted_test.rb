@@ -3,7 +3,7 @@ require 'test_helper'
 module Denormalizers
   class OrderSubmittedTest < ActiveJob::TestCase
     test 'create when not exists' do
-      event_store = Rails.application.config.event_store
+      event_store = Rails.configuration.event_store
 
       customer = Customer.create(name: 'dummy')
       product = Product.create(name: 'something')
@@ -21,7 +21,7 @@ module Denormalizers
     end
 
     test 'skip when duplicated' do
-      event_store = Rails.application.config.event_store
+      event_store = Rails.configuration.event_store
 
       customer = Customer.create(name: 'dummy')
       product = Product.create(name: 'something')

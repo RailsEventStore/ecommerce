@@ -3,7 +3,7 @@ require 'test_helper'
 module Denormalizers
   class ItemAddedToBasketTest < ActiveJob::TestCase
     test 'add new item' do
-      event_store = Rails.application.config.event_store
+      event_store = Rails.configuration.event_store
 
       product = Product.create(name: 'something')
       order_id = SecureRandom.uuid
@@ -24,7 +24,7 @@ module Denormalizers
     end
 
     test 'add the same item 2nd time' do
-      event_store = Rails.application.config.event_store
+      event_store = Rails.configuration.event_store
 
       product = Product.create(name: 'something')
       order_id = SecureRandom.uuid
@@ -46,7 +46,7 @@ module Denormalizers
     end
 
     test 'add another item' do
-      event_store = Rails.application.config.event_store
+      event_store = Rails.configuration.event_store
 
       product = Product.create(name: 'something')
       another_product = Product.create(name: '2nd one')

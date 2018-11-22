@@ -3,7 +3,7 @@ require 'test_helper'
 module Denormalizers
   class ItemRemovedFromBasketTest < ActiveJob::TestCase
     test 'remove item when quantity > 1' do
-      event_store = Rails.application.config.event_store
+      event_store = Rails.configuration.event_store
 
       product = Product.create(name: 'something')
       customer = Customer.create(name: 'dummy')
@@ -23,7 +23,7 @@ module Denormalizers
     end
 
     test 'remove item when quantity = 1' do
-      event_store = Rails.application.config.event_store
+      event_store = Rails.configuration.event_store
 
       product = Product.create(name: 'something')
       customer = Customer.create(name: 'dummy')
@@ -38,7 +38,7 @@ module Denormalizers
     end
 
     test 'remove item when there is another item' do
-      event_store = Rails.application.config.event_store
+      event_store = Rails.configuration.event_store
 
       product = Product.create(name: 'something')
       another_product = Product.create(name: '2nd one')

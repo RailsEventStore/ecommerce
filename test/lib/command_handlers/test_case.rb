@@ -21,7 +21,7 @@ module CommandHandlers
     end
 
     def event_store
-      Rails.application.config.event_store
+      Rails.configuration.event_store
     end
 
     def command_bus
