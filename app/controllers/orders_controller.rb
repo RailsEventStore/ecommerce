@@ -4,56 +4,46 @@ class OrdersController < ApplicationController
   end
 
   def show
-    @order = Order.find(params[:id])
+    @order       = Order.find(params[:id])
     @order_lines = OrderLine.where(order_uid: @order.uid)
   end
 
   def new
-    @order_id = SecureRandom.uuid
-    @products = Product.all
+    @order_id  = SecureRandom.uuid
+    @products  = Product.all
     @customers = Customer.all
   end
 
   def add_item
-    cmd = Command::AddItemToBasket.new(product_params)
-    execute(cmd)
-
+    command_bus.(Command::AddItemToBasket.new(product_params))
     head :ok
   end
 
   def remove_item
-    cmd = Command::RemoveItemFromBasket.new(product_params)
-    execute(cmd)
-
+    command_bus.(Command::RemoveItemFromBasket.new(product_params))
     head :ok
   end
 
   def create
     cmd = Command::SubmitOrder.new(order_params)
-    execute(cmd)
-
+    command_bus.(cmd)
     redirect_to Order.find_by_uid(cmd.order_id), notice: 'Order was successfully submitted.'
   end
 
   def expire
-    ::Order.where(state: "Draft").find_each do |order|
-      cmd = Command::SetOrderAsExpired.new(order_id: order.uid)
-      execute(cmd)
+    Order.where(state: "Draft").find_each do |order|
+      command_bus.(Command::SetOrderAsExpired.new(order_id: order.uid))
     end
-
     redirect_to root_path
   end
 
   def history
     @order  = Order.find(params[:id])
     @stream = "Domain::Order$#{@order.uid}"
-    @events = Rails.configuration.event_store.read.stream(@stream).backward
+    @events = event_store.read.stream(@stream).backward
   end
 
   private
-  def execute(cmd)
-    Rails.configuration.command_bus.call(cmd)
-  end
 
   def product_params
     args = params.permit(:id, :product_id)
