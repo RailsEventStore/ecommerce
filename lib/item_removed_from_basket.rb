@@ -1,1 +1,0 @@
-ItemRemovedFromBasket = Class.new(Event)

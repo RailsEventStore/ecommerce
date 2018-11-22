@@ -1,1 +1,0 @@
-ItemAddedToBasket = Class.new(Event)

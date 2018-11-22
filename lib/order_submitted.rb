@@ -1,1 +1,0 @@
-OrderSubmitted = Class.new(Event)

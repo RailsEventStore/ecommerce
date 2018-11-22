@@ -8,7 +8,7 @@ module Orders
       product = Product.create(name: 'something')
       order_id = SecureRandom.uuid
 
-      event_store.publish(ItemAddedToBasket.new(data: {order_id: order_id, product_id: product.id}))
+      event_store.publish(Ordering::ItemAddedToBasket.new(data: {order_id: order_id, product_id: product.id}))
 
       assert_equal(OrderLine.count, 1)
       order_line = OrderLine.find_by(order_uid: order_id)
@@ -28,9 +28,9 @@ module Orders
 
       product = Product.create(name: 'something')
       order_id = SecureRandom.uuid
-      event_store.publish(ItemAddedToBasket.new(data: {order_id: order_id, product_id: product.id}))
+      event_store.publish(Ordering::ItemAddedToBasket.new(data: {order_id: order_id, product_id: product.id}))
 
-      event_store.publish(ItemAddedToBasket.new(data: {order_id: order_id, product_id: product.id}))
+      event_store.publish(Ordering::ItemAddedToBasket.new(data: {order_id: order_id, product_id: product.id}))
 
       assert_equal(OrderLine.count, 1)
       order_line = OrderLine.find_by(order_uid: order_id)
@@ -51,9 +51,9 @@ module Orders
       product = Product.create(name: 'something')
       another_product = Product.create(name: '2nd one')
       order_id = SecureRandom.uuid
-      event_store.publish(ItemAddedToBasket.new(data: {order_id: order_id, product_id: product.id}))
+      event_store.publish(Ordering::ItemAddedToBasket.new(data: {order_id: order_id, product_id: product.id}))
 
-      event_store.publish(ItemAddedToBasket.new(data: {order_id: order_id, product_id: another_product.id}))
+      event_store.publish(Ordering::ItemAddedToBasket.new(data: {order_id: order_id, product_id: another_product.id}))
 
       assert_equal(OrderLine.count, 2)
       order_lines = OrderLine.where(order_uid: order_id)

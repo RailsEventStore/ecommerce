@@ -12,7 +12,7 @@ module TestCase
 
   def assert_changes(actuals, expected)
     expects = expected.map(&:data)
-    assert_equal(actuals.map(&:data), expects)
+    assert_equal(expects, actuals.map(&:data))
   end
 
   def assert_no_changes(actuals)

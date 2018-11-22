@@ -15,24 +15,25 @@ module CqrsEsSampleWithRes
     # Application configuration can go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded after loading
     # the framework and any gems in your application.
-    config.paths.add "lib", eager_load: true
+    config.paths.add "lib",          eager_load: true
+    config.paths.add 'ordering/lib', eager_load: true
 
     config.to_prepare do
       Rails.configuration.event_store = RailsEventStore::Client.new(
         mapper: RubyEventStore::Mappers::Default.new(serializer: JSON)
       ).tap do |store|
-        store.subscribe(Orders::OnOrderSubmitted, to: [OrderSubmitted])
-        store.subscribe(Orders::OnOrderExpired, to: [OrderExpired])
-        store.subscribe(Orders::OnItemAddedToBasket, to: [ItemAddedToBasket])
-        store.subscribe(Orders::OnItemRemovedFromBasket, to: [ItemRemovedFromBasket])
+        store.subscribe(Orders::OnOrderSubmitted, to: [Ordering::OrderSubmitted])
+        store.subscribe(Orders::OnOrderExpired, to: [Ordering::OrderExpired])
+        store.subscribe(Orders::OnItemAddedToBasket, to: [Ordering::ItemAddedToBasket])
+        store.subscribe(Orders::OnItemRemovedFromBasket, to: [Ordering::ItemRemovedFromBasket])
       end
 
       require 'arkency/command_bus'
       command_bus = Arkency::CommandBus.new.tap do |bus|
-        bus.register(SubmitOrder, OnSubmitOrder.new(number_generator: Rails.configuration.number_generator))
-        bus.register(SetOrderAsExpired, OnSetOrderAsExpired.new)
-        bus.register(AddItemToBasket, OnAddItemToBasket.new)
-        bus.register(RemoveItemFromBasket, OnRemoveItemFromBasket.new)
+        bus.register(Ordering::SubmitOrder, Ordering::OnSubmitOrder.new(number_generator: Rails.configuration.number_generator))
+        bus.register(Ordering::SetOrderAsExpired, Ordering::OnSetOrderAsExpired.new)
+        bus.register(Ordering::AddItemToBasket, Ordering::OnAddItemToBasket.new)
+        bus.register(Ordering::RemoveItemFromBasket, Ordering::OnRemoveItemFromBasket.new)
       end
       Rails.configuration.command_bus = ->(command) do
         command.validate!
