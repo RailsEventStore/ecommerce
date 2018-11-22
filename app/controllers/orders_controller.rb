@@ -37,12 +37,6 @@ class OrdersController < ApplicationController
     redirect_to root_path
   end
 
-  def history
-    @order  = Orders::Order.find(params[:id])
-    @stream = "Ordering::Order$#{@order.uid}"
-    @events = event_store.read.stream(@stream).backward
-  end
-
   private
 
   def product_params
