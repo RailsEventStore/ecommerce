@@ -1,4 +1,6 @@
 module Command
+  ValidationError = Class.new(StandardError)
+
   class Base
     include ActiveModel::Model
     include ActiveModel::Validations
