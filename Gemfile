@@ -3,6 +3,7 @@ source 'https://rubygems.org'
 gem 'rails', '~> 5.2.0'
 gem 'jquery-rails'
 gem 'sassc-rails'
+gem 'turbolinks'
 gem 'jbuilder'
 gem 'sdoc', group: :doc
 gem 'puma'

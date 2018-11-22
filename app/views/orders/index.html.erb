@@ -18,7 +18,7 @@
         <td><%= link_to order.number || 'Not submitted', order_path(order) %></td>
         <td><%= order.customer %></td>
         <td><%= order.state %></td>
-        <td><%= link_to 'History', "/res#streams/Ordering::Order$#{order.uid}" %></td>
+        <td><%= order_history_link(order.uid) %></td>
       </tr>
     <% end %>
   </tbody>
