@@ -1,6 +1,6 @@
 # cqrs-es-sample-with-res
 
-CQRS with Event Sourcing sample app using Arkency's Rails Event Store. See it [live](https://cqrs-es-sample-with-res.herokuapp.com/).
+CQRS with Event Sourcing sample app using [Rails Event Store](https://railseventstore.org). See it [live](https://cqrs-es-sample-with-res.herokuapp.com/).
 
 [![Build Status](https://travis-ci.org/RailsEventStore/cqrs-es-sample-with-res.svg?branch=master)](https://travis-ci.org/RailsEventStore/cqrs-es-sample-with-res)
 [![Maintainability](https://api.codeclimate.com/v1/badges/c444add86606b981e1fb/maintainability)](https://codeclimate.com/github/RailsEventStore/cqrs-es-sample-with-res/maintainability)
