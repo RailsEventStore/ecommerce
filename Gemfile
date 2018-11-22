@@ -24,4 +24,3 @@ group :production do
 end
 
 gem 'simplecov', require: false, group: :test
-
