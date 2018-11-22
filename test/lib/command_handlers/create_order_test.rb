@@ -2,7 +2,7 @@ require 'test_helper'
 
 module CommandHandlers
   class SubmitOrderTest < ActiveSupport::TestCase
-    include CommandHandlers::TestCase
+    include TestCase
 
     test 'order is submitted' do
       aggregate_id = SecureRandom.uuid

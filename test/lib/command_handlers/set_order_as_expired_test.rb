@@ -2,7 +2,7 @@ require 'test_helper'
 
 module CommandHandlers
   class SetOrderAsExpiredTest < ActiveSupport::TestCase
-    include CommandHandlers::TestCase
+    include TestCase
 
     test 'draft order will expire' do
       aggregate_id = SecureRandom.uuid
