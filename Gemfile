@@ -8,8 +8,7 @@ gem 'jbuilder'
 gem 'sdoc', group: :doc
 gem 'puma'
 gem 'honeybadger', '~> 4.0'
-gem 'rails_event_store',        github: 'RailsEventStore/rails_event_store'
-gem 'ruby_event_store-browser', github: 'RailsEventStore/rails_event_store'
+gem 'rails_event_store', '= 0.34.0'
 gem 'dry-struct'
 
 group :development do

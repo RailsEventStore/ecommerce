@@ -11,8 +11,5 @@ Rails.application.routes.draw do
     end
   end
 
-  require 'ruby_event_store/browser/app'
-  mount RubyEventStore::Browser::App.for(
-    event_store_locator: -> { Rails.configuration.event_store }
-  ) => '/res'
+  mount RailsEventStore::Browser => '/res'
 end
