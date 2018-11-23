@@ -10,6 +10,7 @@ gem 'puma'
 gem 'honeybadger', '~> 4.0'
 gem 'rails_event_store',        github: 'RailsEventStore/rails_event_store'
 gem 'ruby_event_store-browser', github: 'RailsEventStore/rails_event_store'
+gem 'dry-struct'
 
 group :development do
   gem 'web-console'

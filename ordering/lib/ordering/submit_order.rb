@@ -1,10 +1,7 @@
 module Ordering
   class SubmitOrder < Command
-    attr_accessor :order_id
-    attr_accessor :customer_id
-
-    validates :order_id, presence: true
-    validates :customer_id, presence: true
+    attribute :order_id, Types::UUID
+    attribute :customer_id, Types::Coercible::Integer
 
     alias :aggregate_id :order_id
   end

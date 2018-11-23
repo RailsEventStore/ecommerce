@@ -29,15 +29,11 @@ module CqrsEsSampleWithRes
       end
 
       require 'arkency/command_bus'
-      command_bus = Arkency::CommandBus.new.tap do |bus|
+      Rails.configuration.command_bus = Arkency::CommandBus.new.tap do |bus|
         bus.register(Ordering::SubmitOrder, Ordering::OnSubmitOrder.new(number_generator: Rails.configuration.number_generator))
         bus.register(Ordering::SetOrderAsExpired, Ordering::OnSetOrderAsExpired.new)
         bus.register(Ordering::AddItemToBasket, Ordering::OnAddItemToBasket.new)
         bus.register(Ordering::RemoveItemFromBasket, Ordering::OnRemoveItemFromBasket.new)
-      end
-      Rails.configuration.command_bus = ->(command) do
-        command.validate!
-        command_bus.(command)
       end
     end
   end

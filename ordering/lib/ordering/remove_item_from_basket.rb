@@ -1,10 +1,7 @@
 module Ordering
   class RemoveItemFromBasket < Command
-    attr_accessor :order_id
-    attr_accessor :product_id
-
-    validates :order_id, presence: true
-    validates :product_id, presence: true
+    attribute :order_id, Types::UUID
+    attribute :product_id, Types::Coercible::Integer
 
     alias :aggregate_id :order_id
   end

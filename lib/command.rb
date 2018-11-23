@@ -1,15 +1,11 @@
-class Command
-  ValidationError = Class.new(StandardError)
+require 'dry-struct'
 
-  include ActiveModel::Model
-  include ActiveModel::Validations
-  include ActiveModel::Conversion
+class Command < Dry::Struct::Value
+  Invalid = Class.new(StandardError)
 
-  def initialize(attributes = {})
+  def self.new(*)
     super
-  end
-
-  def validate!
-    raise ValidationError, errors unless valid?
+  rescue Dry::Struct::Error => doh
+    raise Invalid, doh
   end
 end

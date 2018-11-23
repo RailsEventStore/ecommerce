@@ -20,7 +20,7 @@ module Ordering
     test 'could not create order where customer is not given' do
       aggregate_id = SecureRandom.uuid
       stream = "Ordering::Order$#{aggregate_id}"
-      assert_raises(Command::ValidationError) do
+      assert_raises(Command::Invalid) do
         act(stream, SubmitOrder.new(order_id: aggregate_id, customer_id: nil))
       end
     end
