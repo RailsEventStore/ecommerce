@@ -1,6 +1,6 @@
 GIT
   remote: git://github.com/RailsEventStore/rails_event_store.git
-  revision: 462521418dd985e8eca3df560050d3ded333af9c
+  revision: 14d73c0ea3ad6d1bcbf2724d242feff80d52956e
   specs:
     aggregate_root (0.33.0)
     bounded_context (0.33.0)
