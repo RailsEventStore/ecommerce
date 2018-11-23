@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2018_11_23_154324) do
+ActiveRecord::Schema.define(version: 2018_11_23_155503) do
 
   create_table "customers", force: :cascade do |t|
     t.string "name"
@@ -30,7 +30,7 @@ ActiveRecord::Schema.define(version: 2018_11_23_154324) do
   create_table "event_store_events_in_streams", force: :cascade do |t|
     t.string "stream", null: false
     t.integer "position"
-    t.string "event_id", null: false
+    t.string "event_id", limit: 36, null: false
     t.datetime "created_at", null: false
     t.index ["created_at"], name: "index_event_store_events_in_streams_on_created_at"
     t.index ["stream", "event_id"], name: "index_event_store_events_in_streams_on_stream_and_event_id", unique: true
