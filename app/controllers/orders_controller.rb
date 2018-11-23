@@ -15,17 +15,17 @@ class OrdersController < ApplicationController
   end
 
   def add_item
-    command_bus.(Ordering::AddItemToBasket.new(product_params))
+    command_bus.(Ordering::AddItemToBasket.new(order_id: params[:id], product_id: params[:product_id]))
     head :ok
   end
 
   def remove_item
-    command_bus.(Ordering::RemoveItemFromBasket.new(product_params))
+    command_bus.(Ordering::RemoveItemFromBasket.new(order_id: params[:id], product_id: params[:product_id]))
     head :ok
   end
 
   def create
-    cmd = Ordering::SubmitOrder.new(order_params)
+    cmd = Ordering::SubmitOrder.new(order_id: params[:order_id], customer_id: params[:customer_id])
     command_bus.(cmd)
     redirect_to order_path(Orders::Order.find_by_uid(cmd.order_id)), notice: 'Order was successfully submitted.'
   end
@@ -35,16 +35,5 @@ class OrdersController < ApplicationController
       command_bus.(Ordering::SetOrderAsExpired.new(order_id: order.uid))
     end
     redirect_to root_path
-  end
-
-  private
-
-  def product_params
-    args = params.permit(:id, :product_id)
-    {order_id: args[:id], product_id: args[:product_id]}
-  end
-
-  def order_params
-    params.permit(:order_id, :customer_id)
   end
 end
