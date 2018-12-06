@@ -3,8 +3,8 @@
   "private": true,
   "dependencies": {
     "@rails/webpacker": "3.5",
-    "elm": "^0.19.0-bugfix2",
-    "elm-webpack-loader": "^5.0.0"
+    "elm": "^0.18.0-exp5",
+    "elm-webpack-loader": "4.3.1"
   },
   "devDependencies": {
     "elm-hot-loader": "^0.5.4",
