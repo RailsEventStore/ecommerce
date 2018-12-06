@@ -2,6 +2,10 @@ install: ## Install gem dependencies
 	@echo "Installing gem dependencies"
 	@bundle install
 
+mutate: test ## Run mutation tests
+	@bundle exec mutant --include test --require ./config/environment --use minitest -- 'Ordering*'
+
+
 test: ## Run unit tests
 	@echo "Running unit tests"
 	@bundle exec rails t
