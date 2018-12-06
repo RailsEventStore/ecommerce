@@ -3,8 +3,7 @@ require_relative '../config/environment'
 require 'rails/test_help'
 require 'support/test_case'
 require 'simplecov'
-
-SimpleCov.start
+require 'mutant/minitest/coverage'
 
 
 class ActiveSupport::TestCase
@@ -13,3 +12,5 @@ class ActiveSupport::TestCase
 
   # Add more helper methods to be used by all tests here...
 end
+
+SimpleCov.start
