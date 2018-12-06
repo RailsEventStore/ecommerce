@@ -3,7 +3,7 @@ install: ## Install gem dependencies
 	@bundle install
 
 mutate: test ## Run mutation tests
-	@bundle exec mutant --include test --require ./config/environment --use minitest -- 'Ordering*'
+	@bundle exec mutant -j1 --include test --require ./config/environment --use minitest -- 'Ordering*'
 
 
 test: ## Run unit tests
