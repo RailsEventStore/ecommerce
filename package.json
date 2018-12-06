@@ -1,0 +1,13 @@
+{
+  "name": "cqrs_es_sample_with_res",
+  "private": true,
+  "dependencies": {
+    "@rails/webpacker": "3.5",
+    "elm": "^0.19.0-bugfix2",
+    "elm-webpack-loader": "^5.0.0"
+  },
+  "devDependencies": {
+    "elm-hot-loader": "^0.5.4",
+    "webpack-dev-server": "2.11.2"
+  }
+}
