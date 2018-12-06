@@ -4,7 +4,7 @@ module Ordering
   class SetOrderAsExpiredTest < ActiveSupport::TestCase
     include TestCase
 
-    cover 'Ordering::SetOrderAsExpiredTest*'
+    cover 'Ordering::OnSetOrderAsExpired*'
 
     test 'draft order will expire' do
       aggregate_id = SecureRandom.uuid

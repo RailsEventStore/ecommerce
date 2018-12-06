@@ -4,6 +4,8 @@ module Ordering
   class RemoveItemFromBasketTest < ActiveSupport::TestCase
     include TestCase
 
+    cover 'Ordering::OnRemoveItemFromBasket*'
+
     test 'item is removed from draft order' do
       aggregate_id = SecureRandom.uuid
       stream = "Ordering::Order$#{aggregate_id}"

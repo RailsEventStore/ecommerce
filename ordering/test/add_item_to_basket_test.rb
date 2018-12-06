@@ -4,6 +4,8 @@ module Ordering
   class AddItemToBasketTest < ActiveSupport::TestCase
     include TestCase
 
+    cover 'Ordering::OnAddItemToBasket*'
+
     test 'item is added to draft order' do
       aggregate_id = SecureRandom.uuid
       stream = "Ordering::Order$#{aggregate_id}"

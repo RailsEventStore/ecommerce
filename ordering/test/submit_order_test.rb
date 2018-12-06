@@ -4,6 +4,8 @@ module Ordering
   class SubmitOrderTest < ActiveSupport::TestCase
     include TestCase
 
+    cover 'Ordering::OnSubmitOrder*'
+
     test 'order is submitted' do
       aggregate_id = SecureRandom.uuid
       stream = "Ordering::Order$#{aggregate_id}"
