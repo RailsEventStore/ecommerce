@@ -12,7 +12,7 @@ gem 'uglifier', '>= 1.3.0'
 gem 'webpacker'
 gem 'bootsnap', '>= 1.1.0', require: false
 gem 'honeybadger', '~> 4.0'
-gem 'rails_event_store', '= 0.34.0'
+gem 'rails_event_store', github: 'RailsEventStore/rails_event_store'
 gem 'dry-struct'
 
 group :development do
