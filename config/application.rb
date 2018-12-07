@@ -17,24 +17,5 @@ module CqrsEsSampleWithRes
     # the framework and any gems in your application.
     config.paths.add "lib",          eager_load: true
     config.paths.add 'ordering/lib', eager_load: true
-
-    config.to_prepare do
-      Rails.configuration.event_store = RailsEventStore::Client.new(
-        mapper: RubyEventStore::Mappers::Default.new(serializer: JSON)
-      ).tap do |store|
-        store.subscribe(Orders::OnOrderSubmitted, to: [Ordering::OrderSubmitted])
-        store.subscribe(Orders::OnOrderExpired, to: [Ordering::OrderExpired])
-        store.subscribe(Orders::OnItemAddedToBasket, to: [Ordering::ItemAddedToBasket])
-        store.subscribe(Orders::OnItemRemovedFromBasket, to: [Ordering::ItemRemovedFromBasket])
-      end
-
-      require 'arkency/command_bus'
-      Rails.configuration.command_bus = Arkency::CommandBus.new.tap do |bus|
-        bus.register(Ordering::SubmitOrder, Ordering::OnSubmitOrder.new(number_generator: Rails.configuration.number_generator))
-        bus.register(Ordering::SetOrderAsExpired, Ordering::OnSetOrderAsExpired.new)
-        bus.register(Ordering::AddItemToBasket, Ordering::OnAddItemToBasket.new)
-        bus.register(Ordering::RemoveItemFromBasket, Ordering::OnRemoveItemFromBasket.new)
-      end
-    end
   end
 end
