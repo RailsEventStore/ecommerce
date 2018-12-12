@@ -4,7 +4,7 @@ rvm:
   - 2.5.3
 notifications:
   slack:
-    secure: MHZY4LKUJ06P8cLtiXACL+oeP7VHIMd3tqnPAQE8zOotmEVHchshHDF3k9BvS0qIAcKkKdIfCAIxYXKPM/QZ0hdbqIY8nMiFtMimLPpK6C+uzaVMdrqJHgPY5K0u0xtBqXo/ZZ+nqeZOEgW1Ep2qJwUcrwANZNz/o4BffaqDj/w=
+    secure: JR3tcXf1UljXxf3i1FgVeM4gA/KHgqPmPziknIHqahB+50LrD7ExaYqFcHm6dvZomO/iwrBNSYpMxtHUcAT33+R93EM8kKMqoaCKUSPd3ueW5jNn8zods87u+HxS3UAb0hYwHmN8GWvasCFBnSBELCRmuRXd6qn8r3nuqyPJkuo=
 env:
   global:
     - CC_TEST_REPORTER_ID=957fa7b7d88d5482dede502364d2fff8763ea30ee7d1de53000c14288a76ed4c
