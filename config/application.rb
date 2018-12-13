@@ -8,7 +8,6 @@ Bundler.require(*Rails.groups)
 
 module CqrsEsSampleWithRes
   class Application < Rails::Application
-    config.paths.add 'payments/lib', eager_load: true
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 5.2
 
@@ -18,5 +17,6 @@ module CqrsEsSampleWithRes
     # the framework and any gems in your application.
     config.paths.add "lib",          eager_load: true
     config.paths.add 'ordering/lib', eager_load: true
+    config.paths.add 'payments/lib', eager_load: true
   end
 end
