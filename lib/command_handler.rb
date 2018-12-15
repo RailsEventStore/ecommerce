@@ -6,6 +6,11 @@ module CommandHandler
     aggregate.store(event_store: Rails.configuration.event_store)
   end
 
+  def rehydrate(aggregate, stream)
+    aggregate.load(stream, event_store: Rails.configuration.event_store)
+    aggregate
+  end
+
   def stream_name(aggregate_class, aggregate_id)
     "#{aggregate_class.name}$#{aggregate_id}"
   end

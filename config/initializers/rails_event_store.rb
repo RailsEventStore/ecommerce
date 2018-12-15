@@ -23,5 +23,8 @@ Rails.configuration.to_prepare do
     bus.register(Ordering::SetOrderAsExpired, Ordering::OnSetOrderAsExpired.new)
     bus.register(Ordering::AddItemToBasket, Ordering::OnAddItemToBasket.new)
     bus.register(Ordering::RemoveItemFromBasket, Ordering::OnRemoveItemFromBasket.new)
+    bus.register(Payments::AuthorizePayment, Payments::OnAuthorizePayment.new)
+    bus.register(Payments::CapturePayment, Payments::OnCapturePayment.new)
+    bus.register(Payments::ReleasePayment, Payments::OnReleasePayment.new)
   end
 end
