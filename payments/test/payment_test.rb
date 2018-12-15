@@ -36,6 +36,12 @@ module Payments
       ])
     end
 
+    test 'must not capture not authorized payment' do
+      assert_raises(Payments::NotAuthorized) do
+        Payment.new.capture
+      end
+    end
+
     private
     def transaction_id
       @transaction_id ||= SecureRandom.hex(16)

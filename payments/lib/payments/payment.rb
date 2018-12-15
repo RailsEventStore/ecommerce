@@ -1,5 +1,6 @@
 module Payments
   AlreadyAuthorized = Class.new(StandardError)
+  NotAuthorized = Class.new(StandardError)
 
   class Payment
     include AggregateRoot
@@ -13,6 +14,7 @@ module Payments
     end
 
     def capture
+      raise NotAuthorized unless authorized?
       apply(PaymentCaptured.new(data: {
         transaction_id: @transaction_id,
         order_id: @order_id
