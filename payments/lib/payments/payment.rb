@@ -24,6 +24,7 @@ module Payments
     end
 
     def release
+      raise AlreadyCaptured if captured?
       apply(PaymentReleased.new(data: {
         transaction_id: @transaction_id,
         order_id: @order_id

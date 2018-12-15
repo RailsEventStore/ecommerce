@@ -62,6 +62,12 @@ module Payments
       ])
     end
 
+    test 'must not release not captured payment' do
+      assert_raises(Payments::AlreadyCaptured) do
+        captured_payment.release
+      end
+    end
+
     private
     def transaction_id
       @transaction_id ||= SecureRandom.hex(16)
