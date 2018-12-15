@@ -12,10 +12,22 @@ module Payments
       }))
     end
 
+    def capture
+      apply(PaymentCaptured.new(data: {
+        transaction_id: @transaction_id,
+        order_id: @order_id
+      }))
+    end
+
     private
 
     on PaymentAuthorized do |event|
       @state = :authorized
+      @transaction_id = event.data.fetch(:transaction_id)
+      @order_id = event.data.fetch(:order_id)
+    end
+
+    on PaymentCaptured do |event|
     end
 
     def authorized?
