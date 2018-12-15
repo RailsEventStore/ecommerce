@@ -2,6 +2,7 @@ module Payments
   AlreadyAuthorized = Class.new(StandardError)
   NotAuthorized = Class.new(StandardError)
   AlreadyCaptured = Class.new(StandardError)
+  AlreadyReleased = Class.new(StandardError)
 
   class Payment
     include AggregateRoot
@@ -24,6 +25,7 @@ module Payments
     end
 
     def release
+      raise AlreadyReleased if released?
       raise AlreadyCaptured if captured?
       raise NotAuthorized unless authorized?
       apply(PaymentReleased.new(data: {
@@ -45,6 +47,7 @@ module Payments
     end
 
     on PaymentReleased do |event|
+      @state = :released
     end
 
     def authorized?
@@ -53,6 +56,10 @@ module Payments
 
     def captured?
       @state == :captured
+    end
+
+    def released?
+      @state == :released
     end
   end
 end

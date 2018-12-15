@@ -74,6 +74,12 @@ module Payments
       end
     end
 
+    test 'should not allow for double release' do
+      assert_raises(Payments::AlreadyReleased) do
+        released_payment.release
+      end
+    end
+
     private
     def transaction_id
       @transaction_id ||= SecureRandom.hex(16)
@@ -98,6 +104,17 @@ module Payments
       authorized_payment.tap do |payment|
         payment.apply(
           PaymentCaptured.new(data: {
+            transaction_id: transaction_id,
+            order_id: order_id,
+          })
+        )
+      end
+    end
+
+    def released_payment
+      captured_payment.tap do |payment|
+        payment.apply(
+          PaymentReleased.new(data: {
             transaction_id: transaction_id,
             order_id: order_id,
           })
