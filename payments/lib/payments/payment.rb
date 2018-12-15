@@ -1,6 +1,7 @@
 module Payments
   AlreadyAuthorized = Class.new(StandardError)
   NotAuthorized = Class.new(StandardError)
+  AlreadyCaptured = Class.new(StandardError)
 
   class Payment
     include AggregateRoot
@@ -14,6 +15,7 @@ module Payments
     end
 
     def capture
+      raise AlreadyCaptured if captured?
       raise NotAuthorized unless authorized?
       apply(PaymentCaptured.new(data: {
         transaction_id: @transaction_id,
@@ -30,10 +32,15 @@ module Payments
     end
 
     on PaymentCaptured do |event|
+      @state = :captured
     end
 
     def authorized?
       @state == :authorized
+    end
+
+    def captured?
+      @state == :captured
     end
   end
 end

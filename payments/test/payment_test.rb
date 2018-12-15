@@ -42,6 +42,12 @@ module Payments
       end
     end
 
+    test 'should not allow for double capture' do
+      assert_raises(Payments::AlreadyCaptured) do
+        captured_payment.capture
+      end
+    end
+
     private
     def transaction_id
       @transaction_id ||= SecureRandom.hex(16)
@@ -55,6 +61,17 @@ module Payments
       Payment.new.tap do |payment|
         payment.apply(
           PaymentAuthorized.new(data: {
+            transaction_id: transaction_id,
+            order_id: order_id,
+          })
+        )
+      end
+    end
+
+    def captured_payment
+      authorized_payment.tap do |payment|
+        payment.apply(
+          PaymentCaptured.new(data: {
             transaction_id: transaction_id,
             order_id: order_id,
           })
