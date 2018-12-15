@@ -48,6 +48,20 @@ module Payments
       end
     end
 
+    test 'authorization could be released' do
+      payment = authorized_payment
+      before = payment.unpublished_events.to_a
+
+      payment.release
+      actual = payment.unpublished_events.to_a - before
+      assert_changes(actual, [
+        PaymentReleased.new(data: {
+          transaction_id: transaction_id,
+          order_id: order_id,
+        })
+      ])
+    end
+
     private
     def transaction_id
       @transaction_id ||= SecureRandom.hex(16)

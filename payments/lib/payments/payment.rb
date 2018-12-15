@@ -23,6 +23,13 @@ module Payments
       }))
     end
 
+    def release
+      apply(PaymentReleased.new(data: {
+        transaction_id: @transaction_id,
+        order_id: @order_id
+      }))
+    end
+
     private
 
     on PaymentAuthorized do |event|
@@ -33,6 +40,9 @@ module Payments
 
     on PaymentCaptured do |event|
       @state = :captured
+    end
+
+    on PaymentReleased do |event|
     end
 
     def authorized?
