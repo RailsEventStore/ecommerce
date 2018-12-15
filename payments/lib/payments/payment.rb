@@ -25,6 +25,7 @@ module Payments
 
     def release
       raise AlreadyCaptured if captured?
+      raise NotAuthorized unless authorized?
       apply(PaymentReleased.new(data: {
         transaction_id: @transaction_id,
         order_id: @order_id
