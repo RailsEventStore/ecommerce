@@ -5,6 +5,8 @@ module Ordering
     include AggregateRoot
 
     AlreadySubmitted = Class.new(StandardError)
+    AlreadyPaid = Class.new(StandardError)
+    NotSubmitted = Class.new(StandardError)
     OrderHasExpired = Class.new(StandardError)
     MissingCustomer = Class.new(StandardError)
 
@@ -21,7 +23,14 @@ module Ordering
       apply OrderSubmitted.new(data: {order_id: @id, order_number: order_number, customer_id: customer_id})
     end
 
+    def mark_as_paid(transaction_id)
+      raise OrderHasExpired if @state == :expired
+      raise NotSubmitted unless @state == :submitted
+      apply OrderPaid.new(data: {order_id: @id, transaction_id: transaction_id})
+    end
+
     def expire
+      raise AlreadyPaid if @state == :paid
       apply OrderExpired.new(data: {order_id: @id})
     end
 
@@ -39,6 +48,10 @@ module Ordering
       @customer_id = event.data[:customer_id]
       @number = event.data[:order_number]
       @state = :submitted
+    end
+
+    on OrderPaid do |event|
+      @state = :paid
     end
 
     on OrderExpired do |event|

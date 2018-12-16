@@ -1,23 +1,23 @@
 require 'test_helper'
 
 module Ordering
-  class SetOrderAsExpiredTest < ActiveSupport::TestCase
+  class MarkOrderAsPaidTest < ActiveSupport::TestCase
     include TestCase
 
-    cover 'Ordering::OnSetOrderAsExpired*'
+    cover 'Ordering::OnMarkOrderAsPaid*'
 
-    test 'draft order will expire' do
+    test 'draft order could not be marked as paid' do
       aggregate_id = SecureRandom.uuid
       stream = "Ordering::Order$#{aggregate_id}"
       product = Product.create(name: 'test')
       arrange(stream, [ItemAddedToBasket.new(data: {order_id: aggregate_id, product_id: product.id})])
 
-      published = act(stream, SetOrderAsExpired.new(order_id: aggregate_id))
-
-      assert_changes(published, [OrderExpired.new(data: {order_id: aggregate_id})])
+      assert_raises(Order::NotSubmitted) do
+        act(stream, MarkOrderAsPaid.new(order_id: aggregate_id, transaction_id: SecureRandom.hex(16)))
+      end
     end
 
-    test 'submitted order will expire' do
+    test 'submitted order will be marked as paid' do
       aggregate_id = SecureRandom.uuid
       stream = "Ordering::Order$#{aggregate_id}"
       product = Product.create(name: 'test')
@@ -27,12 +27,13 @@ module Ordering
         OrderSubmitted.new(data: {order_id: aggregate_id, order_number: '12/2018', customer_id: customer.id}),
       ])
 
-      published = act(stream, SetOrderAsExpired.new(order_id: aggregate_id))
+      transaction_id = SecureRandom.hex(16)
+      published = act(stream, MarkOrderAsPaid.new(order_id: aggregate_id, transaction_id: transaction_id))
 
-      assert_changes(published, [OrderExpired.new(data: {order_id: aggregate_id})])
+      assert_changes(published, [OrderPaid.new(data: {order_id: aggregate_id, transaction_id: transaction_id})])
     end
 
-    test 'paid order cannot expire' do
+    test 'expired order cannot be marked as paid' do
       aggregate_id = SecureRandom.uuid
       stream = "Ordering::Order$#{aggregate_id}"
       product = Product.create(name: 'test')
@@ -40,11 +41,11 @@ module Ordering
       arrange(stream, [
         ItemAddedToBasket.new(data: {order_id: aggregate_id, product_id: product.id}),
         OrderSubmitted.new(data: {order_id: aggregate_id, order_number: '12/2018', customer_id: customer.id}),
-        OrderPaid.new(data: {order_id: aggregate_id, transaction_id: SecureRandom.hex(16)}),
+        OrderExpired.new(data: {order_id: aggregate_id}),
       ])
 
-      assert_raises(Order::AlreadyPaid) do
-        act(stream, SetOrderAsExpired.new(order_id: aggregate_id))
+      assert_raises(Order::OrderHasExpired) do
+        act(stream, MarkOrderAsPaid.new(order_id: aggregate_id, transaction_id: SecureRandom.hex(16)))
       end
     end
   end
