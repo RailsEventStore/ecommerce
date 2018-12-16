@@ -22,7 +22,6 @@ module Ordering
     end
 
     def expire
-      raise AlreadySubmitted unless @state == :draft
       apply OrderExpired.new(data: {order_id: @id})
     end
 
