@@ -17,6 +17,14 @@ Rails.configuration.to_prepare do
     store.subscribe(Orders::OnOrderPaid, to: [Ordering::OrderPaid])
     store.subscribe(Orders::OnItemAddedToBasket, to: [Ordering::ItemAddedToBasket])
     store.subscribe(Orders::OnItemRemovedFromBasket, to: [Ordering::ItemRemovedFromBasket])
+
+    store.subscribe(PaymentProcess, to: [
+      Ordering::OrderSubmitted,
+      Ordering::OrderExpired,
+      Ordering::OrderPaid,
+      Payments::PaymentAuthorized,
+      Payments::PaymentReleased,
+    ])
   end
 
   Rails.configuration.command_bus.tap do |bus|
