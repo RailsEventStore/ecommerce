@@ -1,2 +1,2 @@
 require_relative '../lib/payments'
-require_relative '../../test/support/test_case'
+require_relative '../../test/test_helper'
