@@ -17,7 +17,7 @@ module Payments
     end
 
     test 'should not allow for double authorization' do
-      assert_raises(Payments::AlreadyAuthorized) do
+      assert_raises(Payment::AlreadyAuthorized) do
         authorized_payment.authorize(transaction_id, order_id)
       end
     end
@@ -37,13 +37,13 @@ module Payments
     end
 
     test 'must not capture not authorized payment' do
-      assert_raises(Payments::NotAuthorized) do
+      assert_raises(Payment::NotAuthorized) do
         Payment.new.capture
       end
     end
 
     test 'should not allow for double capture' do
-      assert_raises(Payments::AlreadyCaptured) do
+      assert_raises(Payment::AlreadyCaptured) do
         captured_payment.capture
       end
     end
@@ -63,19 +63,19 @@ module Payments
     end
 
     test 'must not release not captured payment' do
-      assert_raises(Payments::AlreadyCaptured) do
+      assert_raises(Payment::AlreadyCaptured) do
         captured_payment.release
       end
     end
 
     test 'must not release not authorized payment' do
-      assert_raises(Payments::NotAuthorized) do
+      assert_raises(Payment::NotAuthorized) do
         Payment.new.release
       end
     end
 
     test 'should not allow for double release' do
-      assert_raises(Payments::AlreadyReleased) do
+      assert_raises(Payment::AlreadyReleased) do
         released_payment.release
       end
     end

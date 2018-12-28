@@ -1,11 +1,11 @@
 module Payments
-  AlreadyAuthorized = Class.new(StandardError)
-  NotAuthorized = Class.new(StandardError)
-  AlreadyCaptured = Class.new(StandardError)
-  AlreadyReleased = Class.new(StandardError)
-
   class Payment
     include AggregateRoot
+
+    AlreadyAuthorized = Class.new(StandardError)
+    NotAuthorized = Class.new(StandardError)
+    AlreadyCaptured = Class.new(StandardError)
+    AlreadyReleased = Class.new(StandardError)
 
     def authorize(transaction_id, order_id)
       raise AlreadyAuthorized if authorized?
