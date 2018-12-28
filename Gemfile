@@ -14,6 +14,7 @@ gem 'bootsnap', '>= 1.1.0', require: false
 gem 'honeybadger', '~> 4.0'
 gem 'rails_event_store', '~> 0.35.0'
 gem 'dry-struct'
+gem 'dry-types'
 
 group :development do
   gem 'web-console', '>= 3.3.0'

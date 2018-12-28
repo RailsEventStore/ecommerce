@@ -320,6 +320,7 @@ DEPENDENCIES
   capybara (>= 2.15)
   chromedriver-helper
   dry-struct
+  dry-types
   honeybadger (~> 4.0)
   jbuilder (~> 2.5)
   listen (>= 3.0.5, < 3.2)
