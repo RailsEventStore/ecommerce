@@ -1,3 +1,6 @@
 module Ordering
-  ItemAddedToBasket = Class.new(Event)
+  class ItemAddedToBasket < Event
+    attribute :order_id,   Types::UUID
+    attribute :product_id, Types::ID
+  end
 end

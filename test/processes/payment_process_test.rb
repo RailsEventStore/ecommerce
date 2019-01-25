@@ -73,7 +73,7 @@ class PaymentProcessTest < ActiveSupport::TestCase
   end
 
   def order_number
-    '2018/12/16/1'
+    '2018/12/16'
   end
 
   def customer_id

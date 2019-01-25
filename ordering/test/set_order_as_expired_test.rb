@@ -24,7 +24,7 @@ module Ordering
       customer = Customer.create(name: 'dummy')
       arrange(stream, [
         ItemAddedToBasket.new(data: {order_id: aggregate_id, product_id: product.id}),
-        OrderSubmitted.new(data: {order_id: aggregate_id, order_number: '12/2018', customer_id: customer.id}),
+        OrderSubmitted.new(data: {order_id: aggregate_id, order_number: '2018/12/1', customer_id: customer.id}),
       ])
 
       published = act(stream, SetOrderAsExpired.new(order_id: aggregate_id))
@@ -39,7 +39,7 @@ module Ordering
       customer = Customer.create(name: 'dummy')
       arrange(stream, [
         ItemAddedToBasket.new(data: {order_id: aggregate_id, product_id: product.id}),
-        OrderSubmitted.new(data: {order_id: aggregate_id, order_number: '12/2018', customer_id: customer.id}),
+        OrderSubmitted.new(data: {order_id: aggregate_id, order_number: '2018/12/1', customer_id: customer.id}),
         OrderPaid.new(data: {order_id: aggregate_id, transaction_id: SecureRandom.hex(16)}),
       ])
 

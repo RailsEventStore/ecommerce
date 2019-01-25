@@ -1,3 +1,5 @@
 module Ordering
-  OrderExpired = Class.new(Event)
+  class OrderExpired < Event
+    attribute :order_id, Types::UUID
+  end
 end

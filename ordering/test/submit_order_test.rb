@@ -11,7 +11,7 @@ module Ordering
       stream = "Ordering::Order$#{aggregate_id}"
       customer = Customer.create(name: 'test')
       product = Product.create(name: 'test')
-      order_number = "123/08/2015"
+      order_number = "2019/01/60"
       arrange(stream, [ItemAddedToBasket.new(data: {order_id: aggregate_id, product_id: product.id})])
 
       published = act(stream, SubmitOrder.new(order_id: aggregate_id, customer_id: customer.id))
@@ -33,7 +33,7 @@ module Ordering
       customer = Customer.create(name: 'test')
       product = Product.create(name: 'test')
       another_customer = Customer.create(name: 'another')
-      order_number = "123/08/2015"
+      order_number = "2019/01/60"
 
       arrange(stream, [
         ItemAddedToBasket.new(data: {order_id: aggregate_id, product_id: product.id}),

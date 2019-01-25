@@ -1,3 +1,6 @@
 module Ordering
-  ItemRemovedFromBasket = Class.new(Event)
+  class ItemRemovedFromBasket < Event
+    attribute :order_id,   Types::UUID
+    attribute :product_id, Types::ID
+  end
 end
