@@ -26,7 +26,7 @@ class PaymentProcess
       past.each{|ev| state.call(ev)}
       state.call(event)
     end
-  rescue RubyEventStore::WrongExpectedVersion
+  rescue RubyEventStore::WrongExpectedEventVersion
     retry
   end
 
