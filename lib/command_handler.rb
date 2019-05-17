@@ -1,14 +1,14 @@
 module CommandHandler
-  def with_aggregate(aggregate_class, aggregate_id)
+  def with_aggregate(aggregate_class, aggregate_id, &block)
+    repository = AggregateRoot::Repository.new(Rails.configuration.event_store)
     aggregate = aggregate_class.new(aggregate_id)
-    aggregate.load(stream_name(aggregate_class, aggregate_id), event_store: Rails.configuration.event_store)
-    yield aggregate
-    aggregate.store(event_store: Rails.configuration.event_store)
+    stream = stream_name(aggregate_class, aggregate_id)
+    repository.with_aggregate(aggregate, stream, &block)
   end
 
   def rehydrate(aggregate, stream)
-    aggregate.load(stream, event_store: Rails.configuration.event_store)
-    aggregate
+    repository = AggregateRoot::Repository.new(Rails.configuration.event_store)
+    repository.load(aggregate, stream)
   end
 
   def stream_name(aggregate_class, aggregate_id)

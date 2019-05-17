@@ -3,9 +3,11 @@ module Payments
     include CommandHandler
 
     def call(command)
-      payment = rehydrate(Payment.new, stream_name(Payment, command.transaction_id))
+      repository = AggregateRoot::Repository.new(Rails.configuration.event_store)
+      stream = stream_name(Payment, command.transaction_id)
+      payment = repository.load(Payment.new, stream)
       payment.authorize(command.transaction_id, command.order_id)
-      payment.store
+      repository.store(payment, stream)
     end
   end
 end
