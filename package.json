@@ -8,6 +8,6 @@
   },
   "devDependencies": {
     "elm-hot-loader": "^0.5.4",
-    "webpack-dev-server": "2.11.2"
+    "webpack-dev-server": "3.4.1"
   }
 }
