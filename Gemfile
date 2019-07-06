@@ -15,6 +15,7 @@ gem 'honeybadger', '~> 4.0'
 gem 'rails_event_store', '~> 0.40.1'
 gem 'dry-struct'
 gem 'dry-types'
+gem 'skylight'
 
 group :development do
   gem 'web-console', '>= 3.3.0'
