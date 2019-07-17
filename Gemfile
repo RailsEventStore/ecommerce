@@ -38,7 +38,8 @@ group :test do
   gem 'selenium-webdriver'
   gem 'chromedriver-helper'
   gem 'simplecov', require: false
-  gem 'mutant-minitest'
+  gem 'mutant-minitest', github: 'mbj/mutant', ref: '027b3d8f7508fe4e460ed999dd91f2ac3edd136b'
+  gem 'mutant-license',  source: 'https://oss:7AXfeZdAfCqL1PvHm2nvDJO6Zd9UW8IK@gem.mutant.dev'
 end
 
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
