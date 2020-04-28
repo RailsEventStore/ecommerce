@@ -30,7 +30,7 @@ class Event < Dry::Struct
     to_h[:data]
   end
 
-  def type
+  def event_type
     self.class.name
   end
 
