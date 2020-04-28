@@ -12,7 +12,7 @@ gem 'uglifier', '>= 1.3.0'
 gem 'webpacker'
 gem 'bootsnap', '>= 1.1.0', require: false
 gem 'honeybadger', '~> 4.0'
-gem 'rails_event_store', '~> 0.43.0'
+gem 'rails_event_store', '~> 0.44.0'
 gem 'dry-struct'
 gem 'dry-types'
 gem 'skylight'
