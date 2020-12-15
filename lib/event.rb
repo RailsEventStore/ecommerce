@@ -4,8 +4,7 @@ class Event < Dry::Struct
   transform_keys(&:to_sym)
 
   def self.new(data: {}, metadata: {}, **rest)
-    timestamp = Time.parse(metadata.delete(:timestamp)) rescue nil
-    super(rest.merge(data).merge(metadata: metadata.merge(timestamp: timestamp)))
+    super(rest.merge(data).merge(metadata: metadata))
   end
 
   def self.inherited(klass)
@@ -24,6 +23,10 @@ class Event < Dry::Struct
 
   def timestamp
     metadata[:timestamp]
+  end
+
+  def valid_at
+    metadata[:valid_at]
   end
 
   def data
