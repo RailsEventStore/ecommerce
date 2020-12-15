@@ -1,7 +1,7 @@
 language: ruby
 cache: bundler
 rvm:
-  - 2.5.3
+  - 2.7.2
 notifications:
   slack:
     secure: JR3tcXf1UljXxf3i1FgVeM4gA/KHgqPmPziknIHqahB+50LrD7ExaYqFcHm6dvZomO/iwrBNSYpMxtHUcAT33+R93EM8kKMqoaCKUSPd3ueW5jNn8zods87u+HxS3UAb0hYwHmN8GWvasCFBnSBELCRmuRXd6qn8r3nuqyPJkuo=
