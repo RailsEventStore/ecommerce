@@ -5,7 +5,10 @@ require 'arkency/command_bus'
 
 Rails.configuration.to_prepare do
   Rails.configuration.event_store = RailsEventStore::Client.new(
-    mapper: RubyEventStore::Mappers::Default.new(serializer: JSON)
+    repository: RailsEventStoreActiveRecord::EventRepository.new(serializer: JSON),
+    dispatcher: RubyEventStore::ComposedDispatcher.new(
+      RailsEventStore::AfterCommitAsyncDispatcher.new(scheduler: RailsEventStore::ActiveJobScheduler.new(serializer: JSON)),
+      RubyEventStore::Dispatcher.new),
   )
   Rails.configuration.command_bus = Arkency::CommandBus.new
 
