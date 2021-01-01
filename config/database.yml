@@ -4,8 +4,7 @@ default: &default
 
 development:
   <<: *default
-  adapter: sqlite3
-  database: db/development.sqlite3
+  url: "postgres://postgres:secret@localhost/cqrs-es-sample-with-res"
 
 test:
   <<: *default
