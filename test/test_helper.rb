@@ -1,5 +1,9 @@
 ENV['RAILS_ENV'] ||= 'test'
 require_relative '../config/environment'
+
+ActiveRecord::Schema.verbose = false
+load Rails.root.join('db/schema.rb').to_s
+
 require 'rails/test_help'
 require 'support/test_case'
 require 'simplecov'
