@@ -4,12 +4,11 @@ default: &default
 
 development:
   <<: *default
-  url: "postgres://postgres:secret@localhost/cqrs-es-sample-with-res"
+  url: "postgres://postgres:secret@localhost/cqrs-es-sample-with-res_development"
 
 test:
   <<: *default
-  adapter: sqlite3
-  database: ":memory:"
+  url: "postgres://postgres:secret@localhost/cqrs-es-sample-with-res_test"
 
 production:
   <<: *default

@@ -16,6 +16,7 @@ gem 'rails_event_store', '~> 1.3.0'
 gem 'dry-struct'
 gem 'dry-types'
 gem 'skylight'
+gem 'pg'
 
 group :development do
   gem 'web-console', '>= 3.3.0'
@@ -24,11 +25,6 @@ end
 
 group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
-  gem 'sqlite3'
-end
-
-group :production do
-  gem 'pg'
 end
 
 group :test do
