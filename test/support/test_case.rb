@@ -1,6 +1,6 @@
 module TestCase
-  def arrange(stream, events)
-    event_store.publish(events, stream_name: stream)
+  def arrange(stream, events, expected_version: :any)
+    event_store.publish(events, stream_name: stream, expected_version: expected_version)
   end
 
   def act(stream, command)

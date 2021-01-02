@@ -20,9 +20,13 @@ module Ordering
       customer = Customer.create(name: 'test')
       product = Product.create(name: 'test')
       order_number = "2019/01/60"
-      arrange(stream, [
-        ItemAddedToBasket.new(data: {order_id: aggregate_id, product_id: product.id}),
-        OrderSubmitted.new(data: {order_id: aggregate_id, order_number: order_number, customer_id: customer.id})])
+      arrange(
+        stream,
+        [ ItemAddedToBasket.new(data: {order_id: aggregate_id, product_id: product.id}),
+          OrderSubmitted.new(data: {order_id: aggregate_id, order_number: order_number, customer_id: customer.id})
+        ],
+        expected_version: -1
+      )
 
       assert_raises(Order::AlreadySubmitted) do
         act(stream, AddItemToBasket.new(order_id: aggregate_id, product_id: product.id))

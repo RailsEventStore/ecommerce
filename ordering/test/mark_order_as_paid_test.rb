@@ -22,10 +22,13 @@ module Ordering
       stream = "Ordering::Order$#{aggregate_id}"
       product = Product.create(name: 'test')
       customer = Customer.create(name: 'dummy')
-      arrange(stream, [
-        ItemAddedToBasket.new(data: {order_id: aggregate_id, product_id: product.id}),
-        OrderSubmitted.new(data: {order_id: aggregate_id, order_number: '2018/12/1', customer_id: customer.id}),
-      ])
+      arrange(
+        stream,
+        [ ItemAddedToBasket.new(data: {order_id: aggregate_id, product_id: product.id}),
+          OrderSubmitted.new(data: {order_id: aggregate_id, order_number: '2018/12/1', customer_id: customer.id})
+        ],
+        expected_version: -1
+      )
 
       transaction_id = SecureRandom.hex(16)
       published = act(stream, MarkOrderAsPaid.new(order_id: aggregate_id, transaction_id: transaction_id))

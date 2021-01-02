@@ -10,7 +10,7 @@ module Ordering
       aggregate_id = SecureRandom.uuid
       stream = "Ordering::Order$#{aggregate_id}"
       product = Product.create(name: 'test')
-      arrange(stream, [ItemAddedToBasket.new(data: {order_id: aggregate_id, product_id: product.id})])
+      arrange(stream, [ItemAddedToBasket.new(data: {order_id: aggregate_id, product_id: product.id})], expected_version: -1)
 
       published = act(stream, SetOrderAsExpired.new(order_id: aggregate_id))
 
@@ -22,10 +22,13 @@ module Ordering
       stream = "Ordering::Order$#{aggregate_id}"
       product = Product.create(name: 'test')
       customer = Customer.create(name: 'dummy')
-      arrange(stream, [
-        ItemAddedToBasket.new(data: {order_id: aggregate_id, product_id: product.id}),
-        OrderSubmitted.new(data: {order_id: aggregate_id, order_number: '2018/12/1', customer_id: customer.id}),
-      ])
+      arrange(
+        stream,
+        [ ItemAddedToBasket.new(data: {order_id: aggregate_id, product_id: product.id}),
+          OrderSubmitted.new(data: {order_id: aggregate_id, order_number: '2018/12/1', customer_id: customer.id}),
+        ],
+        expected_version: -1
+      )
 
       published = act(stream, SetOrderAsExpired.new(order_id: aggregate_id))
 

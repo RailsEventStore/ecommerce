@@ -9,7 +9,7 @@ module Payments
       order_id = SecureRandom.uuid
       stream = "Payments::Payment$#{transaction_id}"
 
-      arrange(stream, [PaymentAuthorized.new(data: {transaction_id: transaction_id, order_id: order_id})])
+      arrange(stream, [PaymentAuthorized.new(data: {transaction_id: transaction_id, order_id: order_id})], expected_version: -1)
       published = act(stream, CapturePayment.new(transaction_id: transaction_id, order_id: order_id))
 
       assert_changes(published, [PaymentCaptured.new(data: {transaction_id: transaction_id, order_id: order_id})])

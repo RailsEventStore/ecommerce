@@ -12,7 +12,7 @@ module Ordering
       customer = Customer.create(name: 'test')
       product = Product.create(name: 'test')
       order_number = "2019/01/60"
-      arrange(stream, [ItemAddedToBasket.new(data: {order_id: aggregate_id, product_id: product.id})])
+      arrange(stream, [ItemAddedToBasket.new(data: {order_id: aggregate_id, product_id: product.id})], expected_version: -1)
 
       published = act(stream, SubmitOrder.new(order_id: aggregate_id, customer_id: customer.id))
 
@@ -35,9 +35,13 @@ module Ordering
       another_customer = Customer.create(name: 'another')
       order_number = "2019/01/60"
 
-      arrange(stream, [
-        ItemAddedToBasket.new(data: {order_id: aggregate_id, product_id: product.id}),
-        OrderSubmitted.new(data: {order_id: aggregate_id, order_number: order_number, customer_id: customer.id})])
+      arrange(
+        stream,
+        [ ItemAddedToBasket.new(data: {order_id: aggregate_id, product_id: product.id}),
+          OrderSubmitted.new(data: {order_id: aggregate_id, order_number: order_number, customer_id: customer.id})
+        ],
+        expected_version: -1
+      )
 
       assert_raises(Order::AlreadySubmitted) do
         act(stream, SubmitOrder.new(order_id: aggregate_id, customer_id: another_customer.id))
@@ -49,9 +53,13 @@ module Ordering
       stream = "Ordering::Order$#{aggregate_id}"
       customer = Customer.create(name: 'test')
       product = Product.create(name: 'test')
-      arrange(stream, [
-        ItemAddedToBasket.new(data: {order_id: aggregate_id, product_id: product.id}),
-        OrderExpired.new(data: {order_id: aggregate_id})])
+      arrange(
+        stream,
+        [ ItemAddedToBasket.new(data: {order_id: aggregate_id, product_id: product.id}),
+          OrderExpired.new(data: {order_id: aggregate_id})
+        ],
+        expected_version: -1
+      )
 
       assert_raises(Order::OrderHasExpired) do
         act(stream, SubmitOrder.new(order_id: aggregate_id, customer_id: customer.id))
