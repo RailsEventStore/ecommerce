@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_01_02_110315) do
+ActiveRecord::Schema.define(version: 2021_01_02_182818) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -23,8 +23,8 @@ ActiveRecord::Schema.define(version: 2021_01_02_110315) do
 
   create_table "event_store_events", id: :uuid, default: nil, force: :cascade do |t|
     t.string "event_type", null: false
-    t.binary "metadata"
-    t.binary "data", null: false
+    t.jsonb "metadata"
+    t.jsonb "data", null: false
     t.datetime "created_at", null: false
     t.index ["created_at"], name: "index_event_store_events_on_created_at"
     t.index ["event_type"], name: "index_event_store_events_on_event_type"
