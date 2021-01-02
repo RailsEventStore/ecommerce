@@ -5,6 +5,15 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
+    services:
+      postgres_11:
+        image: postgres:11
+        env:
+          POSTGRES_DB: cqrs-es-sample-with-res_test
+          POSTGRES_PASSWORD: secret
+        ports:
+          - 10011:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
       - uses: actions/checkout@v2
       - uses: ruby/setup-ruby@v1
