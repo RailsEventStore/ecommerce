@@ -176,7 +176,8 @@ GEM
     pg (1.2.3)
     procto (0.0.3)
     public_suffix (4.0.6)
-    puma (3.12.6)
+    puma (5.1.1)
+      nio4r (~> 2.0)
     rack (2.2.3)
     rack-protection (2.1.0)
       rack
@@ -326,7 +327,7 @@ DEPENDENCIES
   mutant-license!
   mutant-minitest
   pg
-  puma (~> 3.12)
+  puma (~> 5.0)
   rails (~> 5.2.3)
   rails_event_store (~> 2.0.0)
   sassc-rails

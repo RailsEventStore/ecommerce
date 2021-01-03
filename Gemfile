@@ -6,7 +6,7 @@ gem 'rails', '~> 5.2.3'
 gem 'sassc-rails'
 gem 'turbolinks', '~> 5'
 gem 'jbuilder', '~> 2.5'
-gem 'puma', '~> 3.12'
+gem 'puma', '~> 5.0'
 gem 'uglifier', '>= 1.3.0'
 gem 'webpacker', '~> 5.0'
 gem 'bootsnap', '>= 1.1.0', require: false
