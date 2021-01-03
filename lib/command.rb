@@ -1,6 +1,6 @@
 require 'dry-struct'
 
-class Command < Dry::Struct::Value
+class Command < Dry::Struct
   Invalid = Class.new(StandardError)
 
   def self.new(*)
