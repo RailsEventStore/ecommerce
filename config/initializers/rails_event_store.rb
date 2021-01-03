@@ -9,10 +9,6 @@ Rails.configuration.to_prepare do
   )
   Rails.configuration.command_bus = Arkency::CommandBus.new
 
-  AggregateRoot.configure do |config|
-    config.default_event_store = Rails.configuration.event_store
-  end
-
   Rails.configuration.event_store.tap do |store|
     store.subscribe(Orders::OnOrderSubmitted, to: [Ordering::OrderSubmitted])
     store.subscribe(Orders::OnOrderExpired, to: [Ordering::OrderExpired])
