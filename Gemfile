@@ -2,7 +2,7 @@ source 'https://rubygems.org'
 
 ruby '~> 2.7'
 
-gem 'rails', '~> 6.0.0'
+gem 'rails', '~> 6.1.0'
 gem 'sassc-rails'
 gem 'turbolinks', '~> 5'
 gem 'jbuilder', '~> 2.5'
