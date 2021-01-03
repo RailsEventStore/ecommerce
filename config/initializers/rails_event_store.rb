@@ -4,7 +4,9 @@ require 'arkency/command_bus'
 
 
 Rails.configuration.to_prepare do
-  Rails.configuration.event_store = RailsEventStore::Client.new
+  Rails.configuration.event_store = RailsEventStore::Client.new(
+    repository: RailsEventStoreActiveRecord::EventRepository.new(serializer: RubyEventStore::NULL)
+  )
   Rails.configuration.command_bus = Arkency::CommandBus.new
 
   AggregateRoot.configure do |config|
