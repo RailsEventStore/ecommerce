@@ -20,7 +20,7 @@ module Ordering
       stream = "Ordering::Order$#{aggregate_id}"
       customer = Customer.create(name: 'test')
       product = Product.create(name: 'test')
-      order_number = "2019/01/60"
+      order_number = FakeNumberGenerator::FAKE_NUMBER
       arrange(
         stream,
         [ ItemAddedToBasket.new(data: {order_id: aggregate_id, product_id: product.id}),

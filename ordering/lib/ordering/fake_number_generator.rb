@@ -1,7 +1,8 @@
 module Ordering
   class FakeNumberGenerator
+    FAKE_NUMBER = "2019/01/60".freeze
     def call
-      "2019/01/60"
+      FAKE_NUMBER
     end
   end
 end
