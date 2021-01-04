@@ -1,0 +1,9 @@
+---
+includes:
+- test
+integration: minitest
+requires:
+- ./config/environment
+matcher:
+  subjects:
+  - Ordering*
