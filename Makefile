@@ -22,7 +22,7 @@ cleanup: ## Clean files which pile up from time to time
 
 dev: install migrate cleanup ## This is an short alias for day to day update of dev's environment
 
-mutate: test ## Run mutation tests
+mutate: ## Run mutation tests
 	@bundle exec mutant run -j1 --include test --require ./config/environment --use minitest -- 'Ordering*'
 
 
