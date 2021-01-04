@@ -4,6 +4,8 @@ module Payments
   class OnAuthorizePaymentTest < ActiveSupport::TestCase
     include TestCase
 
+    cover 'Payments::OnAuthorizePayment*'
+
     test 'authorize payment' do
       transaction_id = SecureRandom.hex(16)
       order_id = SecureRandom.uuid

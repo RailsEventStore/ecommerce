@@ -4,6 +4,8 @@ module Payments
   class OnReleasePaymentTest < ActiveSupport::TestCase
     include TestCase
 
+    cover 'Payments::OnReleasePayment*'
+
     test 'capture payment' do
       transaction_id = SecureRandom.hex(16)
       order_id = SecureRandom.uuid
