@@ -23,7 +23,7 @@ cleanup: ## Clean files which pile up from time to time
 dev: install migrate cleanup ## This is an short alias for day to day update of dev's environment
 
 mutate: ## Run mutation tests
-	@bundle exec mutant run -j1
+	@env RAILS_ENV=test bundle exec mutant run -j1
 
 test: ## Run unit tests
 	@echo "Running unit tests"
