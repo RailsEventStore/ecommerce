@@ -1,5 +1,3 @@
-require 'aggregate_root'
-
 module Ordering
   class Order
     include AggregateRoot
