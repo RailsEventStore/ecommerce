@@ -8,3 +8,11 @@ matcher:
   subjects:
   - Ordering*
   - Payments*
+  ignore:
+  - Ordering::OrderLine*
+  - Ordering::Order#create_order_line
+  - Ordering::Order#remove_order_line
+  - Ordering::Order#find_order_line
+  - Ordering::Order#submit
+  - Ordering::NumberGenerator#call
+  - Payments::Payment#authorized?
