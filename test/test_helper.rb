@@ -10,10 +10,8 @@ class ActiveSupport::TestCase
   fixtures :all
 
   setup do
-    repository =
-      RailsEventStoreActiveRecord::EventRepository.new(serializer: RubyEventStore::NULL)
     Rails.configuration.event_store =
-      RailsEventStore::Client.new(repository: repository)
+      RailsEventStore::Client.new(repository: RubyEventStore::InMemoryRepository.new)
     Rails.configuration.command_bus =
       Arkency::CommandBus.new
     Configuration.new.call(
