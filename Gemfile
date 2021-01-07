@@ -14,7 +14,7 @@ gem 'pg'
 gem 'dry-struct'
 gem 'dry-types'
 gem 'skylight'
-gem 'rails_event_store', '~> 2.0.0'
+gem 'rails_event_store', '~> 2.1.0'
 
 group :development do
   gem 'web-console', '>= 4.1.0'
