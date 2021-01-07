@@ -15,30 +15,30 @@ module Ordering
     end
 
     def submit(order_number, customer_id)
-      raise AlreadySubmitted if @state == :submitted
-      raise OrderHasExpired if @state == :expired
+      raise AlreadySubmitted if @state.equal?(:submitted)
+      raise OrderHasExpired  if @state.equal?(:expired)
       raise MissingCustomer unless customer_id
       apply OrderSubmitted.new(data: {order_id: @id, order_number: order_number, customer_id: customer_id})
     end
 
     def mark_as_paid(transaction_id)
-      raise OrderHasExpired if @state == :expired
-      raise NotSubmitted unless @state == :submitted
+      raise OrderHasExpired if @state.equal?(:expired)
+      raise NotSubmitted unless @state.equal?(:submitted)
       apply OrderPaid.new(data: {order_id: @id, transaction_id: transaction_id})
     end
 
     def expire
-      raise AlreadyPaid if @state == :paid
+      raise AlreadyPaid if @state.equal?(:paid)
       apply OrderExpired.new(data: {order_id: @id})
     end
 
     def add_item(product_id)
-      raise AlreadySubmitted unless @state == :draft
+      raise AlreadySubmitted unless @state.equal?(:draft)
       apply ItemAddedToBasket.new(data: {order_id: @id, product_id: product_id})
     end
 
     def remove_item(product_id)
-      raise AlreadySubmitted unless @state == :draft
+      raise AlreadySubmitted unless @state.equal?(:draft)
       apply ItemRemovedFromBasket.new(data: {order_id: @id, product_id: product_id})
     end
 

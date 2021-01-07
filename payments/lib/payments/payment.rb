@@ -51,15 +51,15 @@ module Payments
     end
 
     def authorized?
-      @state == :authorized
+      @state.equal?(:authorized)
     end
 
     def captured?
-      @state == :captured
+      @state.equal?(:captured)
     end
 
     def released?
-      @state == :released
+      @state.equal?(:released)
     end
   end
 end
