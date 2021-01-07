@@ -7,10 +7,20 @@ require 'mutant/minitest/coverage'
 
 
 class ActiveSupport::TestCase
-  # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
   fixtures :all
 
-  # Add more helper methods to be used by all tests here...
+  setup do
+    repository =
+      RailsEventStoreActiveRecord::EventRepository.new(serializer: RubyEventStore::NULL)
+    Rails.configuration.event_store =
+      RailsEventStore::Client.new(repository: repository)
+    Rails.configuration.command_bus =
+      Arkency::CommandBus.new
+    Configuration.new.call(
+      Rails.configuration.event_store,
+      Rails.configuration.command_bus
+    )
+  end
 end
 
 SimpleCov.start
