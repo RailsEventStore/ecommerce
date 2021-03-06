@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  ActiveAdmin.routes(self)
   root 'orders#index'
 
   resources :orders, only: [:index, :show, :new, :edit, :create] do

@@ -10,10 +10,25 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_01_03_114315) do
+ActiveRecord::Schema.define(version: 2021_03_06_222803) do
 
   # These are extensions that must be enabled in order to support this database
+  enable_extension "pgcrypto"
   enable_extension "plpgsql"
+
+  create_table "active_admin_comments", force: :cascade do |t|
+    t.string "namespace"
+    t.text "body"
+    t.string "resource_type"
+    t.bigint "resource_id"
+    t.string "author_type"
+    t.bigint "author_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["author_type", "author_id"], name: "index_active_admin_comments_on_author"
+    t.index ["namespace"], name: "index_active_admin_comments_on_namespace"
+    t.index ["resource_type", "resource_id"], name: "index_active_admin_comments_on_resource"
+  end
 
   create_table "customers", force: :cascade do |t|
     t.string "name"
@@ -34,7 +49,7 @@ ActiveRecord::Schema.define(version: 2021_01_03_114315) do
     t.index ["valid_at"], name: "index_event_store_events_on_valid_at"
   end
 
-  create_table "event_store_events_in_streams", force: :cascade do |t|
+  create_table "event_store_events_in_streams", id: :serial, force: :cascade do |t|
     t.string "stream", null: false
     t.integer "position"
     t.uuid "event_id", null: false
