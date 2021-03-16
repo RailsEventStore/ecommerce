@@ -14,14 +14,21 @@ class OrdersController < ApplicationController
     @customers = Customer.all
   end
 
+  def edit
+    @order_id    = params[:id]
+    @order_lines = Orders::OrderLine.where(order_uid: params[:id])
+    @products    = Product.all
+    @customers   = Customer.all
+  end
+
   def add_item
     command_bus.(Ordering::AddItemToBasket.new(order_id: params[:id], product_id: params[:product_id]))
-    head :ok
+    redirect_to edit_order_path(params[:id])
   end
 
   def remove_item
     command_bus.(Ordering::RemoveItemFromBasket.new(order_id: params[:id], product_id: params[:product_id]))
-    head :ok
+    redirect_to edit_order_path(params[:id])
   end
 
   def create

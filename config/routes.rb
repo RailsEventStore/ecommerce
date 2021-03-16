@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   root 'orders#index'
 
-  resources :orders, only: [:index, :show, :new, :create] do
+  resources :orders, only: [:index, :show, :new, :edit, :create] do
     collection do
       post :expire
     end
