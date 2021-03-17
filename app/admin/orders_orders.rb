@@ -10,7 +10,7 @@ ActiveAdmin.register Orders::Order, as: 'Order' do
 
   action_item :cancel,
               only: %i[show],
-              if: proc { resource.state != 'Cancelled' } do
+              if: proc { %w[Submitted Paid].include?(resource.state) } do
     link_to 'Cancel order',
             cancel_admin_order_path,
             method: :post,
