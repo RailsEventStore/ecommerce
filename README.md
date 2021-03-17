@@ -57,6 +57,8 @@ It consists of 2 ActiveRecord classes: `Order` and `OrderItem`.
 
 ## Process Managers
 
+### 1. Release payments when order expired
+
 There's a process manager responsible for dealing with the process of 
 expiring orders.
 
@@ -68,4 +70,9 @@ It takes the following events as the input:
 - Payments::PaymentReleased
 
 When certain conditions are met the process manager return a 
-`ReleasePayment` command. 
+`ReleasePayment` command.
+
+### 2. Confirm order when payment successful
+
+Another process manager is responsible for confirming order.
+It does it, when a successful payment is detected. 
