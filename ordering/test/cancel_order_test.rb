@@ -2,7 +2,7 @@ require_relative 'test_helper'
 
 module Ordering
   class CancelOrderTest < ActiveSupport::TestCase
-    include TestCase
+    include TestPlumbing
 
     cover 'Ordering::OnCancelOrder*'
 
@@ -10,11 +10,14 @@ module Ordering
       aggregate_id = SecureRandom.uuid
       stream = "Ordering::Order$#{aggregate_id}"
       product = Product.create(name: 'test')
-      arrange(stream, [ItemAddedToBasket.new(data: {order_id: aggregate_id, product_id: product.id})], expected_version: -1)
+      arrange(
+        AddItemToBasket.new(order_id: aggregate_id, product_id: product.id)
+      )
 
-      published = act(stream, CancelOrder.new(order_id: aggregate_id))
-
-      assert_changes(published, [OrderCancelled.new(data: {order_id: aggregate_id})])
+      assert_events(
+        stream,
+        OrderCancelled.new(data: { order_id: aggregate_id })
+      ) { act(CancelOrder.new(order_id: aggregate_id)) }
     end
 
     test 'submitted order can be cancelled' do
@@ -23,16 +26,18 @@ module Ordering
       product = Product.create(name: 'test')
       customer = Customer.create(name: 'dummy')
       arrange(
-        stream,
-        [ ItemAddedToBasket.new(data: {order_id: aggregate_id, product_id: product.id}),
-          OrderSubmitted.new(data: {order_id: aggregate_id, order_number: '2018/12/1', customer_id: customer.id}),
-        ],
-        expected_version: -1
+        AddItemToBasket.new(order_id: aggregate_id, product_id: product.id),
+        SubmitOrder.new(
+          order_id: aggregate_id,
+          order_number: '2018/12/1',
+          customer_id: customer.id
+        )
       )
 
-      published = act(stream, CancelOrder.new(order_id: aggregate_id))
-
-      assert_changes(published, [OrderCancelled.new(data: {order_id: aggregate_id})])
+      assert_events(
+        stream,
+        OrderCancelled.new(data: { order_id: aggregate_id })
+      ) { act(CancelOrder.new(order_id: aggregate_id)) }
     end
 
     test 'paid order can be cancelled' do
@@ -40,15 +45,23 @@ module Ordering
       stream = "Ordering::Order$#{aggregate_id}"
       product = Product.create(name: 'test')
       customer = Customer.create(name: 'dummy')
-      arrange(stream, [
-        ItemAddedToBasket.new(data: {order_id: aggregate_id, product_id: product.id}),
-        OrderSubmitted.new(data: {order_id: aggregate_id, order_number: '2018/12/1', customer_id: customer.id}),
-        OrderPaid.new(data: {order_id: aggregate_id, transaction_id: SecureRandom.hex(16)}),
-      ])
+      arrange(
+        AddItemToBasket.new(order_id: aggregate_id, product_id: product.id),
+        SubmitOrder.new(
+          order_id: aggregate_id,
+          order_number: '2018/12/1',
+          customer_id: customer.id
+        ),
+        MarkOrderAsPaid.new(
+          order_id: aggregate_id,
+          transaction_id: SecureRandom.hex(16)
+        )
+      )
 
-      published = act(stream, CancelOrder.new(order_id: aggregate_id))
-
-      assert_changes(published, [OrderCancelled.new(data: {order_id: aggregate_id})])
+      assert_events(
+        stream,
+        OrderCancelled.new(data: { order_id: aggregate_id })
+      ) { act(CancelOrder.new(order_id: aggregate_id)) }
     end
   end
 end

@@ -2,7 +2,8 @@ require_relative 'test_helper'
 
 module Payments
   class PaymentTest < ActiveSupport::TestCase
-    include TestCase
+    include TestPlumbing
+
     cover 'Payments::Payment*'
 
     test 'authorize' do

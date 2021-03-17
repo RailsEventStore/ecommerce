@@ -2,7 +2,7 @@ require_relative 'test_helper'
 
 module Payments
   class OnReleasePaymentTest < ActiveSupport::TestCase
-    include TestCase
+    include TestPlumbing
 
     cover 'Payments::OnReleasePayment*'
 
@@ -11,10 +11,23 @@ module Payments
       order_id = SecureRandom.uuid
       stream = "Payments::Payment$#{transaction_id}"
 
-      arrange(stream, [PaymentAuthorized.new(data: {transaction_id: transaction_id, order_id: order_id})], expected_version: -1)
-      published = act(stream, ReleasePayment.new(transaction_id: transaction_id, order_id: order_id))
+      arrange(
+        AuthorizePayment.new(transaction_id: transaction_id, order_id: order_id)
+      )
 
-      assert_changes(published, [PaymentReleased.new(data: {transaction_id: transaction_id, order_id: order_id})])
+      assert_events(
+        stream,
+        PaymentReleased.new(
+          data: {
+            transaction_id: transaction_id,
+            order_id: order_id
+          }
+        )
+      ) do
+        act(
+          ReleasePayment.new(transaction_id: transaction_id, order_id: order_id)
+        )
+      end
     end
   end
 end

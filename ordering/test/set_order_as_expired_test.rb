@@ -2,7 +2,7 @@ require_relative 'test_helper'
 
 module Ordering
   class SetOrderAsExpiredTest < ActiveSupport::TestCase
-    include TestCase
+    include TestPlumbing
 
     cover 'Ordering::OnSetOrderAsExpired*'
 
@@ -10,11 +10,13 @@ module Ordering
       aggregate_id = SecureRandom.uuid
       stream = "Ordering::Order$#{aggregate_id}"
       product = Product.create(name: 'test')
-      arrange(stream, [ItemAddedToBasket.new(data: {order_id: aggregate_id, product_id: product.id})], expected_version: -1)
+      arrange(
+        AddItemToBasket.new(order_id: aggregate_id, product_id: product.id)
+      )
 
-      published = act(stream, SetOrderAsExpired.new(order_id: aggregate_id))
-
-      assert_changes(published, [OrderExpired.new(data: {order_id: aggregate_id})])
+      assert_events(stream, OrderExpired.new(data: { order_id: aggregate_id })) do
+        act(SetOrderAsExpired.new(order_id: aggregate_id))
+      end
     end
 
     test 'submitted order will expire' do
@@ -23,31 +25,39 @@ module Ordering
       product = Product.create(name: 'test')
       customer = Customer.create(name: 'dummy')
       arrange(
-        stream,
-        [ ItemAddedToBasket.new(data: {order_id: aggregate_id, product_id: product.id}),
-          OrderSubmitted.new(data: {order_id: aggregate_id, order_number: '2018/12/1', customer_id: customer.id}),
-        ],
-        expected_version: -1
+        AddItemToBasket.new(order_id: aggregate_id, product_id: product.id),
+        SubmitOrder.new(
+          order_id: aggregate_id,
+          order_number: '2018/12/1',
+          customer_id: customer.id
+        )
       )
 
-      published = act(stream, SetOrderAsExpired.new(order_id: aggregate_id))
-
-      assert_changes(published, [OrderExpired.new(data: {order_id: aggregate_id})])
+      assert_events(
+        stream,
+        OrderExpired.new(data: { order_id: aggregate_id })
+      ) { act(SetOrderAsExpired.new(order_id: aggregate_id)) }
     end
 
     test 'paid order cannot expire' do
       aggregate_id = SecureRandom.uuid
-      stream = "Ordering::Order$#{aggregate_id}"
       product = Product.create(name: 'test')
       customer = Customer.create(name: 'dummy')
-      arrange(stream, [
-        ItemAddedToBasket.new(data: {order_id: aggregate_id, product_id: product.id}),
-        OrderSubmitted.new(data: {order_id: aggregate_id, order_number: '2018/12/1', customer_id: customer.id}),
-        OrderPaid.new(data: {order_id: aggregate_id, transaction_id: SecureRandom.hex(16)}),
-      ])
+      arrange(
+        AddItemToBasket.new(order_id: aggregate_id, product_id: product.id),
+        SubmitOrder.new(
+          order_id: aggregate_id,
+          order_number: '2018/12/1',
+          customer_id: customer.id
+        ),
+        MarkOrderAsPaid.new(
+          order_id: aggregate_id,
+          transaction_id: SecureRandom.hex(16)
+        )
+      )
 
       assert_raises(Order::AlreadyPaid) do
-        act(stream, SetOrderAsExpired.new(order_id: aggregate_id))
+        act(SetOrderAsExpired.new(order_id: aggregate_id))
       end
     end
   end

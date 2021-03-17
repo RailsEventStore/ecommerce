@@ -2,7 +2,7 @@ require_relative 'test_helper'
 
 module Ordering
   class AddItemToBasketTest < ActiveSupport::TestCase
-    include TestCase
+    include TestPlumbing
 
     cover 'Ordering::OnAddItemToBasket*'
 
@@ -10,26 +10,36 @@ module Ordering
       aggregate_id = SecureRandom.uuid
       stream = "Ordering::Order$#{aggregate_id}"
       product = Product.create(name: 'test')
-      published = act(stream, AddItemToBasket.new(order_id: aggregate_id, product_id: product.id))
-      assert_changes(published, [ItemAddedToBasket.new(data: {order_id: aggregate_id, product_id: product.id})])
+
+      assert_events(
+        stream,
+        ItemAddedToBasket.new(
+          data: {
+            order_id: aggregate_id,
+            product_id: product.id
+          }
+        )
+      ) do
+        act(AddItemToBasket.new(order_id: aggregate_id, product_id: product.id))
+      end
     end
 
     test 'no add allowed to submitted order' do
       aggregate_id = SecureRandom.uuid
-      stream = "Ordering::Order$#{aggregate_id}"
       customer = Customer.create(name: 'test')
       product = Product.create(name: 'test')
       order_number = FakeNumberGenerator::FAKE_NUMBER
       arrange(
-        stream,
-        [ ItemAddedToBasket.new(data: {order_id: aggregate_id, product_id: product.id}),
-          OrderSubmitted.new(data: {order_id: aggregate_id, order_number: order_number, customer_id: customer.id})
-        ],
-        expected_version: -1
+        AddItemToBasket.new(order_id: aggregate_id, product_id: product.id),
+        SubmitOrder.new(
+          order_id: aggregate_id,
+          order_number: order_number,
+          customer_id: customer.id
+        )
       )
 
       assert_raises(Order::AlreadySubmitted) do
-        act(stream, AddItemToBasket.new(order_id: aggregate_id, product_id: product.id))
+        act(AddItemToBasket.new(order_id: aggregate_id, product_id: product.id))
       end
     end
   end
