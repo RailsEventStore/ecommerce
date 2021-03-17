@@ -1,18 +1,22 @@
-ActiveAdmin.register Orders::Order do
+ActiveAdmin.register Orders::Order, as: 'Order' do
+  controller { actions :show, :index, :cancel }
 
-  # See permitted parameters documentation:
-  # https://github.com/activeadmin/activeadmin/blob/master/docs/2-resource-customization.md#setting-up-strong-parameters
-  #
-  # Uncomment all parameters which should be permitted for assignment
-  #
-  # permit_params :uid, :number, :customer, :state
-  #
-  # or
-  #
-  # permit_params do
-  #   permitted = [:uid, :number, :customer, :state]
-  #   permitted << :other if params[:action] == 'create' && current_user.admin?
-  #   permitted
-  # end
-  
+  member_action :cancel, method: %i[post] do
+    command_bus.(
+      Ordering::CancelOrder.new(order_id: Orders::Order.find(params[:id]).uid)
+    )
+    redirect_to admin_orders_path, notice: 'Order cancelled!'
+  end
+
+  action_item :cancel,
+              only: %i[show],
+              if: proc { resource.state != 'Cancelled' } do
+    link_to 'Cancel order',
+            cancel_admin_order_path,
+            method: :post,
+            class: 'button',
+            data: {
+              confirm: 'Do you really want to hurt me?'
+            }
+  end
 end
