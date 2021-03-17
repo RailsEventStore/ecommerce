@@ -43,6 +43,7 @@ module Ordering
     end
 
     def cancel
+      raise NotSubmitted unless @state.equal?(:submitted)
       apply OrderCancelled.new(data: {order_id: @id})
     end
 
