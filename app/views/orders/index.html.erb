@@ -9,6 +9,7 @@
       <th>Customer</th>
       <th>State</th>
       <th>History</th>
+      <th>Actions</th>
     </tr>
   </thead>
 
@@ -19,6 +20,7 @@
         <td><%= order.customer %></td>
         <td><%= order.state %></td>
         <td><%= order_history_link(order.uid) %></td>
+        <td><%= link_to("Pay", pay_order_path(order.uid), method: :post) %></td>
       </tr>
     <% end %>
   </tbody>
