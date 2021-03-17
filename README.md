@@ -36,6 +36,7 @@ The `Ordering::Order` aggregate manages the state machine of an order:
 - submitted
 - paid
 - expired
+- cancelled
 
 After each successful change an appropriate event is published in the Order stream.
 This object is fully event sourced.
