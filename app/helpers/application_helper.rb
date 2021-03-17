@@ -1,6 +1,6 @@
 module ApplicationHelper
   def stream_browser_path(stream_name)
-    "/res#streams/#{stream_name}"
+    "/res/streams/#{stream_name}"
   end
 
   def stream_browser_link(link_name, stream_name)
