@@ -21,7 +21,7 @@ module Ordering
       apply OrderSubmitted.new(data: {order_id: @id, order_number: order_number, customer_id: customer_id})
     end
 
-    def mark_as_paid(transaction_id)
+    def confirm(transaction_id)
       raise OrderHasExpired if @state.equal?(:expired)
       raise NotSubmitted unless @state.equal?(:submitted)
       apply OrderPaid.new(data: {order_id: @id, transaction_id: transaction_id})
