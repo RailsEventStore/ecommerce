@@ -17,6 +17,10 @@ We start with a list of exiting products and customers (populated with seeds).
 
 ## UI flow
 
+### Customer perspective
+
+The customer perspective is "simulated" only - via using the select box.
+
 - Add/remove some of the existing products to the order
 - Choose the customer
 - Submit the order 
@@ -24,6 +28,14 @@ We start with a list of exiting products and customers (populated with seeds).
   - it generates the order number like "2021/03/20" (the last part is random(100))
 - Look at the order
 - Look at the history of events (in the Rails Event Store Browser)
+
+### Admin perspective
+
+In `/admin` we show how to combine the `ActiveAdmin` gem with the
+DDD/event-driven approach. We do it via limiting the typical CRUD actions. 
+All the "view" options are still there. 
+
+Admin can cancel an order in the admin panel.
 
 ## Domains
 
