@@ -42,6 +42,10 @@ module Ordering
       apply ItemRemovedFromBasket.new(data: {order_id: @id, product_id: product_id})
     end
 
+    def cancel
+      apply OrderCancelled.new(data: {order_id: @id})
+    end
+
     on OrderSubmitted do |event|
       @customer_id = event.data[:customer_id]
       @number = event.data[:order_number]
@@ -54,6 +58,10 @@ module Ordering
 
     on OrderExpired do |event|
       @state = :expired
+    end
+
+    on OrderCancelled do |event|
+      @state = :cancelled
     end
 
     on ItemAddedToBasket do |event|

@@ -5,6 +5,7 @@ class Configuration
     event_store.subscribe(Orders::OnOrderPaid, to: [Ordering::OrderPaid])
     event_store.subscribe(Orders::OnItemAddedToBasket, to: [Ordering::ItemAddedToBasket])
     event_store.subscribe(Orders::OnItemRemovedFromBasket, to: [Ordering::ItemRemovedFromBasket])
+    event_store.subscribe(Orders::OnOrderCancelled, to: [Ordering::OrderCancelled])
 
     event_store.subscribe(PaymentProcess, to: [
       Ordering::OrderSubmitted,
@@ -22,5 +23,6 @@ class Configuration
     command_bus.register(Payments::AuthorizePayment, Payments::OnAuthorizePayment.new)
     command_bus.register(Payments::CapturePayment, Payments::OnCapturePayment.new)
     command_bus.register(Payments::ReleasePayment, Payments::OnReleasePayment.new)
+    command_bus.register(Ordering::CancelOrder, Ordering::OnCancelOrder.new)
   end
 end
