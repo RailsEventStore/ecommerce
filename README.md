@@ -88,6 +88,14 @@ The `Ordering::Order` aggregate manages the state machine of an order:
 After each successful change an appropriate event is published in the Order stream.
 This object is fully event sourced.
 
+| Order     | draft | submitted | paid  | expired  | cancelled |
+|-----------|:-----:|:---------:|:-----:|:--------:|:---------:|
+| draft     |       |     ✅    |       |   ✅      |  ✅       |
+| submitted |       |           |   ✅  |          |   ✅       |
+| paid      |       |           |       |          |   ✅       |
+| expired   |       |           |       |          |   ✅       |
+| cancelled |    ✅  |     ✅    |  ✅   |     ✅    |           |
+
 ### Payments
 
 The `Payments::Payment` aggregate manages the following states:

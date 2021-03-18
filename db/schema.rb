@@ -48,7 +48,7 @@ ActiveRecord::Schema.define(version: 2021_03_18_093812) do
     t.index ["valid_at"], name: "index_event_store_events_on_valid_at"
   end
 
-  create_table "event_store_events_in_streams", id: :serial, force: :cascade do |t|
+  create_table "event_store_events_in_streams", force: :cascade do |t|
     t.string "stream", null: false
     t.integer "position"
     t.uuid "event_id", null: false
