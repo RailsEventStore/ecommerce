@@ -15,6 +15,41 @@ This application simulates a process of managing orders.
 
 We start with a list of exiting products and customers (populated with seeds).
 
+## Setup
+
+### Postgresql
+
+#### Docker
+
+If you would like to use Docker image with PostgreSQL provided by us, run `docker-compose up -d`. Your done for this
+step.
+
+#### PostgreSQL installed in the system
+
+If you have PostgreSQL installed directly in your system and prefer to use it, create
+
+- `.env.development.local`
+  containing:
+
+```
+DATABASE_URL=postgresql:///cqrs-es-sample-with-res_development
+```
+
+* `.env.test.local` containing:
+
+```
+DATABASE_URL=postgresql:///cqrs-es-sample-with-res_test
+```
+
+It should would work for most of the cases. If you have more sophisticated setup, you need to update `DATABASE_URL`
+accordingly.
+
+### Application
+
+Run `make dev` to install dependencies, create db, setup schema and seed data.
+
+Run `bin/rails s` to start the web server.
+
 ## UI flow
 
 ### Customer perspective
