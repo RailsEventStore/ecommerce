@@ -94,7 +94,7 @@ This object is fully event sourced.
 | submitted |       |           |   ✅  |          |   ✅       |
 | paid      |       |           |       |          |   ✅       |
 | expired   |       |           |       |          |   ✅       |
-| cancelled |    ✅  |     ✅    |  ✅   |     ✅    |           |
+| cancelled |       |     ✅    |       |          |           |
 
 ### Payments
 
