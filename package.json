@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@activeadmin/activeadmin": "^2.9.0",
     "@rails/webpacker": "5.2.1"
   },
   "devDependencies": {
