@@ -90,11 +90,11 @@ This object is fully event sourced.
 
 | Order     | draft | submitted | paid  | expired  | cancelled |
 |-----------|:-----:|:---------:|:-----:|:--------:|:---------:|
-| draft     |       |     ✅    |       |   ✅      |  ✅       |
+| draft     |       |     ✅    |       |   ✅      |           |
 | submitted |       |           |   ✅  |          |   ✅       |
-| paid      |       |           |       |          |   ✅       |
-| expired   |       |           |       |          |   ✅       |
-| cancelled |       |     ✅    |       |          |           |
+| paid      |       |           |       |          |           |
+| expired   |       |           |       |          |           |
+| cancelled |       |           |       |          |           |
 
 ### Payments
 
@@ -102,7 +102,8 @@ The `Payments::Payment` aggregate manages the following states:
 - authorized
 - captured
 - released
-This object is fully event sourced.
+
+This Order object is fully event sourced.
 
 ## Read models
 
