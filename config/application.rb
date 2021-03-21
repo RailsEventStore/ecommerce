@@ -21,6 +21,7 @@ module CqrsEsSampleWithRes
 
     config.paths.add "lib",          eager_load: true
     config.paths.add "ordering/lib", eager_load: true
+    config.paths.add "ecommerce",    eager_load: true
     config.paths.add "payments/lib", eager_load: true
   end
 end
