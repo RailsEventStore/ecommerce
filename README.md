@@ -4,8 +4,6 @@ CQRS with Event Sourcing sample app using [Rails Event Store](https://railsevent
 
 [![Build Status](https://github.com/RailsEventStore/cqrs-es-sample-with-res/workflows/ci/badge.svg)](https://github.com/RailsEventStore/cqrs-es-sample-with-res/actions/workflows/ci.yml)
 [![Maintainability](https://api.codeclimate.com/v1/badges/c444add86606b981e1fb/maintainability)](https://codeclimate.com/github/RailsEventStore/cqrs-es-sample-with-res/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/c444add86606b981e1fb/test_coverage)](https://codeclimate.com/github/RailsEventStore/cqrs-es-sample-with-res/test_coverage)
-
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
 
