@@ -134,4 +134,4 @@ It does it, when a successful payment is detected.
 
 # I like it, where can I learn more about all those DDD concepts?
 
-Over time we have developed a number of DDD-related online courses. We now sell them as part of 1 membership access via [https://arkademy.dev](https://arkademy.dev) for $49.
+Over time we have developed a number of DDD-related online courses. We now sell them as part of 1 membership access via [https://arkademy.dev](https://arkademy.dev) for $49/month.
