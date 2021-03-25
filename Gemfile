@@ -1,11 +1,5 @@
 source 'https://rubygems.org'
 
-ruby '~> 2.7'
-# rvm doesn't support ruby version operators
-# but supports magic #ruby= comment
-# https://github.com/rvm/rvm/issues/3737#issuecomment-271707899
-#ruby=2.7.2
-
 gem 'rails', '~> 6.1.0'
 gem 'puma', '~> 5.0'
 gem 'sass-rails', '>= 6'
