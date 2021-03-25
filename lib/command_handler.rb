@@ -6,11 +6,6 @@ module CommandHandler
     repository.with_aggregate(aggregate, stream, &block)
   end
 
-  def rehydrate(aggregate, stream)
-    repository = AggregateRoot::InstrumentedRepository.new(AggregateRoot::Repository.new(Rails.configuration.event_store), ActiveSupport::Notifications)
-    repository.load(aggregate, stream)
-  end
-
   def stream_name(aggregate_class, aggregate_id)
     "#{aggregate_class.name}$#{aggregate_id}"
   end
