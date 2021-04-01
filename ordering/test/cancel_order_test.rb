@@ -8,7 +8,7 @@ module Ordering
 
     test "draft order can't be cancelled" do
       aggregate_id = SecureRandom.uuid
-      product = Product.create(name: 'test')
+      product = ProductCatalog::Product.create(name: 'test')
       arrange(
         AddItemToBasket.new(order_id: aggregate_id, product_id: product.id)
       )
@@ -21,7 +21,7 @@ module Ordering
     test 'submitted order can be cancelled' do
       aggregate_id = SecureRandom.uuid
       stream = "Ordering::Order$#{aggregate_id}"
-      product = Product.create(name: 'test')
+      product = ProductCatalog::Product.create(name: 'test')
       customer = Customer.create(name: 'dummy')
       arrange(
         AddItemToBasket.new(order_id: aggregate_id, product_id: product.id),
@@ -40,7 +40,7 @@ module Ordering
 
     test "paid order can't be cancelled" do
       aggregate_id = SecureRandom.uuid
-      product = Product.create(name: 'test')
+      product = ProductCatalog::Product.create(name: 'test')
       customer = Customer.create(name: 'dummy')
       arrange(
         AddItemToBasket.new(order_id: aggregate_id, product_id: product.id),
@@ -62,7 +62,7 @@ module Ordering
 
     test "expired order can't be cancelled" do
       aggregate_id = SecureRandom.uuid
-      product = Product.create(name: 'test')
+      product = ProductCatalog::Product.create(name: 'test')
       customer = Customer.create(name: 'dummy')
       arrange(
         AddItemToBasket.new(order_id: aggregate_id, product_id: product.id),

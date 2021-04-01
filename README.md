@@ -103,6 +103,20 @@ The `Payments::Payment` aggregate manages the following states:
 
 This Order object is fully event sourced.
 
+### Product Catalog
+
+We implement this domain as a CRUD-based bounded context. The goal is to present
+how to deal with such CRUD-ish domains and to show how to integrate it with 
+parts of the system.
+
+It's just a single ActiveRecord `Product` class.
+
+We wrap it with a `ProductCatalog` namespace to explicitly set its boundaries.
+
+This Bounded Context has both - the write part and the read part as the 
+same model. You can say it's not really CQRS - which is true for many CRUDish
+bounded contexts. 
+
 ## Read models
 
 There's only one read model - which helps us listing all the orders 

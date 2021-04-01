@@ -15,5 +15,5 @@ end
  'Developers Oriented Project Management',
  'Blogging for busy programmers']
 .each do |name|
-  Product.create(name: name)
+  ProductCatalog::Product.create(name: name)
 end

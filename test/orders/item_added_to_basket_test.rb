@@ -5,7 +5,7 @@ module Orders
     test 'add new item' do
       event_store = Rails.configuration.event_store
 
-      product = Product.create(name: 'something')
+      product = ProductCatalog::Product.create(name: 'something')
       order_id = SecureRandom.uuid
 
       event_store.publish(Ordering::ItemAddedToBasket.new(data: {order_id: order_id, product_id: product.id}))
@@ -26,7 +26,7 @@ module Orders
     test 'add the same item 2nd time' do
       event_store = Rails.configuration.event_store
 
-      product = Product.create(name: 'something')
+      product = ProductCatalog::Product.create(name: 'something')
       order_id = SecureRandom.uuid
       event_store.publish(Ordering::ItemAddedToBasket.new(data: {order_id: order_id, product_id: product.id}))
 
@@ -48,8 +48,8 @@ module Orders
     test 'add another item' do
       event_store = Rails.configuration.event_store
 
-      product = Product.create(name: 'something')
-      another_product = Product.create(name: '2nd one')
+      product = ProductCatalog::Product.create(name: 'something')
+      another_product = ProductCatalog::Product.create(name: '2nd one')
       order_id = SecureRandom.uuid
       event_store.publish(Ordering::ItemAddedToBasket.new(data: {order_id: order_id, product_id: product.id}))
 

@@ -8,7 +8,7 @@ module Ordering
 
     test 'draft order could not be marked as paid' do
       aggregate_id = SecureRandom.uuid
-      product = Product.create(name: 'test')
+      product = ProductCatalog::Product.create(name: 'test')
       arrange(
         AddItemToBasket.new(order_id: aggregate_id, product_id: product.id)
       )
@@ -26,7 +26,7 @@ module Ordering
     test 'submitted order will be marked as paid' do
       aggregate_id = SecureRandom.uuid
       stream = "Ordering::Order$#{aggregate_id}"
-      product = Product.create(name: 'test')
+      product = ProductCatalog::Product.create(name: 'test')
       customer = Customer.create(name: 'dummy')
       arrange(
         AddItemToBasket.new(order_id: aggregate_id, product_id: product.id),
@@ -59,7 +59,7 @@ module Ordering
 
     test 'expired order cannot be marked as paid' do
       aggregate_id = SecureRandom.uuid
-      product = Product.create(name: 'test')
+      product = ProductCatalog::Product.create(name: 'test')
       customer = Customer.create(name: 'dummy')
       arrange(
         AddItemToBasket.new(order_id: aggregate_id, product_id: product.id),

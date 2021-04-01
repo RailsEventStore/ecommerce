@@ -10,7 +10,7 @@ module Payments
       transaction_id = SecureRandom.hex(16)
       order_id = SecureRandom.uuid
       stream = "Payments::Payment$#{transaction_id}"
-      product  = Product.create(name: 'test')
+      product  = ProductCatalog::Product.create(name: 'test')
       customer = Customer.create(name: 'test')
       arrange(
         Ordering::AddItemToBasket.new(order_id: order_id, product_id: product.id),

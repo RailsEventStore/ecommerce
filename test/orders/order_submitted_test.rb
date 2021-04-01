@@ -6,7 +6,7 @@ module Orders
       event_store = Rails.configuration.event_store
 
       customer = Customer.create(name: 'dummy')
-      product = Product.create(name: 'something')
+      product = ProductCatalog::Product.create(name: 'something')
       order_id = SecureRandom.uuid
       order_number = Ordering::FakeNumberGenerator::FAKE_NUMBER
 
@@ -24,7 +24,7 @@ module Orders
       event_store = Rails.configuration.event_store
 
       customer = Customer.create(name: 'dummy')
-      product = Product.create(name: 'something')
+      product = ProductCatalog::Product.create(name: 'something')
       order_id = SecureRandom.uuid
       order_number = Ordering::FakeNumberGenerator::FAKE_NUMBER
       event_store.publish(Ordering::ItemAddedToBasket.new(data: {order_id: order_id, product_id: product.id}))

@@ -5,7 +5,7 @@ module Orders
     test 'remove item when quantity > 1' do
       event_store = Rails.configuration.event_store
 
-      product = Product.create(name: 'something')
+      product = ProductCatalog::Product.create(name: 'something')
       customer = Customer.create(name: 'dummy')
       order_id = SecureRandom.uuid
       order_number = Ordering::FakeNumberGenerator::FAKE_NUMBER
@@ -25,7 +25,7 @@ module Orders
     test 'remove item when quantity = 1' do
       event_store = Rails.configuration.event_store
 
-      product = Product.create(name: 'something')
+      product = ProductCatalog::Product.create(name: 'something')
       customer = Customer.create(name: 'dummy')
       order_id = SecureRandom.uuid
       order_number = Ordering::FakeNumberGenerator::FAKE_NUMBER
@@ -40,8 +40,8 @@ module Orders
     test 'remove item when there is another item' do
       event_store = Rails.configuration.event_store
 
-      product = Product.create(name: 'something')
-      another_product = Product.create(name: '2nd one')
+      product = ProductCatalog::Product.create(name: 'something')
+      another_product = ProductCatalog::Product.create(name: '2nd one')
       customer = Customer.create(name: 'dummy')
       order_id = SecureRandom.uuid
       order_number = Ordering::FakeNumberGenerator::FAKE_NUMBER

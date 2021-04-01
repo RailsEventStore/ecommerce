@@ -19,9 +19,10 @@ module CqrsEsSampleWithRes
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
 
-    config.paths.add "lib",          eager_load: true
-    config.paths.add "ordering/lib", eager_load: true
-    config.paths.add "ecommerce",    eager_load: true
-    config.paths.add "payments/lib", eager_load: true
+    config.paths.add "lib",             eager_load: true
+    config.paths.add "ordering/lib",    eager_load: true
+    config.paths.add "ecommerce",       eager_load: true
+    config.paths.add "payments/lib",    eager_load: true
+    config.paths.add "product_catalog", eager_load: true
   end
 end

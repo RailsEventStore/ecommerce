@@ -10,7 +10,7 @@ module Ordering
       aggregate_id = SecureRandom.uuid
       stream = "Ordering::Order$#{aggregate_id}"
       customer = Customer.create(name: 'test')
-      product = Product.create(name: 'test')
+      product = ProductCatalog::Product.create(name: 'test')
       order_number = FakeNumberGenerator::FAKE_NUMBER
       arrange(
         AddItemToBasket.new(order_id: aggregate_id, product_id: product.id)
@@ -41,7 +41,7 @@ module Ordering
     test 'already created order could not be created again' do
       aggregate_id = SecureRandom.uuid
       customer = Customer.create(name: 'test')
-      product = Product.create(name: 'test')
+      product = ProductCatalog::Product.create(name: 'test')
       another_customer = Customer.create(name: 'another')
       order_number = FakeNumberGenerator::FAKE_NUMBER
 
@@ -67,7 +67,7 @@ module Ordering
     test 'expired order could not be created' do
       aggregate_id = SecureRandom.uuid
       customer = Customer.create(name: 'test')
-      product = Product.create(name: 'test')
+      product = ProductCatalog::Product.create(name: 'test')
       arrange(
         AddItemToBasket.new(order_id: aggregate_id, product_id: product.id),
         SetOrderAsExpired.new(order_id: aggregate_id)
