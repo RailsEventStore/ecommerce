@@ -10,14 +10,14 @@ class OrdersController < ApplicationController
 
   def new
     @order_id  = SecureRandom.uuid
-    @products  = Product.all
+    @products  = ProductCatalog::Product.all
     @customers = Customer.all
   end
 
   def edit
     @order_id    = params[:id]
     @order_lines = Orders::OrderLine.where(order_uid: params[:id])
-    @products    = Product.all
+    @products    = ProductCatalog::Product.all
     @customers   = Customer.all
   end
 
