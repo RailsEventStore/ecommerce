@@ -101,7 +101,7 @@ The `Payments::Payment` aggregate manages the following states:
 - captured
 - released
 
-This Order object is fully event sourced.
+This Payment object is fully event sourced.
 
 ### Product Catalog
 
