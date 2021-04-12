@@ -12,6 +12,10 @@ require Rails.root.join("../ecommerce/payments/lib/payments")
 
 class Configuration
   def call(event_store, command_bus)
+    event_store.subscribe_to_all_events(RailsEventStore::LinkByEventType.new)
+    event_store.subscribe_to_all_events(RailsEventStore::LinkByCorrelationId.new)
+    event_store.subscribe_to_all_events(RailsEventStore::LinkByCausationId.new)
+
     cqrs = Cqrs.new(event_store, command_bus)
 
     Orders::Configuration.new(cqrs).call
