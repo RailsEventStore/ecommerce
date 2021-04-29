@@ -16,7 +16,6 @@ module Ordering
     def submit(order_number, customer_id)
       raise AlreadySubmitted if @state.equal?(:submitted)
       raise OrderHasExpired  if @state.equal?(:expired)
-      raise MissingCustomer unless customer_id
       apply OrderSubmitted.new(data: {order_id: @id, order_number: order_number, customer_id: customer_id})
     end
 

@@ -9,6 +9,5 @@ matcher:
   - Ordering*
   - Payments*
   ignore:
-  - Ordering::Order#submit
   - Ordering::NumberGenerator#call
   - Payments::Payment#authorized?
