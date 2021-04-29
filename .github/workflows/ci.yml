@@ -24,6 +24,9 @@ jobs:
           ruby-version: ruby-2.7.2
           bundler-cache: true
       - run: make test
+      - uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
   mutate:
     runs-on: ubuntu-20.04
     strategy:
@@ -44,3 +47,6 @@ jobs:
           ruby-version: ruby-2.7.2
           bundler-cache: true
       - run: make mutate
+      - uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
