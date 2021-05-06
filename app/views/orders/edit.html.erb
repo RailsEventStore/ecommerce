@@ -5,6 +5,8 @@
     <tr>
       <th>Product</th>
       <th>Quantity</th>
+      <th>Price</th>
+      <th>Value</th>
       <th/>
       <th/>
     </tr>
@@ -13,8 +15,11 @@
   <tbody>
   <% @products.each do |product| %>
     <tr>
+      <% order_line = @order_lines.find{|order_line| order_line.product_id == product.id} %>
       <td><%= product.name %></td>
-      <td><%= @order_lines.find{|order_line| order_line.product_id == product.id}.try(&:quantity) || 0 %></td>
+      <td><%= order_line.try(&:quantity) || 0 %></td>
+      <td><%= number_to_currency(order_line.try(&:price)) %></td>
+      <td><%= number_to_currency(order_line.try(&:value)) %></td>
       <td><%= link_to "Add", add_item_order_path(id: @order_id, product_id: product.id),
         {method: :post} %></td>
       <td><%= link_to "Remove", remove_item_order_path(id: @order_id, product_id: product.id),

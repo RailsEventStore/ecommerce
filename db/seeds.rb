@@ -10,10 +10,11 @@
   Customer.create(name: name)
 end
 
-['Fearless Refactoring: Rails controllers',
- 'Rails meets React.js',
- 'Developers Oriented Project Management',
- 'Blogging for busy programmers']
-.each do |name|
-  ProductCatalog::Product.create(name: name)
+[
+  ['Fearless Refactoring: Rails controllers', 49],
+  ['Rails meets React.js', 49],
+  ['Developers Oriented Project Management', 39],
+  ['Blogging for busy programmers', 29]
+].each do |name_price_tuple|
+  ProductCatalog::Product.create(name: name_price_tuple[0], price: name_price_tuple[1])
 end

@@ -2,6 +2,9 @@ require 'test_helper'
 
 module Orders
   class OrderSubmittedTest < ActiveJob::TestCase
+
+    cover 'Orders'
+
     test 'create when not exists' do
       event_store = Rails.configuration.event_store
 

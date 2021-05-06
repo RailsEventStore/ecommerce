@@ -5,13 +5,15 @@ Customer: <%= @order.customer %><br/>
 State: <%= @order.state %>
 </p>
 
-<h2>Orders lines</h2>
+<h2>Order lines</h2>
 
 <table class="table">
   <thead>
     <tr>
       <th>Product</th>
       <th>Quantity</th>
+      <th>Price</th>
+      <th>Value</th>
     </tr>
   </thead>
 
@@ -20,6 +22,8 @@ State: <%= @order.state %>
     <tr>
     <td><%= item.product_name %></td>
     <td><%= item.quantity %></td>
+    <td><%= item.price %></td>
+    <td><%= item.value %></td>
   </tr>
 <% end %>
   </tbody>

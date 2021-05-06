@@ -25,8 +25,10 @@ module Orders
       OrderLine.new.tap do |i|
         i.order_uid = order_uid
         i.product_id = product_id
-        i.product_name = ProductCatalog::Product.find(product_id).name
-        i.quantity = 0
+        product = ProductCatalog::Product.find(product_id)
+        i.product_name = product.name
+        i.price        = product.price
+        i.quantity     = 0
       end
     end
   end

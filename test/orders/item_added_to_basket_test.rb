@@ -2,10 +2,13 @@ require 'test_helper'
 
 module Orders
   class ItemAddedToBasketTest < ActiveJob::TestCase
+
+    cover 'Orders'
+
     test 'add new item' do
       event_store = Rails.configuration.event_store
 
-      product = ProductCatalog::Product.create(name: 'something')
+      product = ProductCatalog::Product.create(name: 'something', price: 49)
       order_id = SecureRandom.uuid
 
       event_store.publish(Ordering::ItemAddedToBasket.new(data: {order_id: order_id, product_id: product.id}))
@@ -15,6 +18,8 @@ module Orders
       assert_equal(order_line.product_id, product.id)
       assert_equal(order_line.product_name, 'something')
       assert_equal(order_line.quantity , 1)
+      assert_equal(order_line.price , 49)
+      assert_equal(order_line.value , 49)
 
       assert_equal(Order.count, 1)
       order = Order.find_by(uid: order_id)
@@ -26,7 +31,7 @@ module Orders
     test 'add the same item 2nd time' do
       event_store = Rails.configuration.event_store
 
-      product = ProductCatalog::Product.create(name: 'something')
+      product = ProductCatalog::Product.create(name: 'something', price: 49)
       order_id = SecureRandom.uuid
       event_store.publish(Ordering::ItemAddedToBasket.new(data: {order_id: order_id, product_id: product.id}))
 
@@ -36,7 +41,9 @@ module Orders
       order_line = OrderLine.find_by(order_uid: order_id)
       assert_equal(order_line.product_id, product.id)
       assert_equal(order_line.product_name, 'something')
-      assert_equal(order_line.quantity , 2)
+      assert_equal(order_line.quantity, 2)
+      assert_equal(order_line.price, 49)
+      assert_equal(order_line.value, 98)
 
       assert_equal(Order.count, 1)
       order = Order.find_by(uid: order_id)

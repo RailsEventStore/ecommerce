@@ -1,6 +1,9 @@
 require 'test_helper'
 
 class PaymentProcessTest < ActiveSupport::TestCase
+
+  cover 'PaymentProcess'
+
   test 'happy path' do
     fake = FakeCommandBus.new
     process = PaymentProcess.new(bus: fake)

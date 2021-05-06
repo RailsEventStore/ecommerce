@@ -8,6 +8,7 @@ matcher:
   subjects:
   - Ordering*
   - Payments*
+  - Orders::OrderLine*
   ignore:
   - Ordering::NumberGenerator*
   - Payments::Payment#authorized?

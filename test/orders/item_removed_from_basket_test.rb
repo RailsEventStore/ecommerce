@@ -2,6 +2,9 @@ require 'test_helper'
 
 module Orders
   class ItemRemovedFromBasketTest < ActiveJob::TestCase
+
+    cover 'Orders'
+
     test 'remove item when quantity > 1' do
       event_store = Rails.configuration.event_store
 

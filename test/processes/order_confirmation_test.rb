@@ -2,6 +2,8 @@ require 'test_helper'
 
 class OrderConfirmationTest < ActiveSupport::TestCase
 
+  cover 'OrderConfirmation'
+
   def test_authorized_is_not_enough_to_confirm
     product  = ProductCatalog::Product.create(name: 'test')
     customer = Customer.create(name: 'test')

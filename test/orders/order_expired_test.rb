@@ -2,6 +2,9 @@ require 'test_helper'
 
 module Orders
   class OrderExpiredTest < ActiveJob::TestCase
+
+    cover 'Orders'
+
     test 'expire created order' do
       event_store = Rails.configuration.event_store
 

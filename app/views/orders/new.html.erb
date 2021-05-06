@@ -4,6 +4,7 @@
   <thead>
     <tr>
       <th>Product</th>
+      <th>Price</th>
       <th/>
       <th/>
     </tr>
@@ -13,6 +14,7 @@
   <% @products.each do |product| %>
     <tr>
       <td><%= product.name %></td>
+      <td><%= number_to_currency(product.price) %></td>
       <td><%= link_to "Add", add_item_order_path(id: @order_id, product_id: product.id),
         {method: :post} %></td>
     </tr>
