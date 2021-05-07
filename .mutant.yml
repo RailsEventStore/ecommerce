@@ -14,6 +14,7 @@ matcher:
   - Payments*
   - Orders::OrderLine*
   - PaymentProcess#call
+  - PaymentProcess#release_payment
   ignore:
   - Ordering::NumberGenerator*
   - Payments::Payment#authorized?

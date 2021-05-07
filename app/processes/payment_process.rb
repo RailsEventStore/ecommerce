@@ -13,20 +13,18 @@ class PaymentProcess
   private
 
   def release_payment(state)
-    bus.call(Payments::ReleasePayment.new(
-      order_id: state.order_id,
-      transaction_id: state.transaction_id))
+    bus.call(Payments::ReleasePayment.new(transaction_id: state.transaction_id))
   end
 
   attr_reader :store, :bus
 
   def build_state(event)
     stream_name = "PaymentProcess$#{event.data.fetch(:order_id)}"
-    past = store.read.stream(stream_name).to_a
-    last_stored = past.size - 1
+    past_events = store.read.stream(stream_name).to_a
+    last_stored = past_events.size - 1
     store.link(event.event_id, stream_name: stream_name, expected_version: last_stored)
     ProcessState.new.tap do |state|
-      past.each{|ev| state.call(ev)}
+      past_events.each{|ev| state.call(ev)}
       state.call(event)
     end
   rescue RubyEventStore::WrongExpectedEventVersion
