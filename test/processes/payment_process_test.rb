@@ -2,9 +2,9 @@ require 'test_helper'
 
 class PaymentProcessTest < ActiveSupport::TestCase
 
-  cover 'PaymentProcess'
+  cover 'PaymentProcess*'
 
-  test 'happy path' do
+  def test_happy_path
     fake = FakeCommandBus.new
     process = PaymentProcess.new(bus: fake)
     given([
@@ -17,7 +17,7 @@ class PaymentProcessTest < ActiveSupport::TestCase
     assert_nil(fake.received)
   end
 
-  test 'order expired without payment' do
+  def test_order_expired_without_payment
     fake = FakeCommandBus.new
     process = PaymentProcess.new(bus: fake)
     given([
@@ -29,7 +29,7 @@ class PaymentProcessTest < ActiveSupport::TestCase
     assert_nil(fake.received)
   end
 
-  test 'order expired after payment authorization' do
+  def test_order_expired_after_payment_authorization
     fake = FakeCommandBus.new
     process = PaymentProcess.new(bus: fake)
     given([
@@ -44,7 +44,7 @@ class PaymentProcessTest < ActiveSupport::TestCase
     )
   end
 
-  test 'order expired after payment released' do
+  def test_order_expired_after_payment_released
     fake = FakeCommandBus.new
     process = PaymentProcess.new(bus: fake)
     given([

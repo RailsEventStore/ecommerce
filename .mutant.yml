@@ -2,6 +2,10 @@
 includes:
 - test
 integration: minitest
+mutation_timeout: 10.0
+coverage_criteria:
+  timeout: true
+  process_abort: true
 requires:
 - ./config/environment
 matcher:
@@ -9,6 +13,7 @@ matcher:
   - Ordering*
   - Payments*
   - Orders::OrderLine*
+  - PaymentProcess#call
   ignore:
   - Ordering::NumberGenerator*
   - Payments::Payment#authorized?

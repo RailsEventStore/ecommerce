@@ -7,14 +7,17 @@ class PaymentProcess
 
   def call(event)
     state = build_state(event)
-    if state.release?
-      bus.call(Payments::ReleasePayment.new(
-        order_id: state.order_id,
-        transaction_id: state.transaction_id))
-    end
+    release_payment(state) if state.release?
   end
 
   private
+
+  def release_payment(state)
+    bus.call(Payments::ReleasePayment.new(
+      order_id: state.order_id,
+      transaction_id: state.transaction_id))
+  end
+
   attr_reader :store, :bus
 
   def build_state(event)
