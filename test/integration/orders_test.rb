@@ -3,7 +3,8 @@ require "test_helper"
 class BlogFlowTest < ActionDispatch::IntegrationTest
 
   def test_submitting_empty_order
-    arkency = Customer.create(name: "Arkency")
+    Customer.destroy_all
+    #arkency = Customer.create(name: "Arkency")
 
     get "/"
     assert_select "h1", "Orders"
