@@ -1,11 +1,9 @@
 require "test_helper"
 
 class BlogFlowTest < ActionDispatch::IntegrationTest
-  def setup
-    Rails.application.load_seed
-  end
 
   def test_submitting_empty_order
+    Customer.create(name: "Arkency")
     get "/"
     assert_select "h1", "Orders"
     get "/orders/new"
