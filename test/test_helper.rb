@@ -6,7 +6,6 @@ require 'simplecov'
 require 'mutant/minitest/coverage'
 
 class ActiveSupport::TestCase
-  fixtures :all
 
   setup do
     Rails.configuration.event_store =
