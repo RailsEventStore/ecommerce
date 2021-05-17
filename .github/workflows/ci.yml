@@ -27,6 +27,7 @@ jobs:
       - uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_COLOR: ${{ job.status }}
   mutate:
     runs-on: ubuntu-20.04
     strategy:

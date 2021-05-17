@@ -13,7 +13,7 @@ class BlogFlowTest < ActionDispatch::IntegrationTest
          {
            "authenticity_token"=>"[FILTERED]",
            "order_id"=>"288c590d-b7dc-429f-8d82-79ebf2d5aabc",
-           "customer_id"=>arkency.id,
+           "customer_id"=> 1,
            "commit"=>"Submit order"
          }
   end
