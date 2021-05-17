@@ -27,6 +27,11 @@
     </tr>
   <% end %>
   </tbody>
+  <tr>
+    <td>Total:</td>
+    <td colspan="2"></td>
+    <td><strong><%= number_to_currency(@order.total_value) %></strong></td>
+  </tr>
 </table>
 
 <%= form_tag({controller: "orders", action: "create"}, method: "post") do %>

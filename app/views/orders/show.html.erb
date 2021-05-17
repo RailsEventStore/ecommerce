@@ -1,7 +1,9 @@
 <p id="notice"><%= notice %></p>
 <h1>Order: <%= @order.number %></h1>
 <p>
-Customer: <%= @order.customer %><br/>
+Customer: <%= @order.customer %>
+</p>
+<p>
 State: <%= @order.state %>
 </p>
 
@@ -22,11 +24,16 @@ State: <%= @order.state %>
     <tr>
     <td><%= item.product_name %></td>
     <td><%= item.quantity %></td>
-    <td><%= item.price %></td>
-    <td><%= item.value %></td>
+    <td><%= number_to_currency(item.price) %></td>
+    <td><%= number_to_currency(item.value) %></td>
   </tr>
 <% end %>
   </tbody>
+  <tr>
+    <td>Total:</td>
+    <td colspan="2"></td>
+    <td><strong><%= number_to_currency(@order.total_value) %></strong></td>
+  </tr>
 </table>
 
 <br/>

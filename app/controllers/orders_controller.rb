@@ -16,6 +16,7 @@ class OrdersController < ApplicationController
 
   def edit
     @order_id    = params[:id]
+    @order       = Orders::Order.find_by_uid(params[:id])
     @order_lines = Orders::OrderLine.where(order_uid: params[:id])
     @products    = ProductCatalog::Product.all
     @customers   = Customer.all

@@ -12,6 +12,7 @@ matcher:
   subjects:
   - Ordering*
   - Payments*
+  - Orders::Order*
   - Orders::OrderLine*
   - PaymentProcess#call
   - PaymentProcess#release_payment
