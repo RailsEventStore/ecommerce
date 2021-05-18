@@ -23,6 +23,7 @@ jobs:
         with:
           ruby-version: ruby-2.7.2
           bundler-cache: true
+      - run: yarn
       - run: make test
       - uses: rtCamp/action-slack-notify@v2
         env:
