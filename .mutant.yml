@@ -11,9 +11,8 @@ requires:
 matcher:
   subjects:
   - Ordering*
+  - Orders*
   - Payments*
-  - Orders::Order*
-  - Orders::OrderLine*
   - PaymentProcess#call
   - PaymentProcess#release_payment
   ignore:

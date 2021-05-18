@@ -1,9 +1,10 @@
 module Orders
   class OnItemAddedToBasket
     def call(event)
-      create_draft_order(event.data[:order_id])
-      item = find(event.data[:order_id], event.data[:product_id]) ||
-             create(event.data[:order_id], event.data[:product_id])
+      order_id = event.data.fetch(:order_id)
+      create_draft_order(order_id)
+      item = find(order_id, event.data.fetch(:product_id)) ||
+             create(order_id, event.data.fetch(:product_id))
       item.quantity += 1
       item.save!
     end
@@ -18,11 +19,11 @@ module Orders
     end
 
     def find(order_uid, product_id)
-      OrderLine.where({order_uid: order_uid, product_id: product_id}).first
+      Order.find_by_uid(order_uid).order_lines.where(product_id: product_id).first
     end
 
     def create(order_uid, product_id)
-      OrderLine.new.tap do |i|
+      OrderLine.new do |i|
         i.order_uid = order_uid
         i.product_id = product_id
         product = ProductCatalog::Product.find(product_id)

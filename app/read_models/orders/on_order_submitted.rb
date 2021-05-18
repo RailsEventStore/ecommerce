@@ -1,9 +1,9 @@
 module Orders
   class OnOrderSubmitted
     def call(event)
-      order = Order.find_or_create_by(uid: event.data[:order_id])
-      order.number = event.data[:order_number]
-      order.customer = Customer.find(event.data[:customer_id]).name
+      order = Order.find_or_create_by(uid: event.data.fetch(:order_id))
+      order.number = event.data.fetch(:order_number)
+      order.customer = Customer.find(event.data.fetch(:customer_id)).name
       order.state = "Submitted"
       order.save!
     end
