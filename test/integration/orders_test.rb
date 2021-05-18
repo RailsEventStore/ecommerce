@@ -1,6 +1,6 @@
 require "test_helper"
 
-class BlogFlowTest < ActionDispatch::IntegrationTest
+class OrdersTest < ActionDispatch::IntegrationTest
   cover 'Orders*'
 
   def test_submitting_empty_order
