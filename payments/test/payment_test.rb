@@ -6,7 +6,7 @@ module Payments
 
     cover 'Payments::Payment*'
 
-    test 'authorize' do
+    def test_authorize
       payment = Payment.new
       payment.authorize(transaction_id, order_id)
       assert_changes(payment.unpublished_events, [
@@ -17,13 +17,13 @@ module Payments
       ])
     end
 
-    test 'should not allow for double authorization' do
+    def test_should_not_allow_for_double_authorization
       assert_raises(Payment::AlreadyAuthorized) do
         authorized_payment.authorize(transaction_id, order_id)
       end
     end
 
-    test 'should capture authorized payment' do
+    def test_should_capture_authorized_payment
       payment = authorized_payment
       before = payment.unpublished_events.to_a
 
@@ -37,19 +37,19 @@ module Payments
       ])
     end
 
-    test 'must not capture not authorized payment' do
+    def test_must_not_capture_not_authorized_payment
       assert_raises(Payment::NotAuthorized) do
         Payment.new.capture
       end
     end
 
-    test 'should not allow for double capture' do
+    def test_should_not_allow_for_double_capture
       assert_raises(Payment::AlreadyCaptured) do
         captured_payment.capture
       end
     end
 
-    test 'authorization could be released' do
+    def test_authorization_could_be_released
       payment = authorized_payment
       before = payment.unpublished_events.to_a
 
@@ -63,19 +63,19 @@ module Payments
       ])
     end
 
-    test 'must not release not captured payment' do
+    def test_must_not_release_not_captured_payment
       assert_raises(Payment::AlreadyCaptured) do
         captured_payment.release
       end
     end
 
-    test 'must not release not authorized payment' do
+    def test_must_not_release_not_authorized_payment
       assert_raises(Payment::NotAuthorized) do
         Payment.new.release
       end
     end
 
-    test 'should not allow for double release' do
+    def test_should_not_allow_for_double_release
       assert_raises(Payment::AlreadyReleased) do
         released_payment.release
       end
