@@ -7,8 +7,9 @@ module Payments
     AlreadyCaptured = Class.new(StandardError)
     AlreadyReleased = Class.new(StandardError)
 
-    def authorize(transaction_id, order_id)
+    def authorize(transaction_id, order_id, gateway)
       raise AlreadyAuthorized if authorized?
+      gateway.authorize_transaction(transaction_id)
       apply(PaymentAuthorized.new(data: {
         transaction_id: transaction_id,
         order_id: order_id
