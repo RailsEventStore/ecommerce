@@ -59,4 +59,5 @@ Rails.application.configure do
 
   # --- CqrsEsSampleWithRes ---
   config.number_generator = ->{ Ordering::FakeNumberGenerator.new }
+  config.payment_gateway = -> { @gateway ||= Payments::FakeGateway.new }
 end

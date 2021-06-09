@@ -9,7 +9,7 @@ module Payments
     def test_authorize_publishes_event
       payment = Payment.new
       gateway = FakeGateway.new
-      payment.authorize(transaction_id, order_id, gateway)
+      payment.authorize(transaction_id, order_id, gateway, 20)
       assert_changes(payment.unpublished_events, [
         PaymentAuthorized.new(data: {
           transaction_id: transaction_id,
@@ -21,13 +21,13 @@ module Payments
     def test_authorize_contacts_gateway
       payment = Payment.new
       gateway = FakeGateway.new
-      payment.authorize(transaction_id, order_id, gateway)
-      assert(gateway.authorized_transactions.include?(transaction_id))
+      payment.authorize(transaction_id, order_id, gateway, 20)
+      assert(gateway.authorized_transactions.include?([transaction_id, 20]))
     end
 
     def test_should_not_allow_for_double_authorization
       assert_raises(Payment::AlreadyAuthorized) do
-        authorized_payment.authorize(transaction_id, order_id, nil)
+        authorized_payment.authorize(transaction_id, order_id, nil, 20)
       end
     end
 

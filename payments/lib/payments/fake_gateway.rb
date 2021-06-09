@@ -4,8 +4,12 @@ module Payments
       @authorized_transactions = []
     end
 
-    def authorize_transaction(transaction_id)
-      authorized_transactions << transaction_id
+    def reset
+      @authorized_transactions = []
+    end
+
+    def authorize_transaction(transaction_id, amount)
+      authorized_transactions << [transaction_id, amount]
     end
 
     def authorized_transactions

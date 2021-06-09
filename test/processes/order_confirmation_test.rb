@@ -5,7 +5,7 @@ class OrderConfirmationTest < ActiveSupport::TestCase
   cover 'OrderConfirmation'
 
   def test_authorized_is_not_enough_to_confirm
-    product  = ProductCatalog::Product.create(name: 'test')
+    product  = ProductCatalog::Product.create(name: 'test', price: 20)
     customer = Customer.create(name: 'test')
     [
       Ordering::AddItemToBasket.new(order_id: order_id, product_id: product.id),
@@ -18,7 +18,7 @@ class OrderConfirmationTest < ActiveSupport::TestCase
   end
 
   def test_payment_confirms_order
-    product  = ProductCatalog::Product.create(name: 'test')
+    product  = ProductCatalog::Product.create(name: 'test', price: 20)
     customer = Customer.create(name: 'test')
     [
       Ordering::AddItemToBasket.new(order_id: order_id, product_id: product.id),
