@@ -65,6 +65,7 @@ module Orders
       order = Orders::Order.find_by(uid: order_id)
       assert_equal(order.order_lines.count, 2)
       order_lines = order.order_lines
+      assert_equal([product.id, another_product.id], order_lines.map(&:product_id))
       assert_equal(order_lines[0].product_id, product.id)
       assert_equal(order_lines[0].product_name, 'something')
       assert_equal(order_lines[0].quantity , 1)
