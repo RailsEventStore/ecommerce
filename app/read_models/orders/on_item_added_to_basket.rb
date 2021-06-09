@@ -23,14 +23,13 @@ module Orders
     end
 
     def create(order_uid, product_id)
-      OrderLine.new do |i|
-        i.order_uid = order_uid
-        i.product_id = product_id
-        product = ProductCatalog::Product.find(product_id)
-        i.product_name = product.name
-        i.price        = product.price
-        i.quantity     = 0
-      end
+      product = ProductCatalog::Product.find(product_id)
+      Order.find_by(uid: order_uid).order_lines.create(
+        product_id: product_id,
+        product_name: product.name,
+        price: product.price,
+        quantity: 0
+      )
     end
   end
 end
