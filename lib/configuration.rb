@@ -29,5 +29,9 @@ class Configuration
     command_bus.register(Payments::CapturePayment, Payments::OnCapturePayment.new)
     command_bus.register(Payments::ReleasePayment, Payments::OnReleasePayment.new)
     command_bus.register(Ordering::CancelOrder, Ordering::OnCancelOrder.new)
+
+    command_bus.register(Pricing::SetPrice, Pricing::SetPriceHandler.new)
+
+    event_store.subscribe(ProductCatalog::AssignPriceToProduct.new, to: [Pricing::PriceSet])
   end
 end
