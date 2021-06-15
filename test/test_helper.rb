@@ -7,26 +7,18 @@ require 'mutant/minitest/coverage'
 
 class ActiveSupport::TestCase
 
-  def setup
-    Rails.configuration.event_store = event_store
-    Rails.configuration.command_bus = command_bus
+  setup do
+    Rails.configuration.event_store = RailsEventStore::Client.new(repository: RubyEventStore::InMemoryRepository.new)
+    Rails.configuration.command_bus = Arkency::CommandBus.new
 
     Configuration.new.call(
-      event_store,
-      command_bus
+      Rails.configuration.event_store,
+      Rails.configuration.command_bus
     )
   end
 
   def run_command(command)
-    command_bus.call(command)
-  end
-
-  def command_bus
-    @command_bus ||= Arkency::CommandBus.new
-  end
-
-  def event_store
-    @event_store ||= RailsEventStore::Client.new(repository: RubyEventStore::InMemoryRepository.new)
+    Rails.configuration.command_bus.call(command)
   end
 end
 
