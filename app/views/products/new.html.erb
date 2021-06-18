@@ -1,0 +1,14 @@
+<h1>New Product</h1>
+
+<%= form_tag({controller: "products", action: "create"}, method: "post") do %>
+  <%= hidden_field_tag(:product_uid, @product_uid) %>
+
+  <p>Name:
+    <%= text_field_tag :name %>
+  </p>
+  <p>Price:
+    <%= number_field_tag :price, nil, min: 0, step: 0.01 %>
+  </p>
+
+  <%= submit_tag("Create product", class: "btn btn-primary") %>
+<% end %>

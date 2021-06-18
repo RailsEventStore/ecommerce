@@ -1,0 +1,25 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Products</h1>
+
+<table class="table">
+  <thead>
+  <tr>
+    <th>Name</th>
+    <th>Price</th>
+  </tr>
+  </thead>
+
+  <tbody>
+  <% @products.each do |order| %>
+    <tr>
+      <td><%= order.name %></td>
+      <td><%= number_to_currency order.price %></td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Product', new_product_path, class: "btn btn-primary" %>

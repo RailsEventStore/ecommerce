@@ -32,6 +32,8 @@ class Configuration
 
     command_bus.register(Pricing::SetPrice, Pricing::SetPriceHandler.new)
 
+    command_bus.register(ProductCatalog::RegisterProduct, ProductCatalog::ProductRegistrationHandler.new)
+
     event_store.subscribe(ProductCatalog::AssignPriceToProduct.new, to: [Pricing::PriceSet])
   end
 end
