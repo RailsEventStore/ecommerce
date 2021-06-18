@@ -12,6 +12,7 @@ Rails.application.routes.draw do
       post :pay
     end
   end
+  resources :products, only: [:new, :create, :index]
 
   mount RailsEventStore::Browser => '/res'
 end
