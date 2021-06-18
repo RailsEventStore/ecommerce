@@ -4,7 +4,7 @@ module ProductCatalog
 
     self.table_name = "products"
 
-    def register name
+    def register(name)
       raise AlreadyRegistered unless new_record?
       self.name = name
     end

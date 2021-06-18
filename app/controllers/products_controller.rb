@@ -21,19 +21,19 @@ class ProductsController < ApplicationController
 
   private
 
-  def create_product product_uid, name
+  def create_product(product_uid, name)
     command_bus.(create_product_cmd(product_uid, name))
   end
 
-  def set_product_price product_id, price
+  def set_product_price(product_id, price)
     command_bus.(set_product_price_cmd(product_id, price))
   end
 
-  def create_product_cmd product_uid, name
+  def create_product_cmd(product_uid, name)
     ProductCatalog::RegisterProduct.new(product_uid: product_uid, name: name)
   end
 
-  def set_product_price_cmd product_id, price
+  def set_product_price_cmd(product_id, price)
     Pricing::SetPrice.new(product_id: product_id, price: price)
   end
 end
