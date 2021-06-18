@@ -11,7 +11,7 @@ module Ordering
       stream = "Ordering::Order$#{aggregate_id}"
       product = ProductCatalog::Product.create(name: 'test')
       arrange(
-        AddItemToBasket.new(order_id: aggregate_id, product_id: product.id)
+        Pricing::AddItemToBasket.new(order_id: aggregate_id, product_id: product.id)
       )
 
       assert_events(stream, OrderExpired.new(data: { order_id: aggregate_id })) do
@@ -25,7 +25,7 @@ module Ordering
       product = ProductCatalog::Product.create(name: 'test')
       customer = Customer.create(name: 'dummy')
       arrange(
-        AddItemToBasket.new(order_id: aggregate_id, product_id: product.id),
+        Pricing::AddItemToBasket.new(order_id: aggregate_id, product_id: product.id),
         SubmitOrder.new(
           order_id: aggregate_id,
           order_number: '2018/12/1',
@@ -44,7 +44,7 @@ module Ordering
       product = ProductCatalog::Product.create(name: 'test')
       customer = Customer.create(name: 'dummy')
       arrange(
-        AddItemToBasket.new(order_id: aggregate_id, product_id: product.id),
+        Pricing::AddItemToBasket.new(order_id: aggregate_id, product_id: product.id),
         SubmitOrder.new(
           order_id: aggregate_id,
           order_number: '2018/12/1',

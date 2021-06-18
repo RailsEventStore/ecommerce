@@ -23,12 +23,12 @@ class OrdersController < ApplicationController
   end
 
   def add_item
-    command_bus.(Ordering::AddItemToBasket.new(order_id: params[:id], product_id: params[:product_id]))
+    command_bus.(Pricing::AddItemToBasket.new(order_id: params[:id], product_id: params[:product_id]))
     redirect_to edit_order_path(params[:id])
   end
 
   def remove_item
-    command_bus.(Ordering::RemoveItemFromBasket.new(order_id: params[:id], product_id: params[:product_id]))
+    command_bus.(Pricing::RemoveItemFromBasket.new(order_id: params[:id], product_id: params[:product_id]))
     redirect_to edit_order_path(params[:id])
   end
 

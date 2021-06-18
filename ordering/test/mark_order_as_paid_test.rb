@@ -10,7 +10,7 @@ module Ordering
       aggregate_id = SecureRandom.uuid
       product = ProductCatalog::Product.create(name: 'test')
       arrange(
-        AddItemToBasket.new(order_id: aggregate_id, product_id: product.id)
+        Pricing::AddItemToBasket.new(order_id: aggregate_id, product_id: product.id)
       )
 
       assert_raises(Order::NotSubmitted) do
@@ -29,7 +29,7 @@ module Ordering
       product = ProductCatalog::Product.create(name: 'test')
       customer = Customer.create(name: 'dummy')
       arrange(
-        AddItemToBasket.new(order_id: aggregate_id, product_id: product.id),
+        Pricing::AddItemToBasket.new(order_id: aggregate_id, product_id: product.id),
         SubmitOrder.new(
           order_id: aggregate_id,
           order_number: '2018/12/1',
@@ -62,7 +62,7 @@ module Ordering
       product = ProductCatalog::Product.create(name: 'test')
       customer = Customer.create(name: 'dummy')
       arrange(
-        AddItemToBasket.new(order_id: aggregate_id, product_id: product.id),
+        Pricing::AddItemToBasket.new(order_id: aggregate_id, product_id: product.id),
         SubmitOrder.new(
           order_id: aggregate_id,
           order_number: '2018/12/1',

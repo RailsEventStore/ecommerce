@@ -13,7 +13,7 @@ module Ordering
       product = ProductCatalog::Product.create(name: 'test')
       order_number = FakeNumberGenerator::FAKE_NUMBER
       arrange(
-        AddItemToBasket.new(order_id: aggregate_id, product_id: product.id)
+        Pricing::AddItemToBasket.new(order_id: aggregate_id, product_id: product.id)
       )
 
       assert_events(
@@ -46,7 +46,7 @@ module Ordering
       order_number = FakeNumberGenerator::FAKE_NUMBER
 
       arrange(
-        AddItemToBasket.new(order_id: aggregate_id, product_id: product.id),
+        Pricing::AddItemToBasket.new(order_id: aggregate_id, product_id: product.id),
         SubmitOrder.new(
           order_id: aggregate_id,
           order_number: order_number,
@@ -69,7 +69,7 @@ module Ordering
       customer = Customer.create(name: 'test')
       product = ProductCatalog::Product.create(name: 'test')
       arrange(
-        AddItemToBasket.new(order_id: aggregate_id, product_id: product.id),
+        Pricing::AddItemToBasket.new(order_id: aggregate_id, product_id: product.id),
         SetOrderAsExpired.new(order_id: aggregate_id)
       )
 

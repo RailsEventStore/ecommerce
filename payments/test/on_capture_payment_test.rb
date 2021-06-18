@@ -14,7 +14,7 @@ module Payments
       customer = Customer.create(name: 'test')
       Rails.configuration.payment_gateway.call.reset
       arrange(
-        Ordering::AddItemToBasket.new(order_id: order_id, product_id: product.id),
+        Pricing::AddItemToBasket.new(order_id: order_id, product_id: product.id),
         Ordering::SubmitOrder.new(order_id: order_id, customer_id: customer.id),
         AuthorizePayment.new(transaction_id: transaction_id, order_id: order_id)
       )

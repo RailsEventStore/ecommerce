@@ -1,13 +1,4 @@
 module Ordering
-  class OnAddItemToBasket
-    include CommandHandler
-
-    def call(command)
-      with_aggregate(Order, command.aggregate_id) do |order|
-        order.add_item(command.product_id)
-      end
-    end
-  end
 
   class OnCancelOrder
     include CommandHandler
@@ -29,15 +20,6 @@ module Ordering
     end
   end
 
-  class OnRemoveItemFromBasket
-    include CommandHandler
-
-    def call(command)
-      with_aggregate(Order, command.aggregate_id) do |order|
-        order.remove_item(command.product_id)
-      end
-    end
-  end
   class OnSetOrderAsExpired
     include CommandHandler
 
