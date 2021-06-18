@@ -1,7 +1,7 @@
 module Pricing
   class SetPrice < Command
     attribute :product_id, Types::Coercible::Integer
-    attribute :price, Types::Coercible::Integer
+    attribute :price, Types::Price
   end
 
   class SetPriceHandler
@@ -28,7 +28,7 @@ module Pricing
     end
 
     def set_price(price)
-      apply(PriceSet.new(data: {product_id: @id, price: price}))
+      apply(PriceSet.new(data: { product_id: @id, price: price }))
     end
 
     private
