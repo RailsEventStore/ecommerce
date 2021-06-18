@@ -16,5 +16,8 @@ end
   ['Developers Oriented Project Management', 39],
   ['Blogging for busy programmers', 29]
 ].each do |name_price_tuple|
-  ProductCatalog::Product.create(name: name_price_tuple[0], price: name_price_tuple[1])
+  product_uid = SecureRandom.uuid
+  command_bus = Rails.configuration.command_bus
+  product_id = command_bus.call(ProductCatalog::RegisterProduct.new(product_uid: product_uid, name: name_price_tuple[0]))
+  command_bus.call(Pricing::SetPrice.new(product_id: product_id, price: name_price_tuple[1]))
 end
