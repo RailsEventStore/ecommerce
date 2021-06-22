@@ -19,10 +19,7 @@ module Ordering
 
       assert_raises(Order::NotSubmitted) do
         act(
-          MarkOrderAsPaid.new(
-            order_id: aggregate_id,
-            transaction_id: SecureRandom.hex(16)
-          )
+          MarkOrderAsPaid.new(order_id: aggregate_id)
         )
       end
     end
@@ -45,21 +42,17 @@ module Ordering
         )
       )
 
-      transaction_id = SecureRandom.hex(16)
-
       assert_events(
         stream,
         OrderPaid.new(
           data: {
             order_id: aggregate_id,
-            transaction_id: transaction_id
           }
         )
       ) do
         act(
           MarkOrderAsPaid.new(
             order_id: aggregate_id,
-            transaction_id: transaction_id
           )
         )
       end
@@ -85,10 +78,7 @@ module Ordering
 
       assert_raises(Order::OrderHasExpired) do
         act(
-          MarkOrderAsPaid.new(
-            order_id: aggregate_id,
-            transaction_id: SecureRandom.hex(16)
-          )
+          MarkOrderAsPaid.new(order_id: aggregate_id)
         )
       end
     end

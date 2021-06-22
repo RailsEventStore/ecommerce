@@ -9,10 +9,9 @@ module Payments
     def test_authorize_publishes_event
       payment = Payment.new
       gateway = FakeGateway.new
-      payment.authorize(transaction_id, order_id, gateway, 20)
+      payment.authorize(order_id, gateway, 20)
       assert_changes(payment.unpublished_events, [
         PaymentAuthorized.new(data: {
-          transaction_id: transaction_id,
           order_id: order_id,
         })
       ])
@@ -21,13 +20,13 @@ module Payments
     def test_authorize_contacts_gateway
       payment = Payment.new
       gateway = FakeGateway.new
-      payment.authorize(transaction_id, order_id, gateway, 20)
-      assert(gateway.authorized_transactions.include?([transaction_id, 20]))
+      payment.authorize(order_id, gateway, 20)
+      assert(gateway.authorized_transactions.include?([order_id, 20]))
     end
 
     def test_should_not_allow_for_double_authorization
       assert_raises(Payment::AlreadyAuthorized) do
-        authorized_payment.authorize(transaction_id, order_id, nil, 20)
+        authorized_payment.authorize(order_id, nil, 20)
       end
     end
 
@@ -39,7 +38,6 @@ module Payments
       actual = payment.unpublished_events.to_a - before
       assert_changes(actual, [
         PaymentCaptured.new(data: {
-          transaction_id: transaction_id,
           order_id: order_id,
         })
       ])
@@ -65,7 +63,6 @@ module Payments
       actual = payment.unpublished_events.to_a - before
       assert_changes(actual, [
         PaymentReleased.new(data: {
-          transaction_id: transaction_id,
           order_id: order_id,
         })
       ])
@@ -90,9 +87,6 @@ module Payments
     end
 
     private
-    def transaction_id
-      @transaction_id ||= SecureRandom.hex(16)
-    end
 
     def order_id
       @order_id ||= SecureRandom.uuid
@@ -102,7 +96,6 @@ module Payments
       Payment.new.tap do |payment|
         payment.apply(
           PaymentAuthorized.new(data: {
-            transaction_id: transaction_id,
             order_id: order_id,
           })
         )
@@ -113,7 +106,6 @@ module Payments
       authorized_payment.tap do |payment|
         payment.apply(
           PaymentCaptured.new(data: {
-            transaction_id: transaction_id,
             order_id: order_id,
           })
         )
@@ -124,7 +116,6 @@ module Payments
       captured_payment.tap do |payment|
         payment.apply(
           PaymentReleased.new(data: {
-            transaction_id: transaction_id,
             order_id: order_id,
           })
         )

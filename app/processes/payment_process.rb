@@ -13,7 +13,7 @@ class PaymentProcess
   private
 
   def release_payment(state)
-    bus.call(Payments::ReleasePayment.new(transaction_id: state.transaction_id))
+    bus.call(Payments::ReleasePayment.new(order_id: state.order_id))
   end
 
   attr_reader :store, :bus
@@ -36,13 +36,12 @@ class PaymentProcess
       @order = :draft
       @payment = :none
     end
-    attr_reader :transaction_id, :order_id
+    attr_reader :order_id
 
     def call(event)
       case event
       when Payments::PaymentAuthorized
         @payment = :authorized
-        @transaction_id = event.data.fetch(:transaction_id)
       when Payments::PaymentReleased
         @payment = :released
       when Ordering::OrderSubmitted

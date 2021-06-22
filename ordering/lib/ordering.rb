@@ -15,7 +15,7 @@ module Ordering
 
     def call(command)
       with_aggregate(Order, command.aggregate_id) do |order|
-        order.confirm(command.transaction_id)
+        order.confirm
       end
     end
   end

@@ -40,7 +40,7 @@ class PaymentProcessTest < ActiveSupport::TestCase
       process.call(event)
     end
     assert_equal(fake.received,
-      Payments::ReleasePayment.new(transaction_id: transaction_id)
+      Payments::ReleasePayment.new(order_id: order_id)
     )
   end
 
@@ -65,10 +65,6 @@ class PaymentProcessTest < ActiveSupport::TestCase
     def call(command)
       @received = command
     end
-  end
-
-  def transaction_id
-    @transaction_id ||= SecureRandom.hex(16)
   end
 
   def order_id
@@ -97,19 +93,17 @@ class PaymentProcessTest < ActiveSupport::TestCase
   end
 
   def order_paid
-    Ordering::OrderPaid.new(data: {order_id: order_id, transaction_id: transaction_id})
+    Ordering::OrderPaid.new(data: {order_id: order_id})
   end
 
   def payment_authorized
     Payments::PaymentAuthorized.new(data: {
-      transaction_id: transaction_id,
       order_id: order_id
     })
   end
 
   def payment_released
     Payments::PaymentReleased.new(data: {
-      transaction_id: transaction_id,
       order_id: order_id
     })
   end

@@ -61,10 +61,7 @@ module Ordering
           order_number: '2018/12/1',
           customer_id: customer.id
         ),
-        MarkOrderAsPaid.new(
-          order_id: aggregate_id,
-          transaction_id: SecureRandom.hex(16)
-        )
+        MarkOrderAsPaid.new(order_id: aggregate_id)
       )
 
       assert_raises(Order::NotSubmitted) do

@@ -7,11 +7,10 @@ module Payments
     AlreadyCaptured = Class.new(StandardError)
     AlreadyReleased = Class.new(StandardError)
 
-    def authorize(transaction_id, order_id, gateway, amount)
+    def authorize(order_id, gateway, amount)
       raise AlreadyAuthorized if authorized?
-      gateway.authorize_transaction(transaction_id, amount)
+      gateway.authorize_transaction(order_id, amount)
       apply(PaymentAuthorized.new(data: {
-        transaction_id: transaction_id,
         order_id: order_id
       }))
     end
@@ -20,7 +19,6 @@ module Payments
       raise AlreadyCaptured if captured?
       raise NotAuthorized unless authorized?
       apply(PaymentCaptured.new(data: {
-        transaction_id: @transaction_id,
         order_id: @order_id
       }))
     end
@@ -30,7 +28,6 @@ module Payments
       raise AlreadyCaptured if captured?
       raise NotAuthorized unless authorized?
       apply(PaymentReleased.new(data: {
-        transaction_id: @transaction_id,
         order_id: @order_id
       }))
     end
@@ -39,7 +36,6 @@ module Payments
 
     on PaymentAuthorized do |event|
       @state = :authorized
-      @transaction_id = event.data.fetch(:transaction_id)
       @order_id = event.data.fetch(:order_id)
     end
 

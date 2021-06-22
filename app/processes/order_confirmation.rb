@@ -8,10 +8,7 @@ class OrderConfirmation
   def call(event)
     state = build_state(event)
     if state.confirm_order?
-      bus.call(Ordering::MarkOrderAsPaid.new(
-        order_id: state.order_id,
-        transaction_id: event.data.fetch(:transaction_id))
-      )
+      bus.call(Ordering::MarkOrderAsPaid.new(order_id: state.order_id))
     end
   end
 
@@ -19,7 +16,7 @@ class OrderConfirmation
   attr_reader :store, :bus
 
   def build_state(event)
-    stream_name = "OrderConfirmation$#{event.data.fetch(:transaction_id)}"
+    stream_name = "OrderConfirmation$#{event.data.fetch(:order_id)}"
     past = store.read.stream(stream_name).to_a
     last_stored = past.size - 1
     store.link(event.event_id, stream_name: stream_name, expected_version: last_stored)
@@ -36,7 +33,7 @@ class OrderConfirmation
       @order_id = nil
       @payment  = nil
     end
-    attr_reader :transaction_id, :order_id
+    attr_reader :order_id
 
     def call(event)
       case event

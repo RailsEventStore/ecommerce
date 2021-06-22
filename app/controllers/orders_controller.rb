@@ -47,9 +47,8 @@ class OrdersController < ApplicationController
 
   def pay
     ActiveRecord::Base.transaction do
-      transaction_id = SecureRandom.hex(16)
-      authorize_payment(params[:id], transaction_id)
-      capture_payment(transaction_id)
+      authorize_payment(params[:id])
+      capture_payment(params[:id])
       flash[:notice] = "Order paid successfully."
     rescue Payments::Payment::AlreadyAuthorized
       flash[:notice] = "Payment was already authorized."
@@ -65,22 +64,21 @@ class OrdersController < ApplicationController
 
   private
 
-  def authorize_payment(order_id, transaction_id)
-    command_bus.call(authorize_payment_cmd(order_id, transaction_id))
+  def authorize_payment(order_id)
+    command_bus.call(authorize_payment_cmd(order_id))
   end
 
-  def capture_payment(transaction_id)
-    command_bus.call(capture_payment_cmd(transaction_id))
+  def capture_payment(order_id)
+    command_bus.call(capture_payment_cmd(order_id))
   end
 
-  def authorize_payment_cmd(order_id, transaction_id)
+  def authorize_payment_cmd(order_id)
     Payments::AuthorizePayment.new(
       order_id: order_id,
-      transaction_id: transaction_id
     )
   end
 
-  def capture_payment_cmd(transaction_id)
-    Payments::CapturePayment.new(transaction_id: transaction_id)
+  def capture_payment_cmd(order_id)
+    Payments::CapturePayment.new(order_id: order_id)
   end
 end
