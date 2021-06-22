@@ -23,8 +23,17 @@ class OrdersTest < ActionDispatch::IntegrationTest
     shopify = Customer.create(name: "Shopify")
     order_id = "288c590d-b7dc-429f-8d82-79ebf2d5aabc"
     another_order_id = "1111590d-b7dc-429f-8d82-79ebf2d5aabc"
-    async_remote = ProductCatalog::Product.create(name: "Async Remote", price: 39)
-    fearless = ProductCatalog::Product.create(name: "Fearless Refactoring", price: 49)
+
+    product_uid = SecureRandom.uuid
+    product_id = run_command(ProductCatalog::RegisterProduct.new(product_uid: product_uid, name: "Async Remote"))
+    run_command(Pricing::SetPrice.new(product_id: product_id, price: 39))
+    async_remote = ProductCatalog::Product.find_by(id: product_id)
+
+    product_uid = SecureRandom.uuid
+    product_id = run_command(ProductCatalog::RegisterProduct.new(product_uid: product_uid, name: "Fearless Refactoring"))
+    run_command(Pricing::SetPrice.new(product_id: product_id, price: 49))
+    fearless = ProductCatalog::Product.find_by(id: product_id)
+
     post "/orders", params:
       {
         "authenticity_token"=>"[FILTERED]",
@@ -63,7 +72,11 @@ class OrdersTest < ActionDispatch::IntegrationTest
 
   def test_expiring_orders
     order_id = "388c590d-b7dc-429f-8d82-79ebf2d5aabc"
-    async_remote = ProductCatalog::Product.create(name: "Async Remote", price: 39)
+    product_uid = SecureRandom.uuid
+    product_id = run_command(ProductCatalog::RegisterProduct.new(product_uid: product_uid, name: "Async Remote"))
+    run_command(Pricing::SetPrice.new(product_id: product_id, price: 39))
+    async_remote = ProductCatalog::Product.find_by(id: product_id)
+
     post "/orders/#{order_id}/add_item?product_id=#{async_remote.id}"
     follow_redirect!
     assert_select("td", "$39.00")
@@ -77,7 +90,11 @@ class OrdersTest < ActionDispatch::IntegrationTest
   def test_cancel
     shopify = Customer.create(name: "Shopify")
     order_id = "288c590d-b7dc-429f-8d82-79ebf2d5aabc"
-    async_remote = ProductCatalog::Product.create(name: "Async Remote", price: 39)
+    product_uid = SecureRandom.uuid
+    product_id = run_command(ProductCatalog::RegisterProduct.new(product_uid: product_uid, name: "Async Remote"))
+    run_command(Pricing::SetPrice.new(product_id: product_id, price: 39))
+    async_remote = ProductCatalog::Product.find_by(id: product_id)
+
     get "/"
     get "/orders/new"
     post "/orders/#{order_id}/add_item?product_id=#{async_remote.id}"

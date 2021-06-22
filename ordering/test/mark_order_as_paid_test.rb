@@ -8,9 +8,13 @@ module Ordering
 
     test 'draft order could not be marked as paid' do
       aggregate_id = SecureRandom.uuid
-      product = ProductCatalog::Product.create(name: 'test')
+
+      product_uid = SecureRandom.uuid
+      product_id = run_command(ProductCatalog::RegisterProduct.new(product_uid: product_uid, name: "test"))
+      run_command(Pricing::SetPrice.new(product_id: product_id, price: 20))
+
       arrange(
-        Pricing::AddItemToBasket.new(order_id: aggregate_id, product_id: product.id)
+        Pricing::AddItemToBasket.new(order_id: aggregate_id, product_id: product_id)
       )
 
       assert_raises(Order::NotSubmitted) do
@@ -26,10 +30,14 @@ module Ordering
     test 'submitted order will be marked as paid' do
       aggregate_id = SecureRandom.uuid
       stream = "Ordering::Order$#{aggregate_id}"
-      product = ProductCatalog::Product.create(name: 'test')
+
+      product_uid = SecureRandom.uuid
+      product_id = run_command(ProductCatalog::RegisterProduct.new(product_uid: product_uid, name: "test"))
+      run_command(Pricing::SetPrice.new(product_id: product_id, price: 20))
+
       customer = Customer.create(name: 'dummy')
       arrange(
-        Pricing::AddItemToBasket.new(order_id: aggregate_id, product_id: product.id),
+        Pricing::AddItemToBasket.new(order_id: aggregate_id, product_id: product_id),
         SubmitOrder.new(
           order_id: aggregate_id,
           order_number: '2018/12/1',
@@ -59,10 +67,14 @@ module Ordering
 
     test 'expired order cannot be marked as paid' do
       aggregate_id = SecureRandom.uuid
-      product = ProductCatalog::Product.create(name: 'test')
+
+      product_uid = SecureRandom.uuid
+      product_id = run_command(ProductCatalog::RegisterProduct.new(product_uid: product_uid, name: "test"))
+      run_command(Pricing::SetPrice.new(product_id: product_id, price: 20))
+
       customer = Customer.create(name: 'dummy')
       arrange(
-        Pricing::AddItemToBasket.new(order_id: aggregate_id, product_id: product.id),
+        Pricing::AddItemToBasket.new(order_id: aggregate_id, product_id: product_id),
         SubmitOrder.new(
           order_id: aggregate_id,
           order_number: '2018/12/1',

@@ -9,18 +9,20 @@ module Ordering
     test 'item is added to draft order' do
       aggregate_id = SecureRandom.uuid
       stream = "Pricing::Order$#{aggregate_id}"
-      product = ProductCatalog::Product.create(name: 'test')
+      product_uid = SecureRandom.uuid
+      product_id = run_command(ProductCatalog::RegisterProduct.new(product_uid: product_uid, name: "Async Remote"))
+      run_command(Pricing::SetPrice.new(product_id: product_id, price: 39))
 
       assert_events(
         stream,
         Pricing::ItemAddedToBasket.new(
           data: {
             order_id: aggregate_id,
-            product_id: product.id
+            product_id: product_id
           }
         )
       ) do
-        act(Pricing::AddItemToBasket.new(order_id: aggregate_id, product_id: product.id))
+        act(Pricing::AddItemToBasket.new(order_id: aggregate_id, product_id: product_id))
       end
     end
   end

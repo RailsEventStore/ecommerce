@@ -8,15 +8,19 @@ module Orders
     test 'add new item' do
       event_store = Rails.configuration.event_store
 
-      product = ProductCatalog::Product.create(name: 'something', price: 49)
+
+      product_uid = SecureRandom.uuid
+      product_id = run_command(ProductCatalog::RegisterProduct.new(product_uid: product_uid, name: "test"))
+      run_command(Pricing::SetPrice.new(product_id: product_id, price: 49))
+
       order_id = SecureRandom.uuid
 
-      event_store.publish(Pricing::ItemAddedToBasket.new(data: {order_id: order_id, product_id: product.id}))
+      event_store.publish(Pricing::ItemAddedToBasket.new(data: {order_id: order_id, product_id: product_id}))
 
       assert_equal(OrderLine.count, 1)
       order_line = OrderLine.find_by(order_uid: order_id)
-      assert_equal(order_line.product_id, product.id)
-      assert_equal(order_line.product_name, 'something')
+      assert_equal(order_line.product_id, product_id)
+      assert_equal(order_line.product_name, 'test')
       assert_equal(order_line.quantity , 1)
       assert_equal(order_line.price , 49)
       assert_equal(order_line.value , 49)
@@ -31,16 +35,20 @@ module Orders
     test 'add the same item 2nd time' do
       event_store = Rails.configuration.event_store
 
-      product = ProductCatalog::Product.create(name: 'something', price: 49)
-      order_id = SecureRandom.uuid
-      event_store.publish(Pricing::ItemAddedToBasket.new(data: {order_id: order_id, product_id: product.id}))
 
-      event_store.publish(Pricing::ItemAddedToBasket.new(data: {order_id: order_id, product_id: product.id}))
+      product_uid = SecureRandom.uuid
+      product_id = run_command(ProductCatalog::RegisterProduct.new(product_uid: product_uid, name: "test"))
+      run_command(Pricing::SetPrice.new(product_id: product_id, price: 49))
+
+      order_id = SecureRandom.uuid
+      event_store.publish(Pricing::ItemAddedToBasket.new(data: {order_id: order_id, product_id: product_id}))
+
+      event_store.publish(Pricing::ItemAddedToBasket.new(data: {order_id: order_id, product_id: product_id}))
 
       assert_equal(OrderLine.count, 1)
       order_line = OrderLine.find_by(order_uid: order_id)
-      assert_equal(order_line.product_id, product.id)
-      assert_equal(order_line.product_name, 'something')
+      assert_equal(order_line.product_id, product_id)
+      assert_equal(order_line.product_name, 'test')
       assert_equal(order_line.quantity, 2)
       assert_equal(order_line.price, 49)
       assert_equal(order_line.value, 98)
@@ -55,22 +63,28 @@ module Orders
     test 'add another item' do
       event_store = Rails.configuration.event_store
 
-      product = ProductCatalog::Product.create(name: 'something')
-      another_product = ProductCatalog::Product.create(name: '2nd one')
-      order_id = SecureRandom.uuid
-      event_store.publish(Pricing::ItemAddedToBasket.new(data: {order_id: order_id, product_id: product.id}))
+      product_uid = SecureRandom.uuid
+      product_id = run_command(ProductCatalog::RegisterProduct.new(product_uid: product_uid, name: "test"))
+      run_command(Pricing::SetPrice.new(product_id: product_id, price: 20))
 
-      event_store.publish(Pricing::ItemAddedToBasket.new(data: {order_id: order_id, product_id: another_product.id}))
+      another_product_uid = SecureRandom.uuid
+      another_product_id = run_command(ProductCatalog::RegisterProduct.new(product_uid: another_product_uid, name: "2nd one"))
+      run_command(Pricing::SetPrice.new(product_id: another_product_id, price: 20))
+
+      order_id = SecureRandom.uuid
+      event_store.publish(Pricing::ItemAddedToBasket.new(data: {order_id: order_id, product_id: product_id}))
+
+      event_store.publish(Pricing::ItemAddedToBasket.new(data: {order_id: order_id, product_id: another_product_id}))
 
       order = Orders::Order.find_by(uid: order_id)
       assert_equal(order.order_lines.count, 2)
       order_lines = order.order_lines
-      assert_equal([product.id, another_product.id], order_lines.map(&:product_id))
-      assert_equal(order_lines[0].product_id, product.id)
-      assert_equal(order_lines[0].product_name, 'something')
+      assert_equal([product_id, another_product_id], order_lines.map(&:product_id))
+      assert_equal(order_lines[0].product_id, product_id)
+      assert_equal(order_lines[0].product_name, 'test')
       assert_equal(order_lines[0].quantity , 1)
 
-      assert_equal(order_lines[1].product_id, another_product.id)
+      assert_equal(order_lines[1].product_id, another_product_id)
       assert_equal(order_lines[1].product_name, '2nd one')
       assert_equal(order_lines[1].quantity , 1)
 

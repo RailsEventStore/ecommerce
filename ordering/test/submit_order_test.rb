@@ -10,10 +10,13 @@ module Ordering
       aggregate_id = SecureRandom.uuid
       stream = "Ordering::Order$#{aggregate_id}"
       customer = Customer.create(name: 'test')
-      product = ProductCatalog::Product.create(name: 'test')
+      product_uid = SecureRandom.uuid
+      product_id = run_command(ProductCatalog::RegisterProduct.new(product_uid: product_uid, name: "Async Remote"))
+      run_command(Pricing::SetPrice.new(product_id: product_id, price: 39))
+
       order_number = FakeNumberGenerator::FAKE_NUMBER
       arrange(
-        Pricing::AddItemToBasket.new(order_id: aggregate_id, product_id: product.id)
+        Pricing::AddItemToBasket.new(order_id: aggregate_id, product_id: product_id)
       )
 
       assert_events(
@@ -41,12 +44,15 @@ module Ordering
     test 'already created order could not be created again' do
       aggregate_id = SecureRandom.uuid
       customer = Customer.create(name: 'test')
-      product = ProductCatalog::Product.create(name: 'test')
+      product_uid = SecureRandom.uuid
+      product_id = run_command(ProductCatalog::RegisterProduct.new(product_uid: product_uid, name: "Async Remote"))
+      run_command(Pricing::SetPrice.new(product_id: product_id, price: 39))
+
       another_customer = Customer.create(name: 'another')
       order_number = FakeNumberGenerator::FAKE_NUMBER
 
       arrange(
-        Pricing::AddItemToBasket.new(order_id: aggregate_id, product_id: product.id),
+        Pricing::AddItemToBasket.new(order_id: aggregate_id, product_id: product_id),
         SubmitOrder.new(
           order_id: aggregate_id,
           order_number: order_number,
@@ -67,9 +73,12 @@ module Ordering
     test 'expired order could not be created' do
       aggregate_id = SecureRandom.uuid
       customer = Customer.create(name: 'test')
-      product = ProductCatalog::Product.create(name: 'test')
+      product_uid = SecureRandom.uuid
+      product_id = run_command(ProductCatalog::RegisterProduct.new(product_uid: product_uid, name: "Async Remote"))
+      run_command(Pricing::SetPrice.new(product_id: product_id, price: 39))
+
       arrange(
-        Pricing::AddItemToBasket.new(order_id: aggregate_id, product_id: product.id),
+        Pricing::AddItemToBasket.new(order_id: aggregate_id, product_id: product_id),
         SetOrderAsExpired.new(order_id: aggregate_id)
       )
 

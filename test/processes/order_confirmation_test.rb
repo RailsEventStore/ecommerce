@@ -5,10 +5,12 @@ class OrderConfirmationTest < ActiveSupport::TestCase
   cover 'OrderConfirmation'
 
   def test_authorized_is_not_enough_to_confirm
-    product  = ProductCatalog::Product.create(name: 'test', price: 20)
+    product_uid = SecureRandom.uuid
+    product_id = run_command(ProductCatalog::RegisterProduct.new(product_uid: product_uid, name: "Async Remote"))
+    run_command(Pricing::SetPrice.new(product_id: product_id, price: 39))
     customer = Customer.create(name: 'test')
     [
-      Pricing::AddItemToBasket.new(order_id: order_id, product_id: product.id),
+      Pricing::AddItemToBasket.new(order_id: order_id, product_id: product_id),
       Ordering::SubmitOrder.new(order_id: order_id, customer_id: customer.id),
       Payments::AuthorizePayment.new(transaction_id: transaction_id, order_id: order_id)
     ].each do |cmd|
@@ -18,10 +20,13 @@ class OrderConfirmationTest < ActiveSupport::TestCase
   end
 
   def test_payment_confirms_order
-    product  = ProductCatalog::Product.create(name: 'test', price: 20)
+    product_uid = SecureRandom.uuid
+    product_id = run_command(ProductCatalog::RegisterProduct.new(product_uid: product_uid, name: "Async Remote"))
+    run_command(Pricing::SetPrice.new(product_id: product_id, price: 39))
+
     customer = Customer.create(name: 'test')
     [
-      Pricing::AddItemToBasket.new(order_id: order_id, product_id: product.id),
+      Pricing::AddItemToBasket.new(order_id: order_id, product_id: product_id),
       Ordering::SubmitOrder.new(order_id: order_id, customer_id: customer.id),
       Payments::AuthorizePayment.new(transaction_id: transaction_id, order_id: order_id),
       Payments::CapturePayment.new(transaction_id: transaction_id)
