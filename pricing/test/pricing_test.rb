@@ -16,12 +16,13 @@ module Pricing
     end
 
     def test_calculates_total_value
-      set_price(1, 20)
-      set_price(2, 30)
-      set_price(3, 40)
+      product_1_id  = run_command(ProductCatalog::RegisterProduct.new(product_uid: SecureRandom.uuid, name: "test"))
+      product_2_id  = run_command(ProductCatalog::RegisterProduct.new(product_uid: SecureRandom.uuid, name: "test2"))
+      set_price(product_1_id, 20)
+      set_price(product_2_id, 30)
       order_id = SecureRandom.uuid
-      add_item(order_id, 1)
-      add_item(order_id, 2)
+      add_item(order_id, product_1_id)
+      add_item(order_id, product_2_id)
       stream = "Pricing::Order$#{order_id}"
       assert_events(stream, OrderTotalValueCalculated.new(data: { order_id: order_id, amount: 50 })) do
         calculate_total_value(order_id)
