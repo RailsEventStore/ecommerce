@@ -13,6 +13,11 @@ module Pricing
     alias :aggregate_id :order_id
   end
 
+  class CalculateTotalValue < Command
+    attribute :order_id, Types::UUID
+    alias :aggregate_id :order_id
+  end
+
   class SetPrice < Command
     attribute :product_id, Types::Coercible::Integer
     attribute :price, Types::Price
@@ -60,8 +65,21 @@ module Pricing
     end
   end
 
-  class PriceSet < RailsEventStore::Event
+  class OnCalculateTotalValue
+    include CommandHandler
 
+    def call(command)
+      pricing_catalog = PricingCatalog.new(Rails.configuration.event_store)
+      with_aggregate(Order, command.aggregate_id) do |order|
+        order.calculate_total_value(pricing_catalog)
+      end
+    end
+  end
+
+  class PriceSet < RailsEventStore::Event
+  end
+
+  class OrderTotalValueCalculated < RailsEventStore::Event
   end
 
   class Order
@@ -69,6 +87,7 @@ module Pricing
 
     def initialize(id)
       @id = id
+      @product_ids = []
     end
 
     def add_item(product_id)
@@ -79,10 +98,23 @@ module Pricing
       apply ItemRemovedFromBasket.new(data: {order_id: @id, product_id: product_id})
     end
 
+    def calculate_total_value(pricing_catalog)
+      total_value = @product_ids.sum do |product_id|
+        pricing_catalog.price_for(product_id)
+      end
+
+      apply(OrderTotalValueCalculated.new(data: {order_id: @id, amount: total_value}))
+    end
+
     on ItemAddedToBasket do |event|
+      @product_ids << event.data.fetch(:product_id)
     end
 
     on ItemRemovedFromBasket do |event|
+      @product_ids.delete(event.data.fetch(:product_id))
+    end
+
+    on OrderTotalValueCalculated do |event|
     end
   end
 
@@ -100,6 +132,16 @@ module Pricing
     private
 
     def apply_price_set(_)
+    end
+  end
+
+  class PricingCatalog
+    def initialize(event_store)
+      @event_store = event_store
+    end
+
+    def price_for(product_id)
+      @event_store.read.of_type(PriceSet).to_a.filter{|e| e.data.fetch(:product_id).eql?(product_id)}.last.data.fetch(:price)
     end
   end
 end

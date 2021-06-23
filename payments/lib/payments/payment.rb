@@ -7,9 +7,13 @@ module Payments
     AlreadyCaptured = Class.new(StandardError)
     AlreadyReleased = Class.new(StandardError)
 
-    def authorize(order_id, gateway, amount)
+    def set_amount(order_id, amount)
+      apply(PaymentAmountSet.new(data: {order_id: order_id, amount: amount}))
+    end
+
+    def authorize(order_id, gateway)
       raise AlreadyAuthorized if authorized?
-      gateway.authorize_transaction(order_id, amount)
+      gateway.authorize_transaction(order_id, @amount)
       apply(PaymentAuthorized.new(data: {
         order_id: order_id
       }))
@@ -33,6 +37,10 @@ module Payments
     end
 
     private
+
+    on PaymentAmountSet do |event|
+      @amount = event.data.fetch(:amount)
+    end
 
     on PaymentAuthorized do |event|
       @state = :authorized
