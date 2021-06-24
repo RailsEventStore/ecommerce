@@ -3,7 +3,7 @@ source 'https://rubygems.org'
 ruby '2.7.2'
 
 gem 'rails', '~> 6.1.0'
-gem 'puma', '~> 5.0'
+gem 'puma', '~> 5.3'
 gem 'sass-rails', '>= 6'
 gem 'webpacker', '~> 5.0'
 gem 'turbolinks', '~> 5'

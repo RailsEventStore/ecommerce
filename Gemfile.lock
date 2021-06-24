@@ -192,7 +192,7 @@ GEM
     parser (3.0.0.0)
       ast (~> 2.4.1)
     pg (1.2.3)
-    puma (5.1.1)
+    puma (5.3.1)
       nio4r (~> 2.0)
     racc (1.5.2)
     rack (2.2.3)
@@ -345,7 +345,7 @@ DEPENDENCIES
   mutant-license!
   mutant-minitest
   pg
-  puma (~> 5.0)
+  puma (~> 5.3)
   rails (~> 6.1.0)
   rails_event_store (~> 2.1.0)
   ruby_event_store-transformations
