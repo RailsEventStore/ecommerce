@@ -15,6 +15,7 @@ gem 'dry-struct'
 gem 'dry-types'
 gem 'skylight'
 gem 'rails_event_store', '~> 2.1.0', require: %w[aggregate_root rails_event_store]
+gem 'ruby_event_store-transformations'
 gem 'activeadmin'
 
 group :development do
