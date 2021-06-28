@@ -6,6 +6,8 @@
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
 
+command_bus = Rails.configuration.command_bus
+
 ['BigCorp Ltd', 'MegaTron Gmbh', 'Arkency'].each do |name|
   command_bus.call(Crm::RegisterCustomer.new(customer_id: SecureRandom.uuid, name: name))
 end
@@ -17,7 +19,6 @@ end
   ['Blogging for busy programmers', 29]
 ].each do |name_price_tuple|
   product_id = SecureRandom.uuid
-  command_bus = Rails.configuration.command_bus
   command_bus.call(ProductCatalog::RegisterProduct.new(product_id: product_id, name: name_price_tuple[0]))
   command_bus.call(Pricing::SetPrice.new(product_id: product_id, price: name_price_tuple[1]))
 end
