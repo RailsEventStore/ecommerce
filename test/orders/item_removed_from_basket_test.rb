@@ -8,15 +8,16 @@ module Orders
     test 'remove item when quantity > 1' do
       event_store = Rails.configuration.event_store
 
-      product_uid = SecureRandom.uuid
-      product_id = run_command(ProductCatalog::RegisterProduct.new(product_uid: product_uid, name: "something"))
+      product_id = SecureRandom.uuid
+      run_command(ProductCatalog::RegisterProduct.new(product_id: product_id, name: "something"))
       run_command(Pricing::SetPrice.new(product_id: product_id, price: 20))
-      customer = Customer.create(name: 'dummy')
+      customer_id = SecureRandom.uuid
+      run_command(Crm::RegisterCustomer.new(customer_id: customer_id, name: 'dummy'))
       order_id = SecureRandom.uuid
       order_number = Ordering::FakeNumberGenerator::FAKE_NUMBER
       event_store.publish(Pricing::ItemAddedToBasket.new(data: {order_id: order_id, product_id: product_id}))
       event_store.publish(Pricing::ItemAddedToBasket.new(data: {order_id: order_id, product_id: product_id}))
-      event_store.publish(Ordering::OrderSubmitted.new(data: {order_id: order_id, order_number: order_number, customer_id: customer.id}))
+      event_store.publish(Ordering::OrderSubmitted.new(data: {order_id: order_id, order_number: order_number, customer_id: customer_id}))
 
       event_store.publish(Pricing::ItemRemovedFromBasket.new(data: {order_id: order_id, product_id: product_id}))
 
@@ -30,14 +31,15 @@ module Orders
     test 'remove item when quantity = 1' do
       event_store = Rails.configuration.event_store
 
-      product_uid = SecureRandom.uuid
-      product_id = run_command(ProductCatalog::RegisterProduct.new(product_uid: product_uid, name: "test"))
+      product_id = SecureRandom.uuid
+      run_command(ProductCatalog::RegisterProduct.new(product_id: product_id, name: "test"))
       run_command(Pricing::SetPrice.new(product_id: product_id, price: 20))
-      customer = Customer.create(name: 'dummy')
+      customer_id = SecureRandom.uuid
+      run_command(Crm::RegisterCustomer.new(customer_id: customer_id, name: 'dummy'))
       order_id = SecureRandom.uuid
       order_number = Ordering::FakeNumberGenerator::FAKE_NUMBER
       event_store.publish(Pricing::ItemAddedToBasket.new(data: {order_id: order_id, product_id: product_id}))
-      event_store.publish(Ordering::OrderSubmitted.new(data: {order_id: order_id, order_number: order_number, customer_id: customer.id}))
+      event_store.publish(Ordering::OrderSubmitted.new(data: {order_id: order_id, order_number: order_number, customer_id: customer_id}))
 
       event_store.publish(Pricing::ItemRemovedFromBasket.new(data: {order_id: order_id, product_id: product_id}))
 
@@ -48,21 +50,22 @@ module Orders
       event_store = Rails.configuration.event_store
 
 
-      product_uid = SecureRandom.uuid
-      product_id = run_command(ProductCatalog::RegisterProduct.new(product_uid: product_uid, name: "test"))
+      product_id = SecureRandom.uuid
+      run_command(ProductCatalog::RegisterProduct.new(product_id: product_id, name: "test"))
       run_command(Pricing::SetPrice.new(product_id: product_id, price: 20))
 
 
-      another_product_uid = SecureRandom.uuid
-      another_product_id = run_command(ProductCatalog::RegisterProduct.new(product_uid: another_product_uid, name: "test"))
+      another_product_id = SecureRandom.uuid
+      run_command(ProductCatalog::RegisterProduct.new(product_id: another_product_id, name: "test"))
       run_command(Pricing::SetPrice.new(product_id: another_product_id, price: 20))
-      customer = Customer.create(name: 'dummy')
+      customer_id = SecureRandom.uuid
+      run_command(Crm::RegisterCustomer.new(customer_id: customer_id, name: 'dummy'))
       order_id = SecureRandom.uuid
       order_number = Ordering::FakeNumberGenerator::FAKE_NUMBER
       event_store.publish(Pricing::ItemAddedToBasket.new(data: {order_id: order_id, product_id: product_id}))
       event_store.publish(Pricing::ItemAddedToBasket.new(data: {order_id: order_id, product_id: product_id}))
       event_store.publish(Pricing::ItemAddedToBasket.new(data: {order_id: order_id, product_id: another_product_id}))
-      event_store.publish(Ordering::OrderSubmitted.new(data: {order_id: order_id, order_number: order_number, customer_id: customer.id}))
+      event_store.publish(Ordering::OrderSubmitted.new(data: {order_id: order_id, order_number: order_number, customer_id: customer_id}))
 
       event_store.publish(Pricing::ItemRemovedFromBasket.new(data: {order_id: order_id, product_id: another_product_id}))
 

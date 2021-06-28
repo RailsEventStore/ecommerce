@@ -8,7 +8,7 @@ module ProductCatalog
     def test_product_should_get_registered
       uid = SecureRandom.uuid
       register_product(uid, fake_name)
-      assert_not_nil(product_registered = Product.find_by(uid: uid))
+      assert_not_nil(product_registered = Product.find(uid))
       assert_equal(product_registered.name, fake_name)
     end
 
@@ -22,7 +22,7 @@ module ProductCatalog
     private
 
     def register_product(uid, name)
-      run_command(RegisterProduct.new(product_uid: uid, name: name))
+      run_command(RegisterProduct.new(product_id: uid, name: name))
     end
 
     def fake_name

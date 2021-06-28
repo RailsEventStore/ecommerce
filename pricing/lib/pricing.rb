@@ -1,14 +1,14 @@
 module Pricing
   class AddItemToBasket < Command
     attribute :order_id, Types::UUID
-    attribute :product_id, Types::Coercible::Integer
+    attribute :product_id, Types::UUID
 
     alias :aggregate_id :order_id
   end
 
   class RemoveItemFromBasket < Command
     attribute :order_id, Types::UUID
-    attribute :product_id, Types::Coercible::Integer
+    attribute :product_id, Types::UUID
 
     alias :aggregate_id :order_id
   end
@@ -19,18 +19,18 @@ module Pricing
   end
 
   class SetPrice < Command
-    attribute :product_id, Types::Coercible::Integer
+    attribute :product_id, Types::UUID
     attribute :price, Types::Price
   end
 
   class ItemAddedToBasket < Event
     attribute :order_id,   Types::UUID
-    attribute :product_id, Types::ID
+    attribute :product_id, Types::UUID
   end
 
   class ItemRemovedFromBasket < Event
     attribute :order_id,   Types::UUID
-    attribute :product_id, Types::ID
+    attribute :product_id, Types::UUID
   end
 
   class SetPriceHandler

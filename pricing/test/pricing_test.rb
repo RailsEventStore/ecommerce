@@ -7,7 +7,8 @@ module Pricing
     cover 'Pricing*'
 
     def test_setting_price_updates_read_model
-      product_1_id  = run_command(ProductCatalog::RegisterProduct.new(product_uid: SecureRandom.uuid, name: "test"))
+      product_1_id = SecureRandom.uuid
+      run_command(ProductCatalog::RegisterProduct.new(product_id: product_1_id, name: "test"))
 
       set_price(product_1_id, 20)
       assert_product_read_model_price(product_1_id, 20)
@@ -16,8 +17,10 @@ module Pricing
     end
 
     def test_calculates_total_value
-      product_1_id  = run_command(ProductCatalog::RegisterProduct.new(product_uid: SecureRandom.uuid, name: "test"))
-      product_2_id  = run_command(ProductCatalog::RegisterProduct.new(product_uid: SecureRandom.uuid, name: "test2"))
+      product_1_id = SecureRandom.uuid
+      run_command(ProductCatalog::RegisterProduct.new(product_id: product_1_id, name: "test"))
+      product_2_id = SecureRandom.uuid
+      run_command(ProductCatalog::RegisterProduct.new(product_id: product_2_id, name: "test2"))
       set_price(product_1_id, 20)
       set_price(product_2_id, 30)
       order_id = SecureRandom.uuid

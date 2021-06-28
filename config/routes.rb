@@ -13,6 +13,7 @@ Rails.application.routes.draw do
     end
   end
   resources :products, only: [:new, :create, :index]
+  resources :customers, only: [:new, :create, :index]
 
   mount RailsEventStore::Browser => '/res'
 end
