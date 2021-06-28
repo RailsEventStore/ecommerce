@@ -4,8 +4,9 @@ class OrdersTest < ActionDispatch::IntegrationTest
   cover 'Orders*'
 
   def test_submitting_empty_order
-    arkency = Customer.create(name: "Arkency")
-
+    arkency_id = SecureRandom.uuid
+    run_command(Crm::RegisterCustomer.new(customer_id: arkency_id, name: 'Arkency'))
+    
     get "/"
     assert_select "h1", "Orders"
     get "/orders/new"
@@ -14,23 +15,25 @@ class OrdersTest < ActionDispatch::IntegrationTest
          {
            "authenticity_token"=>"[FILTERED]",
            "order_id"=>"288c590d-b7dc-429f-8d82-79ebf2d5aabc",
-           "customer_id"=> arkency.id,
+           "customer_id"=> arkency_id,
            "commit"=>"Submit order"
          }
   end
 
   def test_happy_path
-    shopify = Customer.create(name: "Shopify")
+    shopify_id = SecureRandom.uuid
+    run_command(Crm::RegisterCustomer.new(customer_id: shopify_id, name: 'Shopify'))
+
     order_id = "288c590d-b7dc-429f-8d82-79ebf2d5aabc"
     another_order_id = "1111590d-b7dc-429f-8d82-79ebf2d5aabc"
 
-    product_uid = SecureRandom.uuid
-    product_id = run_command(ProductCatalog::RegisterProduct.new(product_uid: product_uid, name: "Async Remote"))
+    product_id = SecureRandom.uuid
+    run_command(ProductCatalog::RegisterProduct.new(product_id: product_id, name: "Async Remote"))
     run_command(Pricing::SetPrice.new(product_id: product_id, price: 39))
     async_remote = ProductCatalog::Product.find_by(id: product_id)
 
-    product_uid = SecureRandom.uuid
-    product_id = run_command(ProductCatalog::RegisterProduct.new(product_uid: product_uid, name: "Fearless Refactoring"))
+    product_id = SecureRandom.uuid
+    run_command(ProductCatalog::RegisterProduct.new(product_id: product_id, name: "Fearless Refactoring"))
     run_command(Pricing::SetPrice.new(product_id: product_id, price: 49))
     fearless = ProductCatalog::Product.find_by(id: product_id)
 
@@ -38,7 +41,7 @@ class OrdersTest < ActionDispatch::IntegrationTest
       {
         "authenticity_token"=>"[FILTERED]",
         "order_id" => another_order_id,
-        "customer_id"=> shopify.id,
+        "customer_id"=> shopify_id,
         "commit"=>"Submit order"
       }
 
@@ -57,7 +60,7 @@ class OrdersTest < ActionDispatch::IntegrationTest
       {
         "authenticity_token"=>"[FILTERED]",
         "order_id" => order_id,
-        "customer_id"=> shopify.id,
+        "customer_id"=> shopify_id,
         "commit"=>"Submit order"
       }
     follow_redirect!
@@ -72,8 +75,8 @@ class OrdersTest < ActionDispatch::IntegrationTest
 
   def test_expiring_orders
     order_id = "388c590d-b7dc-429f-8d82-79ebf2d5aabc"
-    product_uid = SecureRandom.uuid
-    product_id = run_command(ProductCatalog::RegisterProduct.new(product_uid: product_uid, name: "Async Remote"))
+    product_id = SecureRandom.uuid
+    run_command(ProductCatalog::RegisterProduct.new(product_id: product_id, name: "Async Remote"))
     run_command(Pricing::SetPrice.new(product_id: product_id, price: 39))
     async_remote = ProductCatalog::Product.find_by(id: product_id)
 
@@ -88,10 +91,11 @@ class OrdersTest < ActionDispatch::IntegrationTest
   end
 
   def test_cancel
-    shopify = Customer.create(name: "Shopify")
+    shopify_id = SecureRandom.uuid
+    run_command(Crm::RegisterCustomer.new(customer_id: shopify_id, name: 'Shopify'))
     order_id = "288c590d-b7dc-429f-8d82-79ebf2d5aabc"
-    product_uid = SecureRandom.uuid
-    product_id = run_command(ProductCatalog::RegisterProduct.new(product_uid: product_uid, name: "Async Remote"))
+    product_id = SecureRandom.uuid
+    run_command(ProductCatalog::RegisterProduct.new(product_id: product_id, name: "Async Remote"))
     run_command(Pricing::SetPrice.new(product_id: product_id, price: 39))
     async_remote = ProductCatalog::Product.find_by(id: product_id)
 
@@ -104,7 +108,7 @@ class OrdersTest < ActionDispatch::IntegrationTest
       {
         "authenticity_token"=>"[FILTERED]",
         "order_id" => order_id,
-        "customer_id"=> shopify.id,
+        "customer_id"=> shopify_id,
         "commit"=>"Submit order"
       }
     follow_redirect!

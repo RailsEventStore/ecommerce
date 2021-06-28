@@ -76,7 +76,7 @@ class PaymentProcessTest < ActiveSupport::TestCase
   end
 
   def customer_id
-    123
+    @customer_id ||= SecureRandom.uuid
   end
 
   def given(events, store: Rails.configuration.event_store)

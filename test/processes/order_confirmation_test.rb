@@ -5,13 +5,14 @@ class OrderConfirmationTest < ActiveSupport::TestCase
   cover 'OrderConfirmation'
 
   def test_authorized_is_not_enough_to_confirm
-    product_uid = SecureRandom.uuid
-    product_id = run_command(ProductCatalog::RegisterProduct.new(product_uid: product_uid, name: "Async Remote"))
+    product_id = SecureRandom.uuid
+    run_command(ProductCatalog::RegisterProduct.new(product_id: product_id, name: "Async Remote"))
     run_command(Pricing::SetPrice.new(product_id: product_id, price: 39))
-    customer = Customer.create(name: 'test')
+    customer_id = SecureRandom.uuid
+    run_command(Crm::RegisterCustomer.new(customer_id: customer_id, name: 'test'))
     [
       Pricing::AddItemToBasket.new(order_id: order_id, product_id: product_id),
-      Ordering::SubmitOrder.new(order_id: order_id, customer_id: customer.id),
+      Ordering::SubmitOrder.new(order_id: order_id, customer_id: customer_id),
       Payments::AuthorizePayment.new(order_id: order_id)
     ].each do |cmd|
       Rails.configuration.command_bus.call(cmd)
@@ -20,14 +21,15 @@ class OrderConfirmationTest < ActiveSupport::TestCase
   end
 
   def test_payment_confirms_order
-    product_uid = SecureRandom.uuid
-    product_id = run_command(ProductCatalog::RegisterProduct.new(product_uid: product_uid, name: "Async Remote"))
+    product_id = SecureRandom.uuid
+    run_command(ProductCatalog::RegisterProduct.new(product_id: product_id, name: "Async Remote"))
     run_command(Pricing::SetPrice.new(product_id: product_id, price: 39))
 
-    customer = Customer.create(name: 'test')
+    customer_id = SecureRandom.uuid
+    run_command(Crm::RegisterCustomer.new(customer_id: customer_id, name: 'test'))
     [
       Pricing::AddItemToBasket.new(order_id: order_id, product_id: product_id),
-      Ordering::SubmitOrder.new(order_id: order_id, customer_id: customer.id),
+      Ordering::SubmitOrder.new(order_id: order_id, customer_id: customer_id),
       Payments::AuthorizePayment.new(order_id: order_id),
       Payments::CapturePayment.new(order_id: order_id)
     ].each do |cmd|

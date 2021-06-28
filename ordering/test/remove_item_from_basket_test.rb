@@ -10,8 +10,8 @@ module Ordering
       aggregate_id = SecureRandom.uuid
       stream = "Pricing::Order$#{aggregate_id}"
 
-      product_uid = SecureRandom.uuid
-      product_id = run_command(ProductCatalog::RegisterProduct.new(product_uid: product_uid, name: "test"))
+      product_id = SecureRandom.uuid
+      run_command(ProductCatalog::RegisterProduct.new(product_id: product_id, name: "test"))
       run_command(Pricing::SetPrice.new(product_id: product_id, price: 20))
 
       arrange(Pricing::AddItemToBasket.new(order_id: aggregate_id, product_id: product_id))

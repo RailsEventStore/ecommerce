@@ -26,3 +26,6 @@ yarn-debug.log*
 yarn-debug.log*
 .yarn-integrity
 .env*.local
+
+.idea
+.ruby-version

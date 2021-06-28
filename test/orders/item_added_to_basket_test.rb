@@ -9,8 +9,8 @@ module Orders
       event_store = Rails.configuration.event_store
 
 
-      product_uid = SecureRandom.uuid
-      product_id = run_command(ProductCatalog::RegisterProduct.new(product_uid: product_uid, name: "test"))
+      product_id = SecureRandom.uuid
+      run_command(ProductCatalog::RegisterProduct.new(product_id: product_id, name: "test"))
       run_command(Pricing::SetPrice.new(product_id: product_id, price: 49))
 
       order_id = SecureRandom.uuid
@@ -36,8 +36,8 @@ module Orders
       event_store = Rails.configuration.event_store
 
 
-      product_uid = SecureRandom.uuid
-      product_id = run_command(ProductCatalog::RegisterProduct.new(product_uid: product_uid, name: "test"))
+      product_id = SecureRandom.uuid
+      run_command(ProductCatalog::RegisterProduct.new(product_id: product_id, name: "test"))
       run_command(Pricing::SetPrice.new(product_id: product_id, price: 49))
 
       order_id = SecureRandom.uuid
@@ -63,12 +63,12 @@ module Orders
     test 'add another item' do
       event_store = Rails.configuration.event_store
 
-      product_uid = SecureRandom.uuid
-      product_id = run_command(ProductCatalog::RegisterProduct.new(product_uid: product_uid, name: "test"))
+      product_id = SecureRandom.uuid
+      run_command(ProductCatalog::RegisterProduct.new(product_id: product_id, name: "test"))
       run_command(Pricing::SetPrice.new(product_id: product_id, price: 20))
 
-      another_product_uid = SecureRandom.uuid
-      another_product_id = run_command(ProductCatalog::RegisterProduct.new(product_uid: another_product_uid, name: "2nd one"))
+      another_product_id = SecureRandom.uuid
+      run_command(ProductCatalog::RegisterProduct.new(product_id: another_product_id, name: "2nd one"))
       run_command(Pricing::SetPrice.new(product_id: another_product_id, price: 20))
 
       order_id = SecureRandom.uuid

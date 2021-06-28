@@ -35,8 +35,10 @@ class Configuration
     command_bus.register(Pricing::CalculateTotalValue, Pricing::OnCalculateTotalValue.new)
 
     command_bus.register(ProductCatalog::RegisterProduct, ProductCatalog::ProductRegistrationHandler.new)
-
     event_store.subscribe(ProductCatalog::AssignPriceToProduct.new, to: [Pricing::PriceSet])
+
+    command_bus.register(Crm::RegisterCustomer, Crm::CustomerRegistrationHandler.new)
+
     event_store.subscribe(
       -> (event) { command_bus.call(Pricing::CalculateTotalValue.new(order_id: event.data.fetch(:order_id)))},
       to: [Ordering::OrderSubmitted])

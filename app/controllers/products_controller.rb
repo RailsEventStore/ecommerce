@@ -4,13 +4,13 @@ class ProductsController < ApplicationController
   end
 
   def new
-    @product_uid = SecureRandom.uuid
+    @product_id = SecureRandom.uuid
   end
 
   def create
     ActiveRecord::Base.transaction do
-      product_id = create_product(params[:product_uid], params[:name])
-      set_product_price(product_id, params[:price]) if params[:price].present?
+      create_product(params[:product_id], params[:name])
+      set_product_price(params[:product_id], params[:price]) if params[:price].present?
     rescue ProductCatalog::Product::AlreadyRegistered
       flash[:notice] = 'Product was already registered.'
       render 'new'
@@ -21,16 +21,16 @@ class ProductsController < ApplicationController
 
   private
 
-  def create_product(product_uid, name)
-    command_bus.(create_product_cmd(product_uid, name))
+  def create_product(product_id, name)
+    command_bus.(create_product_cmd(product_id, name))
   end
 
   def set_product_price(product_id, price)
     command_bus.(set_product_price_cmd(product_id, price))
   end
 
-  def create_product_cmd(product_uid, name)
-    ProductCatalog::RegisterProduct.new(product_uid: product_uid, name: name)
+  def create_product_cmd(product_id, name)
+    ProductCatalog::RegisterProduct.new(product_id: product_id, name: name)
   end
 
   def set_product_price_cmd(product_id, price)
