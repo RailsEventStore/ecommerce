@@ -17,16 +17,14 @@ class Configuration
       Payments::PaymentCaptured
     ])
 
-    cqrs.register(Ordering::SubmitOrder, Ordering::OnSubmitOrder.new(number_generator: Rails.configuration.number_generator.call))
-    cqrs.register(Ordering::SetOrderAsExpired, Ordering::OnSetOrderAsExpired.new)
-    cqrs.register(Ordering::MarkOrderAsPaid, Ordering::OnMarkOrderAsPaid.new)
+    Ordering::Configuration.new(cqrs).call
     cqrs.register(Pricing::AddItemToBasket, Pricing::OnAddItemToBasket.new)
     cqrs.register(Pricing::RemoveItemFromBasket, Pricing::OnRemoveItemFromBasket.new)
     cqrs.register(Payments::AuthorizePayment, Payments::OnAuthorizePayment.new)
     cqrs.register(Payments::CapturePayment, Payments::OnCapturePayment.new)
     cqrs.register(Payments::ReleasePayment, Payments::OnReleasePayment.new)
     cqrs.register(Payments::SetPaymentAmount, Payments::OnSetPaymentAmount.new)
-    cqrs.register(Ordering::CancelOrder, Ordering::OnCancelOrder.new)
+
 
     cqrs.register(Pricing::SetPrice, Pricing::SetPriceHandler.new)
     cqrs.register(Pricing::CalculateTotalValue, Pricing::OnCalculateTotalValue.new)
