@@ -1,13 +1,15 @@
 class Configuration
   def call(event_store, command_bus)
-    event_store.subscribe(Orders::OnOrderSubmitted, to: [Ordering::OrderSubmitted])
-    event_store.subscribe(Orders::OnOrderExpired, to: [Ordering::OrderExpired])
-    event_store.subscribe(Orders::OnOrderPaid, to: [Ordering::OrderPaid])
-    event_store.subscribe(Orders::OnItemAddedToBasket, to: [Pricing::ItemAddedToBasket])
-    event_store.subscribe(Orders::OnItemRemovedFromBasket, to: [Pricing::ItemRemovedFromBasket])
-    event_store.subscribe(Orders::OnOrderCancelled, to: [Ordering::OrderCancelled])
+    cqrs = Cqrs.new(event_store, command_bus)
 
-    event_store.subscribe(PaymentProcess.new, to: [
+    cqrs.subscribe(Orders::OnOrderSubmitted, [Ordering::OrderSubmitted])
+    cqrs.subscribe(Orders::OnOrderExpired, [Ordering::OrderExpired])
+    cqrs.subscribe(Orders::OnOrderPaid, [Ordering::OrderPaid])
+    cqrs.subscribe(Orders::OnItemAddedToBasket, [Pricing::ItemAddedToBasket])
+    cqrs.subscribe(Orders::OnItemRemovedFromBasket, [Pricing::ItemRemovedFromBasket])
+    cqrs.subscribe(Orders::OnOrderCancelled, [Ordering::OrderCancelled])
+
+    cqrs.subscribe(PaymentProcess.new, [
       Ordering::OrderSubmitted,
       Ordering::OrderExpired,
       Ordering::OrderPaid,
@@ -15,40 +17,40 @@ class Configuration
       Payments::PaymentReleased,
     ])
 
-    event_store.subscribe(OrderConfirmation.new, to: [
+    cqrs.subscribe(OrderConfirmation.new, [
       Payments::PaymentAuthorized,
       Payments::PaymentCaptured
     ])
 
-    command_bus.register(Ordering::SubmitOrder, Ordering::OnSubmitOrder.new(number_generator: Rails.configuration.number_generator.call))
-    command_bus.register(Ordering::SetOrderAsExpired, Ordering::OnSetOrderAsExpired.new)
-    command_bus.register(Ordering::MarkOrderAsPaid, Ordering::OnMarkOrderAsPaid.new)
-    command_bus.register(Pricing::AddItemToBasket, Pricing::OnAddItemToBasket.new)
-    command_bus.register(Pricing::RemoveItemFromBasket, Pricing::OnRemoveItemFromBasket.new)
-    command_bus.register(Payments::AuthorizePayment, Payments::OnAuthorizePayment.new)
-    command_bus.register(Payments::CapturePayment, Payments::OnCapturePayment.new)
-    command_bus.register(Payments::ReleasePayment, Payments::OnReleasePayment.new)
-    command_bus.register(Payments::SetPaymentAmount, Payments::OnSetPaymentAmount.new)
-    command_bus.register(Ordering::CancelOrder, Ordering::OnCancelOrder.new)
+    cqrs.register(Ordering::SubmitOrder, Ordering::OnSubmitOrder.new(number_generator: Rails.configuration.number_generator.call))
+    cqrs.register(Ordering::SetOrderAsExpired, Ordering::OnSetOrderAsExpired.new)
+    cqrs.register(Ordering::MarkOrderAsPaid, Ordering::OnMarkOrderAsPaid.new)
+    cqrs.register(Pricing::AddItemToBasket, Pricing::OnAddItemToBasket.new)
+    cqrs.register(Pricing::RemoveItemFromBasket, Pricing::OnRemoveItemFromBasket.new)
+    cqrs.register(Payments::AuthorizePayment, Payments::OnAuthorizePayment.new)
+    cqrs.register(Payments::CapturePayment, Payments::OnCapturePayment.new)
+    cqrs.register(Payments::ReleasePayment, Payments::OnReleasePayment.new)
+    cqrs.register(Payments::SetPaymentAmount, Payments::OnSetPaymentAmount.new)
+    cqrs.register(Ordering::CancelOrder, Ordering::OnCancelOrder.new)
 
-    command_bus.register(Pricing::SetPrice, Pricing::SetPriceHandler.new)
-    command_bus.register(Pricing::CalculateTotalValue, Pricing::OnCalculateTotalValue.new)
+    cqrs.register(Pricing::SetPrice, Pricing::SetPriceHandler.new)
+    cqrs.register(Pricing::CalculateTotalValue, Pricing::OnCalculateTotalValue.new)
 
-    command_bus.register(ProductCatalog::RegisterProduct, ProductCatalog::ProductRegistrationHandler.new)
-    event_store.subscribe(ProductCatalog::AssignPriceToProduct.new, to: [Pricing::PriceSet])
+    cqrs.register(ProductCatalog::RegisterProduct, ProductCatalog::ProductRegistrationHandler.new)
+    cqrs.subscribe(ProductCatalog::AssignPriceToProduct.new, [Pricing::PriceSet])
 
-    command_bus.register(Crm::RegisterCustomer, Crm::CustomerRegistrationHandler.new)
+    cqrs.register(Crm::RegisterCustomer, Crm::CustomerRegistrationHandler.new)
 
-    event_store.subscribe(
-      -> (event) { command_bus.call(Pricing::CalculateTotalValue.new(order_id: event.data.fetch(:order_id)))},
-      to: [Ordering::OrderSubmitted])
+    cqrs.subscribe(
+      -> (event) { cqrs.run(Pricing::CalculateTotalValue.new(order_id: event.data.fetch(:order_id)))},
+      [Ordering::OrderSubmitted])
 
-    event_store.subscribe(
-      -> (event) { command_bus.call(
+    cqrs.subscribe(
+      -> (event) { cqrs.run(
         Payments::SetPaymentAmount.new(
           order_id: event.data.fetch(:order_id),
           amount: event.data.fetch(:amount)
       ))},
-      to: [Pricing::OrderTotalValueCalculated])
+      [Pricing::OrderTotalValueCalculated])
   end
 end
