@@ -1,4 +1,18 @@
 module Pricing
+
+  class Configuration
+    def initialize(cqrs)
+      @cqrs = cqrs
+    end
+
+    def call
+      @cqrs.register(AddItemToBasket, OnAddItemToBasket.new)
+      @cqrs.register(RemoveItemFromBasket, OnRemoveItemFromBasket.new)
+      @cqrs.register(SetPrice, SetPriceHandler.new)
+      @cqrs.register(CalculateTotalValue, OnCalculateTotalValue.new)
+    end
+  end
+
   class AddItemToBasket < Command
     attribute :order_id, Types::UUID
     attribute :product_id, Types::UUID

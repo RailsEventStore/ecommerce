@@ -18,16 +18,12 @@ class Configuration
     ])
 
     Ordering::Configuration.new(cqrs).call
-    cqrs.register(Pricing::AddItemToBasket, Pricing::OnAddItemToBasket.new)
-    cqrs.register(Pricing::RemoveItemFromBasket, Pricing::OnRemoveItemFromBasket.new)
+    Pricing::Configuration.new(cqrs).call
+
     cqrs.register(Payments::AuthorizePayment, Payments::OnAuthorizePayment.new)
     cqrs.register(Payments::CapturePayment, Payments::OnCapturePayment.new)
     cqrs.register(Payments::ReleasePayment, Payments::OnReleasePayment.new)
     cqrs.register(Payments::SetPaymentAmount, Payments::OnSetPaymentAmount.new)
-
-
-    cqrs.register(Pricing::SetPrice, Pricing::SetPriceHandler.new)
-    cqrs.register(Pricing::CalculateTotalValue, Pricing::OnCalculateTotalValue.new)
 
     cqrs.register(ProductCatalog::RegisterProduct, ProductCatalog::ProductRegistrationHandler.new)
     cqrs.subscribe(ProductCatalog::AssignPriceToProduct.new, [Pricing::PriceSet])
