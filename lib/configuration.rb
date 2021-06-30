@@ -2,12 +2,7 @@ class Configuration
   def call(event_store, command_bus)
     cqrs = Cqrs.new(event_store, command_bus)
 
-    cqrs.subscribe(Orders::OnOrderSubmitted, [Ordering::OrderSubmitted])
-    cqrs.subscribe(Orders::OnOrderExpired, [Ordering::OrderExpired])
-    cqrs.subscribe(Orders::OnOrderPaid, [Ordering::OrderPaid])
-    cqrs.subscribe(Orders::OnItemAddedToBasket, [Pricing::ItemAddedToBasket])
-    cqrs.subscribe(Orders::OnItemRemovedFromBasket, [Pricing::ItemRemovedFromBasket])
-    cqrs.subscribe(Orders::OnOrderCancelled, [Ordering::OrderCancelled])
+    Orders::Configuration.new(cqrs).call
 
     cqrs.subscribe(PaymentProcess.new, [
       Ordering::OrderSubmitted,
