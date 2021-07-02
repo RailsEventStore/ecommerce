@@ -1,4 +1,15 @@
 module ProductCatalog
+
+  class Configuration
+    def initialize(cqrs)
+      @cqrs = cqrs
+    end
+
+    def call
+      @cqrs.register(RegisterProduct, ProductRegistrationHandler.new)
+    end
+  end
+
   class Product < ApplicationRecord
     AlreadyRegistered = Class.new(StandardError)
 

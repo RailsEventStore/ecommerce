@@ -6,6 +6,7 @@ class Configuration
     Ordering::Configuration.new(cqrs).call
     Pricing::Configuration.new(cqrs).call
     Payments::Configuration.new(cqrs).call
+    ProductCatalog::Configuration.new(cqrs).call
 
     cqrs.subscribe(PaymentProcess.new, [
       Ordering::OrderSubmitted,
@@ -20,7 +21,6 @@ class Configuration
       Payments::PaymentCaptured
     ])
 
-    cqrs.register(ProductCatalog::RegisterProduct, ProductCatalog::ProductRegistrationHandler.new)
     cqrs.subscribe(ProductCatalog::AssignPriceToProduct.new, [Pricing::PriceSet])
 
     cqrs.register(Crm::RegisterCustomer, Crm::CustomerRegistrationHandler.new)
