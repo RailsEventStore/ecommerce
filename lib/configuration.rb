@@ -7,6 +7,7 @@ class Configuration
     Pricing::Configuration.new(cqrs).call
     Payments::Configuration.new(cqrs).call
     ProductCatalog::Configuration.new(cqrs).call
+    Crm::Configuration.new(cqrs).call
 
     cqrs.subscribe(PaymentProcess.new, [
       Ordering::OrderSubmitted,
@@ -23,18 +24,13 @@ class Configuration
 
     cqrs.subscribe(ProductCatalog::AssignPriceToProduct.new, [Pricing::PriceSet])
 
-    cqrs.register(Crm::RegisterCustomer, Crm::CustomerRegistrationHandler.new)
-
     cqrs.subscribe(
       -> (event) { cqrs.run(Pricing::CalculateTotalValue.new(order_id: event.data.fetch(:order_id)))},
       [Ordering::OrderSubmitted])
 
     cqrs.subscribe(
       -> (event) { cqrs.run(
-        Payments::SetPaymentAmount.new(
-          order_id: event.data.fetch(:order_id),
-          amount: event.data.fetch(:amount)
-        ))},
+        Payments::SetPaymentAmount.new(order_id: event.data.fetch(:order_id), amount: event.data.fetch(:amount)))},
       [Pricing::OrderTotalValueCalculated])
   end
 end

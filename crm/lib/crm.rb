@@ -1,4 +1,14 @@
 module Crm
+
+  class Configuration
+    def initialize(cqrs)
+      @cqrs = cqrs
+    end
+
+    def call
+      @cqrs.register(RegisterCustomer, CustomerRegistrationHandler.new)
+    end
+  end
   class Customer < ApplicationRecord
     AlreadyRegistered = Class.new(StandardError)
 
