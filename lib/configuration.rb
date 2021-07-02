@@ -3,6 +3,9 @@ class Configuration
     cqrs = Cqrs.new(event_store, command_bus)
 
     Orders::Configuration.new(cqrs).call
+    Ordering::Configuration.new(cqrs).call
+    Pricing::Configuration.new(cqrs).call
+    Payments::Configuration.new(cqrs).call
 
     cqrs.subscribe(PaymentProcess.new, [
       Ordering::OrderSubmitted,
@@ -16,14 +19,6 @@ class Configuration
       Payments::PaymentAuthorized,
       Payments::PaymentCaptured
     ])
-
-    Ordering::Configuration.new(cqrs).call
-    Pricing::Configuration.new(cqrs).call
-
-    cqrs.register(Payments::AuthorizePayment, Payments::OnAuthorizePayment.new)
-    cqrs.register(Payments::CapturePayment, Payments::OnCapturePayment.new)
-    cqrs.register(Payments::ReleasePayment, Payments::OnReleasePayment.new)
-    cqrs.register(Payments::SetPaymentAmount, Payments::OnSetPaymentAmount.new)
 
     cqrs.register(ProductCatalog::RegisterProduct, ProductCatalog::ProductRegistrationHandler.new)
     cqrs.subscribe(ProductCatalog::AssignPriceToProduct.new, [Pricing::PriceSet])
@@ -39,7 +34,7 @@ class Configuration
         Payments::SetPaymentAmount.new(
           order_id: event.data.fetch(:order_id),
           amount: event.data.fetch(:amount)
-      ))},
+        ))},
       [Pricing::OrderTotalValueCalculated])
   end
 end
