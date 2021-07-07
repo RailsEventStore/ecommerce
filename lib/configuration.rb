@@ -1,3 +1,5 @@
+require 'cqrs'
+
 class Configuration
   def call(event_store, command_bus)
     cqrs = Cqrs.new(event_store, command_bus)

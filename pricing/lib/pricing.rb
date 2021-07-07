@@ -6,10 +6,10 @@ module Pricing
     end
 
     def call
-      @cqrs.register(AddItemToBasket, OnAddItemToBasket.new)
-      @cqrs.register(RemoveItemFromBasket, OnRemoveItemFromBasket.new)
-      @cqrs.register(SetPrice, SetPriceHandler.new)
-      @cqrs.register(CalculateTotalValue, OnCalculateTotalValue.new)
+      @cqrs.register_command(AddItemToBasket, OnAddItemToBasket.new, ItemAddedToBasket)
+      @cqrs.register_command(RemoveItemFromBasket, OnRemoveItemFromBasket.new, ItemRemovedFromBasket)
+      @cqrs.register_command(SetPrice, SetPriceHandler.new, PriceSet)
+      @cqrs.register_command(CalculateTotalValue, OnCalculateTotalValue.new, OrderTotalValueCalculated)
     end
   end
 
