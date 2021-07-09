@@ -22,22 +22,21 @@ module Pricing
     end
 
     class PercentageDiscountTest < ActiveSupport::TestCase
-      def test_is_at_least_1_percent
-        skip
+      def test_is_more_than_zero
+        assert_raises UnacceptableDiscountRange do
+          PercentageDiscount.new(0)
+        end
       end
 
       def test_is_not_more_than_100_percent
-        skip
+        assert_raises UnacceptableDiscountRange do
+          PercentageDiscount.new(100.01)
+        end
       end
     end
 
     class EmptyOrder
       def discount(discount)
-      end
-    end
-
-    class PercentageDiscount
-      def initialize(percentage_amount)
       end
     end
   end

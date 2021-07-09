@@ -1,3 +1,5 @@
+require_relative 'discounts'
+
 module Pricing
 
   class Configuration
