@@ -20,3 +20,4 @@ matcher:
   - Ordering::NumberGenerator*
   - Payments::Payment#authorized?
   - Pricing::SetPriceHandler#call
+  - Pricing::Configuration*
