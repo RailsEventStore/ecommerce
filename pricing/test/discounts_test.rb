@@ -11,33 +11,47 @@ module Pricing
       end
 
       def test_can_be_discounted
-        @order.discount(PercentageDiscount.new(10))
+        @order.discount
       end
     end
 
     class DiscountedOrderTest < ActiveSupport::TestCase
+      cover 'Pricing::Discounts*'
+
       def test_can_change_its_discount_value
         @order = Order.new
-        @order.discount(PercentageDiscount.new(10)).change_discount(PercentageDiscount.new(15))
+        @order.discount.change_discount
+      end
+
+      def test_can_change_many_times
+        Order.new.discount.change_discount.change_discount
       end
 
       def test_can_reset_discount
-        discount = PercentageDiscount.new(10)
-        Order.new.discount(discount).reset
+        Order.new.discount.reset
       end
     end
 
     class OrderWithClearedDiscount < ActiveSupport::TestCase
+      cover 'Pricing::Discounts*'
+
       def test_can_be_discounted_again
-        _10_percent = PercentageDiscount.new(10)
-        Order.new.discount(_10_percent).reset.discount(_10_percent)
+        Order.new.discount.reset.discount
       end
     end
 
     class PercentageDiscountTest < ActiveSupport::TestCase
+      cover 'Pricing::Discounts*'
+
       def test_is_more_than_zero
         assert_raises UnacceptableDiscountRange do
           PercentageDiscount.new(0)
+        end
+      end
+
+      def test_is_not_lower_than_0
+        assert_raises UnacceptableDiscountRange do
+          PercentageDiscount.new(-0.01)
         end
       end
 
@@ -45,6 +59,14 @@ module Pricing
         assert_raises UnacceptableDiscountRange do
           PercentageDiscount.new(100.01)
         end
+      end
+
+      def test_100_is_ok
+        PercentageDiscount.new(100)
+      end
+
+      def test_0_01_is_ok
+        PercentageDiscount.new(0.01)
       end
     end
   end

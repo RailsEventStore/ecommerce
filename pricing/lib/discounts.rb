@@ -10,17 +10,15 @@ module Pricing
     end
 
     class Order
-      def discount(discount)
-        DiscountedOrder.new(discount)
+      def discount
+        DiscountedOrder.new
       end
     end
 
     class DiscountedOrder
-      def initialize(discount)
-      end
 
-      def change_discount(new_discount)
-        DiscountedOrder.new(new_discount)
+      def change_discount
+        DiscountedOrder.new
       end
 
       def reset
