@@ -1,4 +1,8 @@
 require 'cqrs'
+require 'command_handler'
+require 'command'
+require 'event'
+require 'types'
 
 class Configuration
   def call(event_store, command_bus)
