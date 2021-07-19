@@ -2,12 +2,12 @@ require 'test_helper'
 
 module Pricing
   module Discounts
-    class EmptyOrderTest < ActiveSupport::TestCase
+    class OrderTest < ActiveSupport::TestCase
 
       cover 'Pricing::Discounts*'
 
       def setup
-        @order = EmptyOrder.new
+        @order = Order.new
       end
 
       def test_can_be_discounted
@@ -17,7 +17,20 @@ module Pricing
 
     class DiscountedOrderTest < ActiveSupport::TestCase
       def test_can_change_its_discount_value
-        skip
+        @order = Order.new
+        @order.discount(PercentageDiscount.new(10)).change_discount(PercentageDiscount.new(15))
+      end
+
+      def test_can_reset_discount
+        discount = PercentageDiscount.new(10)
+        Order.new.discount(discount).reset
+      end
+    end
+
+    class OrderWithClearedDiscount < ActiveSupport::TestCase
+      def test_can_be_discounted_again
+        _10_percent = PercentageDiscount.new(10)
+        Order.new.discount(_10_percent).reset.discount(_10_percent)
       end
     end
 
@@ -32,11 +45,6 @@ module Pricing
         assert_raises UnacceptableDiscountRange do
           PercentageDiscount.new(100.01)
         end
-      end
-    end
-
-    class EmptyOrder
-      def discount(discount)
       end
     end
   end
