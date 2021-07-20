@@ -22,3 +22,4 @@ matcher:
   - Pricing::SetPriceHandler#call
   - Pricing::Configuration*
   - Pricing::SetPercentageDiscountHandler*
+  - Pricing::OnCalculateTotalValue#last_discount_order_event

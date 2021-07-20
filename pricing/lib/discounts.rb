@@ -6,6 +6,18 @@ module Pricing
       def initialize(value)
         raise UnacceptableDiscountRange if value <= 0
         raise UnacceptableDiscountRange if value > 100
+
+        @value = value
+      end
+
+      def apply(total)
+        total - (total * @value / 100)
+      end
+    end
+
+    class NoPercentageDiscount
+      def apply(total)
+        total
       end
     end
 
@@ -26,6 +38,4 @@ module Pricing
       end
     end
   end
-
-
 end

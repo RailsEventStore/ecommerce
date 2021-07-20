@@ -3,6 +3,10 @@ require "test_helper"
 class OrdersTest < ActionDispatch::IntegrationTest
   cover 'Orders*'
 
+  def setup
+    Rails.configuration.payment_gateway.call.reset
+  end
+
   def test_submitting_empty_order
     arkency_id = SecureRandom.uuid
     run_command(Crm::RegisterCustomer.new(customer_id: arkency_id, name: 'Arkency'))
@@ -74,6 +78,8 @@ class OrdersTest < ActionDispatch::IntegrationTest
     post "/orders/#{order_id}/pay"
     follow_redirect!
     assert_select("td", "Ready to ship (paid)")
+
+    assert_payment_gateway_value(123.30)
   end
 
   def test_expiring_orders
@@ -124,6 +130,10 @@ class OrdersTest < ActionDispatch::IntegrationTest
   end
 
   private
+
+  def assert_payment_gateway_value(value)
+    assert_equal(value, Rails.configuration.payment_gateway.call.authorized_transactions[0][1])
+  end
 
   def apply_discount_10_percent(order_id)
     assert_select("a", "Edit discount")

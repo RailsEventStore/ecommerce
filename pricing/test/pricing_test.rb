@@ -30,7 +30,21 @@ module Pricing
       assert_events(stream, OrderTotalValueCalculated.new(data: { order_id: order_id, amount: 50 })) do
         calculate_total_value(order_id)
       end
+    end
 
+    def test_calculates_total_value_with_discount
+      product_1_id = SecureRandom.uuid
+      run_command(ProductCatalog::RegisterProduct.new(product_id: product_1_id, name: "test"))
+      set_price(product_1_id, 20)
+      order_id = SecureRandom.uuid
+      add_item(order_id, product_1_id)
+      stream = "Pricing::Order$#{order_id}"
+      assert_events(stream, OrderTotalValueCalculated.new(data: { order_id: order_id, amount: 20 })) do
+        run_command(CalculateTotalValue.new(order_id: order_id))
+      end
+      assert_events(stream, OrderTotalValueCalculated.new(data: { order_id: order_id, amount: 18 })) do
+        run_command(Pricing::SetPercentageDiscount.new(order_id: order_id, amount: 10))
+      end
     end
 
     private

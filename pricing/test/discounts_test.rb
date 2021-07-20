@@ -68,6 +68,22 @@ module Pricing
       def test_0_01_is_ok
         PercentageDiscount.new(0.01)
       end
+
+      def test_applies_to_value
+        assert_equal(90, PercentageDiscount.new(10).apply(100))
+      end
+
+      def test_calculates_floats_too
+        assert_equal(90.45, PercentageDiscount.new(10).apply(100.50))
+      end
+    end
+
+    class NoPercentageDiscountTest < ActiveSupport::TestCase
+      cover "Pricing::Discounts*"
+
+      def test_doesnt_change_total
+        assert_equal(100, NoPercentageDiscount.new.apply(100))
+      end
     end
   end
 end

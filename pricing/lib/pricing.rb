@@ -13,6 +13,9 @@ module Pricing
       @cqrs.register_command(SetPrice, SetPriceHandler.new, PriceSet)
       @cqrs.register_command(CalculateTotalValue, OnCalculateTotalValue.new, OrderTotalValueCalculated)
       @cqrs.register_command(SetPercentageDiscount, SetPercentageDiscountHandler.new, PercentageDiscountSet)
+      @cqrs.subscribe(
+        -> (event) { @cqrs.run(Pricing::CalculateTotalValue.new(order_id: event.data.fetch(:order_id)))},
+        [Pricing::PercentageDiscountSet])
     end
   end
 
@@ -59,7 +62,6 @@ module Pricing
     include CommandHandler
 
     def call(cmd)
-      repository = AggregateRoot::Repository.new(Rails.configuration.event_store)
       stream_name = stream_name(Discounts::Order, cmd.order_id)
       order = build_order(stream_name)
       percentage_discount = Discounts::PercentageDiscount.new(cmd.amount)
@@ -121,10 +123,28 @@ module Pricing
     include CommandHandler
 
     def call(command)
-      pricing_catalog = PricingCatalog.new(Rails.configuration.event_store)
+      event_store = Rails.configuration.event_store
+      pricing_catalog = PricingCatalog.new(event_store)
+      percentage_discount = build_percentage_discount(command.order_id)
       with_aggregate(Order, command.aggregate_id) do |order|
-        order.calculate_total_value(pricing_catalog)
+        order.calculate_total_value(pricing_catalog, percentage_discount)
       end
+    end
+
+    private
+
+    def build_percentage_discount(order_id)
+      last_event = last_discount_order_event(order_id)
+      case last_event
+      when PercentageDiscountSet
+        Discounts::PercentageDiscount.new(last_event.data.fetch(:amount))
+      else
+        Discounts::NoPercentageDiscount.new
+      end
+    end
+
+    def last_discount_order_event(order_id)
+      Rails.configuration.event_store.read.stream(stream_name(Discounts::Order, order_id)).last
     end
   end
 
@@ -156,11 +176,11 @@ module Pricing
       apply ItemRemovedFromBasket.new(data: {order_id: @id, product_id: product_id})
     end
 
-    def calculate_total_value(pricing_catalog)
+    def calculate_total_value(pricing_catalog, percentage_discount)
       total_value = @product_ids.sum do |product_id|
         pricing_catalog.price_for(product_id)
       end
-
+      total_value = percentage_discount.apply(total_value)
       apply(OrderTotalValueCalculated.new(data: {order_id: @id, amount: total_value}))
     end
 
