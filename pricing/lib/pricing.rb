@@ -58,14 +58,19 @@ module Pricing
     attribute :amount, Types::PercentageDiscount
   end
 
+  class NotPossibleToAssignDiscountTwice < StandardError; end
+
   class SetPercentageDiscountHandler
     include CommandHandler
 
     def call(cmd)
       stream_name = stream_name(Discounts::Order, cmd.order_id)
       order = build_order(stream_name)
-      percentage_discount = Discounts::PercentageDiscount.new(cmd.amount)
-      order.discount
+      begin
+        order.discount
+      rescue NoMethodError
+        raise NotPossibleToAssignDiscountTwice
+      end
       Rails.configuration.event_store.publish(
         PercentageDiscountSet.new(data: {order_id: cmd.order_id, amount: cmd.amount}),
         stream_name: stream_name
@@ -75,15 +80,17 @@ module Pricing
     private
 
     def build_order(stream_name)
-      last_event = Rails.configuration.event_store.read.to_a.last
+      last_event = last_event(stream_name)
       case last_event
       when PercentageDiscountSet
-        Discounts::DiscountedOrder.new
-      when PercentageDiscountReset
-        Discounts::Order.new
+        nil
       else
         Discounts::Order.new
       end
+    end
+
+    def last_event(stream_name)
+      Rails.configuration.event_store.read.stream(stream_name).last
     end
   end
 
