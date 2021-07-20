@@ -10,6 +10,8 @@ Rails.application.routes.draw do
       post :add_item
       post :remove_item
       post :pay
+      get :edit_discount
+      post :update_discount
     end
   end
   resources :products, only: [:new, :create, :index]

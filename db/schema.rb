@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_06_26_210851) do
+ActiveRecord::Schema.define(version: 2021_07_19_172643) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -72,6 +72,9 @@ ActiveRecord::Schema.define(version: 2021_06_26_210851) do
     t.string "number"
     t.string "customer"
     t.string "state"
+    t.decimal "percentage_discount", precision: 8, scale: 2
+    t.decimal "total_value", precision: 8, scale: 2
+    t.decimal "discounted_value", precision: 8, scale: 2
   end
 
   create_table "products", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|

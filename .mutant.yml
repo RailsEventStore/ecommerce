@@ -21,3 +21,4 @@ matcher:
   - Payments::Payment#authorized?
   - Pricing::SetPriceHandler#call
   - Pricing::Configuration*
+  - Pricing::SetPercentageDiscountHandler*

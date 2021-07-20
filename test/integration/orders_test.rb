@@ -56,6 +56,9 @@ class OrdersTest < ActionDispatch::IntegrationTest
     post "/orders/#{order_id}/add_item?product_id=#{fearless.id}"
     follow_redirect!
     assert_select("td", "$137.00")
+
+    apply_discount_10_percent(order_id)
+
     post "/orders", params:
       {
         "authenticity_token"=>"[FILTERED]",
@@ -64,7 +67,7 @@ class OrdersTest < ActionDispatch::IntegrationTest
         "commit"=>"Submit order"
       }
     follow_redirect!
-    assert_select("td", "$137.00")
+    assert_select("td", "$123.30")
     assert_select("p", "State: Submitted")
     assert_select("p", "Customer: Shopify")
     get "/orders"
@@ -118,5 +121,17 @@ class OrdersTest < ActionDispatch::IntegrationTest
     post "/admin/orders/#{Orders::Order.last.id}/cancel"
     follow_redirect!
     assert_select("td", "Cancelled")
+  end
+
+  private
+
+  def apply_discount_10_percent(order_id)
+    assert_select("a", "Edit discount")
+    get "/orders/#{order_id}/edit_discount"
+    assert_select("p", "Percentage:")
+
+    post "/orders/#{order_id}/update_discount?amount=10"
+    follow_redirect!
+    assert_select("td", "$123.30")
   end
 end

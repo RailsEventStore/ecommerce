@@ -1,0 +1,10 @@
+<h1>Discount</h1>
+
+<%= form_tag({controller: "orders", action: "update_discount"}, method: "post") do %>
+  <%= hidden_field_tag(:order_id, @order_id) %>
+  <p>Percentage:
+    <%= number_field_tag :amount, 20, min: 10, max: 100, step: 10 %>
+  </p>
+  <%= submit_tag("Set discount", class: "btn btn-primary") %>
+  <%= link_to "Back", edit_order_path(@order_id) %>
+<% end %>

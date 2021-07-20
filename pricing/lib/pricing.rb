@@ -12,6 +12,7 @@ module Pricing
       @cqrs.register_command(RemoveItemFromBasket, OnRemoveItemFromBasket.new, ItemRemovedFromBasket)
       @cqrs.register_command(SetPrice, SetPriceHandler.new, PriceSet)
       @cqrs.register_command(CalculateTotalValue, OnCalculateTotalValue.new, OrderTotalValueCalculated)
+      @cqrs.register_command(SetPercentageDiscount, SetPercentageDiscountHandler.new, PercentageDiscountSet)
     end
   end
 
@@ -47,6 +48,41 @@ module Pricing
   class ItemRemovedFromBasket < Event
     attribute :order_id,   Types::UUID
     attribute :product_id, Types::UUID
+  end
+
+  class SetPercentageDiscount < Command
+    attribute :order_id,   Types::UUID
+    attribute :amount, Types::PercentageDiscount
+  end
+
+  class SetPercentageDiscountHandler
+    include CommandHandler
+
+    def call(cmd)
+      repository = AggregateRoot::Repository.new(Rails.configuration.event_store)
+      stream_name = stream_name(Discounts::Order, cmd.order_id)
+      order = build_order(stream_name)
+      percentage_discount = Discounts::PercentageDiscount.new(cmd.amount)
+      order.discount
+      Rails.configuration.event_store.publish(
+        PercentageDiscountSet.new(data: {order_id: cmd.order_id, amount: cmd.amount}),
+        stream_name: stream_name
+      )
+    end
+
+    private
+
+    def build_order(stream_name)
+      last_event = Rails.configuration.event_store.read.to_a.last
+      case last_event
+      when PercentageDiscountSet
+        Discounts::DiscountedOrder.new
+      when PercentageDiscountReset
+        Discounts::Order.new
+      else
+        Discounts::Order.new
+      end
+    end
   end
 
   class SetPriceHandler
@@ -96,6 +132,12 @@ module Pricing
   end
 
   class OrderTotalValueCalculated < RailsEventStore::Event
+  end
+
+  class PercentageDiscountSet < RailsEventStore::Event
+  end
+
+  class PercentageDiscountReset < RailsEventStore::Event
   end
 
   class Order

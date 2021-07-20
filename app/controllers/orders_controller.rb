@@ -22,6 +22,17 @@ class OrdersController < ApplicationController
     @customers   = Crm::Customer.all
   end
 
+  def edit_discount
+    @order_id    = params[:id]
+  end
+
+  def update_discount
+    @order_id    = params[:id]
+    command_bus.(Pricing::SetPercentageDiscount.new(order_id: @order_id, amount: params[:amount]))
+
+    redirect_to edit_order_path(@order_id)
+  end
+
   def add_item
     command_bus.(Pricing::AddItemToBasket.new(order_id: params[:id], product_id: params[:product_id]))
     redirect_to edit_order_path(params[:id])

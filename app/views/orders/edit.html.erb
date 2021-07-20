@@ -40,6 +40,16 @@
     <%= select_tag(:customer_id, options_from_collection_for_select(@customers, :id, :name)) %>
   </p>
 
+  <% if @order.percentage_discount %>
+    <p>
+      Discount applied: <%= @order.percentage_discount %> %.
+    </p>
+  <% else %>
+    <p>
+    <%= link_to "Edit discount", edit_discount_order_path(@order_id) %>
+    </p>
+  <% end %>
+
   <%= submit_tag("Submit order", class: "btn btn-primary") %>
   <%= link_to 'Back', orders_path, class: "btn btn-default" %>
 <% end %>
