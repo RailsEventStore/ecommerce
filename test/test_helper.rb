@@ -2,7 +2,6 @@ ENV['RAILS_ENV'] ||= 'test'
 require_relative '../config/environment'
 require 'rails/test_help'
 require 'support/test_plumbing'
-require 'simplecov'
 require 'mutant/minitest/coverage'
 
 class ActiveSupport::TestCase
@@ -21,5 +20,3 @@ class ActiveSupport::TestCase
     Rails.configuration.command_bus.call(command)
   end
 end
-
-SimpleCov.start

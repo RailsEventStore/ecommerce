@@ -32,7 +32,6 @@ group :test do
   # gem 'capybara', '>= 3.34'
   gem 'selenium-webdriver'
   gem 'webdrivers'
-  gem 'simplecov', require: false
   gem 'mutant-minitest'
   gem 'mutant-license',  source: 'https://oss:7AXfeZdAfCqL1PvHm2nvDJO6Zd9UW8IK@gem.mutant.dev'
 end
