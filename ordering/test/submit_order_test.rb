@@ -1,7 +1,7 @@
 require_relative 'test_helper'
 
 module Ordering
-  class SubmitOrderTest < ActiveSupport::TestCase
+  class SubmitOrderTest < Ecommerce::InMemoryTestCase
     include TestPlumbing
 
     cover 'Ordering::OnSubmitOrder*'

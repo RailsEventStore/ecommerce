@@ -1,7 +1,7 @@
 require_relative 'test_helper'
 
 module Ordering
-  class RemoveItemFromBasketTest < ActiveSupport::TestCase
+  class RemoveItemFromBasketTest < Ecommerce::InMemoryTestCase
     include TestPlumbing
 
     cover 'Pricing::OnRemoveItemFromBasket*'

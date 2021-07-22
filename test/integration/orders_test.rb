@@ -1,6 +1,6 @@
 require "test_helper"
 
-class OrdersTest < ActionDispatch::IntegrationTest
+class OrdersTest < Ecommerce::InMemoryIntegrationTestCase
   cover 'Orders*'
 
   def setup
@@ -18,7 +18,7 @@ class OrdersTest < ActionDispatch::IntegrationTest
     post "/orders", params:
          {
            "authenticity_token"=>"[FILTERED]",
-           "order_id"=>"288c590d-b7dc-429f-8d82-79ebf2d5aabc",
+           "order_id"=>SecureRandom.uuid,
            "customer_id"=> arkency_id,
            "commit"=>"Submit order"
          }
@@ -28,8 +28,8 @@ class OrdersTest < ActionDispatch::IntegrationTest
     shopify_id = SecureRandom.uuid
     run_command(Crm::RegisterCustomer.new(customer_id: shopify_id, name: 'Shopify'))
 
-    order_id = "288c590d-b7dc-429f-8d82-79ebf2d5aabc"
-    another_order_id = "1111590d-b7dc-429f-8d82-79ebf2d5aabc"
+    order_id = SecureRandom.uuid
+    another_order_id = SecureRandom.uuid
 
     product_id = SecureRandom.uuid
     run_command(ProductCatalog::RegisterProduct.new(product_id: product_id, name: "Async Remote"))

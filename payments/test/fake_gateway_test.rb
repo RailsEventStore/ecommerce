@@ -1,7 +1,7 @@
 require_relative 'test_helper'
 
 module Payments
-  class FakeGatewayTest < ActiveSupport::TestCase
+  class FakeGatewayTest < Ecommerce::InMemoryTestCase
 
     cover 'Payments::FakeGateway*'
 

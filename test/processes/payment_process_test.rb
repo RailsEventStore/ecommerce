@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class PaymentProcessTest < ActiveSupport::TestCase
+class PaymentProcessTest < Ecommerce::InMemoryTestCase
 
   cover 'PaymentProcess*'
 

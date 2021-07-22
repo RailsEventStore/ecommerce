@@ -1,7 +1,7 @@
 require_relative 'test_helper'
 
 module Ordering
-  class MarkOrderAsPaidTest < ActiveSupport::TestCase
+  class MarkOrderAsPaidTest < Ecommerce::InMemoryTestCase
     include TestPlumbing
 
     cover 'Ordering::OnMarkOrderAsPaid*'

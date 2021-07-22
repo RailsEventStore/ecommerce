@@ -1,7 +1,7 @@
 require 'test_helper'
 
 module Pricing
-  class PricingTest < ActiveSupport::TestCase
+  class PricingTest < Ecommerce::InMemoryTestCase
     include TestPlumbing
 
     cover 'Pricing*'

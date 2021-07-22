@@ -1,7 +1,7 @@
 require_relative 'test_helper'
 
 module Ordering
-  class AddItemToBasketTest < ActiveSupport::TestCase
+  class AddItemToBasketTest < Ecommerce::InMemoryTestCase
     include TestPlumbing
 
     cover 'Pricing::OnAddItemToBasket*'

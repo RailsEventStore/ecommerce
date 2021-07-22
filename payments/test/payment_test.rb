@@ -1,7 +1,7 @@
 require_relative 'test_helper'
 
 module Payments
-  class PaymentTest < ActiveSupport::TestCase
+  class PaymentTest < Ecommerce::InMemoryTestCase
     include TestPlumbing
 
     cover 'Payments::Payment*'

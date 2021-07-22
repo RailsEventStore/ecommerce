@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class OrderConfirmationTest < ActiveSupport::TestCase
+class OrderConfirmationTest < Ecommerce::InMemoryTestCase
 
   cover 'OrderConfirmation'
 

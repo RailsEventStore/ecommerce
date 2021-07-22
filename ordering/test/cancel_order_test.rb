@@ -1,7 +1,7 @@
 require_relative 'test_helper'
 
 module Ordering
-  class CancelOrderTest < ActiveSupport::TestCase
+  class CancelOrderTest < Ecommerce::InMemoryTestCase
     include TestPlumbing
 
     cover 'Ordering::OnCancelOrder*'

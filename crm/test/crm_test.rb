@@ -1,7 +1,7 @@
 require 'test_helper'
 
 module Crm
-  class CrmTest < ActiveSupport::TestCase
+  class CrmTest < Ecommerce::InMemoryTestCase
 
     cover 'Crm*'
 

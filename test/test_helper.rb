@@ -4,19 +4,36 @@ require 'rails/test_help'
 require 'support/test_plumbing'
 require 'mutant/minitest/coverage'
 
-class ActiveSupport::TestCase
+module Ecommerce
+  class InMemoryTestCase < ActiveSupport::TestCase
+    setup do
+      Rails.configuration.event_store = RailsEventStore::Client.new(repository: RubyEventStore::InMemoryRepository.new)
+      Rails.configuration.command_bus = Arkency::CommandBus.new
 
-  setup do
-    Rails.configuration.event_store = RailsEventStore::Client.new(repository: RubyEventStore::InMemoryRepository.new)
-    Rails.configuration.command_bus = Arkency::CommandBus.new
+      Configuration.new.call(
+        Rails.configuration.event_store,
+        Rails.configuration.command_bus
+      )
+    end
 
-    Configuration.new.call(
-      Rails.configuration.event_store,
-      Rails.configuration.command_bus
-    )
+    def run_command(command)
+      Rails.configuration.command_bus.call(command)
+    end
   end
 
-  def run_command(command)
-    Rails.configuration.command_bus.call(command)
+  class InMemoryIntegrationTestCase < ActionDispatch::IntegrationTest
+    setup do
+      Rails.configuration.event_store = RailsEventStore::Client.new(repository: RubyEventStore::InMemoryRepository.new)
+      Rails.configuration.command_bus = Arkency::CommandBus.new
+
+      Configuration.new.call(
+        Rails.configuration.event_store,
+        Rails.configuration.command_bus
+      )
+    end
+
+    def run_command(command)
+      Rails.configuration.command_bus.call(command)
+    end
   end
 end

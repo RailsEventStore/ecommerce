@@ -1,7 +1,7 @@
 require 'test_helper'
 
 module Orders
-  class ItemRemovedFromBasketTest < ActiveJob::TestCase
+  class ItemRemovedFromBasketTest < Ecommerce::InMemoryTestCase
 
     cover 'Orders'
 

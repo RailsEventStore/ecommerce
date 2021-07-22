@@ -1,7 +1,7 @@
 require 'test_helper'
 
 module ProductCatalog
-  class ProductCatalogTest < ActiveSupport::TestCase
+  class ProductCatalogTest < Ecommerce::InMemoryTestCase
 
     cover 'ProductCatalog*'
 

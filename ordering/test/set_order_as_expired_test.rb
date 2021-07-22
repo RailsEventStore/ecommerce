@@ -1,7 +1,7 @@
 require_relative 'test_helper'
 
 module Ordering
-  class SetOrderAsExpiredTest < ActiveSupport::TestCase
+  class SetOrderAsExpiredTest < Ecommerce::InMemoryTestCase
     include TestPlumbing
 
     cover 'Ordering::OnSetOrderAsExpired*'

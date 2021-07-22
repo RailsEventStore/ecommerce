@@ -2,7 +2,7 @@ require_relative '../cqrs'
 require_relative '../../test/test_helper'
 
 
-class CqrsTest < ActiveSupport::TestCase
+class CqrsTest < Ecommerce::InMemoryTestCase
   cover 'Cqrs*'
 
   class SomeCommand < Command; end
