@@ -5,6 +5,11 @@ module Orders
 
     cover 'Orders'
 
+    def setup
+      super
+      Order.destroy_all
+    end
+
     test 'expire created order' do
       event_store = Rails.configuration.event_store
 

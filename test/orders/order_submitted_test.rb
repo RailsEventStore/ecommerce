@@ -5,6 +5,12 @@ module Orders
 
     cover 'Orders'
 
+    def setup
+      super
+      Order.destroy_all
+      OrderLine.destroy_all
+    end
+
     test 'create when not exists' do
       event_store = Rails.configuration.event_store
 

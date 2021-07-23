@@ -1,10 +1,12 @@
 require "test_helper"
 
-class OrdersTest < Ecommerce::InMemoryIntegrationTestCase
+class OrdersTest < Ecommerce::InMemoryRESIntegrationTestCase
   cover 'Orders*'
 
   def setup
+    super
     Rails.configuration.payment_gateway.call.reset
+    Orders::Order.destroy_all
   end
 
   def test_submitting_empty_order
@@ -77,13 +79,12 @@ class OrdersTest < Ecommerce::InMemoryIntegrationTestCase
     get "/orders"
     post "/orders/#{order_id}/pay"
     follow_redirect!
-    assert_select("td", "Ready to ship (paid)")
-
+    assert_select("td", text: "Ready to ship (paid)")
     assert_payment_gateway_value(123.30)
   end
 
   def test_expiring_orders
-    order_id = "388c590d-b7dc-429f-8d82-79ebf2d5aabc"
+    order_id = SecureRandom.uuid
     product_id = SecureRandom.uuid
     run_command(ProductCatalog::RegisterProduct.new(product_id: product_id, name: "Async Remote"))
     run_command(Pricing::SetPrice.new(product_id: product_id, price: 39))
@@ -102,7 +103,7 @@ class OrdersTest < Ecommerce::InMemoryIntegrationTestCase
   def test_cancel
     shopify_id = SecureRandom.uuid
     run_command(Crm::RegisterCustomer.new(customer_id: shopify_id, name: 'Shopify'))
-    order_id = "288c590d-b7dc-429f-8d82-79ebf2d5aabc"
+    order_id = SecureRandom.uuid
     product_id = SecureRandom.uuid
     run_command(ProductCatalog::RegisterProduct.new(product_id: product_id, name: "Async Remote"))
     run_command(Pricing::SetPrice.new(product_id: product_id, price: 39))
@@ -132,6 +133,7 @@ class OrdersTest < Ecommerce::InMemoryIntegrationTestCase
   private
 
   def assert_payment_gateway_value(value)
+    assert_equal(1, Rails.configuration.payment_gateway.call.authorized_transactions.size)
     assert_equal(value, Rails.configuration.payment_gateway.call.authorized_transactions[0][1])
   end
 

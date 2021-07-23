@@ -155,13 +155,17 @@ module Pricing
     end
   end
 
-  class PriceSet < RailsEventStore::Event
+  class PriceSet < Event
+    attribute :product_id, Types::UUID
+    attribute :price, Types::Price
   end
 
   class OrderTotalValueCalculated < RailsEventStore::Event
   end
 
-  class PercentageDiscountSet < RailsEventStore::Event
+  class PercentageDiscountSet < Event
+    attribute :order_id, Types::UUID
+    attribute :amount, Types::Price
   end
 
   class PercentageDiscountReset < RailsEventStore::Event
