@@ -6,7 +6,6 @@ Customer: <%= @order.customer %>
 <p>
 State: <%= @order.state %>
 </p>
-
 <h2>Order lines</h2>
 
 <table class="table">
@@ -32,9 +31,11 @@ State: <%= @order.state %>
   <tr>
     <td>Total:</td>
     <td colspan="2"></td>
-    <td><strong><%= number_to_currency(@order.total_value) %></strong></td>
+    <td><strong><%= number_to_currency(@order.discounted_value) %></strong></td>
   </tr>
 </table>
-
+<% if @order.percentage_discount %>
+  <p>Discount applied: <strong><%= @order.percentage_discount %>%</strong></p>
+<% end %>
 <br/>
 <%= link_to 'Back', orders_path, class: "btn btn-default" %>

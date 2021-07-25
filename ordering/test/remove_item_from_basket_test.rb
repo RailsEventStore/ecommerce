@@ -15,7 +15,11 @@ module Ordering
       run_command(Pricing::SetPrice.new(product_id: product_id, price: 20))
 
       arrange(Pricing::AddItemToBasket.new(order_id: aggregate_id, product_id: product_id))
-      assert_events(stream, Pricing::ItemRemovedFromBasket.new(data: {order_id: aggregate_id, product_id: product_id})) do
+      expected_events = [
+        Pricing::ItemRemovedFromBasket.new(data: {order_id: aggregate_id, product_id: product_id}),
+        Pricing::OrderTotalValueCalculated.new(data: {order_id: aggregate_id, discounted_amount: 0, total_amount: 0})
+      ]
+      assert_events(stream, *expected_events) do
         act(Pricing::RemoveItemFromBasket.new(order_id: aggregate_id, product_id: product_id))
       end
     end

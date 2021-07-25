@@ -27,7 +27,7 @@ module Pricing
       add_item(order_id, product_1_id)
       add_item(order_id, product_2_id)
       stream = "Pricing::Order$#{order_id}"
-      assert_events(stream, OrderTotalValueCalculated.new(data: { order_id: order_id, amount: 50 })) do
+      assert_events(stream, OrderTotalValueCalculated.new(data: { order_id: order_id, discounted_amount: 50, total_amount: 50})) do
         calculate_total_value(order_id)
       end
     end
@@ -39,10 +39,10 @@ module Pricing
       order_id = SecureRandom.uuid
       add_item(order_id, product_1_id)
       stream = "Pricing::Order$#{order_id}"
-      assert_events(stream, OrderTotalValueCalculated.new(data: { order_id: order_id, amount: 20 })) do
+      assert_events(stream, OrderTotalValueCalculated.new(data: { order_id: order_id, discounted_amount: 20, total_amount: 20 })) do
         run_command(CalculateTotalValue.new(order_id: order_id))
       end
-      assert_events(stream, OrderTotalValueCalculated.new(data: { order_id: order_id, amount: 18 })) do
+      assert_events(stream, OrderTotalValueCalculated.new(data: { order_id: order_id, discounted_amount: 18, total_amount: 20 })) do
         run_command(Pricing::SetPercentageDiscount.new(order_id: order_id, amount: 10))
       end
     end

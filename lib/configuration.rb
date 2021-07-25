@@ -36,7 +36,7 @@ class Configuration
 
     cqrs.subscribe(
       -> (event) { cqrs.run(
-        Payments::SetPaymentAmount.new(order_id: event.data.fetch(:order_id), amount: event.data.fetch(:amount).to_f))},
+        Payments::SetPaymentAmount.new(order_id: event.data.fetch(:order_id), amount: event.data.fetch(:discounted_amount).to_f))},
       [Pricing::OrderTotalValueCalculated])
   end
 end

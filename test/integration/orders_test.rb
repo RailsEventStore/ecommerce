@@ -76,6 +76,7 @@ class OrdersTest < Ecommerce::InMemoryRESIntegrationTestCase
     assert_select("td", "$123.30")
     assert_select("p", "State: Submitted")
     assert_select("p", "Customer: Shopify")
+    assert_select("p", "Discount applied: 10.0%")
     get "/orders"
     post "/orders/#{order_id}/pay"
     follow_redirect!

@@ -15,7 +15,7 @@ module Pricing
       @cqrs.register_command(SetPercentageDiscount, SetPercentageDiscountHandler.new, PercentageDiscountSet)
       @cqrs.subscribe(
         -> (event) { @cqrs.run(Pricing::CalculateTotalValue.new(order_id: event.data.fetch(:order_id)))},
-        [Pricing::PercentageDiscountSet])
+        [ItemAddedToBasket, ItemRemovedFromBasket, Pricing::PercentageDiscountSet])
     end
   end
 
@@ -160,7 +160,10 @@ module Pricing
     attribute :price, Types::Price
   end
 
-  class OrderTotalValueCalculated < RailsEventStore::Event
+  class OrderTotalValueCalculated < Event
+    attribute :order_id, Types::UUID
+    attribute :discounted_amount, Types::Value
+    attribute :total_amount, Types::Value
   end
 
   class PercentageDiscountSet < Event
@@ -191,8 +194,13 @@ module Pricing
       total_value = @product_ids.sum do |product_id|
         pricing_catalog.price_for(product_id)
       end
-      total_value = percentage_discount.apply(total_value)
-      apply(OrderTotalValueCalculated.new(data: {order_id: @id, amount: total_value}))
+      discounted_value = percentage_discount.apply(total_value)
+      apply(OrderTotalValueCalculated.new(
+        data: {
+          order_id: @id,
+          total_amount: total_value,
+          discounted_amount: discounted_value
+        }))
     end
 
     on ItemAddedToBasket do |event|

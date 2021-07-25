@@ -13,14 +13,18 @@ module Ordering
       run_command(ProductCatalog::RegisterProduct.new(product_id: product_id, name: "Async Remote"))
       run_command(Pricing::SetPrice.new(product_id: product_id, price: 39))
 
-      assert_events(
-        stream,
+      expected_events = [
         Pricing::ItemAddedToBasket.new(
           data: {
             order_id: aggregate_id,
             product_id: product_id
           }
-        )
+        ),
+        Pricing::OrderTotalValueCalculated.new(data: {order_id: aggregate_id, discounted_amount: 39, total_amount: 39})
+      ]
+      assert_events(
+        stream,
+        *expected_events
       ) do
         act(Pricing::AddItemToBasket.new(order_id: aggregate_id, product_id: product_id))
       end
