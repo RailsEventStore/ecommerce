@@ -1,32 +1,103 @@
 module Orders
+  class Order < ApplicationRecord
+    self.table_name = "orders"
+
+    has_many :order_lines,
+             -> { order(id: :asc) },
+             class_name: "Orders::OrderLine",
+             foreign_key: :order_uid,
+             primary_key: :uid
+
+  end
+
+  class OrderLine < ApplicationRecord
+    self.table_name = "order_lines"
+
+    def value
+      price * quantity
+    end
+  end
+
   class Configuration
     def initialize(cqrs)
       @cqrs = cqrs
     end
 
     def call
-      @cqrs.subscribe(OnOrderSubmitted, [Ordering::OrderSubmitted])
-      @cqrs.subscribe(OnOrderExpired, [Ordering::OrderExpired])
-      @cqrs.subscribe(OnOrderPaid, [Ordering::OrderPaid])
-      @cqrs.subscribe(OnItemAddedToBasket, [Pricing::ItemAddedToBasket])
-      @cqrs.subscribe(OnItemRemovedFromBasket, [Pricing::ItemRemovedFromBasket])
-      @cqrs.subscribe(OnOrderCancelled, [Ordering::OrderCancelled])
+      @cqrs.subscribe(-> (event) { mark_as_submitted(event) }, [Ordering::OrderSubmitted])
+      @cqrs.subscribe(-> (event) { change_order_state(event, "Expired") }, [Ordering::OrderExpired])
+      @cqrs.subscribe(-> (event) { change_order_state(event, "Ready to ship (paid)") }, [Ordering::OrderPaid])
+      @cqrs.subscribe(-> (event) { change_order_state(event, "Cancelled") }, [Ordering::OrderCancelled])
+      @cqrs.subscribe(-> (event) { add_item_to_order(event)}, [Pricing::ItemAddedToBasket])
+      @cqrs.subscribe(-> (event) { remove_item_from_order(event) }, [Pricing::ItemRemovedFromBasket])
       @cqrs.subscribe(-> (event) { update_discount(event) }, [Pricing::PercentageDiscountSet])
       @cqrs.subscribe(-> (event) { update_totals(event) }, [Pricing::OrderTotalValueCalculated])
     end
 
     private
 
-    def update_discount(event)
-      order = Order.find_by_uid(event.data.fetch(:order_id))
-      order.percentage_discount = event.data.fetch(:amount)
+    def mark_as_submitted(event)
+      order = Order.find_or_create_by(uid: event.data.fetch(:order_id))
+      order.number = event.data.fetch(:order_number)
+      order.customer = Crm::Customer.find(event.data.fetch(:customer_id)).name
+      order.state = "Submitted"
       order.save!
     end
 
+    def add_item_to_order(event)
+      order_id = event.data.fetch(:order_id)
+      create_draft_order(order_id)
+      item = find(order_id, event.data.fetch(:product_id)) ||
+        create(order_id, event.data.fetch(:product_id))
+      item.quantity += 1
+      item.save!
+    end
+
+    def create_draft_order(uid)
+      return if Order.where(uid: uid).exists?
+      Order.create!(
+        uid: uid,
+        state: "Draft",
+        )
+    end
+
+    def find(order_uid, product_id)
+      Order.find_by_uid(order_uid).order_lines.where(product_id: product_id).first
+    end
+
+    def create(order_uid, product_id)
+      product = ProductCatalog::Product.find(product_id)
+      Order.find_by(uid: order_uid).order_lines.create(
+        product_id: product_id,
+        product_name: product.name,
+        price: product.price,
+        quantity: 0
+      )
+    end
+
+    def remove_item_from_order(event)
+      item = find(event.data.fetch(:order_id), event.data.fetch(:product_id))
+      item.quantity -= 1
+      item.quantity > 0 ? item.save! : item.destroy!
+    end
+
+    def update_discount(event)
+      with_order(event) {|order| order.percentage_discount = event.data.fetch(:amount)}
+    end
+
     def update_totals(event)
-      order = Order.find_by_uid(event.data.fetch(:order_id))
-      order.discounted_value = event.data.fetch(:discounted_amount)
-      order.save!
+      with_order(event) {|order| order.discounted_value = event.data.fetch(:discounted_amount) }
+    end
+
+    def change_order_state(event, new_state)
+      with_order(event) {|order| order.state = new_state}
+    end
+
+    def with_order(event)
+      Order.find_by_uid(event.data.fetch(:order_id)).tap do |order|
+        yield(order)
+        order.save!
+      end
     end
   end
 end
