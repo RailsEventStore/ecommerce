@@ -82,6 +82,7 @@ class OrdersTest < Ecommerce::InMemoryRESIntegrationTestCase
     follow_redirect!
     assert_select("td", text: "Ready to ship (paid)")
     assert_payment_gateway_value(123.30)
+    assert_res_browser_order_history
   end
 
   def test_expiring_orders
@@ -132,6 +133,15 @@ class OrdersTest < Ecommerce::InMemoryRESIntegrationTestCase
   end
 
   private
+
+  def assert_res_browser_order_history
+    get "/res/api/streams/Orders$#{Orders::Order.last.uid}/relationships/events"
+    event_names = JSON.load(body).fetch("data").map { |data| data.fetch("attributes").fetch("event_type") }
+    assert(event_names.include?("Ordering::OrderPaid"))
+    assert(event_names.include?("Pricing::ItemAddedToBasket"))
+    assert(event_names.include?("Pricing::OrderTotalValueCalculated"))
+    assert(event_names.include?("Ordering::OrderSubmitted"))
+  end
 
   def assert_payment_gateway_value(value)
     assert_equal(1, Rails.configuration.payment_gateway.call.authorized_transactions.size)

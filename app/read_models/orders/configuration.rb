@@ -24,17 +24,26 @@ module Orders
     end
 
     def call
-      @cqrs.subscribe(-> (event) { mark_as_submitted(event) }, [Ordering::OrderSubmitted])
-      @cqrs.subscribe(-> (event) { change_order_state(event, "Expired") }, [Ordering::OrderExpired])
-      @cqrs.subscribe(-> (event) { change_order_state(event, "Ready to ship (paid)") }, [Ordering::OrderPaid])
-      @cqrs.subscribe(-> (event) { change_order_state(event, "Cancelled") }, [Ordering::OrderCancelled])
-      @cqrs.subscribe(-> (event) { add_item_to_order(event)}, [Pricing::ItemAddedToBasket])
-      @cqrs.subscribe(-> (event) { remove_item_from_order(event) }, [Pricing::ItemRemovedFromBasket])
-      @cqrs.subscribe(-> (event) { update_discount(event) }, [Pricing::PercentageDiscountSet])
-      @cqrs.subscribe(-> (event) { update_totals(event) }, [Pricing::OrderTotalValueCalculated])
+      subscribe(-> (event) { mark_as_submitted(event) }, [Ordering::OrderSubmitted])
+      subscribe(-> (event) { change_order_state(event, "Expired") }, [Ordering::OrderExpired])
+      subscribe(-> (event) { change_order_state(event, "Ready to ship (paid)") }, [Ordering::OrderPaid])
+      subscribe(-> (event) { change_order_state(event, "Cancelled") }, [Ordering::OrderCancelled])
+      subscribe(-> (event) { add_item_to_order(event)}, [Pricing::ItemAddedToBasket])
+      subscribe(-> (event) { remove_item_from_order(event) }, [Pricing::ItemRemovedFromBasket])
+      subscribe(-> (event) { update_discount(event) }, [Pricing::PercentageDiscountSet])
+      subscribe(-> (event) { update_totals(event) }, [Pricing::OrderTotalValueCalculated])
     end
 
     private
+
+    def subscribe(handler, events)
+      link_and_handle =
+        -> (event) {
+          link_to_stream(event)
+          handler.call(event)
+        }
+      @cqrs.subscribe(link_and_handle, events)
+    end
 
     def mark_as_submitted(event)
       order = Order.find_or_create_by(uid: event.data.fetch(:order_id))
@@ -42,6 +51,10 @@ module Orders
       order.customer = Crm::Customer.find(event.data.fetch(:customer_id)).name
       order.state = "Submitted"
       order.save!
+    end
+
+    def link_to_stream(event)
+      @cqrs.link_event_to_stream(event, "Orders$#{event.data.fetch(:order_id)}")
     end
 
     def add_item_to_order(event)

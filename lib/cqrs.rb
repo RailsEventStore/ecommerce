@@ -22,6 +22,10 @@ class Cqrs
     @command_bus.call(command)
   end
 
+  def link_event_to_stream(event, stream)
+    @event_store.link(event.event_id, stream_name: stream, expected_version: :any)
+  end
+
   def to_hash
     @commands_to_events
   end
