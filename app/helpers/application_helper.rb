@@ -8,6 +8,6 @@ module ApplicationHelper
   end
 
   def order_history_link(id)
-    stream_browser_link("History", "Ordering::Order$#{id}")
+    stream_browser_link("History", "Orders$#{id}")
   end
 end
