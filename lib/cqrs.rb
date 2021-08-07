@@ -9,13 +9,13 @@ class Cqrs
     @event_store.subscribe(subscriber, to: events)
   end
 
-  def register_command(command_handler, command, events)
-    @commands_to_events[command] = events
-    @command_bus.register(command_handler, command)
+  def register_command(command, command_handler, events)
+    @commands_to_events[command_handler] = events
+    @command_bus.register(command, command_handler)
   end
 
-  def register(command_handler, command)
-    @command_bus.register(command_handler, command)
+  def register(command, command_handler)
+    @command_bus.register(command, command_handler)
   end
 
   def run(command)
