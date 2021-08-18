@@ -6,6 +6,7 @@ require 'types'
 
 require Rails.root.join("ordering/lib/ordering/configuration")
 require Rails.root.join("pricing/lib/pricing")
+require Rails.root.join("product_catalog/lib/product_catalog")
 
 class Configuration
   def call(event_store, command_bus)
