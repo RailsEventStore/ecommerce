@@ -5,6 +5,7 @@ require 'event'
 require 'types'
 
 require Rails.root.join("ordering/lib/ordering/configuration")
+require Rails.root.join("pricing/lib/pricing")
 
 class Configuration
   def call(event_store, command_bus)
