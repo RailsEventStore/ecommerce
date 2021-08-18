@@ -4,11 +4,11 @@ require 'command'
 require 'event'
 require 'types'
 
-require Rails.root.join("ordering/lib/ordering/configuration")
-require Rails.root.join("pricing/lib/pricing")
-require Rails.root.join("product_catalog/lib/product_catalog")
-require Rails.root.join("crm/lib/crm")
-require Rails.root.join("payments/lib/payments")
+require Rails.root.join("ecommerce/ordering/lib/ordering/configuration")
+require Rails.root.join("ecommerce/pricing/lib/pricing")
+require Rails.root.join("ecommerce/product_catalog/lib/product_catalog")
+require Rails.root.join("ecommerce/crm/lib/crm")
+require Rails.root.join("ecommerce/payments/lib/payments")
 
 class Configuration
   def call(event_store, command_bus)
