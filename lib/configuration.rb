@@ -4,6 +4,8 @@ require 'command'
 require 'event'
 require 'types'
 
+require Rails.root.join("ordering/lib/ordering/configuration")
+
 class Configuration
   def call(event_store, command_bus)
     cqrs = Cqrs.new(event_store, command_bus)

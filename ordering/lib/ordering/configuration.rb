@@ -1,3 +1,5 @@
+require_relative '../ordering'
+
 module Ordering
   class Configuration
     def initialize(cqrs)

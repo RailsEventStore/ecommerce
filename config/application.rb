@@ -20,7 +20,6 @@ module CqrsEsSampleWithRes
     # config.eager_load_paths << Rails.root.join("extras")
 
     config.paths.add "lib",             eager_load: true
-    config.paths.add "ordering/lib",    eager_load: true
     config.paths.add "ecommerce",       eager_load: true
     config.paths.add "payments/lib",    eager_load: true
     config.paths.add 'crm/lib', eager_load: true
