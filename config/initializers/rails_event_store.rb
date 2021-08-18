@@ -1,6 +1,7 @@
 require 'rails_event_store'
 require 'arkency/command_bus'
 
+require Rails.root.join("lib/configuration")
 
 class Mapper < RubyEventStore::Mappers::PipelineMapper
   def initialize
