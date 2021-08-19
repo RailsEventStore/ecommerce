@@ -20,11 +20,8 @@ module Orders
       customer_id = SecureRandom.uuid
       run_command(Crm::RegisterCustomer.new(customer_id: customer_id, name: 'dummy'))
       order_id = SecureRandom.uuid
-      order_number = Ordering::FakeNumberGenerator::FAKE_NUMBER
       event_store.publish(Pricing::ItemAddedToBasket.new(data: {order_id: order_id, product_id: product_id}))
       event_store.publish(Pricing::ItemAddedToBasket.new(data: {order_id: order_id, product_id: product_id}))
-      event_store.publish(Ordering::OrderSubmitted.new(data: {order_id: order_id, order_number: order_number, customer_id: customer_id}))
-
       event_store.publish(Pricing::ItemRemovedFromBasket.new(data: {order_id: order_id, product_id: product_id}))
 
       assert_equal(OrderLine.count, 1)
@@ -43,10 +40,7 @@ module Orders
       customer_id = SecureRandom.uuid
       run_command(Crm::RegisterCustomer.new(customer_id: customer_id, name: 'dummy'))
       order_id = SecureRandom.uuid
-      order_number = Ordering::FakeNumberGenerator::FAKE_NUMBER
       event_store.publish(Pricing::ItemAddedToBasket.new(data: {order_id: order_id, product_id: product_id}))
-      event_store.publish(Ordering::OrderSubmitted.new(data: {order_id: order_id, order_number: order_number, customer_id: customer_id}))
-
       event_store.publish(Pricing::ItemRemovedFromBasket.new(data: {order_id: order_id, product_id: product_id}))
 
       assert_equal(OrderLine.count, 0)
@@ -67,12 +61,9 @@ module Orders
       customer_id = SecureRandom.uuid
       run_command(Crm::RegisterCustomer.new(customer_id: customer_id, name: 'dummy'))
       order_id = SecureRandom.uuid
-      order_number = Ordering::FakeNumberGenerator::FAKE_NUMBER
       event_store.publish(Pricing::ItemAddedToBasket.new(data: {order_id: order_id, product_id: product_id}))
       event_store.publish(Pricing::ItemAddedToBasket.new(data: {order_id: order_id, product_id: product_id}))
       event_store.publish(Pricing::ItemAddedToBasket.new(data: {order_id: order_id, product_id: another_product_id}))
-      event_store.publish(Ordering::OrderSubmitted.new(data: {order_id: order_id, order_number: order_number, customer_id: customer_id}))
-
       event_store.publish(Pricing::ItemRemovedFromBasket.new(data: {order_id: order_id, product_id: another_product_id}))
 
       assert_equal(OrderLine.count, 1)
