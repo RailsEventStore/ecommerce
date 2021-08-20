@@ -23,6 +23,7 @@ jobs:
         with:
           ruby-version: ruby-2.7.2
           bundler-cache: true
+        working-directory: rails_application
       - run: yarn
         working-directory: rails_application
       - run: make test
@@ -50,6 +51,7 @@ jobs:
         with:
           ruby-version: ruby-2.7.2
           bundler-cache: true
+        working-directory: rails_application
       - run: yarn
         working-directory: rails_application
       - run: make mutate
