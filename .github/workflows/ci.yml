@@ -24,7 +24,9 @@ jobs:
           ruby-version: ruby-2.7.2
           bundler-cache: true
       - run: yarn
+        working-directory: rails_application
       - run: make test
+        working-directory: rails_application
       - uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
@@ -49,7 +51,9 @@ jobs:
           ruby-version: ruby-2.7.2
           bundler-cache: true
       - run: yarn
+        working-directory: rails_application
       - run: make mutate
+        working-directory: rails_application
       - uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
