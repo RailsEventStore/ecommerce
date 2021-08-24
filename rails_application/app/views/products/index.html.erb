@@ -7,14 +7,17 @@
   <tr>
     <th>Name</th>
     <th>Price</th>
+    <th colspan="2">Stock level</th>
   </tr>
   </thead>
 
   <tbody>
-  <% @products.each do |order| %>
+  <% @products.each do |product| %>
     <tr>
-      <td><%= order.name %></td>
-      <td><%= number_to_currency order.price %></td>
+      <td><%= product.name %></td>
+      <td><%= number_to_currency product.price %></td>
+      <td><%= product.stock_level %></td>
+      <td><%= link_to 'Supply', new_product_supply_path(product) %></td>
     </tr>
   <% end %>
   </tbody>

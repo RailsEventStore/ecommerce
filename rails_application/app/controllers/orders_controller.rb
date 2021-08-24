@@ -47,6 +47,8 @@ class OrdersController < ApplicationController
     cmd = Ordering::SubmitOrder.new(order_id: params[:order_id], customer_id: params[:customer_id])
     command_bus.(cmd)
     redirect_to order_path(Orders::Order.find_by_uid(cmd.order_id)), notice: 'Order was successfully submitted.'
+  rescue Inventory::InventoryEntry::InventoryNotAvailable
+    redirect_to order_path(Orders::Order.find_by_uid(cmd.order_id)), notice: 'Order can not be submitted! Some products are not available.'
   end
 
   def expire

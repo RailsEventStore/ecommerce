@@ -1,0 +1,11 @@
+<h1>Supply</h1>
+
+<%= form_tag({controller: "supplies", action: "create"}, method: "post") do %>
+  <%= hidden_field_tag(:product_id, @product_id) %>
+
+  <p>Quantity:
+    <%= number_field_tag :quantity, nil, min: 1, step: 1 %>
+  </p>
+
+  <%= submit_tag("Supply", class: "btn btn-primary") %>
+<% end %>
