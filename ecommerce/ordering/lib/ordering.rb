@@ -41,6 +41,7 @@ module Ordering
       end
     end
   end
+
   class OnSubmitOrder
     include CommandHandler
 
@@ -49,9 +50,11 @@ module Ordering
     end
 
     def call(command)
-      with_aggregate(Order, command.aggregate_id) do |order|
-        order_number = number_generator.call
-        order.submit(order_number, command.customer_id)
+      ActiveRecord::Base.transaction do
+        with_aggregate(Order, command.aggregate_id) do |order|
+          order_number = number_generator.call
+          order.submit(order_number, command.customer_id)
+        end
       end
     end
 

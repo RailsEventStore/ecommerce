@@ -23,8 +23,8 @@ module Orders
       order_id = SecureRandom.uuid
       order_number = Ordering::FakeNumberGenerator::FAKE_NUMBER
 
-      event_store.publish(Pricing::ItemAddedToBasket.new(data: {order_id: order_id, product_id: product_id}))
-      event_store.publish(Ordering::OrderSubmitted.new(data: {order_id: order_id, order_number: order_number, customer_id: customer_id}))
+      event_store.publish(Pricing::ItemAddedToBasket.new(data: { order_id: order_id, product_id: product_id }))
+      event_store.publish(Ordering::OrderSubmitted.new(data: { order_id: order_id, order_number: order_number, customer_id: customer_id }))
 
       assert_equal(Order.count, 1)
       order = Order.find_by(uid: order_id)
@@ -45,10 +45,12 @@ module Orders
 
       order_id = SecureRandom.uuid
       order_number = Ordering::FakeNumberGenerator::FAKE_NUMBER
-      event_store.publish(Pricing::ItemAddedToBasket.new(data: {order_id: order_id, product_id: product_id}))
-      event_store.publish(Ordering::OrderSubmitted.new(data: {order_id: order_id, order_number: order_number, customer_id: customer_id}))
+      event_store.publish(Pricing::ItemAddedToBasket.new(data: { order_id: order_id, product_id: product_id }))
+      event_store.publish(Ordering::OrderSubmitted.new(data: { order_id: order_id, order_number: order_number, customer_id: customer_id }))
 
-      event_store.publish(Ordering::OrderSubmitted.new(data: {order_id: order_id, order_number: order_number, customer_id: customer_id}))
+      assert_raises(Inventory::Reservation::AlreadySubmitted) do
+        event_store.publish(Ordering::OrderSubmitted.new(data: { order_id: order_id, order_number: order_number, customer_id: customer_id }))
+      end
 
       assert_equal(Order.count, 1)
       order = Order.find_by(uid: order_id)
