@@ -6,8 +6,6 @@ require 'mutant/minitest/coverage'
 
 module Ecommerce
   class InMemoryTestCase < ActiveSupport::TestCase
-    self.use_transactional_tests = false
-
     def before_setup
       result = super
       @previous_event_store = Rails.configuration.event_store
