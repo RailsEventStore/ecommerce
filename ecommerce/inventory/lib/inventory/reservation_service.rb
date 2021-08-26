@@ -3,7 +3,7 @@ module Inventory
     include CommandHandler
 
     def call(command)
-      send command.class.name.demodulize.underscore, command
+      __send__(command.class.name.demodulize.underscore, command)
     end
 
     private
@@ -43,9 +43,11 @@ module Inventory
 
     def cancel_reservation(command)
       with_reservation(command.order_id) do |reservation|
-        reservation.reservation_items.each do |item|
-          with_inventory_entry(item.product_id) do |entry|
-            entry.release(item.quantity)
+        if reservation.submitted?
+          reservation.reservation_items.each do |item|
+            with_inventory_entry(item.product_id) do |entry|
+              entry.release(item.quantity)
+            end
           end
         end
         reservation.cancel

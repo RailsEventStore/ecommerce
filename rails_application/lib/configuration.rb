@@ -77,5 +77,10 @@ class Configuration
       -> (event) { cqrs.run(
         Inventory::CancelReservation.new(order_id: event.data.fetch(:order_id))) },
       [Ordering::OrderCancelled])
+
+    cqrs.subscribe(
+      -> (event) { cqrs.run(
+        Inventory::CancelReservation.new(order_id: event.data.fetch(:order_id))) },
+      [Ordering::OrderExpired])
   end
 end

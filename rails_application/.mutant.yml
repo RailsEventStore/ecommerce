@@ -16,6 +16,7 @@ matcher:
   - PaymentProcess#call
   - PaymentProcess#release_payment
   - Pricing*
+  - Inventory*
   ignore:
   - Ordering::NumberGenerator*
   - Payments::Payment#authorized?

@@ -16,7 +16,6 @@ module Inventory
     end
 
     def dispatch(quantity)
-      raise StockLevelUndefined unless @in_stock
       apply StockLevelChanged.new(data: { product_id: @product_id, quantity: -quantity, stock_level: @in_stock - quantity })
     end
 
@@ -26,8 +25,6 @@ module Inventory
     end
 
     def release(quantity)
-      raise NotEvenReserved unless @reserved
-      # raise NotEvenReserved if @reserved < quantity
       apply StockReleased.new(data: { product_id: @product_id, quantity: quantity })
     end
 

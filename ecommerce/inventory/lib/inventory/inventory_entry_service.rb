@@ -3,7 +3,7 @@ module Inventory
     include CommandHandler
 
     def call(command)
-      send command.class.name.demodulize.underscore, command
+      __send__(command.class.name.demodulize.underscore, command)
     end
 
     private
