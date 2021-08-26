@@ -17,25 +17,25 @@ module Inventory
 
     def adjust(product_id, quantity)
       raise AlreadySubmitted if @state
-      apply ReservationAdjusted.new(data: {product_id: product_id, quantity: quantity})
+      apply ReservationAdjusted.new(data: {order_id: @order_id, product_id: product_id, quantity: quantity})
     end
 
     def submit(reservation_items)
       raise AlreadySubmitted if @state
-      apply ReservationSubmitted.new(data: { reservation_items: reservation_items.map(&:to_h) })
+      apply ReservationSubmitted.new(data: {order_id: @order_id, reservation_items: reservation_items.map(&:to_h) })
     end
 
     def complete
       raise NotSubmitted unless @state
       raise AlreadyCompleted if @state.equal?(:completed)
       raise AlreadyCanceled if @state.equal?(:canceled)
-      apply ReservationCompleted.new(data: { reservation_items: @reservation_items.map(&:to_h) })
+      apply ReservationCompleted.new(data: { order_id: @order_id, reservation_items: @reservation_items.map(&:to_h) })
     end
 
     def cancel
       raise NotSubmitted unless @state
       raise AlreadyCanceled if @state.equal?(:canceled)
-      apply ReservationCanceled.new(data: { reservation_items: @reservation_items.map(&:to_h) })
+      apply ReservationCanceled.new(data: { order_id: @order_id, reservation_items: @reservation_items.map(&:to_h) })
     end
 
     private
