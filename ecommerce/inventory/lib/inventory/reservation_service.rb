@@ -17,7 +17,7 @@ module Inventory
     def submit_reservation(command)
       with_reservation(command.order_id) do |reservation|
         reserved_items = []
-        reservation.reservation_items.map do |item|
+        reservation.reservation_items.each do |item|
           with_inventory_entry(item.product_id) do |entry|
             entry.reserve(item.quantity)
           rescue InventoryEntry::StockLevelUndefined
