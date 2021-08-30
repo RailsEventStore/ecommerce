@@ -1,7 +1,7 @@
 ENV['RAILS_ENV'] ||= 'test'
 require_relative '../config/environment'
 require 'rails/test_help'
-require 'support/test_plumbing'
+require_relative 'support/test_plumbing'
 require 'mutant/minitest/coverage'
 
 module Ecommerce
