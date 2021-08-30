@@ -62,14 +62,6 @@ The customer perspective is "simulated" only - via using the select box.
 - Look at the order
 - Look at the history of events (in the Rails Event Store Browser)
 
-### Admin perspective
-
-In `/admin` we show how to combine the `ActiveAdmin` gem with the
-DDD/event-driven approach. We do it via limiting the typical CRUD actions. 
-All the "view" options are still there. 
-
-Admin can cancel an order in the admin panel.
-
 ## Domains
 
 Domains exist in directories at the root level of the Rails app.
