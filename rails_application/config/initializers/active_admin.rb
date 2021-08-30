@@ -333,3 +333,9 @@ ActiveAdmin.setup do |config|
   #
   config.use_webpacker = true
 end
+
+Rails.application.config.after_initialize do
+  require_relative '../../app/admin/dashboard'
+  require_relative '../../app/admin/orders_orders'
+end
+
