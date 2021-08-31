@@ -1,5 +1,10 @@
 CONTEXTS = $(shell find ecommerce -type d -maxdepth 1 -mindepth 1 -exec basename {} \;)
 
+$(addprefix install-, $(CONTEXTS)):
+	@make -C ecommerce/$(subst install-,,$@) install
+
+install: $(addprefix install-, $(CONTEXTS)) ## Install all dependencies
+
 $(addprefix test-, $(CONTEXTS)):
 	@make -C ecommerce/$(subst test-,,$@) test
 
