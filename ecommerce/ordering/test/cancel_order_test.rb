@@ -2,7 +2,10 @@ require_relative 'test_helper'
 
 module Ordering
   class CancelOrderTest < Ecommerce::InMemoryTestCase
-    include TestPlumbing
+    include TestPlumbing.with(
+      event_store: ->{ Rails.configuration.event_store },
+      command_bus: ->{ Rails.configuration.command_bus }
+    )
 
     cover 'Ordering::OnCancelOrder*'
 
