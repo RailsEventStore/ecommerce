@@ -7,7 +7,9 @@ coverage_criteria:
   timeout: true
   process_abort: true
 requires:
-- ./config/environment
+- ../../rails_application/config/environment
 matcher:
   subjects:
-  - Orders*
+  - Payments*
+  ignore:
+  - Payments::Payment#authorized?
