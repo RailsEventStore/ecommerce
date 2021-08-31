@@ -102,6 +102,33 @@ class OrdersTest < Ecommerce::InMemoryRESIntegrationTestCase
     assert_select("td", "Expired")
   end
 
+  def test_cancel
+    shopify_id = SecureRandom.uuid
+    run_command(Crm::RegisterCustomer.new(customer_id: shopify_id, name: 'Shopify'))
+    order_id = SecureRandom.uuid
+    product_id = SecureRandom.uuid
+    run_command(ProductCatalog::RegisterProduct.new(product_id: product_id, name: "Async Remote"))
+    run_command(Pricing::SetPrice.new(product_id: product_id, price: 39))
+    async_remote = ProductCatalog::Product.find_by(id: product_id)
+
+    get "/"
+    get "/orders/new"
+    post "/orders/#{order_id}/add_item?product_id=#{async_remote.id}"
+    follow_redirect!
+    assert_select("td", "$39.00")
+    post "/orders", params:
+      {
+        "authenticity_token"=>"[FILTERED]",
+        "order_id" => order_id,
+        "customer_id"=> shopify_id,
+        "commit"=>"Submit order"
+      }
+
+    run_command(Ordering::CancelOrder.new(order_id: order_id))
+    get "/orders/#{Orders::Order.last.id}"
+    assert_select("p", "State: Cancelled")
+  end
+
   private
 
   def assert_res_browser_order_history
