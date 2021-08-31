@@ -1,15 +1,15 @@
-name: ci
+name: product_catalog
 on:
   push:
   pull_request:
     types: [opened, reopened]
 jobs:
   test:
-    env:
-      WORKING_DIRECTORY: rails_application
     runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
+    env:
+      WORKING_DIRECTORY: ecommerce/product_catalog
     services:
       postgres_11:
         image: postgres:11
@@ -33,11 +33,11 @@ jobs:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
           SLACK_COLOR: ${{ job.status }}
   mutate:
-    env:
-      WORKING_DIRECTORY: rails_application
     runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
+    env:
+      WORKING_DIRECTORY: ecommerce/product_catalog
     services:
       postgres_11:
         image: postgres:11
