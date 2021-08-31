@@ -3,7 +3,7 @@ require_relative 'inventory_in_memory_test_case'
 module Inventory
   class CancelReservationTest < InventoryInMemoryTestCase
 
-    test 'stock gets released on submitted reservation cancellation' do
+    def test_stock_gets_released_on_submitted_reservation_cancellation
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
 
@@ -19,7 +19,7 @@ module Inventory
       end
     end
 
-    test 'stock does not change on not completed reservation cancellation' do
+    def test_stock_does_not_change_on_not_completed_reservation_cancellation
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
 
@@ -34,7 +34,7 @@ module Inventory
       end
     end
 
-    test 'canceled reservation cannot be canceled again' do
+    def test_canceled_reservation_cannot_be_canceled_again
       order_id = SecureRandom.uuid
 
       arrange(
@@ -45,7 +45,7 @@ module Inventory
       end
     end
 
-    test 'completed reservation cannot be canceled' do
+    def test_completed_reservation_cannot_be_canceled
       order_id = SecureRandom.uuid
 
       arrange(

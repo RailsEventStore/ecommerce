@@ -3,7 +3,7 @@ require_relative 'inventory_in_memory_test_case'
 module Inventory
   class AdjustReservationTest < InventoryInMemoryTestCase
 
-    test 'reservation can be adjusted' do
+    def test_reservation_can_be_adjusted
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
 
@@ -15,7 +15,7 @@ module Inventory
       end
     end
 
-    test 'submitted reservation cannot be adjusted' do
+    def test_submitted_reservation_cannot_be_adjusted
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
 

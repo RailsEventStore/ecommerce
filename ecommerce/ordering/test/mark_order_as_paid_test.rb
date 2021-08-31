@@ -9,7 +9,7 @@ module Ordering
 
     cover 'Ordering::OnMarkOrderAsPaid*'
 
-    test 'draft order could not be marked as paid' do
+    def test_draft_order_could_not_be_marked_as_paid
       aggregate_id = SecureRandom.uuid
 
       product_id = SecureRandom.uuid
@@ -27,7 +27,7 @@ module Ordering
       end
     end
 
-    test 'submitted order will be marked as paid' do
+    def test_submitted_order_will_be_marked_as_paid
       aggregate_id = SecureRandom.uuid
       stream = "Ordering::Order$#{aggregate_id}"
 
@@ -62,7 +62,7 @@ module Ordering
       end
     end
 
-    test 'expired order cannot be marked as paid' do
+    def test_expired_order_cannot_be_marked_as_paid
       aggregate_id = SecureRandom.uuid
 
       product_id = SecureRandom.uuid

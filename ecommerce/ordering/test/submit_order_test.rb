@@ -9,7 +9,7 @@ module Ordering
 
     cover 'Ordering::OnSubmitOrder*'
 
-    test 'order is submitted' do
+    def test_order_is_submitted
       aggregate_id = SecureRandom.uuid
       stream = "Ordering::Order$#{aggregate_id}"
       customer_id = SecureRandom.uuid
@@ -37,7 +37,7 @@ module Ordering
       end
     end
 
-    test 'could not create order where customer is not given' do
+    def test_could_not_create_order_where_customer_is_not_given
       aggregate_id = SecureRandom.uuid
 
       assert_raises(Command::Invalid) do
@@ -45,7 +45,7 @@ module Ordering
       end
     end
 
-    test 'already created order could not be created again' do
+    def test_already_created_order_could_not_be_created_again
       aggregate_id = SecureRandom.uuid
       customer_id = SecureRandom.uuid
       command_bus.call(Crm::RegisterCustomer.new(customer_id: customer_id, name: 'test'))
@@ -76,7 +76,7 @@ module Ordering
       end
     end
 
-    test 'expired order could not be created' do
+    def test_expired_order_could_not_be_created
       aggregate_id = SecureRandom.uuid
       customer_id = SecureRandom.uuid
       run_command(Crm::RegisterCustomer.new(customer_id: customer_id, name: 'test'))

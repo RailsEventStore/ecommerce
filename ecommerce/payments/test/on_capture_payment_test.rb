@@ -9,7 +9,7 @@ module Payments
 
     cover 'Payments::OnCapturePayment*'
 
-    test 'capture payment' do
+    def test_capture_payment
       order_id = SecureRandom.uuid
       stream = "Payments::Payment$#{order_id}"
 

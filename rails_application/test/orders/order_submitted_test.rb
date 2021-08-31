@@ -11,7 +11,7 @@ module Orders
       OrderLine.destroy_all
     end
 
-    test 'create when not exists' do
+    def test_create_when_not_exists
       event_store = Rails.configuration.event_store
 
       customer_id = SecureRandom.uuid
@@ -33,7 +33,7 @@ module Orders
       assert_equal(order.customer, 'dummy')
     end
 
-    test 'skip when duplicated' do
+    def test_skip_when_duplicated
       event_store = Rails.configuration.event_store
 
       customer_id = SecureRandom.uuid

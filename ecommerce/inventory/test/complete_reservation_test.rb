@@ -3,7 +3,7 @@ require_relative 'inventory_in_memory_test_case'
 module Inventory
   class CompleteReservationTest < InventoryInMemoryTestCase
 
-    test 'stock level changes on reservation completion' do
+    def test_stock_level_changes_on_reservation_completion
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
 
@@ -22,7 +22,7 @@ module Inventory
       end
     end
 
-    test 'completed reservation cannot be complete again' do
+    def test_completed_reservation_cannot_be_complete_again
       order_id = SecureRandom.uuid
 
       arrange(
@@ -34,7 +34,7 @@ module Inventory
       end
     end
 
-    test 'not submitted reservation cannot be complete' do
+    def test_not_submitted_reservation_cannot_be_complete
       order_id = SecureRandom.uuid
 
       assert_raises(Reservation::NotSubmitted) do
@@ -42,7 +42,7 @@ module Inventory
       end
     end
 
-    test 'canceled reservation cannot be complete' do
+    def test_canceled_reservation_cannot_be_complete
       order_id = SecureRandom.uuid
 
       arrange(

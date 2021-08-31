@@ -3,7 +3,7 @@ require_relative 'inventory_in_memory_test_case'
 module Inventory
   class SubmitReservationTest < InventoryInMemoryTestCase
 
-    test 'stock gets reserved on reservation submission' do
+    def test_stock_gets_reserved_on_reservation_submission
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
 
@@ -18,7 +18,7 @@ module Inventory
       end
     end
 
-    test 'submitted reservation cannot be submit again' do
+    def test_submitted_reservation_cannot_be_submit_again
       order_id = SecureRandom.uuid
 
       arrange(
@@ -29,7 +29,7 @@ module Inventory
       end
     end
 
-    test 'reservation cannot be submit when inventory is out of stock' do
+    def test_reservation_cannot_be_submit_when_inventory_is_out_of_stock
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
 
@@ -42,7 +42,7 @@ module Inventory
       end
     end
 
-    test 'reservation cannot be submit when inventory is reserved' do
+    def test_reservation_cannot_be_submit_when_inventory_is_reserved
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
       another_order_id = SecureRandom.uuid
@@ -58,7 +58,7 @@ module Inventory
       end
     end
 
-    test 'reservation can be submit when inventory stock level is undefined' do
+    def test_reservation_can_be_submit_when_inventory_stock_level_is_undefined
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
 

@@ -9,7 +9,7 @@ module Ordering
 
     cover 'Pricing::OnAddItemToBasket*'
 
-    test 'item is added to draft order' do
+    def test_item_is_added_to_draft_order
       aggregate_id = SecureRandom.uuid
       stream = "Pricing::Order$#{aggregate_id}"
       product_id = SecureRandom.uuid

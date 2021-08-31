@@ -10,7 +10,7 @@ module Orders
       Order.destroy_all
     end
 
-    test 'expire created order' do
+    def test_expire_created_order
       event_store = Rails.configuration.event_store
 
       customer_id = SecureRandom.uuid

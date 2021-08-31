@@ -11,7 +11,7 @@ module Orders
       OrderLine.destroy_all
     end
 
-    test 'remove item when quantity > 1' do
+    def test_remove_item_when_quantity > 1
       event_store = Rails.configuration.event_store
 
       product_id = SecureRandom.uuid
@@ -31,7 +31,7 @@ module Orders
       assert_equal(order_line.quantity , 1)
     end
 
-    test 'remove item when quantity = 1' do
+    def test_remove_item_when_quantity = 1
       event_store = Rails.configuration.event_store
 
       product_id = SecureRandom.uuid
@@ -46,7 +46,7 @@ module Orders
       assert_equal(OrderLine.count, 0)
     end
 
-    test 'remove item when there is another item' do
+    def test_remove_item_when_there_is_another_item
       event_store = Rails.configuration.event_store
 
 

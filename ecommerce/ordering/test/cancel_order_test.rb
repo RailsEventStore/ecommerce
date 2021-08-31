@@ -25,7 +25,7 @@ module Ordering
       end
     end
 
-    test 'submitted order can be cancelled' do
+    def test_submitted_order_can_be_cancelled
       aggregate_id = SecureRandom.uuid
       stream = "Ordering::Order$#{aggregate_id}"
 

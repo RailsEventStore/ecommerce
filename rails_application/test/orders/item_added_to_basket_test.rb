@@ -11,7 +11,7 @@ module Orders
       OrderLine.destroy_all
     end
 
-    test 'add new item' do
+    def test_add_new_item
       event_store = Rails.configuration.event_store
 
 
@@ -38,7 +38,7 @@ module Orders
       assert_nil(order.number)
     end
 
-    test 'add the same item 2nd time' do
+    def test_add_the_same_item 2nd time
       event_store = Rails.configuration.event_store
 
 
@@ -66,7 +66,7 @@ module Orders
       assert_nil(order.number)
     end
 
-    test 'add another item' do
+    def test_add_another_item
       event_store = Rails.configuration.event_store
 
       product_id = SecureRandom.uuid

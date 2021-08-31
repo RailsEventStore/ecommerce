@@ -9,7 +9,7 @@ module Ordering
 
     cover 'Pricing::OnRemoveItemFromBasket*'
 
-    test 'item is removed from draft order' do
+    def test_item_is_removed_from_draft_order
       aggregate_id = SecureRandom.uuid
       stream = "Pricing::Order$#{aggregate_id}"
 

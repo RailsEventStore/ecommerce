@@ -9,7 +9,7 @@ module Ordering
 
     cover 'Ordering::OnSetOrderAsExpired*'
 
-    test 'draft order will expire' do
+    def test_draft_order_will_expire
       aggregate_id = SecureRandom.uuid
       stream = "Ordering::Order$#{aggregate_id}"
       product_id = SecureRandom.uuid
@@ -24,7 +24,7 @@ module Ordering
       end
     end
 
-    test 'submitted order will expire' do
+    def test_submitted_order_will_expire
       aggregate_id = SecureRandom.uuid
       stream = "Ordering::Order$#{aggregate_id}"
       product_id = SecureRandom.uuid
@@ -47,7 +47,7 @@ module Ordering
       ) { act(SetOrderAsExpired.new(order_id: aggregate_id)) }
     end
 
-    test 'paid order cannot expire' do
+    def test_paid_order_cannot_expire
       aggregate_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
       run_command(ProductCatalog::RegisterProduct.new(product_id: product_id, name: "test"))
