@@ -38,7 +38,7 @@ module Orders
       assert_nil(order.number)
     end
 
-    def test_add_the_same_item 2nd time
+    def test_add_the_same_item_2nd_time
       event_store = Rails.configuration.event_store
 
 
