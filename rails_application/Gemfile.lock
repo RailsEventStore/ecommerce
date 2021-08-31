@@ -259,12 +259,14 @@ DEPENDENCIES
   dry-types
   honeybadger (~> 4.0)
   listen (~> 3.3)
+  minitest
   mutant-license!
   mutant-minitest
   pg (~> 1.1)
   puma (~> 5.0)
   rails (~> 6.1.4, >= 6.1.4.1)
   rails_event_store (~> 2.2.0)
+  rake
   ruby_event_store-transformations
   sass-rails (>= 6)
   skylight
