@@ -1,6 +1,8 @@
-dev: ## Installs dependencies, runs migrations, creates db & seeds if necessary
+install: ## Installs dependencies, runs migrations, creates db & seeds if necessary
 	@bin/setup
 	@env RAILS_ENV=test bin/rails db:setup
+
+dev: install
 
 mutate: ## Run mutation tests
 	@env RAILS_ENV=test bundle exec mutant run
