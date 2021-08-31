@@ -1,3 +1,8 @@
+require_relative "../../../lib/command"
+require_relative "../../../lib/command_handler"
+require_relative "../../../lib/event"
+require_relative "../../../lib/types"
+
 require_relative 'inventory/configuration'
 
 require_relative 'inventory/commands/adjust_reservation'

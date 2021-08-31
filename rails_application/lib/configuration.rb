@@ -1,15 +1,15 @@
-require 'cqrs'
-require 'command_handler'
-require 'command'
-require 'event'
-require 'types'
+require "cqrs"
 
-require Rails.root.join("../ecommerce/ordering/lib/ordering/configuration")
-require Rails.root.join("../ecommerce/pricing/lib/pricing")
-require Rails.root.join("../ecommerce/product_catalog/lib/product_catalog")
-require Rails.root.join("../ecommerce/crm/lib/crm")
-require Rails.root.join("../ecommerce/payments/lib/payments")
-require Rails.root.join("../ecommerce/inventory/lib/inventory")
+require_relative "../../lib/command"
+require_relative "../../lib/command_handler"
+require_relative "../../lib/event"
+require_relative "../../lib/types"
+require_relative "../../ecommerce/ordering/lib/ordering/configuration"
+require_relative "../../ecommerce/pricing/lib/pricing"
+require_relative "../../ecommerce/product_catalog/lib/product_catalog"
+require_relative "../../ecommerce/crm/lib/crm"
+require_relative "../../ecommerce/payments/lib/payments"
+require_relative "../../ecommerce/inventory/lib/inventory"
 
 class Configuration
   def call(event_store, command_bus)

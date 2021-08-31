@@ -1,3 +1,6 @@
+require 'aggregate_root'
+require 'active_support/notifications'
+
 module CommandHandler
   def with_aggregate(aggregate_class, aggregate_id, &block)
     repository = AggregateRoot::InstrumentedRepository.new(AggregateRoot::Repository.new(Rails.configuration.event_store), ActiveSupport::Notifications)
