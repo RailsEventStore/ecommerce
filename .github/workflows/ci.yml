@@ -33,6 +33,8 @@ jobs:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
           SLACK_COLOR: ${{ job.status }}
   mutate:
+    env:
+      WORKING_DIRECTORY: rails_application
     runs-on: ubuntu-20.04
     strategy:
       fail-fast: false
