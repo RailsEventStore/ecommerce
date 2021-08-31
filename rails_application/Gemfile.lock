@@ -128,7 +128,6 @@ GEM
     marcel (1.0.1)
     method_source (1.0.0)
     mini_mime (1.1.0)
-    mini_portile2 (2.6.1)
     minitest (5.14.4)
     msgpack (1.4.2)
     mustermann (1.1.1)
@@ -142,8 +141,9 @@ GEM
       minitest (~> 5.11)
       mutant (= 0.10.32)
     nio4r (2.5.8)
-    nokogiri (1.12.3)
-      mini_portile2 (~> 2.6.1)
+    nokogiri (1.12.3-arm64-darwin)
+      racc (~> 1.4)
+    nokogiri (1.12.3-x86_64-linux)
       racc (~> 1.4)
     parser (3.0.2.0)
       ast (~> 2.4.1)
@@ -249,7 +249,8 @@ GEM
     zeitwerk (2.4.2)
 
 PLATFORMS
-  ruby
+  arm64-darwin-20
+  x86_64-linux
 
 DEPENDENCIES
   bootsnap (>= 1.4.4)
