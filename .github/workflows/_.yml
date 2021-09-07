@@ -1,0 +1,30 @@
+name: commit
+on:
+  push:
+    branches:
+      - master
+jobs:
+  commit:
+    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v2
+      - uses: 8398a7/action-slack@v3
+        with:
+          status: custom
+          custom_payload: |
+            {
+              attachments: [{
+                author_name: `${{ github.actor }}`,
+                author_link: `https://github.com/${{ github.actor }}`,
+                author_icon: `https://github.com/${{ github.actor }}.png?size=32`,
+                text: `${{ github.event.head_commit.message }}`,
+                title_link: `https://github.com/${{ github.repository }}/commit/${{ github.sha }}`,
+                title: `${{ github.sha }}`,
+
+              }]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+        if: always()
