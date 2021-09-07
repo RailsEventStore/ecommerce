@@ -28,10 +28,21 @@ jobs:
           working-directory: ${{ env.WORKING_DIRECTORY }}
       - run: make test
         working-directory: ${{ env.WORKING_DIRECTORY }}
-      - uses: rtCamp/action-slack-notify@v2
+      - uses: 8398a7/action-slack@v3
+        with:
+          status: custom
+          fields: workflow,job,commit,repo,ref,author,took
+          custom_payload: |
+            {
+              attachments: [{
+                color: '${{ job.status }}' === 'success' ? 'good' : '${{ job.status }}' === 'failure' ? 'danger' : 'warning',
+                text: `${process.env.AS_WORKFLOW}/${process.env.AS_JOB} ${{ job.status }} in ${process.env.AS_TOOK}\n${process.env.AS_COMMIT} in ${process.env.AS_REF}`,
+              }]
+            }
         env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          SLACK_COLOR: ${{ job.status }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+        if: always()
+
   mutate:
     runs-on: ubuntu-20.04
     strategy:
@@ -56,6 +67,17 @@ jobs:
           working-directory: ${{ env.WORKING_DIRECTORY }}
       - run: make mutate
         working-directory: ${{ env.WORKING_DIRECTORY }}
-      - uses: rtCamp/action-slack-notify@v2
+      - uses: 8398a7/action-slack@v3
+        with:
+          status: custom
+          fields: workflow,job,commit,repo,ref,author,took
+          custom_payload: |
+            {
+              attachments: [{
+                color: '${{ job.status }}' === 'success' ? 'good' : '${{ job.status }}' === 'failure' ? 'danger' : 'warning',
+                text: `${process.env.AS_WORKFLOW}/${process.env.AS_JOB} ${{ job.status }} in ${process.env.AS_TOOK}\n${process.env.AS_COMMIT} in ${process.env.AS_REF}`,
+              }]
+            }
         env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+        if: always()
