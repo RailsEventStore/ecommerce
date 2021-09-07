@@ -2,7 +2,7 @@
 
 <h1>Orders</h1>
 
-<table class="table">
+<table class="table mb-5">
   <thead>
     <tr>
       <th>Number</th>
@@ -26,14 +26,9 @@
   </tbody>
 </table>
 
-<br>
 
 <%= link_to 'New Order', new_order_path, class: "btn btn-primary" %>
-<br/>
-<p>Simulate backgound worker, push
-<%= link_to 'Expire', expire_orders_path, class: "btn", method: :post %>
-to start orders expiration</p>
-<p><%= link_to 'Manage your products', products_path %></p>
-<p><%= link_to 'Manage customers', customers_path %></p>
-
+<%= link_to 'Manage your products', products_path, class: "btn btn-outline-secondary" %>
+<%= link_to 'Manage customers', customers_path, class: "btn btn-outline-secondary" %>
+<%= link_to 'Expire orders', expire_orders_path, class: "btn btn-outline-danger", method: :post %>
 
