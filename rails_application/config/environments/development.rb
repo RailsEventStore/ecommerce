@@ -68,7 +68,7 @@ Rails.application.configure do
 
   config.hosts << ".test"
 
-  # --- CqrsEsSampleWithRes ---
+  # --- Ecommerce ---
   config.number_generator = ->{ Ordering::NumberGenerator.new }
   config.payment_gateway = -> { @gateway ||= Payments::FakeGateway.new }
 end
