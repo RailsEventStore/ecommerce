@@ -41,6 +41,3 @@ accordingly.
 * run `make test` to run unit and integration tests
 * run `make mutate` to perform mutation coverage
 
-## Deployment
-
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
