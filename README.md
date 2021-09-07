@@ -2,10 +2,9 @@
 
 Application with CQRS and Event Sourcing built on Rails and [Rails Event Store](https://railseventstore.org). 
 
-You can see it at [ecommerce.arkademy.dev](https://ecommerce.arkademy.dev):
+👉 [ecommerce.arkademy.dev](https://ecommerce.arkademy.dev)
 
-![imgur](https://imgur.com/4a9GtnZ.png)
-
+[![imgur](https://imgur.com/ymJeLnP.png)](https://ecommerce.arkademy.dev)
 ## Domains
 
 Domains exist in directories starting at [ecommerce](/ecommerce).
