@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_08_30_164940) do
+ActiveRecord::Schema.define(version: 2021_09_07_115224) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -46,7 +46,7 @@ ActiveRecord::Schema.define(version: 2021_08_30_164940) do
   end
 
   create_table "order_lines", force: :cascade do |t|
-    t.string "order_uid"
+    t.uuid "order_uid", null: false
     t.string "product_name"
     t.integer "quantity"
     t.decimal "price", precision: 8, scale: 2
@@ -54,7 +54,7 @@ ActiveRecord::Schema.define(version: 2021_08_30_164940) do
   end
 
   create_table "orders", force: :cascade do |t|
-    t.string "uid"
+    t.uuid "uid", null: false
     t.string "number"
     t.string "customer"
     t.string "state"
