@@ -3,9 +3,11 @@ module TestPlumbing
     Module.new do
       include TestClassMethods
 
-      define_method :setup do
+      define_method :before_setup do
+        result = super()
         @command_bus = command_bus.call
         @event_store = event_store.call
+        result
       end
     end
   end
