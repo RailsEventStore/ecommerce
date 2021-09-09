@@ -1,7 +1,34 @@
 require_relative 'test_helper'
 
 module ProductCatalog
-  class ProductCatalogTest < Ecommerce::InMemoryTestCase
+  class ProductCatalogTest < Minitest::Test
+    include TestPlumbing.with(
+      event_store: ->{ RubyEventStore::Client.new(repository: RubyEventStore::InMemoryRepository.new) },
+      command_bus: ->{ Arkency::CommandBus.new }
+    )
+
+    def before_setup
+      result = super
+      ProductCatalog::Configuration.new(Cqrs.new(event_store, command_bus)).call
+      prepare_schema
+      result
+    end
+
+    def prepare_schema
+      ActiveRecord::Schema.define do
+        create_table "products", id: :uuid, force: :cascade do |t|
+          t.string   "name"
+          t.datetime "created_at", null: false
+          t.datetime "updated_at", null: false
+          t.decimal  "price", precision: 8, scale: 2
+          t.integer  "stock_level"
+        end
+      end
+    end
+
+    def run_command(command)
+      command_bus.call(command)
+    end
 
     cover 'ProductCatalog*'
 

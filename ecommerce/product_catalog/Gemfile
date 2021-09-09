@@ -1,1 +1,4 @@
-eval_gemfile '../../rails_application/Gemfile'
+eval_gemfile '../../lib/Gemfile.shared'
+
+gem 'sqlite3'
+gem 'activerecord'
