@@ -1,7 +1,7 @@
 GEM
   remote: https://oss:7AXfeZdAfCqL1PvHm2nvDJO6Zd9UW8IK@gem.mutant.dev/
   specs:
-    mutant-license (0.1.1.2.1627430819213747598431630701693729869473.2)
+    mutant-license (0.1.1.2.1627430819213747598431630701693729869473.4)
 
 GEM
   remote: https://rubygems.org/
@@ -67,9 +67,9 @@ GEM
       minitest (>= 5.1)
       tzinfo (~> 2.0)
       zeitwerk (~> 2.3)
-    aggregate_root (2.2.0)
+    aggregate_root (2.3.0)
       ruby2_keywords
-      ruby_event_store (= 2.2.0)
+      ruby_event_store (= 2.3.0)
     arkency-command_bus (0.4.0)
       thread_safe
     ast (2.4.2)
@@ -107,7 +107,7 @@ GEM
       dry-inflector (~> 0.1, >= 0.1.2)
       dry-logic (~> 1.0, >= 1.0.2)
     erubi (1.10.0)
-    ffi (1.15.3)
+    ffi (1.15.4)
     globalid (0.5.2)
       activesupport (>= 5.0)
     honeybadger (4.9.0)
@@ -139,6 +139,8 @@ GEM
       mutant (= 0.10.34)
     nio4r (2.5.8)
     nokogiri (1.12.4-arm64-darwin)
+      racc (~> 1.4)
+    nokogiri (1.12.4-x86_64-darwin)
       racc (~> 1.4)
     nokogiri (1.12.4-x86_64-linux)
       racc (~> 1.4)
@@ -173,19 +175,19 @@ GEM
       nokogiri (>= 1.6)
     rails-html-sanitizer (1.4.2)
       loofah (~> 2.3)
-    rails_event_store (2.2.0)
+    rails_event_store (2.3.0)
       activejob (>= 3.0)
       activemodel (>= 3.0)
       activesupport (>= 3.0)
-      aggregate_root (= 2.2.0)
+      aggregate_root (= 2.3.0)
       arkency-command_bus (>= 0.4)
-      rails_event_store_active_record (= 2.2.0)
-      ruby_event_store (= 2.2.0)
-      ruby_event_store-browser (= 2.2.0)
-    rails_event_store_active_record (2.2.0)
+      rails_event_store_active_record (= 2.3.0)
+      ruby_event_store (= 2.3.0)
+      ruby_event_store-browser (= 2.3.0)
+    rails_event_store_active_record (2.3.0)
       activerecord (>= 5.0)
       activerecord-import (>= 1.0.2)
-      ruby_event_store (= 2.2.0)
+      ruby_event_store (= 2.3.0)
     railties (6.1.4.1)
       actionpack (= 6.1.4.1)
       activesupport (= 6.1.4.1)
@@ -198,10 +200,11 @@ GEM
       ffi (~> 1.0)
     regexp_parser (2.1.1)
     ruby2_keywords (0.0.5)
-    ruby_event_store (2.2.0)
+    ruby_event_store (2.3.0)
       concurrent-ruby (~> 1.0, >= 1.1.6)
-    ruby_event_store-browser (2.2.0)
-      ruby_event_store (= 2.2.0)
+      ruby2_keywords
+    ruby_event_store-browser (2.3.0)
+      ruby_event_store (= 2.3.0)
       sinatra
     ruby_event_store-transformations (0.1.0)
       activesupport (>= 5.0)
@@ -245,6 +248,7 @@ GEM
 
 PLATFORMS
   arm64-darwin-20
+  x86_64-darwin-20
   x86_64-linux
 
 DEPENDENCIES
@@ -261,7 +265,7 @@ DEPENDENCIES
   pg (~> 1.1)
   puma (~> 5.0)
   rails (~> 6.1.4, >= 6.1.4.1)
-  rails_event_store (~> 2.2.0)
+  rails_event_store (~> 2.3.0)
   rake
   ruby_event_store-transformations
   sass-rails (>= 6)
