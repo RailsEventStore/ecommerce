@@ -15,9 +15,9 @@ module Pricing
     def call
       @cqrs.register_command(AddItemToBasket, OnAddItemToBasket.new, ItemAddedToBasket)
       @cqrs.register_command(RemoveItemFromBasket, OnRemoveItemFromBasket.new, ItemRemovedFromBasket)
-      @cqrs.register_command(SetPrice, SetPriceHandler.new, PriceSet)
-      @cqrs.register_command(CalculateTotalValue, OnCalculateTotalValue.new, OrderTotalValueCalculated)
-      @cqrs.register_command(SetPercentageDiscount, SetPercentageDiscountHandler.new, PercentageDiscountSet)
+      @cqrs.register_command(SetPrice, SetPriceHandler.new(@cqrs.event_store), PriceSet)
+      @cqrs.register_command(CalculateTotalValue, OnCalculateTotalValue.new(@cqrs.event_store), OrderTotalValueCalculated)
+      @cqrs.register_command(SetPercentageDiscount, SetPercentageDiscountHandler.new(@cqrs.event_store), PercentageDiscountSet)
       @cqrs.subscribe(
         -> (event) { @cqrs.run(Pricing::CalculateTotalValue.new(order_id: event.data.fetch(:order_id)))},
         [ItemAddedToBasket, ItemRemovedFromBasket, Pricing::PercentageDiscountSet])
@@ -68,6 +68,10 @@ module Pricing
   class SetPercentageDiscountHandler
     include CommandHandler
 
+    def initialize(event_store)
+      @event_store = event_store
+    end
+
     def call(cmd)
       stream_name = stream_name(Discounts::Order, cmd.order_id)
       order = build_order(stream_name)
@@ -76,7 +80,7 @@ module Pricing
       rescue NoMethodError
         raise NotPossibleToAssignDiscountTwice
       end
-      Rails.configuration.event_store.publish(
+      @event_store.publish(
         PercentageDiscountSet.new(data: {order_id: cmd.order_id, amount: cmd.amount}),
         stream_name: stream_name
       )
@@ -95,15 +99,19 @@ module Pricing
     end
 
     def last_event(stream_name)
-      Rails.configuration.event_store.read.stream(stream_name).last
+      @event_store.read.stream(stream_name).last
     end
   end
 
   class SetPriceHandler
     include CommandHandler
 
+    def initialize(event_store)
+      @event_store = event_store
+    end
+
     def call(cmd)
-      repository = AggregateRoot::Repository.new(Rails.configuration.event_store)
+      repository = AggregateRoot::Repository.new(@event_store)
       stream_name = stream_name(Product, cmd.product_id)
       product = repository.load(Product.new(cmd.product_id), stream_name)
       product.set_price(cmd.price)
@@ -134,8 +142,12 @@ module Pricing
   class OnCalculateTotalValue
     include CommandHandler
 
+    def initialize(event_store)
+      @event_store = event_store
+    end
+
     def call(command)
-      event_store = Rails.configuration.event_store
+      event_store = @event_store
       pricing_catalog = PricingCatalog.new(event_store)
       percentage_discount = build_percentage_discount(command.order_id)
       with_aggregate(Order, command.aggregate_id) do |order|
@@ -156,7 +168,7 @@ module Pricing
     end
 
     def last_discount_order_event(order_id)
-      Rails.configuration.event_store.read.stream(stream_name(Discounts::Order, order_id)).last
+      @event_store.read.stream(stream_name(Discounts::Order, order_id)).last
     end
   end
 
