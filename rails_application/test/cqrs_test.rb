@@ -1,5 +1,5 @@
-require_relative '../cqrs'
-require_relative '../../test/test_helper'
+require_relative '../../lib/cqrs'
+require_relative 'test_helper'
 
 
 class CqrsTest < Ecommerce::InMemoryTestCase

@@ -15,7 +15,7 @@ module ProductCatalog
     end
   end
 
-  class Product < ApplicationRecord
+  class Product < ActiveRecord::Base
     AlreadyRegistered = Class.new(StandardError)
 
     self.table_name = "products"

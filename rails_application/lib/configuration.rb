@@ -1,5 +1,4 @@
-require "cqrs"
-
+require_relative "../../lib/cqrs"
 require_relative "../../lib/command"
 require_relative "../../lib/command_handler"
 require_relative "../../lib/event"
