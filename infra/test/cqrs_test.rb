@@ -1,8 +1,7 @@
-require_relative '../../lib/cqrs'
 require_relative 'test_helper'
 
 
-class CqrsTest < Ecommerce::InMemoryTestCase
+class CqrsTest < Minitest::Test
   cover 'Cqrs*'
 
   class SomeCommand < Command; end
@@ -12,16 +11,24 @@ class CqrsTest < Ecommerce::InMemoryTestCase
     end
   end
 
-  class SomeEvent < RailsEventStore::Event
+  class SomeEvent < RubyEventStore::Event
   end
 
   def test_works
-    cqrs = Cqrs.new(Rails.configuration.event_store, Rails.configuration.command_bus)
+    cqrs = Cqrs.new(event_store, command_bus)
     cqrs.register_command(SomeCommandHandler.new, SomeCommand, [SomeEvent])
 
     assert_equal(
       {SomeCommand => [SomeEvent]},
       cqrs.to_hash
     )
+  end
+
+  def command_bus
+    Arkency::CommandBus.new
+  end
+
+  def event_store
+    RubyEventStore::Client.new(repository: RubyEventStore::InMemoryRepository.new)
   end
 end

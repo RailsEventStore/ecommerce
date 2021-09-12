@@ -21,5 +21,5 @@ end
 
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
-eval_gemfile '../lib/Gemfile.shared'
+eval_gemfile '../infra/Gemfile'
 

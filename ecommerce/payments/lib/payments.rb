@@ -1,7 +1,7 @@
-require_relative "../../../lib/command"
-require_relative "../../../lib/command_handler"
-require_relative "../../../lib/event"
-require_relative "../../../lib/types"
+require_relative "../../../infra/lib/command"
+require_relative "../../../infra/lib/command_handler"
+require_relative "../../../infra/lib/event"
+require_relative "../../../infra/lib/types"
 
 require_relative 'payments/configuration'
 require_relative 'payments/authorize_payment'
