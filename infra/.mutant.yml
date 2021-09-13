@@ -7,7 +7,7 @@ coverage_criteria:
   timeout: true
   process_abort: true
 requires:
-- ../../rails_application/config/environment
+  - ./lib/infra.rb
 matcher:
   subjects:
-  - Inventory*
+  - Cqrs
