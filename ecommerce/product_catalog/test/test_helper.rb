@@ -13,7 +13,7 @@ module ProductCatalog
 
     def before_setup
       super
-      Configuration.new(Infra::Cqrs.new(event_store, command_bus)).call
+      Configuration.new(cqrs).call
       prepare_schema
     end
 

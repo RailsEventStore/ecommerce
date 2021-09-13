@@ -8,6 +8,7 @@ module Infra
           super()
           @command_bus = command_bus.call
           @event_store = event_store.call
+          @cqrs = Cqrs.new(@event_store, @command_bus)
         end
       end
     end
@@ -20,7 +21,7 @@ module Infra
     end
 
     module TestMethods
-      attr_reader :event_store, :command_bus
+      attr_reader :event_store, :command_bus, :cqrs
 
       def arrange(*commands)
         commands.each { |command| act(command) }
