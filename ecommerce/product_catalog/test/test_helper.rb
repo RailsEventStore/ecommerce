@@ -14,10 +14,6 @@ module ProductCatalog
       command_bus: ->{ Infra::CommandBus.new }
     )
 
-    def run_command(command)
-      command_bus.call(command)
-    end
-
     def before_setup
       super
       Configuration.new(Infra::Cqrs.new(event_store, command_bus)).call

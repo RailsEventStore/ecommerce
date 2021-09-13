@@ -23,6 +23,7 @@ module Infra
       def act(command)
         command_bus.(command)
       end
+      alias :run_command :act
 
       def assert_events(stream_name, *expected_events)
         scope = event_store.read.stream(stream_name)
