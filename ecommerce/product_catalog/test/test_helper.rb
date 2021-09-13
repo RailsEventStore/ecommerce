@@ -9,10 +9,7 @@ require_relative "../lib/product_catalog"
 
 module ProductCatalog
   class Test < Minitest::Test
-    include Infra::TestPlumbing.with(
-      event_store: ->{ Infra::EventStore.in_memory },
-      command_bus: ->{ Infra::CommandBus.new }
-    )
+    include Infra::TestPlumbing
 
     def before_setup
       super

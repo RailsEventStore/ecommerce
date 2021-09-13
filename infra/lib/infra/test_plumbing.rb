@@ -13,6 +13,13 @@ module Infra
       end
     end
 
+    def self.included(klass)
+      klass.include TestPlumbing.with(
+        event_store: ->{ EventStore.in_memory },
+        command_bus: ->{ CommandBus.new }
+      )
+    end
+
     module TestClassMethods
       attr_reader :event_store, :command_bus
 
