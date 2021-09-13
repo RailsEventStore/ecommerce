@@ -5,10 +5,9 @@ module Infra
         include TestClassMethods
 
         define_method :before_setup do
-          result = super()
+          super()
           @command_bus = command_bus.call
           @event_store = event_store.call
-          result
         end
       end
     end
