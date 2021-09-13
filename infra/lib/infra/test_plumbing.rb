@@ -2,7 +2,7 @@ module Infra
   module TestPlumbing
     def self.with(event_store:, command_bus:)
       Module.new do
-        include TestClassMethods
+        include TestMethods
 
         define_method :before_setup do
           super()
@@ -19,7 +19,7 @@ module Infra
       )
     end
 
-    module TestClassMethods
+    module TestMethods
       attr_reader :event_store, :command_bus
 
       def arrange(*commands)
