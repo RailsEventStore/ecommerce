@@ -1,4 +1,4 @@
-require_relative 'test_helper'
+require_relative "test_helper"
 
 module Payments
   class OnCapturePaymentTest < Ecommerce::InMemoryTestCase
@@ -7,7 +7,7 @@ module Payments
       command_bus: ->{ Rails.configuration.command_bus }
     )
 
-    cover 'Payments::OnCapturePayment*'
+    cover "Payments::OnCapturePayment*"
 
     def test_capture_payment
       order_id = SecureRandom.uuid
@@ -18,7 +18,7 @@ module Payments
       run_command(Pricing::SetPrice.new(product_id: product_id, price: 20))
 
       customer_id = SecureRandom.uuid
-      run_command(Crm::RegisterCustomer.new(customer_id: customer_id, name: 'test'))
+      run_command(Crm::RegisterCustomer.new(customer_id: customer_id, name: "test"))
       Rails.configuration.payment_gateway.call.reset
       arrange(
         Pricing::AddItemToBasket.new(order_id: order_id, product_id: product_id),

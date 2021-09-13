@@ -1,4 +1,4 @@
-require_relative 'test_helper'
+require_relative "test_helper"
 
 module Pricing
   class PricingTest < Ecommerce::InMemoryTestCase
@@ -7,7 +7,7 @@ module Pricing
       command_bus: ->{ Rails.configuration.command_bus }
     )
 
-    cover 'Pricing*'
+    cover "Pricing*"
 
     def test_setting_price_updates_read_model
       product_1_id = SecureRandom.uuid

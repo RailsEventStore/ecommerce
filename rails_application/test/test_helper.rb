@@ -1,8 +1,8 @@
-ENV['RAILS_ENV'] ||= 'test'
-require_relative '../config/environment'
-require 'rails/test_help'
-require_relative '../../infra/lib/test_plumbing'
-require 'mutant/minitest/coverage'
+ENV["RAILS_ENV"] ||= "test"
+require_relative "../config/environment"
+require "rails/test_help"
+require_relative "../../infra/lib/test_plumbing"
+require "mutant/minitest/coverage"
 
 module Ecommerce
   class InMemoryTestCase < ActiveSupport::TestCase

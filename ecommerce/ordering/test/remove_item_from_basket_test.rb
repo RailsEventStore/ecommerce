@@ -1,4 +1,4 @@
-require_relative 'test_helper'
+require_relative "test_helper"
 
 module Ordering
   class RemoveItemFromBasketTest < Ecommerce::InMemoryTestCase
@@ -7,7 +7,7 @@ module Ordering
       command_bus: ->{ Rails.configuration.command_bus }
     )
 
-    cover 'Pricing::OnRemoveItemFromBasket*'
+    cover "Pricing::OnRemoveItemFromBasket*"
 
     def test_item_is_removed_from_draft_order
       aggregate_id = SecureRandom.uuid

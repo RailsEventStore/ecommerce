@@ -1,9 +1,9 @@
-require_relative 'test_helper'
+require_relative "test_helper"
 
 module Crm
   class CrmTest < Ecommerce::InMemoryTestCase
 
-    cover 'Crm*'
+    cover "Crm*"
 
     def test_customer_should_get_registered
       uid = SecureRandom.uuid
@@ -26,7 +26,7 @@ module Crm
     end
 
     def fake_name
-      'Fake name'
+      "Fake name"
     end
   end
 end

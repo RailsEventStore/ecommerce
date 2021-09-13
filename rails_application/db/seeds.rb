@@ -8,15 +8,15 @@
 
 command_bus = Rails.configuration.command_bus
 
-['BigCorp Ltd', 'MegaTron Gmbh', 'Arkency'].each do |name|
+["BigCorp Ltd", "MegaTron Gmbh", "Arkency"].each do |name|
   command_bus.call(Crm::RegisterCustomer.new(customer_id: SecureRandom.uuid, name: name))
 end
 
 [
-  ['Fearless Refactoring: Rails controllers', 49],
-  ['Rails meets React.js', 49],
-  ['Developers Oriented Project Management', 39],
-  ['Blogging for busy programmers', 29]
+  ["Fearless Refactoring: Rails controllers", 49],
+  ["Rails meets React.js", 49],
+  ["Developers Oriented Project Management", 39],
+  ["Blogging for busy programmers", 29]
 ].each do |name_price_tuple|
   product_id = SecureRandom.uuid
   command_bus.call(ProductCatalog::RegisterProduct.new(product_id: product_id, name: name_price_tuple[0]))

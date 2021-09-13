@@ -5,7 +5,7 @@ class SuppliesController < ApplicationController
 
   def create
     supply(params[:product_id], params[:quantity])
-    redirect_to products_path, notice: 'Stock level changed.'
+    redirect_to products_path, notice: "Stock level changed."
   end
 
   private

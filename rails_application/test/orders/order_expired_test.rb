@@ -1,9 +1,9 @@
-require 'test_helper'
+require "test_helper"
 
 module Orders
   class OrderExpiredTest < Ecommerce::InMemoryTestCase
 
-    cover 'Orders'
+    cover "Orders"
 
     def setup
       super
@@ -14,7 +14,7 @@ module Orders
       event_store = Rails.configuration.event_store
 
       customer_id = SecureRandom.uuid
-      run_command(Crm::RegisterCustomer.new(customer_id: customer_id, name: 'dummy'))
+      run_command(Crm::RegisterCustomer.new(customer_id: customer_id, name: "dummy"))
       product_id = SecureRandom.uuid
       run_command(ProductCatalog::RegisterProduct.new(product_id: product_id, name: "Async Remote"))
       run_command(Pricing::SetPrice.new(product_id: product_id, price: 39))
@@ -28,7 +28,7 @@ module Orders
 
       assert_equal(Order.count, 1)
       order = Order.find_by(uid: order_id)
-      assert_equal(order.state, 'Expired')
+      assert_equal(order.state, "Expired")
     end
   end
 end

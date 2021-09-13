@@ -1,4 +1,4 @@
-require_relative '../ordering'
+require_relative "../ordering"
 
 module Ordering
   class Configuration

@@ -19,7 +19,7 @@ class CreateEventStoreEvents < ActiveRecord::Migration[4.2]
     add_index :event_store_events_in_streams, [:stream, :event_id], unique: true
 
     if postgres
-      create_table(:event_store_events, id: :uuid, default: 'gen_random_uuid()', force: false) do |t|
+      create_table(:event_store_events, id: :uuid, default: "gen_random_uuid()", force: false) do |t|
         t.string      :event_type,  null: false
         t.text        :metadata
         t.text        :data,        null: false

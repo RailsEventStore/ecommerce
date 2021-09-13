@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  root 'orders#index'
+  root "orders#index"
 
   resources :orders, only: [:index, :show, :new, :edit, :create] do
     collection do
@@ -18,5 +18,5 @@ Rails.application.routes.draw do
   end
   resources :customers, only: [:new, :create, :index]
 
-  mount RailsEventStore::Browser => '/res'
+  mount RailsEventStore::Browser => "/res"
 end

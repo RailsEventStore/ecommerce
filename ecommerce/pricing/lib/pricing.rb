@@ -1,5 +1,5 @@
 require_relative "../../../infra/lib/infra"
-require_relative 'discounts'
+require_relative "discounts"
 
 module Pricing
 

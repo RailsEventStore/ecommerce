@@ -1,7 +1,7 @@
 require "test_helper"
 
 class OrdersTest < Ecommerce::InMemoryRESIntegrationTestCase
-  cover 'Orders*'
+  cover "Orders*"
 
   def setup
     super
@@ -11,7 +11,7 @@ class OrdersTest < Ecommerce::InMemoryRESIntegrationTestCase
 
   def test_submitting_empty_order
     arkency_id = SecureRandom.uuid
-    run_command(Crm::RegisterCustomer.new(customer_id: arkency_id, name: 'Arkency'))
+    run_command(Crm::RegisterCustomer.new(customer_id: arkency_id, name: "Arkency"))
     
     get "/"
     assert_select "h1", "Orders"
@@ -28,7 +28,7 @@ class OrdersTest < Ecommerce::InMemoryRESIntegrationTestCase
 
   def test_happy_path
     shopify_id = SecureRandom.uuid
-    run_command(Crm::RegisterCustomer.new(customer_id: shopify_id, name: 'Shopify'))
+    run_command(Crm::RegisterCustomer.new(customer_id: shopify_id, name: "Shopify"))
 
     order_id = SecureRandom.uuid
     another_order_id = SecureRandom.uuid
@@ -104,7 +104,7 @@ class OrdersTest < Ecommerce::InMemoryRESIntegrationTestCase
 
   def test_cancel
     shopify_id = SecureRandom.uuid
-    run_command(Crm::RegisterCustomer.new(customer_id: shopify_id, name: 'Shopify'))
+    run_command(Crm::RegisterCustomer.new(customer_id: shopify_id, name: "Shopify"))
     order_id = SecureRandom.uuid
     product_id = SecureRandom.uuid
     run_command(ProductCatalog::RegisterProduct.new(product_id: product_id, name: "Async Remote"))

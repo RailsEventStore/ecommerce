@@ -1,4 +1,4 @@
-require_relative 'test_helper'
+require_relative "test_helper"
 
 module Payments
   class PaymentTest < Ecommerce::InMemoryTestCase
@@ -7,7 +7,7 @@ module Payments
       command_bus: ->{ Rails.configuration.command_bus }
     )
 
-    cover 'Payments::Payment*'
+    cover "Payments::Payment*"
 
     def test_authorize_publishes_event
       payment = Payment.new

@@ -1,9 +1,9 @@
-require_relative 'test_helper'
+require_relative "test_helper"
 
 module Payments
   class FakeGatewayTest < Ecommerce::InMemoryTestCase
 
-    cover 'Payments::FakeGateway*'
+    cover "Payments::FakeGateway*"
 
     def test_happy_path
       gateway = FakeGateway.new

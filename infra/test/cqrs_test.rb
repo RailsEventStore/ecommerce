@@ -1,8 +1,8 @@
-require_relative 'test_helper'
+require_relative "test_helper"
 
 
 class CqrsTest < Minitest::Test
-  cover 'Cqrs*'
+  cover "Cqrs*"
 
   class SomeCommand < Command; end
 

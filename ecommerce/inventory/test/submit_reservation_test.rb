@@ -1,4 +1,4 @@
-require_relative 'inventory_in_memory_test_case'
+require_relative "inventory_in_memory_test_case"
 
 module Inventory
   class SubmitReservationTest < InventoryInMemoryTestCase

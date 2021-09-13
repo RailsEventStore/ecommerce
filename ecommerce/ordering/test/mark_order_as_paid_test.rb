@@ -1,4 +1,4 @@
-require_relative 'test_helper'
+require_relative "test_helper"
 
 module Ordering
   class MarkOrderAsPaidTest < Ecommerce::InMemoryTestCase
@@ -7,7 +7,7 @@ module Ordering
       command_bus: ->{ Rails.configuration.command_bus }
     )
 
-    cover 'Ordering::OnMarkOrderAsPaid*'
+    cover "Ordering::OnMarkOrderAsPaid*"
 
     def test_draft_order_could_not_be_marked_as_paid
       aggregate_id = SecureRandom.uuid
@@ -36,12 +36,12 @@ module Ordering
       run_command(Pricing::SetPrice.new(product_id: product_id, price: 20))
 
       customer_id = SecureRandom.uuid
-      command_bus.call(Crm::RegisterCustomer.new(customer_id: customer_id, name: 'dummy'))
+      command_bus.call(Crm::RegisterCustomer.new(customer_id: customer_id, name: "dummy"))
       arrange(
         Pricing::AddItemToBasket.new(order_id: aggregate_id, product_id: product_id),
         SubmitOrder.new(
           order_id: aggregate_id,
-          order_number: '2018/12/1',
+          order_number: "2018/12/1",
           customer_id: customer_id
         )
       )
@@ -70,12 +70,12 @@ module Ordering
       run_command(Pricing::SetPrice.new(product_id: product_id, price: 20))
 
       customer_id = SecureRandom.uuid
-      run_command(Crm::RegisterCustomer.new(customer_id: customer_id, name: 'dummy'))
+      run_command(Crm::RegisterCustomer.new(customer_id: customer_id, name: "dummy"))
       arrange(
         Pricing::AddItemToBasket.new(order_id: aggregate_id, product_id: product_id),
         SubmitOrder.new(
           order_id: aggregate_id,
-          order_number: '2018/12/1',
+          order_number: "2018/12/1",
           customer_id: customer_id
         ),
         SetOrderAsExpired.new(order_id: aggregate_id)

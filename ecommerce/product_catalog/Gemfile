@@ -1,4 +1,4 @@
-eval_gemfile '../../infra/Gemfile'
+eval_gemfile "../../infra/Gemfile"
 
-gem 'sqlite3'
-gem 'activerecord'
+gem "sqlite3"
+gem "activerecord"

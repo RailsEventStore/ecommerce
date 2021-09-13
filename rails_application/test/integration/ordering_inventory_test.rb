@@ -6,7 +6,7 @@ class OrderingInventoryTest < Ecommerce::RealRESIntegrationTestCase
     command_bus: ->{ Rails.configuration.command_bus }
   )
 
-  cover 'Ordering::OnSubmitOrder*'
+  cover "Ordering::OnSubmitOrder*"
 
   def test_inventory_error_prevents_order_submission
     aggregate_id = SecureRandom.uuid
@@ -14,7 +14,7 @@ class OrderingInventoryTest < Ecommerce::RealRESIntegrationTestCase
     product_id = SecureRandom.uuid
 
     arrange(
-      Crm::RegisterCustomer.new(customer_id: customer_id, name: 'test'),
+      Crm::RegisterCustomer.new(customer_id: customer_id, name: "test"),
       ProductCatalog::RegisterProduct.new(product_id: product_id, name: "Async Remote"),
       Pricing::SetPrice.new(product_id: product_id, price: 39),
       Inventory::Supply.new(product_id: product_id, quantity: 1),

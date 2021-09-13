@@ -1,5 +1,5 @@
-require 'yaml'
-require 'json'
+require "yaml"
+require "json"
 
 class MigrateYamlSerializedEventsToJson < ActiveRecord::Migration[5.2]
   def change

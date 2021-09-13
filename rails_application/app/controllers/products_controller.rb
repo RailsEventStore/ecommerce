@@ -12,10 +12,10 @@ class ProductsController < ApplicationController
       create_product(params[:product_id], params[:name])
       set_product_price(params[:product_id], params[:price]) if params[:price].present?
     rescue ProductCatalog::Product::AlreadyRegistered
-      flash[:notice] = 'Product was already registered.'
-      render 'new'
+      flash[:notice] = "Product was already registered."
+      render "new"
     else
-      redirect_to products_path, notice: 'Product was successfully created.'
+      redirect_to products_path, notice: "Product was successfully created."
     end
   end
 

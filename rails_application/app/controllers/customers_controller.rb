@@ -10,10 +10,10 @@ class CustomersController < ApplicationController
   def create
     create_customer(params[:customer_id], params[:name])
   rescue Crm::Customer::AlreadyRegistered
-    flash[:notice] = 'Customer was already registered.'
-    render 'new'
+    flash[:notice] = "Customer was already registered."
+    render "new"
   else
-    redirect_to customers_path, notice: 'Customer was successfully created.'
+    redirect_to customers_path, notice: "Customer was successfully created."
   end
 
   private

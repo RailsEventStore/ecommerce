@@ -1,9 +1,9 @@
-require 'test_helper'
+require "test_helper"
 
 module Orders
   class OrderSubmittedTest < Ecommerce::InMemoryTestCase
 
-    cover 'Orders'
+    cover "Orders"
 
     def setup
       super
@@ -15,7 +15,7 @@ module Orders
       event_store = Rails.configuration.event_store
 
       customer_id = SecureRandom.uuid
-      run_command(Crm::RegisterCustomer.new(customer_id: customer_id, name: 'dummy'))
+      run_command(Crm::RegisterCustomer.new(customer_id: customer_id, name: "dummy"))
 
       product_id = SecureRandom.uuid
       run_command(ProductCatalog::RegisterProduct.new(product_id: product_id, name: "test"))
@@ -28,16 +28,16 @@ module Orders
 
       assert_equal(Order.count, 1)
       order = Order.find_by(uid: order_id)
-      assert_equal(order.state, 'Submitted')
+      assert_equal(order.state, "Submitted")
       assert_equal(order.number, order_number)
-      assert_equal(order.customer, 'dummy')
+      assert_equal(order.customer, "dummy")
     end
 
     def test_skip_when_duplicated
       event_store = Rails.configuration.event_store
 
       customer_id = SecureRandom.uuid
-      run_command(Crm::RegisterCustomer.new(customer_id: customer_id, name: 'dummy'))
+      run_command(Crm::RegisterCustomer.new(customer_id: customer_id, name: "dummy"))
 
       product_id = SecureRandom.uuid
       run_command(ProductCatalog::RegisterProduct.new(product_id: product_id, name: "test"))
@@ -54,9 +54,9 @@ module Orders
 
       assert_equal(Order.count, 1)
       order = Order.find_by(uid: order_id)
-      assert_equal(order.state, 'Submitted')
+      assert_equal(order.state, "Submitted")
       assert_equal(order.number, order_number)
-      assert_equal(order.customer, 'dummy')
+      assert_equal(order.customer, "dummy")
     end
   end
 end

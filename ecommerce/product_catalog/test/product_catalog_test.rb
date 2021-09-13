@@ -1,4 +1,4 @@
-require_relative 'test_helper'
+require_relative "test_helper"
 
 module ProductCatalog
   class ProductCatalogTest < Minitest::Test
@@ -30,7 +30,7 @@ module ProductCatalog
       command_bus.call(command)
     end
 
-    cover 'ProductCatalog*'
+    cover "ProductCatalog*"
 
     def test_product_should_get_registered
       uid = SecureRandom.uuid
@@ -53,7 +53,7 @@ module ProductCatalog
     end
 
     def fake_name
-      'Fake name'
+      "Fake name"
     end
   end
 end

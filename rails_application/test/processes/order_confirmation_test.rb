@@ -1,15 +1,15 @@
-require 'test_helper'
+require "test_helper"
 
 class OrderConfirmationTest < Ecommerce::InMemoryTestCase
 
-  cover 'OrderConfirmation'
+  cover "OrderConfirmation"
 
   def test_authorized_is_not_enough_to_confirm
     product_id = SecureRandom.uuid
     run_command(ProductCatalog::RegisterProduct.new(product_id: product_id, name: "Async Remote"))
     run_command(Pricing::SetPrice.new(product_id: product_id, price: 39))
     customer_id = SecureRandom.uuid
-    run_command(Crm::RegisterCustomer.new(customer_id: customer_id, name: 'test'))
+    run_command(Crm::RegisterCustomer.new(customer_id: customer_id, name: "test"))
     [
       Pricing::AddItemToBasket.new(order_id: order_id, product_id: product_id),
       Ordering::SubmitOrder.new(order_id: order_id, customer_id: customer_id),
@@ -26,7 +26,7 @@ class OrderConfirmationTest < Ecommerce::InMemoryTestCase
     run_command(Pricing::SetPrice.new(product_id: product_id, price: 39))
 
     customer_id = SecureRandom.uuid
-    run_command(Crm::RegisterCustomer.new(customer_id: customer_id, name: 'test'))
+    run_command(Crm::RegisterCustomer.new(customer_id: customer_id, name: "test"))
     [
       Pricing::AddItemToBasket.new(order_id: order_id, product_id: product_id),
       Ordering::SubmitOrder.new(order_id: order_id, customer_id: customer_id),

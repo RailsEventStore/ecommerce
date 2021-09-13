@@ -1,4 +1,4 @@
-require_relative 'test_helper'
+require_relative "test_helper"
 
 module Inventory
   class InventoryInMemoryTestCase < Ecommerce::InMemoryTestCase
@@ -7,7 +7,7 @@ module Inventory
       command_bus: ->{ Rails.configuration.command_bus }
     )
 
-    cover 'Inventory*'
+    cover "Inventory*"
 
     protected
 

@@ -1,9 +1,9 @@
-require 'test_helper'
+require "test_helper"
 
 module Orders
   class ItemAddedToBasketTest < Ecommerce::InMemoryTestCase
 
-    cover 'Orders'
+    cover "Orders"
 
     def setup
       super
@@ -26,7 +26,7 @@ module Orders
       assert_equal(OrderLine.count, 1)
       order_line = OrderLine.find_by(order_uid: order_id)
       assert_equal(order_line.product_id, product_id)
-      assert_equal(order_line.product_name, 'test')
+      assert_equal(order_line.product_name, "test")
       assert_equal(order_line.quantity , 1)
       assert_equal(order_line.price , 49)
       assert_equal(order_line.value , 49)
@@ -54,7 +54,7 @@ module Orders
       assert_equal(OrderLine.count, 1)
       order_line = OrderLine.find_by(order_uid: order_id)
       assert_equal(order_line.product_id, product_id)
-      assert_equal(order_line.product_name, 'test')
+      assert_equal(order_line.product_name, "test")
       assert_equal(order_line.quantity, 2)
       assert_equal(order_line.price, 49)
       assert_equal(order_line.value, 98)
@@ -87,11 +87,11 @@ module Orders
       order_lines = order.order_lines
       assert_equal([product_id, another_product_id], order_lines.map(&:product_id))
       assert_equal(order_lines[0].product_id, product_id)
-      assert_equal(order_lines[0].product_name, 'test')
+      assert_equal(order_lines[0].product_name, "test")
       assert_equal(order_lines[0].quantity , 1)
 
       assert_equal(order_lines[1].product_id, another_product_id)
-      assert_equal(order_lines[1].product_name, '2nd one')
+      assert_equal(order_lines[1].product_name, "2nd one")
       assert_equal(order_lines[1].quantity , 1)
 
       assert_equal(Order.count, 1)

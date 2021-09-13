@@ -1,7 +1,7 @@
-require 'rails_event_store'
-require 'arkency/command_bus'
+require "rails_event_store"
+require "arkency/command_bus"
 
-require_relative '../../lib/configuration'
+require_relative "../../lib/configuration"
 
 class Mapper < RubyEventStore::Mappers::PipelineMapper
   def initialize

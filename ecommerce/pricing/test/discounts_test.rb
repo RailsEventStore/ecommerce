@@ -1,10 +1,10 @@
-require_relative 'test_helper'
+require_relative "test_helper"
 
 module Pricing
   module Discounts
     class OrderTest < Ecommerce::InMemoryTestCase
 
-      cover 'Pricing::Discounts*'
+      cover "Pricing::Discounts*"
 
       def setup
         @order = Order.new
@@ -16,7 +16,7 @@ module Pricing
     end
 
     class DiscountedOrderTest < Ecommerce::InMemoryTestCase
-      cover 'Pricing::Discounts*'
+      cover "Pricing::Discounts*"
 
       def test_can_change_its_discount_value
         @order = Order.new
@@ -33,7 +33,7 @@ module Pricing
     end
 
     class OrderWithClearedDiscount < Ecommerce::InMemoryTestCase
-      cover 'Pricing::Discounts*'
+      cover "Pricing::Discounts*"
 
       def test_can_be_discounted_again
         Order.new.discount.reset.discount
@@ -41,7 +41,7 @@ module Pricing
     end
 
     class PercentageDiscountTest < Ecommerce::InMemoryTestCase
-      cover 'Pricing::Discounts*'
+      cover "Pricing::Discounts*"
 
       def test_is_more_than_zero
         assert_raises UnacceptableDiscountRange do

@@ -1,4 +1,4 @@
-require_relative 'test_helper'
+require_relative "test_helper"
 
 module Ordering
   class AddItemToBasketTest < Ecommerce::InMemoryTestCase
@@ -7,7 +7,7 @@ module Ordering
       command_bus: ->{ Rails.configuration.command_bus }
     )
 
-    cover 'Pricing::OnAddItemToBasket*'
+    cover "Pricing::OnAddItemToBasket*"
 
     def test_item_is_added_to_draft_order
       aggregate_id = SecureRandom.uuid

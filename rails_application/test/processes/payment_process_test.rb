@@ -1,8 +1,8 @@
-require 'test_helper'
+require "test_helper"
 
 class PaymentProcessTest < Ecommerce::InMemoryTestCase
 
-  cover 'PaymentProcess*'
+  cover "PaymentProcess*"
 
   def test_happy_path
     fake = FakeCommandBus.new
@@ -72,7 +72,7 @@ class PaymentProcessTest < Ecommerce::InMemoryTestCase
   end
 
   def order_number
-    '2018/12/16'
+    "2018/12/16"
   end
 
   def customer_id
