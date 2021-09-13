@@ -10,7 +10,7 @@ require_relative "../lib/product_catalog"
 module ProductCatalog
   class Test < Minitest::Test
     include Infra::TestPlumbing.with(
-      event_store: ->{ RubyEventStore::Client.new(repository: RubyEventStore::InMemoryRepository.new) },
+      event_store: ->{ Infra::EventStore.in_memory },
       command_bus: ->{ Arkency::CommandBus.new }
     )
 
