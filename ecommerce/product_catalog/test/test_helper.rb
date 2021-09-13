@@ -8,9 +8,7 @@ ActiveRecord::Schema.verbose = false
 require_relative "../lib/product_catalog"
 
 module ProductCatalog
-  class Test < Minitest::Test
-    include Infra::TestPlumbing
-
+  class Test < Infra::InMemoryTest
     def before_setup
       super
       Configuration.new(cqrs).call

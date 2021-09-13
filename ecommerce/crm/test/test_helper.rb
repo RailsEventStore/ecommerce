@@ -8,9 +8,7 @@ ActiveRecord::Schema.verbose = false
 require_relative "../lib/crm"
 
 module Crm
-  class Test < Minitest::Test
-    include Infra::TestPlumbing
-
+  class Test < Infra::InMemoryTest
     def before_setup
       super
       Configuration.new(cqrs).call

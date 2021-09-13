@@ -48,4 +48,8 @@ module Infra
       end
     end
   end
+
+  class InMemoryTest < Minitest::Test
+    include TestPlumbing
+  end
 end
