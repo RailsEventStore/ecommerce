@@ -6,6 +6,7 @@ require "aggregate_root"
 require "active_support/notifications"
 
 require_relative "infra/command"
+require_relative "infra/command_bus"
 require_relative "infra/command_handler"
 require_relative "infra/cqrs"
 require_relative "infra/event"
