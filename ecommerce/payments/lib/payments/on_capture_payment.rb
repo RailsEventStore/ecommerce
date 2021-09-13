@@ -1,13 +1,13 @@
 module Payments
   class OnCapturePayment
-    include Infra::CommandHandler
+    def initialize
+      @repository = AggregateRoot::Repository.new(Rails.configuration.event_store)
+    end
 
     def call(command)
-      repository = AggregateRoot::Repository.new(Rails.configuration.event_store)
-      stream = stream_name(Payment, command.order_id)
-      payment = repository.load(Payment.new, stream)
-      payment.capture
-      repository.store(payment, stream)
+      @repository.with_aggregate(Payment.new, "Payments::Payment$#{command.order_id}") do |payment|
+        payment.capture
+      end
     end
   end
 end

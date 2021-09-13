@@ -1,13 +1,14 @@
 module Payments
   class OnAuthorizePayment
-    include Infra::CommandHandler
+    def initialize
+      @repository = AggregateRoot::Repository.new(Rails.configuration.event_store)
+      @gateway    = Rails.configuration.payment_gateway
+    end
 
     def call(command)
-      repository = AggregateRoot::Repository.new(Rails.configuration.event_store)
-      stream = stream_name(Payment, command.order_id)
-      payment = repository.load(Payment.new, stream)
-      payment.authorize(command.order_id, Rails.configuration.payment_gateway.call)
-      repository.store(payment, stream)
+      @repository.with_aggregate(Payment.new, "Payments::Payment$#{command.order_id}") do |payment|
+        payment.authorize(command.order_id, @gateway.call)
+      end
     end
   end
 end
