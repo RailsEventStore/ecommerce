@@ -1,6 +1,6 @@
 module Payments
-  class SetPaymentAmount < Command
-    attribute :order_id, Types::UUID
-    attribute :amount, Types::Nominal::Decimal
+  class SetPaymentAmount < Infra::Command
+    attribute :order_id, Infra::Types::UUID
+    attribute :amount,   Infra::Types::Nominal::Decimal
   end
 end

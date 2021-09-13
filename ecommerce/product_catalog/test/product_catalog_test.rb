@@ -2,14 +2,14 @@ require_relative "test_helper"
 
 module ProductCatalog
   class ProductCatalogTest < Minitest::Test
-    include TestPlumbing.with(
+    include Infra::TestPlumbing.with(
       event_store: ->{ RubyEventStore::Client.new(repository: RubyEventStore::InMemoryRepository.new) },
       command_bus: ->{ Arkency::CommandBus.new }
     )
 
     def before_setup
       result = super
-      ProductCatalog::Configuration.new(Cqrs.new(event_store, command_bus)).call
+      ProductCatalog::Configuration.new(Infra::Cqrs.new(event_store, command_bus)).call
       prepare_schema
       result
     end

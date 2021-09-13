@@ -1,6 +1,6 @@
 module Payments
   class OnCapturePayment
-    include CommandHandler
+    include Infra::CommandHandler
 
     def call(command)
       repository = AggregateRoot::Repository.new(Rails.configuration.event_store)

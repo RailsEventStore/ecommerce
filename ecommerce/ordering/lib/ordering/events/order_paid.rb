@@ -1,5 +1,5 @@
 module Ordering
-  class OrderPaid < Event
-    attribute :order_id,       Types::UUID
+  class OrderPaid < Infra::Event
+    attribute :order_id, Infra::Types::UUID
   end
 end

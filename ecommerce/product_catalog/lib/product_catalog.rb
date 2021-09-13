@@ -24,9 +24,9 @@ module ProductCatalog
     end
   end
 
-  class RegisterProduct < Command
-    attribute :product_id, Types::UUID
-    attribute :name, Types::String
+  class RegisterProduct < Infra::Command
+    attribute :product_id, Infra::Types::UUID
+    attribute :name, Infra::Types::String
   end
 
   class ProductRegistrationHandler

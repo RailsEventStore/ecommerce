@@ -10,4 +10,8 @@ requires:
   - ./lib/infra.rb
 matcher:
   subjects:
-  - Cqrs
+  - Infra*
+  ignore:
+  - Infra::Event*
+  - Infra::Command*
+  - Infra::CommandHandler*

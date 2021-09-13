@@ -1,6 +1,6 @@
 module Inventory
   class ReservationService
-    include CommandHandler
+    include Infra::CommandHandler
 
     def call(command)
       __send__(command.class.name.demodulize.underscore, command)

@@ -1,6 +1,6 @@
 module Payments
-  class PaymentAmountSet < Event
-    attribute :order_id, Types::UUID
-    attribute :amount,   Types::Nominal::Decimal
+  class PaymentAmountSet < Infra::Event
+    attribute :order_id, Infra::Types::UUID
+    attribute :amount,   Infra::Types::Nominal::Decimal
   end
 end

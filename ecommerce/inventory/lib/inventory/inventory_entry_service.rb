@@ -1,6 +1,6 @@
 module Inventory
   class InventoryEntryService
-    include CommandHandler
+    include Infra::CommandHandler
 
     def call(command)
       __send__(command.class.name.demodulize.underscore, command)

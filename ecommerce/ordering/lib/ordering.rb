@@ -14,7 +14,7 @@ require_relative "ordering/order"
 module Ordering
 
   class OnCancelOrder
-    include CommandHandler
+    include Infra::CommandHandler
 
     def call(command)
       with_aggregate(Order, command.aggregate_id) do |order|
@@ -24,7 +24,7 @@ module Ordering
   end
 
   class OnMarkOrderAsPaid
-    include CommandHandler
+    include Infra::CommandHandler
 
     def call(command)
       with_aggregate(Order, command.aggregate_id) do |order|
@@ -34,7 +34,7 @@ module Ordering
   end
 
   class OnSetOrderAsExpired
-    include CommandHandler
+    include Infra::CommandHandler
 
     def call(command)
       with_aggregate(Order, command.aggregate_id) do |order|
@@ -44,7 +44,7 @@ module Ordering
   end
 
   class OnSubmitOrder
-    include CommandHandler
+    include Infra::CommandHandler
 
     def initialize(number_generator:)
       @number_generator = number_generator

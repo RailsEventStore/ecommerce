@@ -19,9 +19,9 @@ module Crm
     end
   end
 
-  class RegisterCustomer < Command
-    attribute :customer_id, Types::UUID
-    attribute :name, Types::String
+  class RegisterCustomer < Infra::Command
+    attribute :customer_id, Infra::Types::UUID
+    attribute :name, Infra::Types::String
   end
 
   class CustomerRegistrationHandler

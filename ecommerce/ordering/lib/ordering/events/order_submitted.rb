@@ -1,7 +1,7 @@
 module Ordering
-  class OrderSubmitted < Event
-    attribute :order_id,     Types::UUID
-    attribute :order_number, Types::OrderNumber
-    attribute :customer_id,  Types::UUID
+  class OrderSubmitted < Infra::Event
+    attribute :order_id,     Infra::Types::UUID
+    attribute :order_number, Infra::Types::OrderNumber
+    attribute :customer_id,  Infra::Types::UUID
   end
 end

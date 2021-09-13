@@ -1,5 +1,5 @@
 module Payments
-  class PaymentCaptured < Event
-    attribute :order_id,       Types::UUID
+  class PaymentCaptured < Infra::Event
+    attribute :order_id, Infra::Types::UUID
   end
 end

@@ -1,5 +1,5 @@
 module Inventory
-  class SubmitReservation < Command
-    attribute :order_id, Types::UUID
+  class SubmitReservation < Infra::Command
+    attribute :order_id, Infra::Types::UUID
   end
 end

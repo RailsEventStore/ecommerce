@@ -1,7 +1,7 @@
 module Ordering
-  class SubmitOrder < Command
-    attribute :order_id, Types::UUID
-    attribute :customer_id, Types::UUID
+  class SubmitOrder < Infra::Command
+    attribute :order_id, Infra::Types::UUID
+    attribute :customer_id, Infra::Types::UUID
 
     alias :aggregate_id :order_id
   end

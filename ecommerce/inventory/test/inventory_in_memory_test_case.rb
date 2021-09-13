@@ -2,7 +2,7 @@ require_relative "test_helper"
 
 module Inventory
   class InventoryInMemoryTestCase < Ecommerce::InMemoryTestCase
-    include TestPlumbing.with(
+    include Infra::TestPlumbing.with(
       event_store: ->{ Rails.configuration.event_store },
       command_bus: ->{ Rails.configuration.command_bus }
     )

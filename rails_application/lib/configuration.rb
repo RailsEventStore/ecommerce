@@ -12,7 +12,7 @@ class Configuration
     event_store.subscribe_to_all_events(RailsEventStore::LinkByCorrelationId.new)
     event_store.subscribe_to_all_events(RailsEventStore::LinkByCausationId.new)
 
-    cqrs = Cqrs.new(event_store, command_bus)
+    cqrs = Infra::Cqrs.new(event_store, command_bus)
 
     Orders::Configuration.new(cqrs).call
     Products::Configuration.new(cqrs).call

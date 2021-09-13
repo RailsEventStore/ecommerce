@@ -1,5 +1,5 @@
 module Ordering
-  class OrderExpired < Event
-    attribute :order_id, Types::UUID
+  class OrderExpired < Infra::Event
+    attribute :order_id, Infra::Types::UUID
   end
 end

@@ -1,5 +1,5 @@
 module Inventory
-  class CancelReservation < Command
-    attribute :order_id, Types::UUID
+  class CancelReservation < Infra::Command
+    attribute :order_id, Infra::Types::UUID
   end
 end

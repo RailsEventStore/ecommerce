@@ -1,5 +1,5 @@
 module Payments
-  class ReleasePayment < Command
-    attribute :order_id, Types::UUID
+  class ReleasePayment < Infra::Command
+    attribute :order_id, Infra::Types::UUID
   end
 end

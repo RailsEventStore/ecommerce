@@ -20,49 +20,49 @@ module Pricing
     end
   end
 
-  class AddItemToBasket < Command
-    attribute :order_id, Types::UUID
-    attribute :product_id, Types::UUID
+  class AddItemToBasket < Infra::Command
+    attribute :order_id,   Infra::Types::UUID
+    attribute :product_id, Infra::Types::UUID
 
     alias :aggregate_id :order_id
   end
 
-  class RemoveItemFromBasket < Command
-    attribute :order_id, Types::UUID
-    attribute :product_id, Types::UUID
+  class RemoveItemFromBasket < Infra::Command
+    attribute :order_id,   Infra::Types::UUID
+    attribute :product_id, Infra::Types::UUID
 
     alias :aggregate_id :order_id
   end
 
-  class CalculateTotalValue < Command
-    attribute :order_id, Types::UUID
+  class CalculateTotalValue < Infra::Command
+    attribute :order_id, Infra::Types::UUID
     alias :aggregate_id :order_id
   end
 
-  class SetPrice < Command
-    attribute :product_id, Types::UUID
-    attribute :price, Types::Price
+  class SetPrice < Infra::Command
+    attribute :product_id, Infra::Types::UUID
+    attribute :price,      Infra::Types::Price
   end
 
-  class ItemAddedToBasket < Event
-    attribute :order_id,   Types::UUID
-    attribute :product_id, Types::UUID
+  class ItemAddedToBasket < Infra::Event
+    attribute :order_id,   Infra::Types::UUID
+    attribute :product_id, Infra::Types::UUID
   end
 
-  class ItemRemovedFromBasket < Event
-    attribute :order_id,   Types::UUID
-    attribute :product_id, Types::UUID
+  class ItemRemovedFromBasket < Infra::Event
+    attribute :order_id,   Infra::Types::UUID
+    attribute :product_id, Infra::Types::UUID
   end
 
-  class SetPercentageDiscount < Command
-    attribute :order_id,   Types::UUID
-    attribute :amount, Types::PercentageDiscount
+  class SetPercentageDiscount < Infra::Command
+    attribute :order_id,   Infra::Types::UUID
+    attribute :amount,     Infra::Types::PercentageDiscount
   end
 
   class NotPossibleToAssignDiscountTwice < StandardError; end
 
   class SetPercentageDiscountHandler
-    include CommandHandler
+    include Infra::CommandHandler
 
     def initialize(event_store)
       @event_store = event_store
@@ -100,7 +100,7 @@ module Pricing
   end
 
   class SetPriceHandler
-    include CommandHandler
+    include Infra::CommandHandler
 
     def initialize(event_store)
       @event_store = event_store
@@ -116,7 +116,7 @@ module Pricing
   end
 
   class OnAddItemToBasket
-    include CommandHandler
+    include Infra::CommandHandler
 
     def call(command)
       with_aggregate(Order, command.aggregate_id) do |order|
@@ -126,7 +126,7 @@ module Pricing
   end
 
   class OnRemoveItemFromBasket
-    include CommandHandler
+    include Infra::CommandHandler
 
     def call(command)
       with_aggregate(Order, command.aggregate_id) do |order|
@@ -136,7 +136,7 @@ module Pricing
   end
 
   class OnCalculateTotalValue
-    include CommandHandler
+    include Infra::CommandHandler
 
     def initialize(event_store)
       @event_store = event_store
@@ -168,20 +168,20 @@ module Pricing
     end
   end
 
-  class PriceSet < Event
-    attribute :product_id, Types::UUID
-    attribute :price, Types::Price
+  class PriceSet < Infra::Event
+    attribute :product_id, Infra::Types::UUID
+    attribute :price, Infra::Types::Price
   end
 
-  class OrderTotalValueCalculated < Event
-    attribute :order_id, Types::UUID
-    attribute :discounted_amount, Types::Value
-    attribute :total_amount, Types::Value
+  class OrderTotalValueCalculated < Infra::Event
+    attribute :order_id, Infra::Types::UUID
+    attribute :discounted_amount, Infra::Types::Value
+    attribute :total_amount, Infra::Types::Value
   end
 
-  class PercentageDiscountSet < Event
-    attribute :order_id, Types::UUID
-    attribute :amount, Types::Price
+  class PercentageDiscountSet < Infra::Event
+    attribute :order_id, Infra::Types::UUID
+    attribute :amount, Infra::Types::Price
   end
 
   class PercentageDiscountReset < RailsEventStore::Event

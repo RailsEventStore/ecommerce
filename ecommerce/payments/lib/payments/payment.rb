@@ -3,9 +3,9 @@ module Payments
     include AggregateRoot
 
     AlreadyAuthorized = Class.new(StandardError)
-    NotAuthorized = Class.new(StandardError)
-    AlreadyCaptured = Class.new(StandardError)
-    AlreadyReleased = Class.new(StandardError)
+    NotAuthorized     = Class.new(StandardError)
+    AlreadyCaptured   = Class.new(StandardError)
+    AlreadyReleased   = Class.new(StandardError)
 
     def set_amount(order_id, amount)
       apply(PaymentAmountSet.new(data: {order_id: order_id, amount: amount}))

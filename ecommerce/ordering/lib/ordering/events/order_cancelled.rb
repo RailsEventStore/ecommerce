@@ -1,5 +1,5 @@
 module Ordering
-  class OrderCancelled < Event
-    attribute :order_id, Types::UUID
+  class OrderCancelled < Infra::Event
+    attribute :order_id, Infra::Types::UUID
   end
 end

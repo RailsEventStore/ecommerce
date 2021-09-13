@@ -2,7 +2,7 @@ require_relative "test_helper"
 
 module Ordering
   class SubmitOrderTest < Ecommerce::InMemoryTestCase
-    include TestPlumbing.with(
+    include Infra::TestPlumbing.with(
       event_store: ->{ Rails.configuration.event_store },
       command_bus: ->{ Rails.configuration.command_bus }
     )
@@ -40,7 +40,7 @@ module Ordering
     def test_could_not_create_order_where_customer_is_not_given
       aggregate_id = SecureRandom.uuid
 
-      assert_raises(Command::Invalid) do
+      assert_raises(Infra::Command::Invalid) do
         act(SubmitOrder.new(order_id: aggregate_id, customer_id: nil))
       end
     end

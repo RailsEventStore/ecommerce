@@ -1,7 +1,7 @@
 module Inventory
-  class AdjustReservation < Command
-    attribute :order_id, Types::UUID
-    attribute :product_id, Types::UUID
-    attribute :quantity, Types::Integer
+  class AdjustReservation < Infra::Command
+    attribute :order_id, Infra::Types::UUID
+    attribute :product_id, Infra::Types::UUID
+    attribute :quantity, Infra::Types::Integer
   end
 end

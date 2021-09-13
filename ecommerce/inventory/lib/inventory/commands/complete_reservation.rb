@@ -1,5 +1,5 @@
 module Inventory
-  class CompleteReservation < Command
-    attribute :order_id, Types::UUID
+  class CompleteReservation < Infra::Command
+    attribute :order_id, Infra::Types::UUID
   end
 end
