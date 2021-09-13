@@ -1,5 +1,3 @@
-require 'dry-struct'
-
 class Command < Dry::Struct
   Invalid = Class.new(StandardError)
 

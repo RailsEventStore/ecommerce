@@ -1,6 +1,3 @@
-require 'ruby_event_store'
-require 'dry-struct'
-
 class Event < Dry::Struct
   transform_keys(&:to_sym)
 
