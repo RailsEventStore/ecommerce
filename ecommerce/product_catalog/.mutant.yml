@@ -8,3 +8,4 @@ matcher:
   - ProductCatalog*
   ignore:
   - ProductCatalog::AssignPriceToProduct*
+  - ProductCatalog::Test*
