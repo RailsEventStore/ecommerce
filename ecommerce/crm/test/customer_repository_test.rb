@@ -1,13 +1,7 @@
 require_relative "test_helper"
 
 module Crm
-  class CustomerRepositoryTest < Test
-    cover "Crm*"
-
-    def repository
-      CustomerRepository.new
-    end
-
+  module CustomerRepositoryExamples
     def test_find_non_existing
       refute repository.find(SecureRandom.uuid)
     end
@@ -41,6 +35,32 @@ module Crm
 
     def assert_equal_serialized(expected, actual)
       assert_equal Array(expected).map(&:to_h), Array(actual).map(&:to_h)
+    end
+  end
+
+  class CustomerRepositoryTest < Test
+    include CustomerRepositoryExamples
+
+    cover "Crm::CustomerRepository*"
+
+    attr_reader :repository
+
+    def setup
+      super
+      @repository = CustomerRepository.new
+    end
+  end
+
+  class InMemoryCustomerRepositoryTest < Test
+    include CustomerRepositoryExamples
+
+    cover "Crm::InMemoryCustomerRepository*"
+
+    attr_reader :repository
+
+    def setup
+      super
+      @repository = InMemoryCustomerRepository.new
     end
   end
 end
