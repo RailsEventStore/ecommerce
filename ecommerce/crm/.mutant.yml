@@ -9,3 +9,6 @@ matcher:
   ignore:
     - Crm::Test*
     - Crm::Registration#initialize
+    - Crm::CustomerRepositoryExamples*
+    - Crm::Customer#to_h
+    - Crm::Customer#register

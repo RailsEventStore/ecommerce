@@ -48,7 +48,7 @@ module Orders
     def mark_as_submitted(event)
       order = Order.find_or_create_by(uid: event.data.fetch(:order_id))
       order.number = event.data.fetch(:order_number)
-      order.customer = Crm::CustomerRepository.new.find(event.data.fetch(:customer_id)).name
+      order.customer = CustomerRepository.new.find(event.data.fetch(:customer_id)).name
       order.state = "Submitted"
       order.save!
     end

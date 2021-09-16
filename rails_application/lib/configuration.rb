@@ -5,6 +5,7 @@ require_relative "../../ecommerce/product_catalog/lib/product_catalog"
 require_relative "../../ecommerce/crm/lib/crm"
 require_relative "../../ecommerce/payments/lib/payments"
 require_relative "../../ecommerce/inventory/lib/inventory"
+require_relative 'customer_repository'
 
 class Configuration
   def call(event_store, command_bus)
@@ -21,7 +22,7 @@ class Configuration
     Pricing::Configuration.new(cqrs).call
     Payments::Configuration.new(cqrs).call
     ProductCatalog::Configuration.new(cqrs).call
-    Crm::Configuration.new(cqrs, Crm::CustomerRepository.new).call
+    Crm::Configuration.new(cqrs, CustomerRepository.new).call
     Inventory::Configuration.new(cqrs).call
 
     cqrs.subscribe(PaymentProcess.new, [
