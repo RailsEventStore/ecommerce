@@ -21,7 +21,7 @@ class Configuration
     Pricing::Configuration.new(cqrs).call
     Payments::Configuration.new(cqrs).call
     ProductCatalog::Configuration.new(cqrs).call
-    Crm::Configuration.new(cqrs).call
+    Crm::Configuration.new(cqrs, Crm::CustomerRepository.new).call
     Inventory::Configuration.new(cqrs).call
 
     cqrs.subscribe(PaymentProcess.new, [

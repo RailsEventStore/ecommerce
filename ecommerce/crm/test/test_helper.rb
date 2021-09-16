@@ -11,9 +11,12 @@ module Crm
   class Test < Infra::InMemoryTest
     def before_setup
       super
-      Configuration.new(cqrs).call
+      @customer_repository = InMemoryCustomerRepository.new
+      Configuration.new(cqrs, @customer_repository).call
       prepare_schema
     end
+
+    attr_reader :customer_repository
 
     def prepare_schema
       ActiveRecord::Schema.define do

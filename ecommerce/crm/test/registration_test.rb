@@ -7,7 +7,7 @@ module Crm
     def test_customer_should_get_registered
       register_customer(uuid = SecureRandom.uuid, fake_name)
 
-      refute_nil customer_registered = CustomerRepository.new.find(uuid)
+      refute_nil customer_registered = customer_repository.find(uuid)
       assert_equal fake_name, customer_registered.name
     end
 

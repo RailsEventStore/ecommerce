@@ -6,12 +6,13 @@ require_relative "crm/customer"
 
 module Crm
   class Configuration
-    def initialize(cqrs)
+    def initialize(cqrs, repository)
       @cqrs = cqrs
+      @repository = repository
     end
 
     def call
-      @cqrs.register(RegisterCustomer, Registration.new)
+      @cqrs.register(RegisterCustomer, Registration.new(@repository))
     end
   end
 end
