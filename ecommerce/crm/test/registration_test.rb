@@ -5,16 +5,18 @@ module Crm
     cover "Crm*"
 
     def test_customer_should_get_registered
-      uid = SecureRandom.uuid
-      register_customer(uid, fake_name)
-      refute_nil(customer_registered = Customer.find(uid))
-      assert_equal(customer_registered.name, fake_name)
+      register_customer(uuid = SecureRandom.uuid, fake_name)
+
+      refute_nil customer_registered = CustomerRepository.new.find(uuid)
+      assert_equal fake_name, customer_registered.name
     end
 
     def test_should_not_allow_for_double_registration
-      uid = SecureRandom.uuid
+      uuid = SecureRandom.uuid
+
       assert_raises(Customer::AlreadyRegistered) do
-        2.times { register_customer(uid, fake_name) }
+        register_customer(uuid, fake_name)
+        register_customer(uuid, fake_name)
       end
     end
 
@@ -25,7 +27,7 @@ module Crm
     end
 
     def fake_name
-      "Fake name"
+      "Fake Name"
     end
   end
 end

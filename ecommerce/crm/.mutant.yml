@@ -8,3 +8,4 @@ matcher:
     - Crm*
   ignore:
     - Crm::Test*
+    - Crm::Registration#initialize

@@ -1,6 +1,7 @@
 require_relative "../../../infra/lib/infra"
 require_relative "crm/commands"
-require_relative "crm/customer_registration_handler"
+require_relative "crm/registration"
+require_relative "crm/customer_repository"
 require_relative "crm/customer"
 
 module Crm
@@ -10,7 +11,7 @@ module Crm
     end
 
     def call
-      @cqrs.register(RegisterCustomer, CustomerRegistrationHandler.new)
+      @cqrs.register(RegisterCustomer, Registration.new)
     end
   end
 end
