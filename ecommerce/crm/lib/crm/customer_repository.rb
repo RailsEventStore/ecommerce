@@ -4,10 +4,6 @@ module Crm
       self.table_name = "customers"
     end
 
-    def initialize
-      @klass = Customer
-    end
-
     def create(customer)
       Record.create!(**customer.to_h)
       nil
@@ -21,7 +17,7 @@ module Crm
     end
 
     def find_or_initialize_by_id(id)
-      find(id) || @klass.new(id: id)
+      find(id) || Customer.new(id: id)
     end
 
     def all
@@ -31,7 +27,7 @@ module Crm
     private
 
     def wrap_record(r)
-      @klass.new(**r.attributes.symbolize_keys)
+      Customer.new(**r.attributes.symbolize_keys)
     end
   end
 end
