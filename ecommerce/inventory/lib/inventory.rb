@@ -27,11 +27,11 @@ module Inventory
       reservation = ReservationService.new(@event_store)
       inventory = InventoryEntryService.new(@event_store)
 
-      @cqrs.register(AdjustReservation, reservation.method(:adjust_reservation))
-      @cqrs.register(SubmitReservation, reservation.method(:submit_reservation))
-      @cqrs.register(CancelReservation, reservation.method(:cancel_reservation))
-      @cqrs.register(CompleteReservation, reservation.method(:complete_reservation))
-      @cqrs.register(Supply, inventory.method(:supply))
+      @cqrs.register(AdjustReservation, reservation.public_method(:adjust_reservation))
+      @cqrs.register(SubmitReservation, reservation.public_method(:submit_reservation))
+      @cqrs.register(CancelReservation, reservation.public_method(:cancel_reservation))
+      @cqrs.register(CompleteReservation, reservation.public_method(:complete_reservation))
+      @cqrs.register(Supply, inventory.public_method(:supply))
     end
   end
 end
