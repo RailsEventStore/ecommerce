@@ -1,6 +1,6 @@
 module Crm
   class Registration
-    def initialize(customer_repository = CustomerRepository.new)
+    def initialize(customer_repository)
       @customer_repository = customer_repository
     end
 

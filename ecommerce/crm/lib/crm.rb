@@ -6,7 +6,7 @@ require_relative "crm/customer"
 
 module Crm
   class Configuration
-    def initialize(cqrs, repository)
+    def initialize(cqrs, repository = InMemoryCustomerRepository.new)
       @cqrs = cqrs
       @repository = repository
     end
