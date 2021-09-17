@@ -1,5 +1,5 @@
 require_relative "../../infra/lib/infra"
-require_relative "../../ecommerce/ordering/lib/ordering/configuration"
+require_relative "../../ecommerce/ordering/lib/ordering"
 require_relative "../../ecommerce/pricing/lib/pricing"
 require_relative "../../ecommerce/product_catalog/lib/product_catalog"
 require_relative "../../ecommerce/crm/lib/crm"

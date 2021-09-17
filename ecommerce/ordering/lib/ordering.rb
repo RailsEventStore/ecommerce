@@ -9,61 +9,23 @@ require_relative "ordering/commands/mark_order_as_paid"
 require_relative "ordering/commands/cancel_order"
 require_relative "ordering/fake_number_generator"
 require_relative "ordering/number_generator"
+require_relative "ordering/service"
 require_relative "ordering/order"
 
+
 module Ordering
-  class OnCancelOrder
-    def initialize(event_store)
-      @repository = Infra::AggregateRootRepository.new(event_store)
-    end
-
-    def call(command)
-      @repository.with_aggregate(Order, command.aggregate_id) do |order|
-        order.cancel
-      end
-    end
-  end
-
-  class OnMarkOrderAsPaid
-    def initialize(event_store)
-      @repository = Infra::AggregateRootRepository.new(event_store)
-    end
-
-    def call(command)
-      @repository.with_aggregate(Order, command.aggregate_id) do |order|
-        order.confirm
-      end
-    end
-  end
-
-  class OnSetOrderAsExpired
-    def initialize(event_store)
-      @repository = Infra::AggregateRootRepository.new(event_store)
-    end
-
-    def call(command)
-      @repository.with_aggregate(Order, command.aggregate_id) do |order|
-        order.expire
-      end
-    end
-  end
-
-  class OnSubmitOrder
-    def initialize(event_store, number_generator)
-      @repository = Infra::AggregateRootRepository.new(event_store)
+  class Configuration
+    def initialize(cqrs, event_store, number_generator)
+      @cqrs = cqrs
+      @event_store = event_store
       @number_generator = number_generator
     end
 
-    def call(command)
-      ActiveRecord::Base.transaction do
-        @repository.with_aggregate(Order, command.aggregate_id) do |order|
-          order_number = @number_generator.call
-          order.submit(order_number, command.customer_id)
-        end
-      end
+    def call
+      @cqrs.register(SubmitOrder, OnSubmitOrder.new(@event_store, @number_generator.call))
+      @cqrs.register(SetOrderAsExpired, OnSetOrderAsExpired.new(@event_store))
+      @cqrs.register(MarkOrderAsPaid, OnMarkOrderAsPaid.new(@event_store))
+      @cqrs.register(CancelOrder, OnCancelOrder.new(@event_store))
     end
   end
 end
-
-
-
