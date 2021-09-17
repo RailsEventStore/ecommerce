@@ -3,10 +3,10 @@ require 'active_support/notifications'
 
 module Infra
   class AggregateRootRepository
-    def initialize(event_store)
+    def initialize(event_store, notifications = ActiveSupport::Notifications)
       @repository = AggregateRoot::InstrumentedRepository.new(
         AggregateRoot::Repository.new(event_store),
-        ActiveSupport::Notifications
+        notifications
       )
     end
 
