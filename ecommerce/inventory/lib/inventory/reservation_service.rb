@@ -5,7 +5,16 @@ module Inventory
     end
 
     def call(command)
-      __send__(command.class.name.demodulize.underscore, command)
+      case command
+      when AdjustReservation
+        adjust_reservation(command)
+      when CancelReservation
+        cancel_reservation(command)
+      when CompleteReservation
+        complete_reservation(command)
+      when SubmitReservation
+        submit_reservation(command)
+      end
     end
 
     private

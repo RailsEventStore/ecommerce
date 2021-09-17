@@ -5,7 +5,7 @@ module Inventory
     end
 
     def call(command)
-      __send__(command.class.name.demodulize.underscore, command)
+      supply(command)
     end
 
     private
