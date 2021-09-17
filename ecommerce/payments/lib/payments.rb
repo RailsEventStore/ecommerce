@@ -10,15 +10,16 @@ require_relative "payments/payment"
 
 module Payments
   class Configuration
-    def initialize(cqrs)
+    def initialize(cqrs, event_store)
       @cqrs = cqrs
+      @event_store = event_store
     end
 
     def call
-      @cqrs.register(AuthorizePayment, OnAuthorizePayment.new)
-      @cqrs.register(CapturePayment, OnCapturePayment.new)
-      @cqrs.register(ReleasePayment, OnReleasePayment.new)
-      @cqrs.register(SetPaymentAmount, OnSetPaymentAmount.new)
+      @cqrs.register(AuthorizePayment, OnAuthorizePayment.new(@event_store))
+      @cqrs.register(CapturePayment, OnCapturePayment.new(@event_store))
+      @cqrs.register(ReleasePayment, OnReleasePayment.new(@event_store))
+      @cqrs.register(SetPaymentAmount, OnSetPaymentAmount.new(@event_store))
     end
   end
 end

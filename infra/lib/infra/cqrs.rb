@@ -1,7 +1,5 @@
 module Infra
   class Cqrs
-    attr_reader :event_store
-
     def initialize(event_store, command_bus)
       @event_store = event_store
       @command_bus = command_bus

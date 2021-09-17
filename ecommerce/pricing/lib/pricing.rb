@@ -4,16 +4,17 @@ require_relative "discounts"
 module Pricing
 
   class Configuration
-    def initialize(cqrs)
+    def initialize(cqrs, event_store)
       @cqrs = cqrs
+      @event_store = event_store
     end
 
     def call
-      @cqrs.register_command(AddItemToBasket, OnAddItemToBasket.new, ItemAddedToBasket)
-      @cqrs.register_command(RemoveItemFromBasket, OnRemoveItemFromBasket.new, ItemRemovedFromBasket)
-      @cqrs.register_command(SetPrice, SetPriceHandler.new(@cqrs.event_store), PriceSet)
-      @cqrs.register_command(CalculateTotalValue, OnCalculateTotalValue.new(@cqrs.event_store), OrderTotalValueCalculated)
-      @cqrs.register_command(SetPercentageDiscount, SetPercentageDiscountHandler.new(@cqrs.event_store), PercentageDiscountSet)
+      @cqrs.register_command(AddItemToBasket, OnAddItemToBasket.new(@event_store), ItemAddedToBasket)
+      @cqrs.register_command(RemoveItemFromBasket, OnRemoveItemFromBasket.new(@event_store), ItemRemovedFromBasket)
+      @cqrs.register_command(SetPrice, SetPriceHandler.new(@event_store), PriceSet)
+      @cqrs.register_command(CalculateTotalValue, OnCalculateTotalValue.new(@event_store), OrderTotalValueCalculated)
+      @cqrs.register_command(SetPercentageDiscount, SetPercentageDiscountHandler.new(@event_store), PercentageDiscountSet)
       @cqrs.subscribe(
         -> (event) { @cqrs.run(Pricing::CalculateTotalValue.new(order_id: event.data.fetch(:order_id)))},
         [ItemAddedToBasket, ItemRemovedFromBasket, Pricing::PercentageDiscountSet])
@@ -62,7 +63,7 @@ module Pricing
   class NotPossibleToAssignDiscountTwice < StandardError; end
 
   class SetPercentageDiscountHandler
-    def initialize(event_store = Rails.configuration.event_store)
+    def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)
       @event_store = event_store
     end
@@ -99,7 +100,7 @@ module Pricing
   end
 
   class SetPriceHandler
-    def initialize(event_store = Rails.configuration.event_store)
+    def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)
     end
 
@@ -111,7 +112,7 @@ module Pricing
   end
 
   class OnAddItemToBasket
-    def initialize(event_store = Rails.configuration.event_store)
+    def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)
     end
 
@@ -123,7 +124,7 @@ module Pricing
   end
 
   class OnRemoveItemFromBasket
-    def initialize(event_store = Rails.configuration.event_store)
+    def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)
     end
 
@@ -135,7 +136,7 @@ module Pricing
   end
 
   class OnCalculateTotalValue
-    def initialize(event_store = Rails.configuration.event_store)
+    def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)
       @event_store = event_store
     end

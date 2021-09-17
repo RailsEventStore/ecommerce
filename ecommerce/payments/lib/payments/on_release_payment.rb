@@ -1,7 +1,7 @@
 module Payments
   class OnReleasePayment
-    def initialize
-      @repository = AggregateRoot::Repository.new(Rails.configuration.event_store)
+    def initialize(event_store)
+      @repository = AggregateRoot::Repository.new(event_store)
     end
 
     def call(command)

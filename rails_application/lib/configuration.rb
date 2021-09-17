@@ -18,12 +18,12 @@ class Configuration
     Orders::Configuration.new(cqrs).call
     Products::Configuration.new(cqrs).call
 
-    Ordering::Configuration.new(cqrs).call
-    Pricing::Configuration.new(cqrs).call
-    Payments::Configuration.new(cqrs).call
+    Ordering::Configuration.new(cqrs, event_store, Rails.configuration.number_generator).call
+    Pricing::Configuration.new(cqrs, event_store).call
+    Payments::Configuration.new(cqrs, event_store).call
     ProductCatalog::Configuration.new(cqrs).call
     Crm::Configuration.new(cqrs, CustomerRepository.new).call
-    Inventory::Configuration.new(cqrs).call
+    Inventory::Configuration.new(cqrs, event_store).call
 
     cqrs.subscribe(PaymentProcess.new, [
       Ordering::OrderSubmitted,

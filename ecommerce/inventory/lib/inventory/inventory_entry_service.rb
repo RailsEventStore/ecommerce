@@ -1,6 +1,6 @@
 module Inventory
   class InventoryEntryService
-    def initialize(event_store = Rails.configuration.event_store)
+    def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)
     end
 

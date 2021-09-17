@@ -12,9 +12,8 @@ require_relative "ordering/number_generator"
 require_relative "ordering/order"
 
 module Ordering
-
   class OnCancelOrder
-    def initialize(event_store = Rails.configuration.event_store)
+    def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)
     end
 
@@ -26,7 +25,7 @@ module Ordering
   end
 
   class OnMarkOrderAsPaid
-    def initialize(event_store = Rails.configuration.event_store)
+    def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)
     end
 
@@ -38,7 +37,7 @@ module Ordering
   end
 
   class OnSetOrderAsExpired
-    def initialize(event_store = Rails.configuration.event_store)
+    def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)
     end
 
@@ -50,7 +49,7 @@ module Ordering
   end
 
   class OnSubmitOrder
-    def initialize(event_store = Rails.configuration.event_store, number_generator:)
+    def initialize(event_store, number_generator)
       @repository = Infra::AggregateRootRepository.new(event_store)
       @number_generator = number_generator
     end
@@ -58,15 +57,11 @@ module Ordering
     def call(command)
       ActiveRecord::Base.transaction do
         @repository.with_aggregate(Order, command.aggregate_id) do |order|
-          order_number = number_generator.call
+          order_number = @number_generator.call
           order.submit(order_number, command.customer_id)
         end
       end
     end
-
-    private
-
-    attr_accessor :number_generator
   end
 end
 
