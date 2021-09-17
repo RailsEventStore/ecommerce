@@ -1,12 +1,7 @@
 require_relative "test_helper"
 
 module Ordering
-  class SubmitOrderTest < Ecommerce::InMemoryTestCase
-    include Infra::TestPlumbing.with(
-      event_store: ->{ Rails.configuration.event_store },
-      command_bus: ->{ Rails.configuration.command_bus }
-    )
-
+  class SubmitOrderTest < Test
     cover "Ordering::OnSubmitOrder*"
 
     def test_order_is_submitted

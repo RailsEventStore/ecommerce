@@ -1,12 +1,7 @@
 require_relative "test_helper"
 
 module Ordering
-  class MarkOrderAsPaidTest < Ecommerce::InMemoryTestCase
-    include Infra::TestPlumbing.with(
-      event_store: ->{ Rails.configuration.event_store },
-      command_bus: ->{ Rails.configuration.command_bus }
-    )
-
+  class MarkOrderAsPaidTest < Test
     cover "Ordering::OnMarkOrderAsPaid*"
 
     def test_draft_order_could_not_be_marked_as_paid

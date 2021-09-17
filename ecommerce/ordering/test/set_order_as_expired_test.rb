@@ -1,12 +1,7 @@
 require_relative "test_helper"
 
 module Ordering
-  class SetOrderAsExpiredTest < Ecommerce::InMemoryTestCase
-    include Infra::TestPlumbing.with(
-      event_store: ->{ Rails.configuration.event_store },
-      command_bus: ->{ Rails.configuration.command_bus }
-    )
-
+  class SetOrderAsExpiredTest < Test
     cover "Ordering::OnSetOrderAsExpired*"
 
     def test_draft_order_will_expire

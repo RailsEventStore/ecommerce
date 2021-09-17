@@ -1,15 +1,10 @@
 require_relative "test_helper"
 
 module Ordering
-  class CancelOrderTest < Ecommerce::InMemoryTestCase
-    include Infra::TestPlumbing.with(
-      event_store: ->{ Rails.configuration.event_store },
-      command_bus: ->{ Rails.configuration.command_bus }
-    )
-
+  class CancelOrderTest < Test
     cover "Ordering::OnCancelOrder*"
 
-    test "draft order can't be cancelled" do
+    def test_draft_order_cant_be_cancelled
       aggregate_id = SecureRandom.uuid
 
       product_id = SecureRandom.uuid
@@ -51,7 +46,7 @@ module Ordering
       ) { act(CancelOrder.new(order_id: aggregate_id)) }
     end
 
-    test "paid order can't be cancelled" do
+    def test_paid_order_cant_be_cancelled
       aggregate_id = SecureRandom.uuid
 
       product_id = SecureRandom.uuid
@@ -75,7 +70,7 @@ module Ordering
       end
     end
 
-    test "expired order can't be cancelled" do
+    def test_expired_order_cant_be_cancelled
       aggregate_id = SecureRandom.uuid
 
       product_id = SecureRandom.uuid

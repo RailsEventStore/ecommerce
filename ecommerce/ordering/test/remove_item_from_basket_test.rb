@@ -1,12 +1,7 @@
 require_relative "test_helper"
 
 module Ordering
-  class RemoveItemFromBasketTest < Ecommerce::InMemoryTestCase
-    include Infra::TestPlumbing.with(
-      event_store: ->{ Rails.configuration.event_store },
-      command_bus: ->{ Rails.configuration.command_bus }
-    )
-
+  class RemoveItemFromBasketTest < Test
     cover "Pricing::OnRemoveItemFromBasket*"
 
     def test_item_is_removed_from_draft_order
