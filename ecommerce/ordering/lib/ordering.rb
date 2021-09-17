@@ -14,45 +14,50 @@ require_relative "ordering/order"
 module Ordering
 
   class OnCancelOrder
-    include Infra::CommandHandler
+    def initialize(event_store = Rails.configuration.event_store)
+      @repository = Infra::AggregateRootRepository.new(event_store)
+    end
 
     def call(command)
-      with_aggregate(Order, command.aggregate_id) do |order|
+      @repository.with_aggregate(Order, command.aggregate_id) do |order|
         order.cancel
       end
     end
   end
 
   class OnMarkOrderAsPaid
-    include Infra::CommandHandler
+    def initialize(event_store = Rails.configuration.event_store)
+      @repository = Infra::AggregateRootRepository.new(event_store)
+    end
 
     def call(command)
-      with_aggregate(Order, command.aggregate_id) do |order|
+      @repository.with_aggregate(Order, command.aggregate_id) do |order|
         order.confirm
       end
     end
   end
 
   class OnSetOrderAsExpired
-    include Infra::CommandHandler
+    def initialize(event_store = Rails.configuration.event_store)
+      @repository = Infra::AggregateRootRepository.new(event_store)
+    end
 
     def call(command)
-      with_aggregate(Order, command.aggregate_id) do |order|
+      @repository.with_aggregate(Order, command.aggregate_id) do |order|
         order.expire
       end
     end
   end
 
   class OnSubmitOrder
-    include Infra::CommandHandler
-
-    def initialize(number_generator:)
+    def initialize(event_store = Rails.configuration.event_store, number_generator:)
+      @repository = Infra::AggregateRootRepository.new(event_store)
       @number_generator = number_generator
     end
 
     def call(command)
       ActiveRecord::Base.transaction do
-        with_aggregate(Order, command.aggregate_id) do |order|
+        @repository.with_aggregate(Order, command.aggregate_id) do |order|
           order_number = number_generator.call
           order.submit(order_number, command.customer_id)
         end

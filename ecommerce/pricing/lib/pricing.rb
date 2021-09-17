@@ -62,14 +62,13 @@ module Pricing
   class NotPossibleToAssignDiscountTwice < StandardError; end
 
   class SetPercentageDiscountHandler
-    include Infra::CommandHandler
-
-    def initialize(event_store)
+    def initialize(event_store = Rails.configuration.event_store)
+      @repository = Infra::AggregateRootRepository.new(event_store)
       @event_store = event_store
     end
 
     def call(cmd)
-      stream_name = stream_name(Discounts::Order, cmd.order_id)
+      stream_name = @repository.stream_name(Discounts::Order, cmd.order_id)
       order = build_order(stream_name)
       begin
         order.discount
@@ -100,53 +99,51 @@ module Pricing
   end
 
   class SetPriceHandler
-    include Infra::CommandHandler
-
-    def initialize(event_store)
-      @event_store = event_store
+    def initialize(event_store = Rails.configuration.event_store)
+      @repository = Infra::AggregateRootRepository.new(event_store)
     end
 
     def call(cmd)
-      repository = AggregateRoot::Repository.new(@event_store)
-      stream_name = stream_name(Product, cmd.product_id)
-      product = repository.load(Product.new(cmd.product_id), stream_name)
-      product.set_price(cmd.price)
-      repository.store(product, stream_name)
+      @repository.with_aggregate(Product, cmd.product_id) do |product|
+        product.set_price(cmd.price)
+      end
     end
   end
 
   class OnAddItemToBasket
-    include Infra::CommandHandler
+    def initialize(event_store = Rails.configuration.event_store)
+      @repository = Infra::AggregateRootRepository.new(event_store)
+    end
 
     def call(command)
-      with_aggregate(Order, command.aggregate_id) do |order|
+      @repository.with_aggregate(Order, command.aggregate_id) do |order|
         order.add_item(command.product_id)
       end
     end
   end
 
   class OnRemoveItemFromBasket
-    include Infra::CommandHandler
+    def initialize(event_store = Rails.configuration.event_store)
+      @repository = Infra::AggregateRootRepository.new(event_store)
+    end
 
     def call(command)
-      with_aggregate(Order, command.aggregate_id) do |order|
+      @repository.with_aggregate(Order, command.aggregate_id) do |order|
         order.remove_item(command.product_id)
       end
     end
   end
 
   class OnCalculateTotalValue
-    include Infra::CommandHandler
-
-    def initialize(event_store)
+    def initialize(event_store = Rails.configuration.event_store)
+      @repository = Infra::AggregateRootRepository.new(event_store)
       @event_store = event_store
     end
 
     def call(command)
-      event_store = @event_store
-      pricing_catalog = PricingCatalog.new(event_store)
+      pricing_catalog     = PricingCatalog.new(@event_store)
       percentage_discount = build_percentage_discount(command.order_id)
-      with_aggregate(Order, command.aggregate_id) do |order|
+      @repository.with_aggregate(Order, command.aggregate_id) do |order|
         order.calculate_total_value(pricing_catalog, percentage_discount)
       end
     end
@@ -164,7 +161,7 @@ module Pricing
     end
 
     def last_discount_order_event(order_id)
-      @event_store.read.stream(stream_name(Discounts::Order, order_id)).last
+      @event_store.read.stream(@repository.stream_name(Discounts::Order, order_id)).last
     end
   end
 

@@ -1,6 +1,8 @@
 module Inventory
   class InventoryEntryService
-    include Infra::CommandHandler
+    def initialize(event_store = Rails.configuration.event_store)
+      @repository = Infra::AggregateRootRepository.new(event_store)
+    end
 
     def call(command)
       __send__(command.class.name.demodulize.underscore, command)
@@ -15,7 +17,7 @@ module Inventory
     end
 
     def with_inventory_entry(product_id)
-      with_aggregate(InventoryEntry, product_id) do |entry|
+      @repository.with_aggregate(InventoryEntry, product_id) do |entry|
         yield(entry)
       end
     end
