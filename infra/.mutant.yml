@@ -14,4 +14,4 @@ matcher:
   ignore:
   - Infra::Event*
   - Infra::Command*
-  - Infra::CommandHandler*
+  - Infra::AggregateRootRepository*

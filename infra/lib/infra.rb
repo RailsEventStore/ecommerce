@@ -8,7 +8,7 @@ require "minitest"
 
 require_relative "infra/command"
 require_relative "infra/command_bus"
-require_relative "infra/command_handler"
+require_relative "infra/aggregate_root_repository"
 require_relative "infra/cqrs"
 require_relative "infra/event"
 require_relative "infra/event_store"
