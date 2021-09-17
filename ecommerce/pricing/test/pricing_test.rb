@@ -1,12 +1,7 @@
 require_relative "test_helper"
 
 module Pricing
-  class PricingTest < Ecommerce::InMemoryTestCase
-    include Infra::TestPlumbing.with(
-      event_store: ->{ Rails.configuration.event_store },
-      command_bus: ->{ Rails.configuration.command_bus }
-    )
-
+  class PricingTest < Test
     cover "Pricing*"
 
     def test_setting_price_updates_read_model

@@ -2,8 +2,7 @@ require_relative "test_helper"
 
 module Pricing
   module Discounts
-    class OrderTest < Ecommerce::InMemoryTestCase
-
+    class OrderTest < Test
       cover "Pricing::Discounts*"
 
       def setup
@@ -15,7 +14,7 @@ module Pricing
       end
     end
 
-    class DiscountedOrderTest < Ecommerce::InMemoryTestCase
+    class DiscountedOrderTest < Test
       cover "Pricing::Discounts*"
 
       def test_can_change_its_discount_value
@@ -32,7 +31,7 @@ module Pricing
       end
     end
 
-    class OrderWithClearedDiscount < Ecommerce::InMemoryTestCase
+    class OrderWithClearedDiscount < Test
       cover "Pricing::Discounts*"
 
       def test_can_be_discounted_again
@@ -40,7 +39,7 @@ module Pricing
       end
     end
 
-    class PercentageDiscountTest < Ecommerce::InMemoryTestCase
+    class PercentageDiscountTest < Test
       cover "Pricing::Discounts*"
 
       def test_is_more_than_zero
@@ -78,7 +77,7 @@ module Pricing
       end
     end
 
-    class NoPercentageDiscountTest < Ecommerce::InMemoryTestCase
+    class NoPercentageDiscountTest < Test
       cover "Pricing::Discounts*"
 
       def test_doesnt_change_total
