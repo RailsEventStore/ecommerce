@@ -4,21 +4,6 @@ module Inventory
       @repository = Infra::AggregateRootRepository.new(event_store)
     end
 
-    def call(command)
-      case command
-      when AdjustReservation
-        adjust_reservation(command)
-      when CancelReservation
-        cancel_reservation(command)
-      when CompleteReservation
-        complete_reservation(command)
-      when SubmitReservation
-        submit_reservation(command)
-      end
-    end
-
-    private
-
     def adjust_reservation(command)
       with_reservation(command.order_id) do |reservation|
         reservation.adjust(command.product_id, command.quantity)
@@ -64,6 +49,8 @@ module Inventory
         reservation.cancel
       end
     end
+
+    private
 
     def with_reservation(order_id)
       @repository.with_aggregate(Reservation, order_id) do |reservation|
