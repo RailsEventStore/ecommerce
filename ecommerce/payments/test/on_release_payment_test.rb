@@ -1,12 +1,7 @@
 require_relative "test_helper"
 
 module Payments
-  class OnReleasePaymentTest < Ecommerce::InMemoryTestCase
-    include Infra::TestPlumbing.with(
-      event_store: ->{ Rails.configuration.event_store },
-      command_bus: ->{ Rails.configuration.command_bus }
-    )
-
+  class OnReleasePaymentTest < Test
     cover "Payments::OnReleasePayment*"
 
     def test_capture_payment

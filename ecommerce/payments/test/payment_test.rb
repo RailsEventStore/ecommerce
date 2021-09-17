@@ -1,12 +1,7 @@
 require_relative "test_helper"
 
 module Payments
-  class PaymentTest < Ecommerce::InMemoryTestCase
-    include Infra::TestPlumbing.with(
-      event_store: ->{ Rails.configuration.event_store },
-      command_bus: ->{ Rails.configuration.command_bus }
-    )
-
+  class PaymentTest < Test
     cover "Payments::Payment*"
 
     def test_authorize_publishes_event

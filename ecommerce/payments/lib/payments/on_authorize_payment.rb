@@ -1,8 +1,8 @@
 module Payments
   class OnAuthorizePayment
-    def initialize(event_store)
+    def initialize(event_store, gateway)
       @repository = AggregateRoot::Repository.new(event_store)
-      @gateway    = Rails.configuration.payment_gateway
+      @gateway    = gateway
     end
 
     def call(command)

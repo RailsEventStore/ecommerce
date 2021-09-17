@@ -20,7 +20,7 @@ class Configuration
 
     Ordering::Configuration.new(cqrs, event_store, Rails.configuration.number_generator).call
     Pricing::Configuration.new(cqrs, event_store).call
-    Payments::Configuration.new(cqrs, event_store).call
+    Payments::Configuration.new(cqrs, event_store, Rails.configuration.payment_gateway).call
     ProductCatalog::Configuration.new(cqrs).call
     Crm::Configuration.new(cqrs, CustomerRepository.new).call
     Inventory::Configuration.new(cqrs, event_store).call
