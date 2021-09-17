@@ -104,7 +104,7 @@ module Orders
     end
 
     def create(order_uid, product_id)
-      product = ProductCatalog::Product.find(product_id)
+      product = ProductRepository.new.find(product_id)
       Order
         .find_by(uid: order_uid)
         .order_lines

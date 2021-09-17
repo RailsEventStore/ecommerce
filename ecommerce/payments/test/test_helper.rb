@@ -1,10 +1,6 @@
 require "minitest/autorun"
 require "mutant/minitest/coverage"
 
-require "active_record"
-ActiveRecord::Base.establish_connection("sqlite3::memory:")
-ActiveRecord::Schema.verbose = false
-
 require_relative "../lib/payments"
 require_relative "../../product_catalog/lib/product_catalog"
 require_relative "../../pricing/lib/pricing"
@@ -17,7 +13,6 @@ module Payments
 
     def before_setup
       super
-      prepare_schema
       @payment_gateway = FakeGateway.new
       Configuration.new(cqrs, event_store, -> { @payment_gateway }).call
       ProductCatalog::Configuration.new(cqrs).call
@@ -40,18 +35,6 @@ module Payments
         end,
         [Pricing::OrderTotalValueCalculated]
       )
-    end
-
-    def prepare_schema
-      ActiveRecord::Schema.define do
-        create_table "products", id: :uuid, force: :cascade do |t|
-          t.string "name"
-          t.datetime "created_at", null: false
-          t.datetime "updated_at", null: false
-          t.decimal "price", precision: 8, scale: 2
-          t.integer "stock_level"
-        end
-      end
     end
   end
 end

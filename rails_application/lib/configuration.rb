@@ -6,6 +6,7 @@ require_relative "../../ecommerce/crm/lib/crm"
 require_relative "../../ecommerce/payments/lib/payments"
 require_relative "../../ecommerce/inventory/lib/inventory"
 require_relative "customer_repository"
+require_relative "product_repository"
 
 class Configuration
   def call(event_store, command_bus)
@@ -18,7 +19,7 @@ class Configuration
     cqrs = Infra::Cqrs.new(event_store, command_bus)
 
     Orders::Configuration.new(cqrs).call
-    Products::Configuration.new(cqrs).call
+    Products::Configuration.new(cqrs, ProductRepository.new).call
 
     Ordering::Configuration.new(
       cqrs,
@@ -31,7 +32,7 @@ class Configuration
       event_store,
       Rails.configuration.payment_gateway
     ).call
-    ProductCatalog::Configuration.new(cqrs).call
+    ProductCatalog::Configuration.new(cqrs, ProductRepository.new).call
     Crm::Configuration.new(cqrs, CustomerRepository.new).call
     Inventory::Configuration.new(cqrs, event_store).call
 
@@ -52,7 +53,7 @@ class Configuration
     )
 
     cqrs.subscribe(
-      ProductCatalog::AssignPriceToProduct.new,
+      ProductCatalog::AssignPriceToProduct.new(ProductRepository.new),
       [Pricing::PriceSet]
     )
 

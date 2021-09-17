@@ -116,7 +116,7 @@ module Pricing
     def assert_product_read_model_price(product_id, amount)
       assert_equal(
         amount,
-        ProductCatalog::Product.find_by(id: product_id).price
+        product_repository.find(product_id).price
       )
     end
 

@@ -4,8 +4,9 @@ module Products
   end
 
   class Configuration
-    def initialize(cqrs)
+    def initialize(cqrs, product_repository)
       @cqrs = cqrs
+      @product_repository = product_repository
     end
 
     def call
@@ -18,10 +19,9 @@ module Products
     private
 
     def change_stock_level(event)
-      product = Product.find_or_create_by(id: event.data.fetch(:product_id))
-      stock_level = event.data.fetch(:stock_level)
-      product.stock_level = stock_level
-      product.save!
+      product = @product_repository.find_or_initialize_by_id(event.data.fetch(:product_id))
+      product.set_stock_level(event.data.fetch(:stock_level))
+      @product_repository.upsert(product)
     end
   end
 end

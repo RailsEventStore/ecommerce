@@ -1,9 +1,13 @@
 module ProductCatalog
   class Registration
+    def initialize(product_repository)
+      @product_repository = product_repository
+    end
+
     def call(cmd)
-      product = Product.find_or_initialize_by(id: cmd.product_id)
+      product = @product_repository.find_or_initialize_by_id(cmd.product_id)
       product.register(cmd.name)
-      product.save!
+      @product_repository.upsert(product)
     end
   end
 end

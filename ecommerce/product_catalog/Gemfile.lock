@@ -103,7 +103,6 @@ GEM
       rack (~> 2.2)
       rack-protection (= 2.1.0)
       tilt (~> 2.0)
-    sqlite3 (1.4.2)
     thread_safe (0.3.6)
     tilt (2.0.10)
     tzinfo (2.0.4)
@@ -119,7 +118,6 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
-  activerecord
   dry-struct
   dry-types
   minitest
@@ -128,7 +126,6 @@ DEPENDENCIES
   rails_event_store (~> 2.3.0)
   rake
   ruby_event_store-transformations
-  sqlite3
 
 BUNDLED WITH
    2.2.26

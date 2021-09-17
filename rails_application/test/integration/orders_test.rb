@@ -45,7 +45,7 @@ class OrdersTest < Ecommerce::InMemoryRESIntegrationTestCase
       )
     )
     run_command(Pricing::SetPrice.new(product_id: product_id, price: 39))
-    async_remote = ProductCatalog::Product.find_by(id: product_id)
+    async_remote = ProductRepository.new.find(product_id)
 
     product_id = SecureRandom.uuid
     run_command(
@@ -55,7 +55,7 @@ class OrdersTest < Ecommerce::InMemoryRESIntegrationTestCase
       )
     )
     run_command(Pricing::SetPrice.new(product_id: product_id, price: 49))
-    fearless = ProductCatalog::Product.find_by(id: product_id)
+    fearless = ProductRepository.new.find(product_id)
 
     post "/orders",
          params: {
@@ -109,7 +109,7 @@ class OrdersTest < Ecommerce::InMemoryRESIntegrationTestCase
       )
     )
     run_command(Pricing::SetPrice.new(product_id: product_id, price: 39))
-    async_remote = ProductCatalog::Product.find_by(id: product_id)
+    async_remote = ProductRepository.new.find(product_id)
 
     post "/orders/#{order_id}/add_item?product_id=#{async_remote.id}"
     follow_redirect!
@@ -135,7 +135,7 @@ class OrdersTest < Ecommerce::InMemoryRESIntegrationTestCase
       )
     )
     run_command(Pricing::SetPrice.new(product_id: product_id, price: 39))
-    async_remote = ProductCatalog::Product.find_by(id: product_id)
+    async_remote = ProductRepository.new.find(product_id)
 
     get "/"
     get "/orders/new"
