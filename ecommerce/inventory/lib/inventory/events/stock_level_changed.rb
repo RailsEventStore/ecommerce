@@ -1,5 +1,5 @@
 module Inventory
-  class StockLevelChanged < RailsEventStore::Event
+  class StockLevelChanged < Infra::Event
 
   end
 end

@@ -1,5 +1,5 @@
 module Inventory
-  class StockReleased < RailsEventStore::Event
+  class StockReleased < Infra::Event
 
   end
 end
