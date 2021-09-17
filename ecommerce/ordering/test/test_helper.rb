@@ -16,7 +16,7 @@ module Ordering
       super
       prepare_schema
       @number_generator = FakeNumberGenerator.new
-      Configuration.new(cqrs, event_store, ->{ @number_generator } ).call
+      Configuration.new(cqrs, event_store, -> { @number_generator }).call
 
       ProductCatalog::Configuration.new(cqrs).call
       Pricing::Configuration.new(cqrs, event_store).call
@@ -26,11 +26,11 @@ module Ordering
     def prepare_schema
       ActiveRecord::Schema.define do
         create_table "products", id: :uuid, force: :cascade do |t|
-          t.string   "name"
+          t.string "name"
           t.datetime "created_at", null: false
           t.datetime "updated_at", null: false
-          t.decimal  "price", precision: 8, scale: 2
-          t.integer  "stock_level"
+          t.decimal "price", precision: 8, scale: 2
+          t.integer "stock_level"
         end
       end
     end

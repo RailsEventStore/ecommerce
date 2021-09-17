@@ -17,7 +17,10 @@ module Payments
     end
 
     def call
-      @cqrs.register(AuthorizePayment, OnAuthorizePayment.new(@event_store, @gateway))
+      @cqrs.register(
+        AuthorizePayment,
+        OnAuthorizePayment.new(@event_store, @gateway)
+      )
       @cqrs.register(CapturePayment, OnCapturePayment.new(@event_store))
       @cqrs.register(ReleasePayment, OnReleasePayment.new(@event_store))
       @cqrs.register(SetPaymentAmount, OnSetPaymentAmount.new(@event_store))

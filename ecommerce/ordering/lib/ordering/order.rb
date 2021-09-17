@@ -14,25 +14,31 @@ module Ordering
 
     def submit(order_number, customer_id)
       raise AlreadySubmitted if @state.equal?(:submitted)
-      raise OrderHasExpired  if @state
-      apply OrderSubmitted.new(data: {order_id: @id, order_number: order_number, customer_id: customer_id})
+      raise OrderHasExpired if @state
+      apply OrderSubmitted.new(
+              data: {
+                order_id: @id,
+                order_number: order_number,
+                customer_id: customer_id
+              }
+            )
     end
 
     def confirm
       raise OrderHasExpired if @state.equal?(:expired)
       raise NotSubmitted unless @state
-      apply OrderPaid.new(data: {order_id: @id})
+      apply OrderPaid.new(data: { order_id: @id })
     end
 
     def expire
       raise AlreadyPaid if @state.equal?(:paid)
-      apply OrderExpired.new(data: {order_id: @id})
+      apply OrderExpired.new(data: { order_id: @id })
     end
 
     def cancel
       raise OrderHasExpired if @state.equal?(:expired)
       raise NotSubmitted unless @state.equal?(:submitted)
-      apply OrderCancelled.new(data: {order_id: @id})
+      apply OrderCancelled.new(data: { order_id: @id })
     end
 
     on OrderSubmitted do |event|

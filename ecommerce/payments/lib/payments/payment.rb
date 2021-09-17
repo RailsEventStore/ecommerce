@@ -3,37 +3,31 @@ module Payments
     include AggregateRoot
 
     AlreadyAuthorized = Class.new(StandardError)
-    NotAuthorized     = Class.new(StandardError)
-    AlreadyCaptured   = Class.new(StandardError)
-    AlreadyReleased   = Class.new(StandardError)
+    NotAuthorized = Class.new(StandardError)
+    AlreadyCaptured = Class.new(StandardError)
+    AlreadyReleased = Class.new(StandardError)
 
     def set_amount(order_id, amount)
-      apply(PaymentAmountSet.new(data: {order_id: order_id, amount: amount}))
+      apply(PaymentAmountSet.new(data: { order_id: order_id, amount: amount }))
     end
 
     def authorize(order_id, gateway)
       raise AlreadyAuthorized if authorized?
       gateway.authorize_transaction(order_id, @amount)
-      apply(PaymentAuthorized.new(data: {
-        order_id: order_id
-      }))
+      apply(PaymentAuthorized.new(data: { order_id: order_id }))
     end
 
     def capture
       raise AlreadyCaptured if captured?
       raise NotAuthorized unless authorized?
-      apply(PaymentCaptured.new(data: {
-        order_id: @order_id
-      }))
+      apply(PaymentCaptured.new(data: { order_id: @order_id }))
     end
 
     def release
       raise AlreadyReleased if released?
       raise AlreadyCaptured if captured?
       raise NotAuthorized unless authorized?
-      apply(PaymentReleased.new(data: {
-        order_id: @order_id
-      }))
+      apply(PaymentReleased.new(data: { order_id: @order_id }))
     end
 
     private
@@ -68,4 +62,3 @@ module Payments
     end
   end
 end
-

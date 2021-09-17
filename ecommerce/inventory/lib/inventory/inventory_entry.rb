@@ -12,20 +12,42 @@ module Inventory
     end
 
     def supply(quantity)
-      apply StockLevelChanged.new(data: { product_id: @product_id, quantity: quantity, stock_level: (@in_stock || 0) + quantity })
+      apply StockLevelChanged.new(
+              data: {
+                product_id: @product_id,
+                quantity: quantity,
+                stock_level: (@in_stock || 0) + quantity
+              }
+            )
     end
 
     def dispatch(quantity)
-      apply StockLevelChanged.new(data: { product_id: @product_id, quantity: -quantity, stock_level: @in_stock - quantity })
+      apply StockLevelChanged.new(
+              data: {
+                product_id: @product_id,
+                quantity: -quantity,
+                stock_level: @in_stock - quantity
+              }
+            )
     end
 
     def reserve(quantity)
       check_availability(quantity)
-      apply StockReserved.new(data: { product_id: @product_id, quantity: quantity })
+      apply StockReserved.new(
+              data: {
+                product_id: @product_id,
+                quantity: quantity
+              }
+            )
     end
 
     def release(quantity)
-      apply StockReleased.new(data: { product_id: @product_id, quantity: quantity })
+      apply StockReleased.new(
+              data: {
+                product_id: @product_id,
+                quantity: quantity
+              }
+            )
     end
 
     def check_availability(quantity)

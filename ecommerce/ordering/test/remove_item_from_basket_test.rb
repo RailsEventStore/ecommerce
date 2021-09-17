@@ -9,16 +9,42 @@ module Ordering
       stream = "Pricing::Order$#{aggregate_id}"
 
       product_id = SecureRandom.uuid
-      run_command(ProductCatalog::RegisterProduct.new(product_id: product_id, name: "test"))
+      run_command(
+        ProductCatalog::RegisterProduct.new(
+          product_id: product_id,
+          name: "test"
+        )
+      )
       run_command(Pricing::SetPrice.new(product_id: product_id, price: 20))
 
-      arrange(Pricing::AddItemToBasket.new(order_id: aggregate_id, product_id: product_id))
+      arrange(
+        Pricing::AddItemToBasket.new(
+          order_id: aggregate_id,
+          product_id: product_id
+        )
+      )
       expected_events = [
-        Pricing::ItemRemovedFromBasket.new(data: {order_id: aggregate_id, product_id: product_id}),
-        Pricing::OrderTotalValueCalculated.new(data: {order_id: aggregate_id, discounted_amount: 0, total_amount: 0})
+        Pricing::ItemRemovedFromBasket.new(
+          data: {
+            order_id: aggregate_id,
+            product_id: product_id
+          }
+        ),
+        Pricing::OrderTotalValueCalculated.new(
+          data: {
+            order_id: aggregate_id,
+            discounted_amount: 0,
+            total_amount: 0
+          }
+        )
       ]
       assert_events(stream, *expected_events) do
-        act(Pricing::RemoveItemFromBasket.new(order_id: aggregate_id, product_id: product_id))
+        act(
+          Pricing::RemoveItemFromBasket.new(
+            order_id: aggregate_id,
+            product_id: product_id
+          )
+        )
       end
     end
   end

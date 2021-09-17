@@ -12,7 +12,6 @@ module Pricing
 
     private
 
-    def apply_price_set(_)
-    end
+    def apply_price_set(_); end
   end
 end

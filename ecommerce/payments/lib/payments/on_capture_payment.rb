@@ -5,9 +5,10 @@ module Payments
     end
 
     def call(command)
-      @repository.with_aggregate(Payment.new, "Payments::Payment$#{command.order_id}") do |payment|
-        payment.capture
-      end
+      @repository.with_aggregate(
+        Payment.new,
+        "Payments::Payment$#{command.order_id}"
+      ) { |payment| payment.capture }
     end
   end
 end

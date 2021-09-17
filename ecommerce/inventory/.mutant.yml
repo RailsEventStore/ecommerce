@@ -1,10 +1,10 @@
 requires:
-- ./test/test_helper
+  - ./test/test_helper
 integration: minitest
 coverage_criteria:
   process_abort: true
 matcher:
   subjects:
-  - Inventory*
+    - Inventory*
   ignore:
-  - Inventory::Test*
+    - Inventory::Test*

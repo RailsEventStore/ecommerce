@@ -15,6 +15,7 @@ same model. You can say it's not really CQRS - which is true for many CRUDish
 bounded contexts.
 
 #### Up and running
+
 ```
 make install test mutate
 ```

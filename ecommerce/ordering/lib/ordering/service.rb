@@ -51,6 +51,3 @@ module Ordering
     end
   end
 end
-
-
-

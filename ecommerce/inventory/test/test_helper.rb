@@ -14,11 +14,11 @@ module Inventory
 
     private
 
-    def inventory_entry_stream product_id
+    def inventory_entry_stream(product_id)
       "Inventory::InventoryEntry$#{product_id}"
     end
 
-    def reservation_stream order_id
+    def reservation_stream(order_id)
       "Inventory::Reservation$#{order_id}"
     end
 
@@ -27,7 +27,11 @@ module Inventory
     end
 
     def adjust_reservation(order_id, product_id, quantity)
-      AdjustReservation.new(order_id: order_id, product_id: product_id, quantity: quantity)
+      AdjustReservation.new(
+        order_id: order_id,
+        product_id: product_id,
+        quantity: quantity
+      )
     end
 
     def submit_reservation(order_id)

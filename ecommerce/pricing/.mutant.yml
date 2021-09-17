@@ -1,18 +1,18 @@
 requires:
-- ./test/test_helper
+  - ./test/test_helper
 integration: minitest
 coverage_criteria:
   process_abort: true
 matcher:
   subjects:
-  - Pricing*
+    - Pricing*
   ignore:
-  - Pricing::SetPriceHandler#call
-  - Pricing::Configuration*
-  - Pricing::OnCalculateTotalValue#last_discount_order_event
-  - Pricing::SetPercentageDiscountHandler#last_event
-  - Pricing::Order#remove_item
-  - Pricing::OnRemoveItemFromBasket#call
-  - Pricing::SetPercentageDiscountHandler#initialize
-  - Pricing::OnRemoveItemFromBasket#initialize
-  - Pricing::Test*
+    - Pricing::SetPriceHandler#call
+    - Pricing::Configuration*
+    - Pricing::OnCalculateTotalValue#last_discount_order_event
+    - Pricing::SetPercentageDiscountHandler#last_event
+    - Pricing::Order#remove_item
+    - Pricing::OnRemoveItemFromBasket#call
+    - Pricing::SetPercentageDiscountHandler#initialize
+    - Pricing::OnRemoveItemFromBasket#initialize
+    - Pricing::Test*

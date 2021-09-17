@@ -12,7 +12,6 @@ require_relative "ordering/number_generator"
 require_relative "ordering/service"
 require_relative "ordering/order"
 
-
 module Ordering
   class Configuration
     def initialize(cqrs, event_store, number_generator)
@@ -22,7 +21,10 @@ module Ordering
     end
 
     def call
-      @cqrs.register(SubmitOrder, OnSubmitOrder.new(@event_store, @number_generator.call))
+      @cqrs.register(
+        SubmitOrder,
+        OnSubmitOrder.new(@event_store, @number_generator.call)
+      )
       @cqrs.register(SetOrderAsExpired, OnSetOrderAsExpired.new(@event_store))
       @cqrs.register(MarkOrderAsPaid, OnMarkOrderAsPaid.new(@event_store))
       @cqrs.register(CancelOrder, OnCancelOrder.new(@event_store))

@@ -5,7 +5,8 @@ module Crm
     attr_reader :name, :id
 
     def initialize(**attributes)
-      @id, @name, @registered_at = attributes.values_at(:id, :name, :registered_at)
+      @id, @name, @registered_at =
+        attributes.values_at(:id, :name, :registered_at)
     end
 
     def register(name)

@@ -1,12 +1,12 @@
 requires:
-- ./test/test_helper
+  - ./test/test_helper
 integration: minitest
 coverage_criteria:
   process_abort: true
 matcher:
   subjects:
-  - Ordering*
+    - Ordering*
   ignore:
-  - Ordering::NumberGenerator*
-  - Ordering::OnSubmitOrder#call
-  - Ordering::Test*
+    - Ordering::NumberGenerator*
+    - Ordering::OnSubmitOrder#call
+    - Ordering::Test*

@@ -1,6 +1,7 @@
 module Pricing
   module Discounts
-    class UnacceptableDiscountRange < StandardError; end
+    class UnacceptableDiscountRange < StandardError
+    end
 
     class PercentageDiscount
       def initialize(value)
@@ -28,7 +29,6 @@ module Pricing
     end
 
     class DiscountedOrder
-
       def change_discount
         DiscountedOrder.new
       end

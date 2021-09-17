@@ -29,4 +29,3 @@ module ProductCatalog
     end
   end
 end
-

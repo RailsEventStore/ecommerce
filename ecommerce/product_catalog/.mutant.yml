@@ -1,11 +1,11 @@
 requires:
-- ./test/test_helper
+  - ./test/test_helper
 integration: minitest
 coverage_criteria:
   process_abort: true
 matcher:
   subjects:
-  - ProductCatalog*
+    - ProductCatalog*
   ignore:
-  - ProductCatalog::AssignPriceToProduct*
-  - ProductCatalog::Test*
+    - ProductCatalog::AssignPriceToProduct*
+    - ProductCatalog::Test*

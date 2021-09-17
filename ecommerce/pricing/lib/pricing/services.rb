@@ -1,5 +1,6 @@
 module Pricing
-  class NotPossibleToAssignDiscountTwice < StandardError; end
+  class NotPossibleToAssignDiscountTwice < StandardError
+  end
 
   class SetPercentageDiscountHandler
     def initialize(event_store)
@@ -16,7 +17,12 @@ module Pricing
         raise NotPossibleToAssignDiscountTwice
       end
       @event_store.publish(
-        PercentageDiscountSet.new(data: {order_id: cmd.order_id, amount: cmd.amount}),
+        PercentageDiscountSet.new(
+          data: {
+            order_id: cmd.order_id,
+            amount: cmd.amount
+          }
+        ),
         stream_name: stream_name
       )
     end
@@ -81,7 +87,7 @@ module Pricing
     end
 
     def call(command)
-      pricing_catalog     = PricingCatalog.new(@event_store)
+      pricing_catalog = PricingCatalog.new(@event_store)
       percentage_discount = build_percentage_discount(command.order_id)
       @repository.with_aggregate(Order, command.aggregate_id) do |order|
         order.calculate_total_value(pricing_catalog, percentage_discount)
@@ -101,7 +107,10 @@ module Pricing
     end
 
     def last_discount_order_event(order_id)
-      @event_store.read.stream(@repository.stream_name(Discounts::Order, order_id)).last
+      @event_store
+        .read
+        .stream(@repository.stream_name(Discounts::Order, order_id))
+        .last
     end
   end
 end

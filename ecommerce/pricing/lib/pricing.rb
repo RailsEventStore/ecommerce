@@ -15,14 +15,45 @@ module Pricing
     end
 
     def call
-      @cqrs.register_command(AddItemToBasket, OnAddItemToBasket.new(@event_store), ItemAddedToBasket)
-      @cqrs.register_command(RemoveItemFromBasket, OnRemoveItemFromBasket.new(@event_store), ItemRemovedFromBasket)
-      @cqrs.register_command(SetPrice, SetPriceHandler.new(@event_store), PriceSet)
-      @cqrs.register_command(CalculateTotalValue, OnCalculateTotalValue.new(@event_store), OrderTotalValueCalculated)
-      @cqrs.register_command(SetPercentageDiscount, SetPercentageDiscountHandler.new(@event_store), PercentageDiscountSet)
+      @cqrs.register_command(
+        AddItemToBasket,
+        OnAddItemToBasket.new(@event_store),
+        ItemAddedToBasket
+      )
+      @cqrs.register_command(
+        RemoveItemFromBasket,
+        OnRemoveItemFromBasket.new(@event_store),
+        ItemRemovedFromBasket
+      )
+      @cqrs.register_command(
+        SetPrice,
+        SetPriceHandler.new(@event_store),
+        PriceSet
+      )
+      @cqrs.register_command(
+        CalculateTotalValue,
+        OnCalculateTotalValue.new(@event_store),
+        OrderTotalValueCalculated
+      )
+      @cqrs.register_command(
+        SetPercentageDiscount,
+        SetPercentageDiscountHandler.new(@event_store),
+        PercentageDiscountSet
+      )
       @cqrs.subscribe(
-        -> (event) { @cqrs.run(Pricing::CalculateTotalValue.new(order_id: event.data.fetch(:order_id)))},
-        [ItemAddedToBasket, ItemRemovedFromBasket, Pricing::PercentageDiscountSet])
+        ->(event) do
+          @cqrs.run(
+            Pricing::CalculateTotalValue.new(
+              order_id: event.data.fetch(:order_id)
+            )
+          )
+        end,
+        [
+          ItemAddedToBasket,
+          ItemRemovedFromBasket,
+          Pricing::PercentageDiscountSet
+        ]
+      )
     end
   end
 end
