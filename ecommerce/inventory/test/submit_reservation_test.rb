@@ -1,8 +1,7 @@
-require_relative "inventory_in_memory_test_case"
+require_relative "test_helper"
 
 module Inventory
-  class SubmitReservationTest < InventoryInMemoryTestCase
-
+  class SubmitReservationTest < Test
     def test_stock_gets_reserved_on_reservation_submission
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
@@ -64,11 +63,9 @@ module Inventory
 
       arrange(
         adjust_reservation(order_id, product_id, 1),
-        )
-      assert_nothing_raised do
-        assert_events(inventory_entry_stream(product_id)) do
-          act(submit_reservation(order_id))
-        end
+      )
+      assert_events(inventory_entry_stream(product_id)) do
+        act(submit_reservation(order_id))
       end
     end
   end

@@ -1,8 +1,7 @@
-require_relative "inventory_in_memory_test_case"
+require_relative "test_helper"
 
 module Inventory
-  class CancelReservationTest < InventoryInMemoryTestCase
-
+  class CancelReservationTest < Test
     def test_stock_gets_released_on_submitted_reservation_cancellation
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid

@@ -1,8 +1,7 @@
-require_relative "inventory_in_memory_test_case"
+require_relative "test_helper"
 
 module Inventory
-  class SupplyTest < InventoryInMemoryTestCase
-
+  class SupplyTest < Test
     def test_stock_level_changes_with_supply_command
       product_id = SecureRandom.uuid
       assert_events(inventory_entry_stream(product_id),

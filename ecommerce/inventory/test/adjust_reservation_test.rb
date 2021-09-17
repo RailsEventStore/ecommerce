@@ -1,8 +1,7 @@
-require_relative "inventory_in_memory_test_case"
+require_relative "test_helper"
 
 module Inventory
-  class AdjustReservationTest < InventoryInMemoryTestCase
-
+  class AdjustReservationTest < Test
     def test_reservation_can_be_adjusted
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
