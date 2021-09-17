@@ -9,7 +9,10 @@ module Products
     end
 
     def call
-      @cqrs.subscribe(-> (event) { change_stock_level(event) }, [Inventory::StockLevelChanged])
+      @cqrs.subscribe(
+        ->(event) { change_stock_level(event) },
+        [Inventory::StockLevelChanged]
+      )
     end
 
     private

@@ -10,7 +10,9 @@ class ProductsController < ApplicationController
   def create
     ActiveRecord::Base.transaction do
       create_product(params[:product_id], params[:name])
-      set_product_price(params[:product_id], params[:price]) if params[:price].present?
+      if params[:price].present?
+        set_product_price(params[:product_id], params[:price])
+      end
     rescue ProductCatalog::Product::AlreadyRegistered
       flash[:notice] = "Product was already registered."
       render "new"

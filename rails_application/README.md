@@ -33,11 +33,10 @@ accordingly.
 
 ### Kickstart
 
-* run `make dev` to install dependencies, create db, setup schema and seed data
-* run `bin/rails s` to start the web server
+- run `make dev` to install dependencies, create db, setup schema and seed data
+- run `bin/rails s` to start the web server
 
 ## Testing
 
-* run `make test` to run unit and integration tests
-* run `make mutate` to perform mutation coverage
-
+- run `make test` to run unit and integration tests
+- run `make mutate` to perform mutation coverage

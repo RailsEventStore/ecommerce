@@ -4,7 +4,11 @@ module ApplicationHelper
   end
 
   def stream_browser_link(link_name, stream_name)
-    link_to link_name, stream_browser_path(stream_name), data: { turbolinks: false }
+    link_to link_name,
+            stream_browser_path(stream_name),
+            data: {
+              turbolinks: false
+            }
   end
 
   def order_history_link(id)

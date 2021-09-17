@@ -9,10 +9,7 @@ class CustomerRepository
   end
 
   def find(customer_id)
-    Record
-      .where(id: customer_id)
-      .map(&method(:wrap_record))
-      .first
+    Record.where(id: customer_id).map(&method(:wrap_record)).first
   end
 
   def find_or_initialize_by_id(id)

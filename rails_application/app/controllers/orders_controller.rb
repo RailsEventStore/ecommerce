@@ -4,57 +4,81 @@ class OrdersController < ApplicationController
   end
 
   def show
-    @order       = Orders::Order.find(params[:id])
+    @order = Orders::Order.find(params[:id])
     @order_lines = Orders::OrderLine.where(order_uid: @order.uid)
   end
 
   def new
-    @order_id  = SecureRandom.uuid
-    @products  = ProductCatalog::Product.all
+    @order_id = SecureRandom.uuid
+    @products = ProductCatalog::Product.all
     @customers = CustomerRepository.new.all
   end
 
   def edit
-    @order_id    = params[:id]
-    @order       = Orders::Order.find_by_uid(params[:id])
+    @order_id = params[:id]
+    @order = Orders::Order.find_by_uid(params[:id])
     @order_lines = Orders::OrderLine.where(order_uid: params[:id])
-    @products    = ProductCatalog::Product.all
-    @customers   = CustomerRepository.new.all
+    @products = ProductCatalog::Product.all
+    @customers = CustomerRepository.new.all
   end
 
   def edit_discount
-    @order_id    = params[:id]
+    @order_id = params[:id]
   end
 
   def update_discount
-    @order_id    = params[:id]
-    command_bus.(Pricing::SetPercentageDiscount.new(order_id: @order_id, amount: params[:amount]))
+    @order_id = params[:id]
+    command_bus.(
+      Pricing::SetPercentageDiscount.new(
+        order_id: @order_id,
+        amount: params[:amount]
+      )
+    )
 
     redirect_to edit_order_path(@order_id)
   end
 
   def add_item
-    command_bus.(Pricing::AddItemToBasket.new(order_id: params[:id], product_id: params[:product_id]))
+    command_bus.(
+      Pricing::AddItemToBasket.new(
+        order_id: params[:id],
+        product_id: params[:product_id]
+      )
+    )
     redirect_to edit_order_path(params[:id])
   end
 
   def remove_item
-    command_bus.(Pricing::RemoveItemFromBasket.new(order_id: params[:id], product_id: params[:product_id]))
+    command_bus.(
+      Pricing::RemoveItemFromBasket.new(
+        order_id: params[:id],
+        product_id: params[:product_id]
+      )
+    )
     redirect_to edit_order_path(params[:id])
   end
 
   def create
-    cmd = Ordering::SubmitOrder.new(order_id: params[:order_id], customer_id: params[:customer_id])
+    cmd =
+      Ordering::SubmitOrder.new(
+        order_id: params[:order_id],
+        customer_id: params[:customer_id]
+      )
     command_bus.(cmd)
-    redirect_to order_path(Orders::Order.find_by_uid(cmd.order_id)), notice: "Order was successfully submitted."
+    redirect_to order_path(Orders::Order.find_by_uid(cmd.order_id)),
+                notice: "Order was successfully submitted."
   rescue Inventory::InventoryEntry::InventoryNotAvailable
-    redirect_to order_path(Orders::Order.find_by_uid(cmd.order_id)), notice: "Order can not be submitted! Some products are not available."
+    redirect_to order_path(Orders::Order.find_by_uid(cmd.order_id)),
+                notice:
+                  "Order can not be submitted! Some products are not available."
   end
 
   def expire
-    Orders::Order.where(state: "Draft").find_each do |order|
-      command_bus.(Ordering::SetOrderAsExpired.new(order_id: order.uid))
-    end
+    Orders::Order
+      .where(state: "Draft")
+      .find_each do |order|
+        command_bus.(Ordering::SetOrderAsExpired.new(order_id: order.uid))
+      end
     redirect_to root_path
   end
 
@@ -86,9 +110,7 @@ class OrdersController < ApplicationController
   end
 
   def authorize_payment_cmd(order_id)
-    Payments::AuthorizePayment.new(
-      order_id: order_id,
-    )
+    Payments::AuthorizePayment.new(order_id: order_id)
   end
 
   def capture_payment_cmd(order_id)

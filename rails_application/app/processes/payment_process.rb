@@ -1,6 +1,8 @@
 class PaymentProcess
-  def initialize(store: Rails.configuration.event_store,
-                 bus: Rails.configuration.command_bus)
+  def initialize(
+    store: Rails.configuration.event_store,
+    bus: Rails.configuration.command_bus
+  )
     @store = store
     @bus = bus
   end
@@ -22,9 +24,13 @@ class PaymentProcess
     stream_name = "PaymentProcess$#{event.data.fetch(:order_id)}"
     past_events = store.read.stream(stream_name).to_a
     last_stored = past_events.size - 1
-    store.link(event.event_id, stream_name: stream_name, expected_version: last_stored)
+    store.link(
+      event.event_id,
+      stream_name: stream_name,
+      expected_version: last_stored
+    )
     ProcessState.new.tap do |state|
-      past_events.each{|ev| state.call(ev)}
+      past_events.each { |ev| state.call(ev) }
       state.call(event)
     end
   rescue RubyEventStore::WrongExpectedEventVersion

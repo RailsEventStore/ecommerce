@@ -11,45 +11,59 @@ class OrdersTest < Ecommerce::InMemoryRESIntegrationTestCase
 
   def test_submitting_empty_order
     arkency_id = SecureRandom.uuid
-    run_command(Crm::RegisterCustomer.new(customer_id: arkency_id, name: "Arkency"))
-    
+    run_command(
+      Crm::RegisterCustomer.new(customer_id: arkency_id, name: "Arkency")
+    )
+
     get "/"
     assert_select "h1", "Orders"
     get "/orders/new"
     assert_select "h1", "New Order"
-    post "/orders", params:
-         {
-           "authenticity_token"=>"[FILTERED]",
-           "order_id"=>SecureRandom.uuid,
-           "customer_id"=> arkency_id,
-           "commit"=>"Submit order"
+    post "/orders",
+         params: {
+           "authenticity_token" => "[FILTERED]",
+           "order_id" => SecureRandom.uuid,
+           "customer_id" => arkency_id,
+           "commit" => "Submit order"
          }
   end
 
   def test_happy_path
     shopify_id = SecureRandom.uuid
-    run_command(Crm::RegisterCustomer.new(customer_id: shopify_id, name: "Shopify"))
+    run_command(
+      Crm::RegisterCustomer.new(customer_id: shopify_id, name: "Shopify")
+    )
 
     order_id = SecureRandom.uuid
     another_order_id = SecureRandom.uuid
 
     product_id = SecureRandom.uuid
-    run_command(ProductCatalog::RegisterProduct.new(product_id: product_id, name: "Async Remote"))
+    run_command(
+      ProductCatalog::RegisterProduct.new(
+        product_id: product_id,
+        name: "Async Remote"
+      )
+    )
     run_command(Pricing::SetPrice.new(product_id: product_id, price: 39))
     async_remote = ProductCatalog::Product.find_by(id: product_id)
 
     product_id = SecureRandom.uuid
-    run_command(ProductCatalog::RegisterProduct.new(product_id: product_id, name: "Fearless Refactoring"))
+    run_command(
+      ProductCatalog::RegisterProduct.new(
+        product_id: product_id,
+        name: "Fearless Refactoring"
+      )
+    )
     run_command(Pricing::SetPrice.new(product_id: product_id, price: 49))
     fearless = ProductCatalog::Product.find_by(id: product_id)
 
-    post "/orders", params:
-      {
-        "authenticity_token"=>"[FILTERED]",
-        "order_id" => another_order_id,
-        "customer_id"=> shopify_id,
-        "commit"=>"Submit order"
-      }
+    post "/orders",
+         params: {
+           "authenticity_token" => "[FILTERED]",
+           "order_id" => another_order_id,
+           "customer_id" => shopify_id,
+           "commit" => "Submit order"
+         }
 
     get "/"
     get "/orders/new"
@@ -65,13 +79,13 @@ class OrdersTest < Ecommerce::InMemoryRESIntegrationTestCase
 
     apply_discount_10_percent(order_id)
 
-    post "/orders", params:
-      {
-        "authenticity_token"=>"[FILTERED]",
-        "order_id" => order_id,
-        "customer_id"=> shopify_id,
-        "commit"=>"Submit order"
-      }
+    post "/orders",
+         params: {
+           "authenticity_token" => "[FILTERED]",
+           "order_id" => order_id,
+           "customer_id" => shopify_id,
+           "commit" => "Submit order"
+         }
     follow_redirect!
     assert_select("td", "$123.30")
     assert_select("p", "State: Submitted")
@@ -88,7 +102,12 @@ class OrdersTest < Ecommerce::InMemoryRESIntegrationTestCase
   def test_expiring_orders
     order_id = SecureRandom.uuid
     product_id = SecureRandom.uuid
-    run_command(ProductCatalog::RegisterProduct.new(product_id: product_id, name: "Async Remote"))
+    run_command(
+      ProductCatalog::RegisterProduct.new(
+        product_id: product_id,
+        name: "Async Remote"
+      )
+    )
     run_command(Pricing::SetPrice.new(product_id: product_id, price: 39))
     async_remote = ProductCatalog::Product.find_by(id: product_id)
 
@@ -104,10 +123,17 @@ class OrdersTest < Ecommerce::InMemoryRESIntegrationTestCase
 
   def test_cancel
     shopify_id = SecureRandom.uuid
-    run_command(Crm::RegisterCustomer.new(customer_id: shopify_id, name: "Shopify"))
+    run_command(
+      Crm::RegisterCustomer.new(customer_id: shopify_id, name: "Shopify")
+    )
     order_id = SecureRandom.uuid
     product_id = SecureRandom.uuid
-    run_command(ProductCatalog::RegisterProduct.new(product_id: product_id, name: "Async Remote"))
+    run_command(
+      ProductCatalog::RegisterProduct.new(
+        product_id: product_id,
+        name: "Async Remote"
+      )
+    )
     run_command(Pricing::SetPrice.new(product_id: product_id, price: 39))
     async_remote = ProductCatalog::Product.find_by(id: product_id)
 
@@ -116,13 +142,13 @@ class OrdersTest < Ecommerce::InMemoryRESIntegrationTestCase
     post "/orders/#{order_id}/add_item?product_id=#{async_remote.id}"
     follow_redirect!
     assert_select("td", "$39.00")
-    post "/orders", params:
-      {
-        "authenticity_token"=>"[FILTERED]",
-        "order_id" => order_id,
-        "customer_id"=> shopify_id,
-        "commit"=>"Submit order"
-      }
+    post "/orders",
+         params: {
+           "authenticity_token" => "[FILTERED]",
+           "order_id" => order_id,
+           "customer_id" => shopify_id,
+           "commit" => "Submit order"
+         }
 
     run_command(Ordering::CancelOrder.new(order_id: order_id))
     get "/orders/#{Orders::Order.last.id}"
@@ -133,7 +159,11 @@ class OrdersTest < Ecommerce::InMemoryRESIntegrationTestCase
 
   def assert_res_browser_order_history
     get "/res/api/streams/Orders$#{Orders::Order.last.uid}/relationships/events"
-    event_names = JSON.load(body).fetch("data").map { |data| data.fetch("attributes").fetch("event_type") }
+    event_names =
+      JSON
+        .load(body)
+        .fetch("data")
+        .map { |data| data.fetch("attributes").fetch("event_type") }
     assert(event_names.include?("Ordering::OrderPaid"))
     assert(event_names.include?("Pricing::ItemAddedToBasket"))
     assert(event_names.include?("Pricing::OrderTotalValueCalculated"))
@@ -141,8 +171,14 @@ class OrdersTest < Ecommerce::InMemoryRESIntegrationTestCase
   end
 
   def assert_payment_gateway_value(value)
-    assert_equal(1, Rails.configuration.payment_gateway.call.authorized_transactions.size)
-    assert_equal(value, Rails.configuration.payment_gateway.call.authorized_transactions[0][1])
+    assert_equal(
+      1,
+      Rails.configuration.payment_gateway.call.authorized_transactions.size
+    )
+    assert_equal(
+      value,
+      Rails.configuration.payment_gateway.call.authorized_transactions[0][1]
+    )
   end
 
   def apply_discount_10_percent(order_id)

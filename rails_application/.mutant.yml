@@ -1,13 +1,13 @@
 ---
 includes:
-- test
+  - test
 integration: minitest
 mutation_timeout: 10.0
 coverage_criteria:
   timeout: true
   process_abort: true
 requires:
-- ./config/environment
+  - ./config/environment
 matcher:
   subjects:
-  - Orders*
+    - Orders*

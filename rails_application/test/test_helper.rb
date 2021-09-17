@@ -9,7 +9,10 @@ module Ecommerce
       result = super
       @previous_event_store = Rails.configuration.event_store
       @previous_command_bus = Rails.configuration.command_bus
-      Rails.configuration.event_store = RailsEventStore::Client.new(repository: RubyEventStore::InMemoryRepository.new)
+      Rails.configuration.event_store =
+        RailsEventStore::Client.new(
+          repository: RubyEventStore::InMemoryRepository.new
+        )
       Rails.configuration.command_bus = Arkency::CommandBus.new
 
       Configuration.new.call(
@@ -42,7 +45,10 @@ module Ecommerce
       result = super
       @previous_event_store = Rails.configuration.event_store
       @previous_command_bus = Rails.configuration.command_bus
-      Rails.configuration.event_store = RailsEventStore::Client.new(repository: RubyEventStore::InMemoryRepository.new)
+      Rails.configuration.event_store =
+        RailsEventStore::Client.new(
+          repository: RubyEventStore::InMemoryRepository.new
+        )
       Rails.configuration.command_bus = Arkency::CommandBus.new
 
       Configuration.new.call(

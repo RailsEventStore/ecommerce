@@ -10,7 +10,9 @@ class SuppliesController < ApplicationController
 
   private
 
-  def supply product_id, quantity
-    command_bus.(Inventory::Supply.new(product_id: product_id, quantity: quantity))
+  def supply(product_id, quantity)
+    command_bus.(
+      Inventory::Supply.new(product_id: product_id, quantity: quantity)
+    )
   end
 end
