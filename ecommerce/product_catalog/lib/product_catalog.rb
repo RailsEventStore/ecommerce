@@ -1,7 +1,7 @@
 require_relative "../../../infra/lib/infra"
 require_relative "product_catalog/commands"
 require_relative "product_catalog/product"
-require_relative "product_catalog/product_registration_handler"
+require_relative "product_catalog/registration"
 require_relative "product_catalog/assign_price_to_product"
 
 module ProductCatalog
@@ -11,7 +11,7 @@ module ProductCatalog
     end
 
     def call
-      @cqrs.register(RegisterProduct, ProductRegistrationHandler.new)
+      @cqrs.register(RegisterProduct, Registration.new)
     end
   end
 end
