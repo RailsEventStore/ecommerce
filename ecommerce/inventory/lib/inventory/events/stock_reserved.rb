@@ -1,5 +1,5 @@
 module Inventory
-  class StockReserved < Infra::Event
+  class StockReserved < RubyEventStore::Event
 
   end
 end

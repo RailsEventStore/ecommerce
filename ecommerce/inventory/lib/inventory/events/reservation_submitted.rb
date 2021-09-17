@@ -1,5 +1,5 @@
 module Inventory
-  class ReservationSubmitted < Infra::Event
+  class ReservationSubmitted < RubyEventStore::Event
 
   end
 end

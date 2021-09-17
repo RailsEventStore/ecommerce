@@ -1,6 +1,3 @@
-require_relative "../../../rails_application/test/test_helper"
-
-
 require "minitest/autorun"
 require "mutant/minitest/coverage"
 
