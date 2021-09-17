@@ -9,5 +9,6 @@ class CustomerRepositoryTest < ActiveSupport::TestCase
   def setup
     super
     @repository = CustomerRepository.new
+    CustomerRepository::Record.delete_all
   end
 end
