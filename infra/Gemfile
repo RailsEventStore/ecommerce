@@ -3,12 +3,14 @@ source "https://rubygems.org"
 gem "rake"
 gem "dry-struct"
 gem "dry-types"
-gem "rails_event_store", "~> 2.3.0", require: %w[aggregate_root rails_event_store]
+gem "rails_event_store",
+    "~> 2.3.0",
+    require: %w[aggregate_root rails_event_store]
 gem "ruby_event_store-transformations"
 
 group :test do
   gem "minitest"
   gem "mutant-minitest"
-  gem "mutant-license",  source: "https://oss:7AXfeZdAfCqL1PvHm2nvDJO6Zd9UW8IK@gem.mutant.dev"
+  gem "mutant-license",
+      source: "https://oss:7AXfeZdAfCqL1PvHm2nvDJO6Zd9UW8IK@gem.mutant.dev"
 end
-

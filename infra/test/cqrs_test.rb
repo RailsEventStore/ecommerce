@@ -4,11 +4,11 @@ module Infra
   class CqrsTest < Minitest::Test
     cover "Infra::Cqrs*"
 
-    class SomeCommand < Infra::Command; end
+    class SomeCommand < Infra::Command
+    end
 
     class SomeCommandHandler
-      def call(cmd)
-      end
+      def call(cmd); end
     end
 
     class SomeEvent < RubyEventStore::Event
@@ -18,10 +18,7 @@ module Infra
       cqrs = Cqrs.new(event_store, command_bus)
       cqrs.register_command(SomeCommandHandler.new, SomeCommand, [SomeEvent])
 
-      assert_equal(
-        {SomeCommand => [SomeEvent]},
-        cqrs.to_hash
-      )
+      assert_equal({ SomeCommand => [SomeEvent] }, cqrs.to_hash)
     end
 
     def command_bus
@@ -29,7 +26,9 @@ module Infra
     end
 
     def event_store
-      RubyEventStore::Client.new(repository: RubyEventStore::InMemoryRepository.new)
+      RubyEventStore::Client.new(
+        repository: RubyEventStore::InMemoryRepository.new
+      )
     end
   end
 end

@@ -10,8 +10,12 @@ module Infra
 
     def self.inherited(klass)
       super
-      klass.attribute :metadata, Types.Constructor(RubyEventStore::Metadata).default { RubyEventStore::Metadata.new }
-      klass.attribute :event_id, Infra::Types::UUID.default { SecureRandom.uuid }
+      klass.attribute :metadata,
+                      Types
+                        .Constructor(RubyEventStore::Metadata)
+                        .default { RubyEventStore::Metadata.new }
+      klass.attribute :event_id,
+                      Infra::Types::UUID.default { SecureRandom.uuid }
     end
 
     def timestamp
@@ -32,8 +36,7 @@ module Infra
 
     def ==(other_event)
       other_event.instance_of?(self.class) &&
-        other_event.event_id.eql?(event_id) &&
-        other_event.data.eql?(data)
+        other_event.event_id.eql?(event_id) && other_event.data.eql?(data)
     end
 
     alias_method :eql?, :==

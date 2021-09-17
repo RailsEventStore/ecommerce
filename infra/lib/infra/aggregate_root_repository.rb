@@ -1,13 +1,14 @@
-require 'aggregate_root'
-require 'active_support/notifications'
+require "aggregate_root"
+require "active_support/notifications"
 
 module Infra
   class AggregateRootRepository
     def initialize(event_store, notifications = ActiveSupport::Notifications)
-      @repository = AggregateRoot::InstrumentedRepository.new(
-        AggregateRoot::Repository.new(event_store),
-        notifications
-      )
+      @repository =
+        AggregateRoot::InstrumentedRepository.new(
+          AggregateRoot::Repository.new(event_store),
+          notifications
+        )
     end
 
     def with_aggregate(aggregate_class, aggregate_id, &block)

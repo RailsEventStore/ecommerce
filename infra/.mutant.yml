@@ -1,6 +1,6 @@
 ---
 includes:
-- test
+  - test
 integration: minitest
 mutation_timeout: 10.0
 coverage_criteria:
@@ -10,8 +10,8 @@ requires:
   - ./lib/infra.rb
 matcher:
   subjects:
-  - Infra*
+    - Infra*
   ignore:
-  - Infra::Event*
-  - Infra::Command*
-  - Infra::AggregateRootRepository*
+    - Infra::Event*
+    - Infra::Command*
+    - Infra::AggregateRootRepository*
