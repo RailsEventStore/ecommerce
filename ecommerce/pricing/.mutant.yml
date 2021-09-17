@@ -18,3 +18,5 @@ matcher:
   - Pricing::SetPercentageDiscountHandler#last_event
   - Pricing::Order#remove_item
   - Pricing::OnRemoveItemFromBasket#call
+  - Pricing::SetPercentageDiscountHandler#initialize
+  - Pricing::OnRemoveItemFromBasket#initialize
