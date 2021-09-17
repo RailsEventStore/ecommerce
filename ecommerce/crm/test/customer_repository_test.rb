@@ -2,15 +2,8 @@ require_relative "test_helper"
 
 module Crm
   class InMemoryCustomerRepositoryTest < Test
-    include CustomerRepositoryExamples
+    include CustomerRepositoryExamples.for(-> { InMemoryCustomerRepository.new })
 
     cover "Crm::InMemoryCustomerRepository*"
-
-    attr_reader :repository
-
-    def setup
-      super
-      @repository = InMemoryCustomerRepository.new
-    end
   end
 end
