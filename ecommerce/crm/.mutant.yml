@@ -12,3 +12,4 @@ matcher:
     - Crm::CustomerRepositoryExamples*
     - Crm::Customer#to_h
     - Crm::Customer#register
+    - Crm::Configuration#initialize

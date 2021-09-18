@@ -7,7 +7,7 @@ matcher:
   subjects:
     - ProductCatalog*
   ignore:
-    - ProductCatalog::Product#register
-    - ProductCatalog::Product#to_h
+    - ProductCatalog::Product*
     - ProductCatalog::AssignPriceToProduct*
+    - ProductCatalog::Configuration#initialize
     - ProductCatalog::Test*
