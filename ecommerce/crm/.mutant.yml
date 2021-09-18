@@ -13,3 +13,4 @@ matcher:
     - Crm::Customer#to_h
     - Crm::Customer#register
     - Crm::Configuration#initialize
+    - Crm::Configuration#call
