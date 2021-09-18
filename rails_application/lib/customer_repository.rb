@@ -1,5 +1,5 @@
 class CustomerRepository
-  class Record < ActiveRecord::Base
+  class Record < ApplicationRecord
     self.table_name = "customers"
   end
 
@@ -13,7 +13,7 @@ class CustomerRepository
   end
 
   def find_or_initialize_by_id(id)
-    find(id) || Crm::Customer.new(id: id)
+    find(id) || ::Crm::Customer.new(id: id)
   end
 
   def all
@@ -23,6 +23,6 @@ class CustomerRepository
   private
 
   def wrap_record(r)
-    Crm::Customer.new(**r.attributes.symbolize_keys)
+    ::Crm::Customer.new(**r.attributes.symbolize_keys)
   end
 end
