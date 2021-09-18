@@ -2,7 +2,6 @@ require "minitest/autorun"
 require "mutant/minitest/coverage"
 
 require_relative "../lib/crm"
-require_relative "../lib/crm/customer_repository_examples"
 
 module Crm
   class Test < Infra::InMemoryTest

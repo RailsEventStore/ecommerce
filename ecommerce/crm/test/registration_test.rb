@@ -1,7 +1,7 @@
 require_relative "test_helper"
 
 module Crm
-  class CrmTest < Test
+  class RegistrationTest < Test
     cover "Crm*"
 
     def test_customer_should_get_registered
