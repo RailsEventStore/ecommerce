@@ -14,20 +14,20 @@ require_relative "ordering/order"
 
 module Ordering
   class Configuration
-    def initialize(cqrs, event_store, number_generator)
-      @cqrs = cqrs
-      @event_store = event_store
+    def initialize(number_generator)
       @number_generator = number_generator
     end
 
-    def call
-      @cqrs.register(
+    def call(event_store, command_bus)
+      cqrs = Infra::Cqrs.new(event_store, command_bus)
+
+      cqrs.register(
         SubmitOrder,
-        OnSubmitOrder.new(@event_store, @number_generator.call)
+        OnSubmitOrder.new(event_store, @number_generator.call)
       )
-      @cqrs.register(SetOrderAsExpired, OnSetOrderAsExpired.new(@event_store))
-      @cqrs.register(MarkOrderAsPaid, OnMarkOrderAsPaid.new(@event_store))
-      @cqrs.register(CancelOrder, OnCancelOrder.new(@event_store))
+      cqrs.register(SetOrderAsExpired, OnSetOrderAsExpired.new(event_store))
+      cqrs.register(MarkOrderAsPaid, OnMarkOrderAsPaid.new(event_store))
+      cqrs.register(CancelOrder, OnCancelOrder.new(event_store))
     end
   end
 end

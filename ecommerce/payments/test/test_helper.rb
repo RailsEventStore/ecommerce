@@ -14,15 +14,13 @@ module Payments
     def before_setup
       super
       @payment_gateway = FakeGateway.new
-      Configuration.new(cqrs, event_store, -> { @payment_gateway }).call
-      ProductCatalog::Configuration.new(cqrs).call
-      Pricing::Configuration.new(cqrs, event_store).call
-      Ordering::Configuration.new(
-        cqrs,
-        event_store,
-        -> { Ordering::FakeNumberGenerator.new }
-      ).call
-      Crm::Configuration.new(cqrs, Crm::InMemoryCustomerRepository.new).call
+      [
+        Configuration.new(-> { @payment_gateway }),
+        ProductCatalog::Configuration.new,
+        Pricing::Configuration.new,
+        Ordering::Configuration.new(-> { Ordering::FakeNumberGenerator.new }),
+        Crm::Configuration.new
+      ].each { |c| c.call(event_store, command_bus) }
 
       cqrs.subscribe(
         ->(event) do

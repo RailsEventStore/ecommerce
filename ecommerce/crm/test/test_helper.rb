@@ -10,7 +10,7 @@ module Crm
     def before_setup
       super
       @customer_repository = InMemoryCustomerRepository.new
-      Configuration.new(cqrs, customer_repository).call
+      Configuration.new(customer_repository).call(event_store, command_bus)
     end
   end
 end

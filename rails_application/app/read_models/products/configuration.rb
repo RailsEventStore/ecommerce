@@ -4,13 +4,13 @@ module Products
   end
 
   class Configuration
-    def initialize(cqrs, product_repository)
-      @cqrs = cqrs
+    def initialize(product_repository)
       @product_repository = product_repository
     end
 
-    def call
-      @cqrs.subscribe(
+    def call(event_store, command_bus)
+      cqrs = Infra::Cqrs.new(event_store, command_bus)
+      cqrs.subscribe(
         ->(event) { change_stock_level(event) },
         [Inventory::StockLevelChanged]
       )
@@ -19,7 +19,10 @@ module Products
     private
 
     def change_stock_level(event)
-      product = @product_repository.find_or_initialize_by_id(event.data.fetch(:product_id))
+      product =
+        @product_repository.find_or_initialize_by_id(
+          event.data.fetch(:product_id)
+        )
       product.set_stock_level(event.data.fetch(:stock_level))
       @product_repository.upsert(product)
     end

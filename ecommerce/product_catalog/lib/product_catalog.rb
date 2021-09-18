@@ -7,13 +7,13 @@ require_relative "product_catalog/assign_price_to_product"
 
 module ProductCatalog
   class Configuration
-    def initialize(cqrs, product_repository = InMemoryProductRepository.new)
-      @cqrs = cqrs
+    def initialize(product_repository = InMemoryProductRepository.new)
       @product_repository = product_repository
     end
 
-    def call
-      @cqrs.register(RegisterProduct, Registration.new(@product_repository))
+    def call(event_store, command_bus)
+      cqrs = Infra::Cqrs.new(event_store, command_bus)
+      cqrs.register(RegisterProduct, Registration.new(@product_repository))
     end
   end
 end

@@ -10,12 +10,13 @@ module Ordering
   class Test < Infra::InMemoryTest
     def before_setup
       super
-      @number_generator = FakeNumberGenerator.new
-      Configuration.new(cqrs, event_store, -> { @number_generator }).call
-
-      ProductCatalog::Configuration.new(cqrs).call
-      Pricing::Configuration.new(cqrs, event_store).call
-      Crm::Configuration.new(cqrs, Crm::InMemoryCustomerRepository.new).call
+      number_generator = FakeNumberGenerator.new
+      [
+        Configuration.new(-> { number_generator }),
+        ProductCatalog::Configuration.new,
+        Pricing::Configuration.new,
+        Crm::Configuration.new
+      ].each { |c| c.call(event_store, command_bus) }
     end
   end
 end

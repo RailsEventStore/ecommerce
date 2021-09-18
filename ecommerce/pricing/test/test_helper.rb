@@ -11,8 +11,10 @@ module Pricing
     def before_setup
       super
       @product_repository = ProductCatalog::InMemoryProductRepository.new
-      Configuration.new(cqrs, event_store).call
-      ProductCatalog::Configuration.new(cqrs, product_repository).call
+      [
+        Configuration.new,
+        ProductCatalog::Configuration.new(product_repository)
+      ].each { |c| c.call(event_store, command_bus) }
       cqrs.subscribe(
         ProductCatalog::AssignPriceToProduct.new(product_repository),
         [Pricing::PriceSet]

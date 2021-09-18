@@ -22,15 +22,16 @@ class Configuration
     number_generator = Rails.configuration.number_generator
     payment_gateway = Rails.configuration.payment_gateway
 
-    Orders::Configuration.new(cqrs).call
-    Products::Configuration.new(cqrs, product_repository).call
-    Ordering::Configuration.new(cqrs, event_store, number_generator).call
-    Pricing::Configuration.new(cqrs, event_store).call
-    Payments::Configuration.new(cqrs, event_store, payment_gateway).call
-    ProductCatalog::Configuration.new(cqrs, product_repository).call
-    Crm::Configuration.new(cqrs, customer_repository).call
-    Inventory::Configuration.new(cqrs, event_store).call
-
+    [
+      Orders::Configuration.new,
+      Products::Configuration.new(product_repository),
+      Ordering::Configuration.new(number_generator),
+      Pricing::Configuration.new,
+      Payments::Configuration.new(payment_gateway),
+      ProductCatalog::Configuration.new(product_repository),
+      Crm::Configuration.new(customer_repository),
+      Inventory::Configuration.new
+    ].each { |c| c.call(event_store, command_bus) }
     cqrs.subscribe(
       PaymentProcess.new,
       [

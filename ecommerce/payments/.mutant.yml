@@ -9,3 +9,4 @@ matcher:
   ignore:
     - Payments::Payment#authorized?
     - Payments::Test*
+    - Payments::Configuration#call

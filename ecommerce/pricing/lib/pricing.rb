@@ -9,40 +9,37 @@ require_relative "pricing/pricing_catalog"
 
 module Pricing
   class Configuration
-    def initialize(cqrs, event_store)
-      @cqrs = cqrs
-      @event_store = event_store
-    end
+    def call(event_store, command_bus)
+      cqrs = Infra::Cqrs.new(event_store, command_bus)
 
-    def call
-      @cqrs.register_command(
+      cqrs.register_command(
         AddItemToBasket,
-        OnAddItemToBasket.new(@event_store),
+        OnAddItemToBasket.new(event_store),
         ItemAddedToBasket
       )
-      @cqrs.register_command(
+      cqrs.register_command(
         RemoveItemFromBasket,
-        OnRemoveItemFromBasket.new(@event_store),
+        OnRemoveItemFromBasket.new(event_store),
         ItemRemovedFromBasket
       )
-      @cqrs.register_command(
+      cqrs.register_command(
         SetPrice,
-        SetPriceHandler.new(@event_store),
+        SetPriceHandler.new(event_store),
         PriceSet
       )
-      @cqrs.register_command(
+      cqrs.register_command(
         CalculateTotalValue,
-        OnCalculateTotalValue.new(@event_store),
+        OnCalculateTotalValue.new(event_store),
         OrderTotalValueCalculated
       )
-      @cqrs.register_command(
+      cqrs.register_command(
         SetPercentageDiscount,
-        SetPercentageDiscountHandler.new(@event_store),
+        SetPercentageDiscountHandler.new(event_store),
         PercentageDiscountSet
       )
-      @cqrs.subscribe(
+      cqrs.subscribe(
         ->(event) do
-          @cqrs.run(
+          cqrs.run(
             Pricing::CalculateTotalValue.new(
               order_id: event.data.fetch(:order_id)
             )

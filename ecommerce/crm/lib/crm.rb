@@ -6,13 +6,13 @@ require_relative "crm/customer"
 
 module Crm
   class Configuration
-    def initialize(cqrs, repository = InMemoryCustomerRepository.new)
-      @cqrs = cqrs
+    def initialize(repository = InMemoryCustomerRepository.new)
       @repository = repository
     end
 
-    def call
-      @cqrs.register(RegisterCustomer, Registration.new(@repository))
+    def call(event_store, command_bus)
+      cqrs = Infra::Cqrs.new(event_store, command_bus)
+      cqrs.register(RegisterCustomer, Registration.new(@repository))
     end
   end
 end

@@ -11,3 +11,5 @@ requires:
 matcher:
   subjects:
     - Orders*
+  ignore:
+    - Orders::Configuration#call

@@ -10,20 +10,20 @@ require_relative "payments/payment"
 
 module Payments
   class Configuration
-    def initialize(cqrs, event_store, gateway)
-      @cqrs = cqrs
-      @event_store = event_store
+    def initialize(gateway)
       @gateway = gateway
     end
 
-    def call
-      @cqrs.register(
+    def call(event_store, command_bus)
+      cqrs = Infra::Cqrs.new(event_store, command_bus)
+
+      cqrs.register(
         AuthorizePayment,
-        OnAuthorizePayment.new(@event_store, @gateway)
+        OnAuthorizePayment.new(event_store, @gateway)
       )
-      @cqrs.register(CapturePayment, OnCapturePayment.new(@event_store))
-      @cqrs.register(ReleasePayment, OnReleasePayment.new(@event_store))
-      @cqrs.register(SetPaymentAmount, OnSetPaymentAmount.new(@event_store))
+      cqrs.register(CapturePayment, OnCapturePayment.new(event_store))
+      cqrs.register(ReleasePayment, OnReleasePayment.new(event_store))
+      cqrs.register(SetPaymentAmount, OnSetPaymentAmount.new(event_store))
     end
   end
 end

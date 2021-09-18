@@ -10,7 +10,7 @@ module ProductCatalog
     def before_setup
       super
       @product_repository = InMemoryProductRepository.new
-      Configuration.new(cqrs, product_repository).call
+      Configuration.new(product_repository).call(event_store, command_bus)
     end
   end
 end

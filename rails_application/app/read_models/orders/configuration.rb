@@ -18,11 +18,9 @@ module Orders
   end
 
   class Configuration
-    def initialize(cqrs)
-      @cqrs = cqrs
-    end
+    def call(event_store, command_bus)
+      @cqrs = Infra::Cqrs.new(event_store, command_bus)
 
-    def call
       subscribe(
         ->(event) { mark_as_submitted(event) },
         [Ordering::OrderSubmitted]
