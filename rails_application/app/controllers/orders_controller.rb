@@ -64,21 +64,21 @@ class OrdersController < ApplicationController
         order_id: params[:order_id],
         customer_id: params[:customer_id]
       )
-    command_bus.(cmd)
+    ApplicationRecord.transaction { command_bus.(cmd) }
     redirect_to order_path(Orders::Order.find_by_uid(cmd.order_id)),
-                notice: "Order was successfully submitted."
+      notice: "Order was successfully submitted."
   rescue Inventory::InventoryEntry::InventoryNotAvailable
     redirect_to order_path(Orders::Order.find_by_uid(cmd.order_id)),
-                notice:
-                  "Order can not be submitted! Some products are not available."
+      notice:
+        "Order can not be submitted! Some products are not available."
   end
 
   def expire
     Orders::Order
       .where(state: "Draft")
       .find_each do |order|
-        command_bus.(Ordering::SetOrderAsExpired.new(order_id: order.uid))
-      end
+      command_bus.(Ordering::SetOrderAsExpired.new(order_id: order.uid))
+    end
     redirect_to root_path
   end
 
