@@ -10,3 +10,6 @@ matcher:
     - Ordering::NumberGenerator*
     - Ordering::OnSubmitOrder#call
     - Ordering::Test*
+    - Ordering::Configuration#call
+    - Ordering::Configuration#initialize
+

@@ -8,3 +8,5 @@ matcher:
     - Inventory*
   ignore:
     - Inventory::Test*
+    - Inventory::Configuration#initialize
+    - Inventory::Configuration#call
