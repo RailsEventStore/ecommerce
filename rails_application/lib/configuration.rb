@@ -10,30 +10,32 @@ require_relative "product_repository"
 
 class Configuration
   def call(event_store, command_bus)
-    event_store.subscribe_to_all_events(RailsEventStore::LinkByEventType.new)
-    event_store.subscribe_to_all_events(
-      RailsEventStore::LinkByCorrelationId.new
-    )
-    event_store.subscribe_to_all_events(RailsEventStore::LinkByCausationId.new)
+    [RailsEventStore::LinkByEventType.new,
+      RailsEventStore::LinkByCorrelationId.new,
+      RailsEventStore::LinkByCausationId.new,
+    ].each { |h| event_store.subscribe_to_all_events(h) }
 
     cqrs = Infra::Cqrs.new(event_store, command_bus)
+    customer_repository = CustomerRepository.new
+    product_repository = ProductRepository.new
+    number_generator = Rails.configuration.number_generator
+    payment_gateway = Rails.configuration.payment_gateway
 
     Orders::Configuration.new(cqrs).call
-    Products::Configuration.new(cqrs, ProductRepository.new).call
-
+    Products::Configuration.new(cqrs, product_repository).call
     Ordering::Configuration.new(
       cqrs,
       event_store,
-      Rails.configuration.number_generator
+      number_generator
     ).call
     Pricing::Configuration.new(cqrs, event_store).call
     Payments::Configuration.new(
       cqrs,
       event_store,
-      Rails.configuration.payment_gateway
+      payment_gateway
     ).call
-    ProductCatalog::Configuration.new(cqrs, ProductRepository.new).call
-    Crm::Configuration.new(cqrs, CustomerRepository.new).call
+    ProductCatalog::Configuration.new(cqrs, product_repository).call
+    Crm::Configuration.new(cqrs, customer_repository).call
     Inventory::Configuration.new(cqrs, event_store).call
 
     cqrs.subscribe(
@@ -53,7 +55,7 @@ class Configuration
     )
 
     cqrs.subscribe(
-      ProductCatalog::AssignPriceToProduct.new(ProductRepository.new),
+      ProductCatalog::AssignPriceToProduct.new(product_repository),
       [Pricing::PriceSet]
     )
 
