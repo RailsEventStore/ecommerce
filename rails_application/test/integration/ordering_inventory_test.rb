@@ -2,9 +2,9 @@ require "test_helper"
 
 class OrderingInventoryTest < Ecommerce::RealRESIntegrationTestCase
   include Infra::TestPlumbing.with(
-    event_store: -> { Rails.configuration.event_store },
-    command_bus: -> { Rails.configuration.command_bus }
-  )
+            event_store: -> { Rails.configuration.event_store },
+            command_bus: -> { Rails.configuration.command_bus }
+          )
 
   cover "Ordering::OnSubmitOrder*"
 

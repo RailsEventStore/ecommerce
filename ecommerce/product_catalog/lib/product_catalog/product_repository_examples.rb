@@ -37,12 +37,12 @@ module ProductCatalog
       def test_find_or_initialize_by_id
         id = SecureRandom.uuid
         assert_equal_serialized Product.new(id: id),
-          repository.find_or_initialize_by_id(id)
+                                repository.find_or_initialize_by_id(id)
 
         repository.upsert(Product.new(id: id, name: "Fake Name"))
 
         assert_equal_serialized Product.new(id: id, name: "Fake Name"),
-          repository.find_or_initialize_by_id(id)
+                                repository.find_or_initialize_by_id(id)
       end
 
       def assert_equal_serialized(expected, actual)

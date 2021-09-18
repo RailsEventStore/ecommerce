@@ -5,6 +5,8 @@ module Crm
   class InMemoryCustomerRepositoryTest < Test
     cover "Crm::InMemoryCustomerRepository*"
 
-    include CustomerRepositoryExamples.for(-> { InMemoryCustomerRepository.new })
+    include CustomerRepositoryExamples.for(
+              -> { InMemoryCustomerRepository.new }
+            )
   end
 end

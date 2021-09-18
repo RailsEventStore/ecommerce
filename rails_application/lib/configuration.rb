@@ -10,9 +10,10 @@ require_relative "product_repository"
 
 class Configuration
   def call(event_store, command_bus)
-    [RailsEventStore::LinkByEventType.new,
+    [
+      RailsEventStore::LinkByEventType.new,
       RailsEventStore::LinkByCorrelationId.new,
-      RailsEventStore::LinkByCausationId.new,
+      RailsEventStore::LinkByCausationId.new
     ].each { |h| event_store.subscribe_to_all_events(h) }
 
     cqrs = Infra::Cqrs.new(event_store, command_bus)
@@ -23,17 +24,9 @@ class Configuration
 
     Orders::Configuration.new(cqrs).call
     Products::Configuration.new(cqrs, product_repository).call
-    Ordering::Configuration.new(
-      cqrs,
-      event_store,
-      number_generator
-    ).call
+    Ordering::Configuration.new(cqrs, event_store, number_generator).call
     Pricing::Configuration.new(cqrs, event_store).call
-    Payments::Configuration.new(
-      cqrs,
-      event_store,
-      payment_gateway
-    ).call
+    Payments::Configuration.new(cqrs, event_store, payment_gateway).call
     ProductCatalog::Configuration.new(cqrs, product_repository).call
     Crm::Configuration.new(cqrs, customer_repository).call
     Inventory::Configuration.new(cqrs, event_store).call

@@ -24,7 +24,13 @@ module ProductCatalog
     end
 
     def to_h
-      { name: name, id: id, price: price, stock_level: stock_level, registered_at: @registered_at }
+      {
+        name: name,
+        id: id,
+        price: price,
+        stock_level: stock_level,
+        registered_at: @registered_at
+      }
     end
   end
 end
