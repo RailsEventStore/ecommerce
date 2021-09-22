@@ -6,7 +6,9 @@
   <%= csp_meta_tag %>
 
   <%= javascript_include_tag 'application' %>
-  <%= stylesheet_link_tag 'application', media: 'all' %>
+
+    <%= stylesheet_link_tag "inter-font", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>  <%= stylesheet_link_tag 'application', media: 'all' %>
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 </head>
 <body>

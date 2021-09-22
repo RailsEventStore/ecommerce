@@ -212,16 +212,6 @@ GEM
     ruby_event_store-transformations (0.1.0)
       activesupport (>= 5.0)
       ruby_event_store (>= 2.0.0, < 3.0.0)
-    sass-rails (6.0.0)
-      sassc-rails (~> 2.1, >= 2.1.1)
-    sassc (2.4.0)
-      ffi (~> 1.9)
-    sassc-rails (2.1.2)
-      railties (>= 4.0.0)
-      sassc (>= 2.0)
-      sprockets (> 3.0)
-      sprockets-rails
-      tilt
     sinatra (2.1.0)
       mustermann (~> 1.0)
       rack (~> 2.2)
@@ -238,6 +228,8 @@ GEM
       actionpack (>= 4.0)
       activesupport (>= 4.0)
       sprockets (>= 3.0.0)
+    tailwindcss-rails (0.4.3)
+      rails (>= 6.0.0)
     thor (1.1.0)
     thread_safe (0.3.6)
     tilt (2.0.10)
@@ -273,8 +265,8 @@ DEPENDENCIES
   rails_event_store (~> 2.3.0)
   rake
   ruby_event_store-transformations
-  sass-rails (>= 6)
   skylight
+  tailwindcss-rails
   tzinfo-data
 
 RUBY VERSION
