@@ -88,9 +88,9 @@ class OrdersTest < Ecommerce::InMemoryRESIntegrationTestCase
          }
     follow_redirect!
     assert_select("td", "$123.30")
-    assert_select("p", "State: Submitted")
-    assert_select("p", "Customer: Shopify")
-    assert_select("p", "Discount applied: 10.0%")
+    assert_select("dd", "Submitted")
+    assert_select("dd", "Shopify")
+    assert_select("td", "10.0%")
     get "/orders"
     post "/orders/#{order_id}/pay"
     follow_redirect!
@@ -152,7 +152,7 @@ class OrdersTest < Ecommerce::InMemoryRESIntegrationTestCase
 
     run_command(Ordering::CancelOrder.new(order_id: order_id))
     get "/orders/#{Orders::Order.last.id}"
-    assert_select("p", "State: Cancelled")
+    assert_select("dd", "Cancelled")
   end
 
   private
@@ -184,7 +184,7 @@ class OrdersTest < Ecommerce::InMemoryRESIntegrationTestCase
   def apply_discount_10_percent(order_id)
     assert_select("a", "Edit discount")
     get "/orders/#{order_id}/edit_discount"
-    assert_select("p", "Percentage:")
+    assert_select("label", "Percentage")
 
     post "/orders/#{order_id}/update_discount?amount=10"
     follow_redirect!
