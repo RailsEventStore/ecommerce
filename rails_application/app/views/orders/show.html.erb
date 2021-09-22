@@ -1,41 +1,70 @@
-<p id="notice"><%= notice %></p>
-<h1>Order: <%= @order.number %></h1>
-<p>
-Customer: <%= @order.customer %>
-</p>
-<p>
-State: <%= @order.state %>
-</p>
-<h2>Order lines</h2>
+<% content_for(:header) do %>
+  Order <%= @order.number %>
+<% end %>
 
-<table class="table">
+<% content_for(:actions) do %>
+  <span class="sm:ml-3">
+    <button type="button" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+      <%= order_history_link(@order.uid) %>
+    </button>
+  </span>
+  <span class="sm:ml-3">
+    <button type="button" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+       <%= link_to 'Back', orders_path %>
+    </button>
+  </span>
+  <span class="sm:ml-3">
+    <% if @order.state == "Draft" %>
+    <button type="button" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+       <%= link_to 'Edit', edit_order_path(@order.uid) %>
+    </button>
+    <% end %>
+
+    <% if @order.state == "Submitted" %>
+    <button type="button" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+      <%= link_to("Pay", pay_order_path(@order.uid), method: :post) %>
+    </button>
+    <% end %>
+  </span>
+<% end %>
+
+<dl class="mb-8">
+  <dt class="font-bold">Customer</dt>
+  <dd class="mb-2"><%= @order.customer || "None" %></dd>
+  <dt class="font-bold">State</dt>
+  <dd class="mb-2"><%= @order.state %></dd>
+</dl>
+
+<table class="w-full">
   <thead>
     <tr>
-      <th>Product</th>
-      <th>Quantity</th>
-      <th>Price</th>
-      <th>Value</th>
+      <th class="text-left py-2">Product</th>
+      <th class="text-left py-2">Quantity</th>
+      <th class="text-left py-2">Price</th>
+      <th class="text-right py-2">Value</th>
     </tr>
   </thead>
 
   <tbody>
   <% @order_lines.each do |item| %>
-    <tr>
-    <td><%= item.product_name %></td>
-    <td><%= item.quantity %></td>
-    <td><%= number_to_currency(item.price) %></td>
-    <td><%= number_to_currency(item.value) %></td>
-  </tr>
-<% end %>
+    <tr class="border-t">
+      <td class="py-2"><%= item.product_name %></td>
+      <td class="py-2"><%= item.quantity %></td>
+      <td class="py-2"><%= number_to_currency(item.price) %></td>
+      <td class="py-2 text-right"><%= number_to_currency(item.value) %></td>
+    </tr>
+  <% end %>
   </tbody>
-  <tr>
-    <td>Total:</td>
-    <td colspan="2"></td>
-    <td><strong><%= number_to_currency(@order.discounted_value) %></strong></td>
-  </tr>
+  <tfoot>
+    <% if @order.percentage_discount %>
+    <tr class="border-t">
+      <td class="py-2" colspan="3">Discount</td>
+      <td class="py-2 text-right"><%= @order.percentage_discount %>%</td>
+    </tr>
+    <% end %>
+    <tr class="border-t">
+      <td class="py-2" colspan="3">Total</td>
+      <td class="py-2 text-right font-bold"><%= number_to_currency(@order.discounted_value) %></td>
+    </tr>
+  </tfoot>
 </table>
-<% if @order.percentage_discount %>
-  <p>Discount applied: <strong><%= @order.percentage_discount %>%</strong></p>
-<% end %>
-<br/>
-<%= link_to 'Back', orders_path, class: "btn btn-default" %>

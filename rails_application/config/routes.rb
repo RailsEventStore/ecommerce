@@ -13,7 +13,7 @@ Rails.application.routes.draw do
       post :update_discount
     end
   end
-  resources :products, only: [:new, :create, :index] do
+  resources :products, only: [:new, :show, :create, :index] do
     resources :supplies, only: [:new, :create]
   end
   resources :customers, only: [:new, :create, :index]

@@ -1,14 +1,33 @@
-<h1>New Product</h1>
+<% content_for(:header) do %>
+  New Product
+<% end %>
 
-<%= form_tag({controller: "products", action: "create"}, method: "post") do %>
+<% content_for(:actions) do %>
+  <span class="sm:ml-3">
+    <button type="button" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+       <%= link_to 'Back', products_path %>
+    </button>
+  </span>
+  <span class="sm:ml-3">
+    <button type="submit" form="form" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+      Create Product
+    </button>
+  </span>
+<% end %>
+
+<%= form_tag({controller: "products", action: "create"}, method: "post", id: "form") do %>
   <%= hidden_field_tag(:product_id, @product_id) %>
 
-  <p>Name:
-    <%= text_field_tag :name %>
-  </p>
-  <p>Price:
-    <%= number_field_tag :price, nil, min: 0, step: 0.01 %>
-  </p>
-
-  <%= submit_tag("Create product", class: "btn btn-primary") %>
+  <div>
+    <label for="name" class="block font-bold">
+      Name
+    </label>
+    <%= text_field_tag :name, "", required: true, class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-sm sm:text-sm border-gray-300 rounded-md" %>
+  </div>
+  <div class="mt-2">
+    <label for="price" class="block font-bold">
+      Price
+    </label>
+    <%= number_field_tag :price, nil, min: 0, step: 0.01, required: true, class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-sm sm:text-sm border-gray-300 rounded-md" %>
+  </div>
 <% end %>

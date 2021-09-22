@@ -66,11 +66,11 @@ class OrdersController < ApplicationController
       )
     ApplicationRecord.transaction { command_bus.(cmd) }
     redirect_to order_path(Orders::Order.find_by_uid(cmd.order_id)),
-      notice: "Order was successfully submitted."
+      notice: "Order was successfully submitted"
   rescue Inventory::InventoryEntry::InventoryNotAvailable
     redirect_to order_path(Orders::Order.find_by_uid(cmd.order_id)),
-      notice:
-        "Order can not be submitted! Some products are not available."
+      alert:
+        "Order can not be submitted! Some products are not available"
   end
 
   def expire
@@ -86,15 +86,15 @@ class OrdersController < ApplicationController
     ActiveRecord::Base.transaction do
       authorize_payment(params[:id])
       capture_payment(params[:id])
-      flash[:notice] = "Order paid successfully."
+      flash[:notice] = "Order paid successfully"
     rescue Payments::Payment::AlreadyAuthorized
-      flash[:notice] = "Payment was already authorized."
+      flash[:alert] = "Payment was already authorized"
     rescue Payments::Payment::AlreadyCaptured
-      flash[:notice] = "Payment was already captured."
+      flash[:alert] = "Payment was already captured"
     rescue Payments::Payment::NotAuthorized
-      flash[:notice] = "Payment wasn't yet authorized."
+      flash[:alert] = "Payment wasn't yet authorized"
     rescue Ordering::Order::NotSubmitted
-      flash[:notice] = "You can't pay for an order which is not submitted"
+      flash[:alert] = "You can't pay for an order which is not submitted"
     end
     redirect_to orders_path
   end

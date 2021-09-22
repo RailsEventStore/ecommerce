@@ -1,34 +1,36 @@
-<p id="notice"><%= notice %></p>
+<% content_for(:header) do %>
+  Orders
+<% end %>
 
-<h1>Orders</h1>
+<% content_for(:actions) do %>
+  <span class="sm:ml-3">
+    <button type="button" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+      <%= link_to 'Expire orders', expire_orders_path, method: :post %>
+    </button>
+  </span>
+  <span class="sm:ml-3">
+    <button type="button" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+      <%= link_to 'New order', new_order_path %>
+    </button>
+  </span>
+<% end %>
 
-<table class="table mb-5">
+<table class="w-full">
   <thead>
     <tr>
-      <th>Number</th>
-      <th>Customer</th>
-      <th>State</th>
-      <th>History</th>
-      <th>Actions</th>
+      <th class="text-left py-2">Number</th>
+      <th class="text-left py-2">Customer</th>
+      <th class="text-right py-2">State</th>
     </tr>
   </thead>
 
   <tbody>
-    <% @orders.each do |order| %>
-      <tr>
-        <td><%= link_to order.number || 'Not submitted', order_path(order) %></td>
-        <td><%= order.customer %></td>
-        <td><%= order.state %></td>
-        <td><%= order_history_link(order.uid) %></td>
-        <td><%= link_to("Pay", pay_order_path(order.uid), method: :post) %></td>
-      </tr>
-    <% end %>
+  <% @orders.each do |order| %>
+    <tr class="border-t">
+      <td class="py-2"><%= link_to order.number || 'Not submitted', order_path(order), class: "text-blue-500 hover:underline" %></td>
+      <td class="py-2"><%= order.customer %></td>
+      <td class="py-2 text-right"><%= order.state %></td>
+    </tr>
+  <% end %>
   </tbody>
 </table>
-
-
-<%= link_to 'New Order', new_order_path, class: "btn btn-primary" %>
-<%= link_to 'Manage your products', products_path, class: "btn btn-outline-secondary" %>
-<%= link_to 'Manage customers', customers_path, class: "btn btn-outline-secondary" %>
-<%= link_to 'Expire orders', expire_orders_path, class: "btn btn-outline-danger", method: :post %>
-

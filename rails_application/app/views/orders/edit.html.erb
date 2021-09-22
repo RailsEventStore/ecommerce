@@ -1,55 +1,73 @@
-<h1>Edit Order</h1>
+<% content_for(:header) do %>
+  Edit Order
+<% end %>
 
-<table class="table">
+<% content_for(:actions) do %>
+  <span class="sm:ml-3">
+    <button type="button" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+      <%= link_to 'Back', orders_path %>
+    </button>
+  </span>
+  <% unless @order.percentage_discount %>
+  <span class="sm:ml-3">
+    <button type="button" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+      <%= link_to "Edit discount", edit_discount_order_path(@order_id) %>
+    </button>
+  </span>
+  <% end %>
+  <span class="sm:ml-3">
+    <button form="form" type="submit" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+      Submit Order
+    </button>
+  </span>
+<% end %>
+
+<table class="w-full">
   <thead>
-    <tr>
-      <th>Product</th>
-      <th>Quantity</th>
-      <th>Price</th>
-      <th>Value</th>
-      <th/>
-      <th/>
+    <tr class="border-b">
+      <th class="text-left py-2">Product</th>
+      <th class="text-left py-2">Quantity</th>
+      <th class="text-left py-2">Price</th>
+      <th class="text-left py-2" colspan="3">Value</th>
     </tr>
   </thead>
 
   <tbody>
   <% @products.each do |product| %>
-    <tr>
+    <tr class="border-b">
       <% order_line = @order_lines.find{|order_line| order_line.product_id == product.id} %>
-      <td><%= product.name %></td>
-      <td><%= order_line.try(&:quantity) || 0 %></td>
-      <td><%= number_to_currency(order_line.try(&:price)) %></td>
-      <td><%= number_to_currency(order_line.try(&:value)) %></td>
-      <td><%= link_to "Add", add_item_order_path(id: @order_id, product_id: product.id),
-        {method: :post} %></td>
-      <td><%= link_to "Remove", remove_item_order_path(id: @order_id, product_id: product.id),
-        {method: :post} %></td>
+      <td class="py-2"><%= product.name %></td>
+      <td class="py-2"><%= order_line.try(&:quantity) || 0 %></td>
+      <td class="py-2"><%= number_to_currency(order_line.try(&:price)) %></td>
+      <td class="py-2"><%= number_to_currency(order_line.try(&:value)) %></td>
+      <td class="py-2 text-right"><%= link_to "Add", add_item_order_path(id: @order_id, product_id: product.id),
+        {method: :post, class: "hover:underline text-blue-500"  } %></td>
+      <td class="py-2 text-right"><%= link_to "Remove", remove_item_order_path(id: @order_id, product_id: product.id),
+        {method: :post, class: "hover:underline text-blue-500"} %></td>
     </tr>
   <% end %>
   </tbody>
-  <tr>
-    <td>Total:</td>
-    <td colspan="2"></td>
-    <td><strong><%= number_to_currency(@order.discounted_value) %></strong></td>
-  </tr>
+  <tfoot>
+  <% if @order.percentage_discount %>
+    <tr class="border-t">
+      <td class="py-2" colspan="3">Discount</td>
+      <td class="py-2"><%= @order.percentage_discount %>%</td>
+    </tr>
+  <% end %>
+    <tr class="border-t">
+      <td class="py-2" colspan="3">Total</td>
+      <td class="py-2 font-bold"><%= number_to_currency(@order.discounted_value) %></td>
+    </tr>
+  </tfoot>
 </table>
 
-<%= form_tag({controller: "orders", action: "create"}, method: "post") do %>
+<%= form_tag({controller: "orders", action: "create"}, method: "post", id: "form") do %>
   <%= hidden_field_tag(:order_id, @order_id) %>
-  <p>Customer:
-    <%= select_tag(:customer_id, options_from_collection_for_select(@customers, :id, :name)) %>
-  </p>
 
-  <% if @order.percentage_discount %>
-    <p>
-      Discount applied: <%= @order.percentage_discount %> %.
-    </p>
-  <% else %>
-    <p>
-    <%= link_to "Edit discount", edit_discount_order_path(@order_id) %>
-    </p>
-  <% end %>
-
-  <%= submit_tag("Submit order", class: "btn btn-primary") %>
-  <%= link_to 'Back', orders_path, class: "btn btn-default" %>
+  <div class="mt-8">
+    <label for="customer" class="block font-bold">
+      Customer
+    </label>
+    <%= select_tag(:customer_id, options_from_collection_for_select(@customers, :id, :name), id: "customer", class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-sm sm:text-sm border-gray-300 rounded-md") %>
+  </div>
 <% end %>

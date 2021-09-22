@@ -3,6 +3,10 @@ class ProductsController < ApplicationController
     @products = Products::Product.all
   end
 
+  def show
+    @product = Products::Product.find(params[:id])
+  end
+
   def new
     @product_id = SecureRandom.uuid
   end
@@ -14,10 +18,10 @@ class ProductsController < ApplicationController
         set_product_price(params[:product_id], params[:price])
       end
     rescue ProductCatalog::Product::AlreadyRegistered
-      flash[:notice] = "Product was already registered."
+      flash[:notice] = "Product was already registered"
       render "new"
     else
-      redirect_to products_path, notice: "Product was successfully created."
+      redirect_to products_path, notice: "Product was successfully created"
     end
   end
 
