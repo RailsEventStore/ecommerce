@@ -73,7 +73,7 @@ GEM
     arkency-command_bus (0.4.0)
       thread_safe
     ast (2.4.2)
-    bootsnap (1.8.1)
+    bootsnap (1.9.1)
       msgpack (~> 1.0)
     builder (3.2.4)
     byebug (11.1.3)
