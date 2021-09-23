@@ -9,7 +9,7 @@ module ApplicationHelper
   end
 
   def stream_browser_path(stream_name)
-    "/res/streams/#{stream_name}"
+    File.join(ruby_event_store_browser_app_path, "streams", stream_name)
   end
 
   def stream_browser_link(link_name, stream_name, options = {})
