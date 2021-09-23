@@ -1,12 +1,11 @@
 module ApplicationHelper
   def navigation_link(label, path)
-    options =
-      if current_page?(path)
-        { class: "bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium", "aria-current": "page" }
-      else
-        { class: "text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium" }
-      end
-    link_to label, path, options
+    current_link_to label, path,
+      class: class_names(
+        "px-3 py-2 rounded-md text-sm font-medium",
+        "bg-gray-900 text-white" => current_page?(path),
+        "text-gray-300 hover:bg-gray-700 hover:text-white" => !current_page?(path)
+      )
   end
 
   def stream_browser_path(stream_name)
@@ -20,5 +19,18 @@ module ApplicationHelper
 
   def order_history_link(id, options = {})
     stream_browser_link("History", "Orders$#{id}", options)
+  end
+
+  def current_link_to(label, path, **kwargs)
+    link_to(label, path,
+      **kwargs.merge(Hash(({ "aria-current": "page" } if current_page?(path))))
+    )
+  end
+
+  def class_names(*unconditional_classes, **conditional_classes)
+    [
+      *unconditional_classes,
+      *conditional_classes.filter_map { |k, v| k if v }
+    ].join(" ")
   end
 end
