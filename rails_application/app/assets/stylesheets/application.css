@@ -13,3 +13,11 @@
  *= require_tree .
  *= require_self
  */
+
+.bg-link {
+    background-image: linear-gradient(
+            180deg,
+            transparent 70%,
+            rgba(191, 219, 254, 1) 0
+    );
+}
