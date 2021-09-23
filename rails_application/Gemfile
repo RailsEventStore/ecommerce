@@ -10,6 +10,7 @@ gem "honeybadger", "~> 4.0"
 gem "skylight"
 gem "tailwindcss-rails"
 gem "kaminari"
+gem "barnes"
 
 group :development do
   gem "listen", "~> 3.3"

@@ -73,6 +73,9 @@ GEM
     arkency-command_bus (0.4.0)
       thread_safe
     ast (2.4.2)
+    barnes (0.0.9)
+      multi_json (~> 1)
+      statsd-ruby (~> 1.1)
     bootsnap (1.9.1)
       msgpack (~> 1.0)
     builder (3.2.4)
@@ -142,6 +145,7 @@ GEM
     mini_mime (1.1.1)
     minitest (5.14.4)
     msgpack (1.4.2)
+    multi_json (1.15.0)
     mustermann (1.1.1)
       ruby2_keywords (~> 0.0.1)
     mutant (0.10.34)
@@ -240,6 +244,7 @@ GEM
       actionpack (>= 4.0)
       activesupport (>= 4.0)
       sprockets (>= 3.0.0)
+    statsd-ruby (1.5.0)
     tailwindcss-rails (0.4.3)
       rails (>= 6.0.0)
     thor (1.1.0)
@@ -261,6 +266,7 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
+  barnes
   bootsnap (>= 1.4.4)
   byebug
   dotenv-rails
