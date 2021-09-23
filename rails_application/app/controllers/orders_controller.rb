@@ -2,7 +2,7 @@ class OrdersController < ApplicationController
   def index
     @orders =
       Orders::Order
-        .all
+        .order(:id)
         .page(params[:page])
         .per(10)
   end
