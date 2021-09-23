@@ -2,7 +2,7 @@
 <html>
   <head>
     <title>
-      Ecommerce
+      ecommerce
     </title>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
@@ -10,27 +10,10 @@
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "application", media: "all", "data-turbo-track": "reload" %>
     <%= javascript_include_tag "application", "data-turbo-track": "reload" %>
-    <script defer data-domain="ecommerce.arkademy.dev" src="https://plausible.io/js/plausible.js"></script>
+    <%= render 'tracking' %>
   </head>
   <body>
-    <nav class="bg-gray-800">
-      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between h-16">
-          <div class="flex items-center">
-            <div class="flex-shrink-0">
-              <h1 class="text-gray-600 uppercase tracking-tight font-bold">ecommerce</h1>
-            </div>
-            <div class="hidden md:block">
-              <div class="ml-10 flex items-baseline space-x-4">
-                <%= navigation_link "Orders", orders_path %>
-                <%= navigation_link "Products", products_path %>
-                <%= navigation_link "Customers", customers_path %>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </nav>
+    <%= render 'top_navigation' %>
     <header class="bg-white shadow">
       <div class="max-w-6xl mx-auto py-6 px-4 sm:px-6 lg:px-8 lg:flex lg:items-center lg:justify-between">
         <div class="flex-1 min-w-0">
