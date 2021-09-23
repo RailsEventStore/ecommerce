@@ -31,3 +31,13 @@
   <% end %>
   </tbody>
 </table>
+
+
+<div class="mt-8 hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+  <div>
+    <%= page_entries_info @orders %>
+  </div>
+  <div>
+    <%= paginate @orders %>
+  </div>
+</div>
