@@ -14,16 +14,15 @@
               Observe
             </h3>
             <ul role="list" class="mt-4 space-y-4">
+              <%
+                { "Errors"    => "https://app.honeybadger.io/project/9d53P8W1ML",
+                  "Analytics" => "https://plausible.io/ecommerce.arkademy.dev",
+                }.each do |label, url|
+              %>
               <li>
-                <a href="https://app.honeybadger.io/project/9d53P8W1ML" class="text-base text-gray-500 hover:text-gray-900">
-                  Errors
-                </a>
+                <%= link_to label, url, class: "text-base text-gray-500 hover:text-gray-900" %>
               </li>
-              <li>
-                <a href="https://plausible.io/ecommerce.arkademy.dev" class="text-base text-gray-500 hover:text-gray-900">
-                  Analytics
-                </a>
-              </li>
+              <% end %>
             </ul>
           </div>
           <div class="mt-12 md:mt-0">
@@ -31,16 +30,15 @@
               Improve
             </h3>
             <ul role="list" class="mt-4 space-y-4">
+              <%
+                { "Issues"      => "https://github.com/RailsEventStore/ecommerce/issues",
+                  "Source Code" => "https://github.com/RailsEventStore/ecommerce",
+                }.each do |label, url|
+              %>
               <li>
-                <a href="https://github.com/RailsEventStore/ecommerce/issues" class="text-base text-gray-500 hover:text-gray-900">
-                  Issues
-                </a>
+                <%= link_to label, url, class: "text-base text-gray-500 hover:text-gray-900" %>
               </li>
-              <li>
-                <a href="https://github.com/RailsEventStore/ecommerce" class="text-base text-gray-500 hover:text-gray-900">
-                  Source Code
-                </a>
-              </li>
+              <% end %>
             </ul>
           </div>
           <div class="mt-12 md:mt-0">
@@ -48,17 +46,15 @@
               Learn
             </h3>
             <ul role="list" class="mt-4 space-y-4">
+              <%
+                { "DDD as Low-Code" => "https://www.youtube.com/watch?v=yohu6qx8-dU",
+                  "arkademy.dev"    => "https://arkademy.dev",
+                }.each do |label, url|
+              %>
               <li>
-                <a href="https://www.youtube.com/watch?v=yohu6qx8-dU" class="text-base text-gray-500 hover:text-gray-900">
-                  DDD as Low-Code
-                </a>
+                <%= link_to label, url, class: "text-base text-gray-500 hover:text-gray-900" %>
               </li>
-
-              <li>
-                <a href="https://arkademy.dev" class="text-base text-gray-500 hover:text-gray-900">
-                  arkademy.dev
-                </a>
-              </li>
+              <% end %>
             </ul>
           </div>
         </div>
