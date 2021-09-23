@@ -12,7 +12,7 @@
     <%= javascript_include_tag "application", "data-turbo-track": "reload" %>
     <%= render 'tracking' %>
   </head>
-  <body>
+  <body class="bg-gray-100">
     <%= render 'top_navigation' %>
     <header class="bg-white shadow">
       <div class="max-w-6xl mx-auto py-6 px-4 sm:px-6 lg:px-8 lg:flex lg:items-center lg:justify-between">
@@ -26,7 +26,7 @@
         </div>
       </div>
     </header>
-    <main>
+    <main class="bg-white">
       <p class="bg-green-500 text-green-200 text-md text-center leading-loose" id="notice"><%= notice %></p>
       <p class="bg-red-500 text-red-200 text-md text-center leading-loose" id="alert"><%= alert %></p>
       <div class="max-w-6xl mx-auto py-6 sm:px-6 lg:px-8">
@@ -34,4 +34,5 @@
       </div>
     </main>
   </body>
+  <%= render 'footer' %>
 </html>
