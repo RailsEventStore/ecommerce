@@ -1,4 +1,4 @@
 module Inventory
-  class ReservationCompleted < RubyEventStore::Event
+  class ReservationCompleted < Infra::Event
   end
 end

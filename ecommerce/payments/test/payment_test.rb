@@ -12,7 +12,7 @@ module Payments
       assert_changes(
         payment.unpublished_events,
         [
-          PaymentAmountSet.new(order_id: order_id, amount: 20),
+          PaymentAmountSet.new(data: { order_id: order_id, amount: 20 }),
           PaymentAuthorized.new(data: { order_id: order_id })
         ]
       )

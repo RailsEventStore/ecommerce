@@ -1,44 +1,32 @@
 require "active_support/core_ext/hash"
 
 module Infra
-  class Event < Dry::Struct
-    transform_keys(&:to_sym)
+  class Event < RubyEventStore::Event
+    module WithSchema
+      class Schema < Dry::Struct
+        transform_keys(&:to_sym)
+      end
 
-    def self.new(data: {}, metadata: {}, **rest)
-      super(rest.merge(data).merge(metadata: metadata))
+      module ClassMethods
+        extend Forwardable
+        def_delegators :schema, :attribute, :attribute?
+
+        def schema
+          @schema ||= Class.new(Schema)
+        end
+      end
+
+      module Constructor
+        def initialize(event_id: SecureRandom.uuid, metadata: nil, data: {})
+          super(event_id: event_id, metadata: metadata, data: data.deep_merge(self.class.schema.new(data).to_h))
+        end
+      end
+
+      def self.included(klass)
+        klass.extend  WithSchema::ClassMethods
+        klass.include WithSchema::Constructor
+      end
     end
-
-    def self.inherited(klass)
-      super
-      klass.attribute :metadata,
-                      Types
-                        .Constructor(RubyEventStore::Metadata)
-                        .default { RubyEventStore::Metadata.new }
-      klass.attribute :event_id,
-                      Infra::Types::UUID.default { SecureRandom.uuid }
-    end
-
-    def timestamp
-      metadata[:timestamp]
-    end
-
-    def valid_at
-      metadata[:valid_at]
-    end
-
-    def data
-      to_h.except(:event_id, :metadata)
-    end
-
-    def event_type
-      self.class.name
-    end
-
-    def ==(other_event)
-      other_event.instance_of?(self.class) &&
-        other_event.event_id.eql?(event_id) && other_event.data.eql?(data)
-    end
-
-    alias_method :eql?, :==
+    include WithSchema
   end
 end

@@ -1,4 +1,4 @@
 module Inventory
-  class ReservationCanceled < RubyEventStore::Event
+  class ReservationCanceled < Infra::Event
   end
 end
