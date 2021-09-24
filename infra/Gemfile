@@ -1,12 +1,6 @@
 source "https://rubygems.org"
 
-gem "rake"
-gem "dry-struct"
-gem "dry-types"
-gem "rails_event_store",
-    "~> 2.3.0",
-    require: %w[aggregate_root rails_event_store]
-gem "ruby_event_store-transformations"
+gemspec
 
 group :test do
   gem "minitest"

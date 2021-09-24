@@ -1,4 +1,4 @@
-require_relative "../../../infra/lib/infra"
+require "infra"
 require_relative "ordering/events/order_submitted"
 require_relative "ordering/events/order_expired"
 require_relative "ordering/events/order_paid"

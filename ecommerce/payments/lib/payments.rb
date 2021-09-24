@@ -1,4 +1,4 @@
-require_relative "../../../infra/lib/infra"
+require "infra"
 require_relative "payments/commands"
 require_relative "payments/events"
 require_relative "payments/on_set_payment_amount"

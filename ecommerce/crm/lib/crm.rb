@@ -1,4 +1,4 @@
-require_relative "../../../infra/lib/infra"
+require "infra"
 require_relative "crm/commands"
 require_relative "crm/registration"
 require_relative "crm/customer_repository"

@@ -1,3 +1,13 @@
+PATH
+  remote: .
+  specs:
+    infra (1.0.0)
+      dry-struct
+      dry-types
+      rails_event_store (~> 2.3.0)
+      rake
+      ruby_event_store-transformations
+
 GEM
   remote: https://oss:7AXfeZdAfCqL1PvHm2nvDJO6Zd9UW8IK@gem.mutant.dev/
   specs:
@@ -116,14 +126,10 @@ PLATFORMS
   arm64-darwin-20
 
 DEPENDENCIES
-  dry-struct
-  dry-types
+  infra!
   minitest
   mutant-license!
   mutant-minitest
-  rails_event_store (~> 2.3.0)
-  rake
-  ruby_event_store-transformations
 
 BUNDLED WITH
    2.2.26

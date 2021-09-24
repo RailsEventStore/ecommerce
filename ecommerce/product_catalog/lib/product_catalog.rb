@@ -1,4 +1,4 @@
-require_relative "../../../infra/lib/infra"
+require "infra"
 require_relative "product_catalog/commands"
 require_relative "product_catalog/product"
 require_relative "product_catalog/in_memory_product_repository"

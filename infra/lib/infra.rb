@@ -1,10 +1,12 @@
 require "ruby_event_store"
+require "aggregate_root"
 require "arkency/command_bus"
 require "dry-struct"
 require "dry-types"
 require "aggregate_root"
 require "active_support/notifications"
 require "minitest"
+require "ruby_event_store/transformations"
 
 require_relative "infra/command"
 require_relative "infra/command_bus"

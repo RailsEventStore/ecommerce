@@ -1,4 +1,4 @@
-require_relative "../../../infra/lib/infra"
+require "infra"
 require_relative "inventory/commands/adjust_reservation"
 require_relative "inventory/commands/submit_reservation"
 require_relative "inventory/commands/cancel_reservation"
