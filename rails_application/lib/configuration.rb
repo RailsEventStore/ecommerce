@@ -7,6 +7,7 @@ require_relative "../../ecommerce/payments/lib/payments"
 require_relative "../../ecommerce/inventory/lib/inventory"
 require_relative "customer_repository"
 require_relative "product_repository"
+require_relative "number_generator"
 
 class Configuration
   def call(event_store, command_bus)
@@ -19,7 +20,7 @@ class Configuration
     cqrs = Infra::Cqrs.new(event_store, command_bus)
     customer_repository = CustomerRepository.new
     product_repository = ProductRepository.new
-    number_generator = Rails.configuration.number_generator
+    number_generator = ->{ NumberGenerator.new }
     payment_gateway = Rails.configuration.payment_gateway
 
     [
