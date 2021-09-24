@@ -1,10 +1,5 @@
 source "https://rubygems.org"
 
-gemspec
+eval_gemfile "Gemfile.test"
 
-group :test do
-  gem "minitest"
-  gem "mutant-minitest"
-  gem "mutant-license",
-      source: "https://oss:7AXfeZdAfCqL1PvHm2nvDJO6Zd9UW8IK@gem.mutant.dev"
-end
+gemspec

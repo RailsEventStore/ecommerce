@@ -20,7 +20,12 @@ group :development, :test do
   gem "dotenv-rails"
 end
 
+group :test do
+  eval_gemfile "../infra/Gemfile.test"
+end
+
+gem "infra", path: "../infra"
+
 gem "tzinfo-data", platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
-eval_gemfile "../infra/Gemfile"
 

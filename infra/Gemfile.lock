@@ -127,9 +127,9 @@ PLATFORMS
 
 DEPENDENCIES
   infra!
-  minitest
+  minitest!
   mutant-license!
-  mutant-minitest
+  mutant-minitest!
 
 BUNDLED WITH
    2.2.26

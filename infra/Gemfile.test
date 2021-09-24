@@ -1,0 +1,8 @@
+source "https://rubygems.org" do
+  gem "minitest"
+  gem "mutant-minitest"
+end
+
+source "https://oss:7AXfeZdAfCqL1PvHm2nvDJO6Zd9UW8IK@gem.mutant.dev" do
+  gem "mutant-license"
+end
