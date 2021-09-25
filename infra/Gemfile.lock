@@ -1,5 +1,5 @@
 PATH
-  remote: ../../infra
+  remote: .
   specs:
     infra (1.0.0)
       dry-struct
