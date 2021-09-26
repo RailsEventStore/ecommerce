@@ -1,6 +1,6 @@
 class CustomersController < ApplicationController
   def index
-    @customers = CustomerRepository.new.all
+    @customers = Ecommerce::CustomerRepository.new.all
   end
 
   def new

@@ -3,11 +3,11 @@ require_relative "../../ecommerce/product_catalog/lib/product_catalog/product_re
 
 class ProductRepositoryTest < ActiveSupport::TestCase
   include ProductCatalog::ProductRepositoryExamples.for(
-            -> { ProductRepository.new }
+            -> { Ecommerce::ProductRepository.new }
           )
 
   def setup
     super
-    ProductRepository::Record.delete_all
+    Ecommerce::ProductRepository::Record.delete_all
   end
 end

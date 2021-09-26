@@ -14,16 +14,16 @@ class OrdersController < ApplicationController
 
   def new
     @order_id = SecureRandom.uuid
-    @products = ProductRepository.new.all
-    @customers = CustomerRepository.new.all
+    @products = Ecommerce::ProductRepository.new.all
+    @customers = Ecommerce::CustomerRepository.new.all
   end
 
   def edit
     @order_id = params[:id]
     @order = Orders::Order.find_by_uid(params[:id])
     @order_lines = Orders::OrderLine.where(order_uid: params[:id])
-    @products = ProductRepository.new.all
-    @customers = CustomerRepository.new.all
+    @products = Ecommerce::ProductRepository.new.all
+    @customers = Ecommerce::CustomerRepository.new.all
   end
 
   def edit_discount

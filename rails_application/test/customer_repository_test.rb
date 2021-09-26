@@ -2,10 +2,10 @@ require "test_helper"
 require_relative "../../ecommerce/crm/lib/crm/customer_repository_examples"
 
 class CustomerRepositoryTest < ActiveSupport::TestCase
-  include Crm::CustomerRepositoryExamples.for(-> { CustomerRepository.new })
+  include Crm::CustomerRepositoryExamples.for(-> { Ecommerce::CustomerRepository.new })
 
   def setup
     super
-    CustomerRepository::Record.delete_all
+    Ecommerce::CustomerRepository::Record.delete_all
   end
 end
