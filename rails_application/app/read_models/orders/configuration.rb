@@ -18,8 +18,9 @@ module Orders
   end
 
   class Configuration
-    def initialize(product_repository)
+    def initialize(product_repository, customer_repository)
       @product_repository = product_repository
+      @customer_repository = customer_repository
     end
 
     def call(event_store, command_bus)
@@ -72,8 +73,7 @@ module Orders
     def mark_as_submitted(event)
       order = Order.find_or_create_by(uid: event.data.fetch(:order_id))
       order.number = event.data.fetch(:order_number)
-      order.customer =
-        CustomerRepository.new.find(event.data.fetch(:customer_id)).name
+      order.customer = @customer_repository.find(event.data.fetch(:customer_id)).name
       order.state = "Submitted"
       order.save!
     end

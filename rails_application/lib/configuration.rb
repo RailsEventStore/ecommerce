@@ -22,7 +22,7 @@ class Configuration
     payment_gateway = Rails.configuration.payment_gateway
 
     [
-      Orders::Configuration.new(product_repository),
+      Orders::Configuration.new(product_repository, customer_repository),
       Products::Configuration.new(product_repository),
       Ordering::Configuration.new(number_generator),
       Pricing::Configuration.new,
