@@ -1,4 +1,3 @@
-require_relative "../../infra/lib/infra"
 require_relative "../../ecommerce/ordering/lib/ordering"
 require_relative "../../ecommerce/pricing/lib/pricing"
 require_relative "../../ecommerce/product_catalog/lib/product_catalog"
