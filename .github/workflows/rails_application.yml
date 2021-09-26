@@ -81,3 +81,19 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
         if: always()
+
+  release:
+    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+    env:
+      WORKING_DIRECTORY: rails_application
+    needs: [test, mutate]
+    if: ${{ github.ref == 'refs/heads/master' }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: akhileshns/heroku-deploy@v3.12.12
+        with:
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_app_name: "ecommerce-rails"
+          heroku_email: "dev@arkency.com"
