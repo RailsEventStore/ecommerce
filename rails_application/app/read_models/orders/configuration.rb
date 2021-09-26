@@ -18,6 +18,10 @@ module Orders
   end
 
   class Configuration
+    def initialize(product_repository)
+      @product_repository = product_repository
+    end
+
     def call(event_store, command_bus)
       @cqrs = Infra::Cqrs.new(event_store, command_bus)
 
@@ -102,7 +106,7 @@ module Orders
     end
 
     def create(order_uid, product_id)
-      product = ProductRepository.new.find(product_id)
+      product = @product_repository.find(product_id)
       Order
         .find_by(uid: order_uid)
         .order_lines
