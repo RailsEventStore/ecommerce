@@ -158,7 +158,18 @@ module Ecommerce
           )
         end,
         [Pricing::ItemAddedToBasket]
-      )      
+      )
+      cqrs.subscribe(
+        ->(event) do
+          cqrs.run(
+            Shipping::RemoveItemFromShipmentPickingList.new(
+              order_id: event.data.fetch(:order_id),
+              product_id: event.data.fetch(:product_id)
+            )
+          )
+        end,
+        [Pricing::ItemRemovedFromBasket]
+      )           
     end
   end
 end
