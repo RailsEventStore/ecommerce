@@ -4,6 +4,7 @@ require_relative "../../ecommerce/product_catalog/lib/product_catalog"
 require_relative "../../ecommerce/crm/lib/crm"
 require_relative "../../ecommerce/payments/lib/payments"
 require_relative "../../ecommerce/inventory/lib/inventory"
+require_relative "../../ecommerce/shipping/lib/shipping"
 require_relative "customer_repository"
 require_relative "product_repository"
 
@@ -30,7 +31,8 @@ module Ecommerce
         Payments::Configuration.new(payment_gateway),
         ProductCatalog::Configuration.new(product_repository),
         Crm::Configuration.new(customer_repository),
-        Inventory::Configuration.new
+        Inventory::Configuration.new,
+        Shipping::Configuration.new
       ].each { |c| c.call(event_store, command_bus) }
       cqrs.subscribe(
         PaymentProcess.new,
@@ -145,6 +147,18 @@ module Ecommerce
         end,
         [Ordering::OrderExpired]
       )
+
+      cqrs.subscribe(
+        ->(event) do
+          cqrs.run(
+            Shipping::AddItemToShipmentPickingList.new(
+              order_id: event.data.fetch(:order_id),
+              product_id: event.data.fetch(:product_id)
+            )
+          )
+        end,
+        [Pricing::ItemAddedToBasket]
+      )      
     end
   end
 end
