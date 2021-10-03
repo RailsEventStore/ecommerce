@@ -8,6 +8,8 @@ require_relative "shipping/events/item_removed_from_shipment_picking_list"
 require_relative "shipping/services/on_remove_item_from_shipment_picking_list"
 
 require_relative "shipping/shipment"
+require_relative "shipping/picking_list"
+require_relative "shipping/picking_list_item"
 
 module Shipping
   class Configuration
