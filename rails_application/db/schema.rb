@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_09_18_003625) do
+ActiveRecord::Schema.define(version: 2021_10_03_170051) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -69,6 +69,14 @@ ActiveRecord::Schema.define(version: 2021_09_18_003625) do
     t.decimal "price", precision: 8, scale: 2
     t.integer "stock_level"
     t.datetime "registered_at"
+  end
+
+  create_table "shipments", force: :cascade do |t|
+    t.string "order_uid", null: false
+    t.string "address_line_1"
+    t.string "address_line_2"
+    t.string "address_line_3"
+    t.string "address_line_4"
   end
 
 end
