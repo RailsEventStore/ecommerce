@@ -26,6 +26,7 @@ module Ecommerce
       [
         Orders::Configuration.new(product_repository, customer_repository),
         Products::Configuration.new(product_repository),
+        Shipments::Configuration.new,
         Ordering::Configuration.new(number_generator),
         Pricing::Configuration.new,
         Payments::Configuration.new(payment_gateway),
@@ -169,7 +170,7 @@ module Ecommerce
           )
         end,
         [Pricing::ItemRemovedFromBasket]
-      )           
+      )
     end
   end
 end
