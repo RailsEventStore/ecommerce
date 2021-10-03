@@ -1,5 +1,5 @@
 module Shipping
-  class OnAddItemToShipmentPickingList
+  class OnAddShippingAddressToShipment
     def initialize(event_store)
       @repository = AggregateRoot::Repository.new(event_store)
     end
@@ -9,8 +9,12 @@ module Shipping
         Shipment.new(command.order_id),
         "Shipping::Shipment$#{command.order_id}"
       ) do |shipment|
-        address =
-        shipment.add_address(address)
+        shipment.add_address(
+          command.line_1,
+          command.line_2,
+          command.line_3,
+          command.line_4
+        )
       end
     end
   end
