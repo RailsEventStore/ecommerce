@@ -11,6 +11,10 @@
     <%= link_to "Edit discount", edit_discount_order_path(@order_id) %>
   <% end unless @order.percentage_discount %>
 
+  <%= secondary_action_button do %>
+    <%= link_to "Edit Shipping Address", new_order_shipping_address_path(@order_id) %>
+  <% end %>
+
   <%= primary_form_action_button do %>
     Submit Order
   <% end %>
