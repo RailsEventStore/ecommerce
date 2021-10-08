@@ -42,6 +42,7 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
         if: always()
+        continue-on-error: true
 
   mutate:
     runs-on: ubuntu-20.04
@@ -81,6 +82,7 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
         if: always()
+        continue-on-error: true
 
   release:
     runs-on: ubuntu-20.04
