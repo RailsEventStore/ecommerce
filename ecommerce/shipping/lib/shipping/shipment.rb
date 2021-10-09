@@ -1,6 +1,7 @@
 module Shipping
   class Shipment
     include AggregateRoot
+    attr_reader :state, :shipping_address
 
     ItemNotFound = Class.new(StandardError)
 
@@ -8,7 +9,6 @@ module Shipping
       @order_id = order_id
       @picking_list = PickingList.new
       @state = :draft
-      @shipping_address = nil
     end
 
     def add_item(product_id)
@@ -54,13 +54,12 @@ module Shipping
     end
 
     on ShippingAddressAddedToShipment do |event|
-      address = PostalAddress.new(
+      @shipping_address = PostalAddress.new(
         line_1: event.data.fetch(:line_1),
         line_2: event.data.fetch(:line_2),
         line_3: event.data.fetch(:line_3),
         line_4: event.data.fetch(:line_4)
       )
-      @shipping_address = address
     end
 
     def has_item?(product_id)
