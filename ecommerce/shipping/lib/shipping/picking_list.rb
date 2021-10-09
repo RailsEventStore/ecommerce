@@ -21,15 +21,15 @@ module Shipping
       find_item(product_id)
     end
 
-    private
-
     def find_or_add_item(product_id)
       find_item(product_id) || add_item(product_id)
     end
 
     def find_item(product_id)
-      items.find {|i| i.product_id == product_id }
+      items.find {|i| i.product_id === product_id }
     end
+
+    private
 
     def add_item(product_id)
       item = PickingListItem.new(product_id)
