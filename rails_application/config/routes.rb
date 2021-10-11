@@ -19,5 +19,6 @@ Rails.application.routes.draw do
   end
   resources :customers, only: [:new, :create, :index]
 
+  match("architecture", to: "architecture#index", via: :get)
   mount RailsEventStore::Browser => "/res"
 end

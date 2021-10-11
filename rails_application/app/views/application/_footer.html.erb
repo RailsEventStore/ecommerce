@@ -16,10 +16,11 @@
             </h3>
             <ul role="list" class="mt-4 space-y-4">
               <%
-                { "Errors"      => "https://app.honeybadger.io/project/9d53P8W1ML",
-                  "Analytics"   => "https://plausible.io/ecommerce.arkademy.dev",
-                  "Events"      => ruby_event_store_browser_app_path,
-                  "Performance" => "https://oss.skylight.io/app/applications/pTvtzqO3cOxV/recent/6h/endpoints"
+                { "Errors"       => "https://app.honeybadger.io/project/9d53P8W1ML",
+                  "Analytics"    => "https://plausible.io/ecommerce.arkademy.dev",
+                  "Events"       => ruby_event_store_browser_app_path,
+                  "Architecture" => architecture_path,
+                  "Performance"  => "https://oss.skylight.io/app/applications/pTvtzqO3cOxV/recent/6h/endpoints"
                 }.each do |label, url|
               %>
               <li>
