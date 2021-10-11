@@ -25,6 +25,14 @@
   <dd class="mb-2"><%= @order.customer || "None" %></dd>
   <dt class="font-bold">State</dt>
   <dd class="mb-2"><%= @order.state %></dd>
+  <dt class="font-bold">Shipping Details</dt>
+  <dd class="mb-2">
+    <% unless @shipment %>
+      Shipping addres is missing. <%= link_to "Add", new_order_shipping_address_path(@order.uid) %>
+    <% else %>
+      Your shipment has been queued for processing.
+    <% end %>
+  </dd>
 </dl>
 
 <table class="w-full">
