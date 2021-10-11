@@ -4,8 +4,7 @@ module Shipments
   end
 
   class Configuration
-    def call(event_store, command_bus)
-      cqrs = Infra::Cqrs.new(event_store, command_bus)
+    def call(cqrs)
       cqrs.subscribe(
         ->(event) { set_shipping_address(event) },
         [Shipping::ShippingAddressAddedToShipment]

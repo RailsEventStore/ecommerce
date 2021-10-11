@@ -9,32 +9,30 @@ require_relative "pricing/pricing_catalog"
 
 module Pricing
   class Configuration
-    def call(event_store, command_bus)
-      cqrs = Infra::Cqrs.new(event_store, command_bus)
-
+    def call(cqrs)
       cqrs.register_command(
         AddItemToBasket,
-        OnAddItemToBasket.new(event_store),
+        OnAddItemToBasket.new(cqrs.event_store),
         ItemAddedToBasket
       )
       cqrs.register_command(
         RemoveItemFromBasket,
-        OnRemoveItemFromBasket.new(event_store),
+        OnRemoveItemFromBasket.new(cqrs.event_store),
         ItemRemovedFromBasket
       )
       cqrs.register_command(
         SetPrice,
-        SetPriceHandler.new(event_store),
+        SetPriceHandler.new(cqrs.event_store),
         PriceSet
       )
       cqrs.register_command(
         CalculateTotalValue,
-        OnCalculateTotalValue.new(event_store),
+        OnCalculateTotalValue.new(cqrs.event_store),
         OrderTotalValueCalculated
       )
       cqrs.register_command(
         SetPercentageDiscount,
-        SetPercentageDiscountHandler.new(event_store),
+        SetPercentageDiscountHandler.new(cqrs.event_store),
         PercentageDiscountSet
       )
       cqrs.subscribe(

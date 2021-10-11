@@ -8,8 +8,7 @@ module Products
       @product_repository = product_repository
     end
 
-    def call(event_store, command_bus)
-      cqrs = Infra::Cqrs.new(event_store, command_bus)
+    def call(cqrs)
       cqrs.subscribe(
         ->(event) { change_stock_level(event) },
         [Inventory::StockLevelChanged]

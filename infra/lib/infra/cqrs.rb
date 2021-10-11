@@ -1,5 +1,7 @@
 module Infra
   class Cqrs
+    attr_reader :event_store
+
     def initialize(event_store, command_bus)
       @event_store = event_store
       @command_bus = command_bus
@@ -8,6 +10,10 @@ module Infra
 
     def subscribe(subscriber, events)
       @event_store.subscribe(subscriber, to: events)
+    end
+
+    def subscribe_to_all_events(handler)
+      @event_store.subscribe_to_all_events(handler)
     end
 
     def register_command(command, command_handler, events)

@@ -11,7 +11,7 @@ module Shipping
       super
       [
         Shipping::Configuration.new
-      ].each { |c| c.call(event_store, command_bus) }
+      ].each { |c| c.call(cqrs) }
     end
   end
 end

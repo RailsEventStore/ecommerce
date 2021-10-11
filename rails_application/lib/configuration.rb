@@ -10,14 +10,13 @@ require_relative "product_repository"
 
 module Ecommerce
   class Configuration
-    def call(event_store, command_bus)
+    def call(cqrs)
       [
         RailsEventStore::LinkByEventType.new,
         RailsEventStore::LinkByCorrelationId.new,
         RailsEventStore::LinkByCausationId.new
-      ].each { |h| event_store.subscribe_to_all_events(h) }
+      ].each { |h| cqrs.subscribe_to_all_events(h) }
 
-      cqrs = Infra::Cqrs.new(event_store, command_bus)
       customer_repository = CustomerRepository.new
       product_repository = ProductRepository.new
       number_generator = Rails.configuration.number_generator
@@ -34,7 +33,7 @@ module Ecommerce
         Crm::Configuration.new(customer_repository),
         Inventory::Configuration.new,
         Shipping::Configuration.new
-      ].each { |c| c.call(event_store, command_bus) }
+      ].each { |c| c.call(cqrs) }
       cqrs.subscribe(
         PaymentProcess.new,
         [

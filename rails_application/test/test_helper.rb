@@ -16,8 +16,7 @@ module Ecommerce
       Rails.configuration.command_bus = Arkency::CommandBus.new
 
       Configuration.new.call(
-        Rails.configuration.event_store,
-        Rails.configuration.command_bus
+        Infra::Cqrs.new(Rails.configuration.event_store, Rails.configuration.command_bus)
       )
       result
     end
@@ -52,8 +51,7 @@ module Ecommerce
       Rails.configuration.command_bus = Arkency::CommandBus.new
 
       Configuration.new.call(
-        Rails.configuration.event_store,
-        Rails.configuration.command_bus
+        Infra::Cqrs.new(Rails.configuration.event_store, Rails.configuration.command_bus)
       )
       result
     end

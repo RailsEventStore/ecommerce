@@ -11,8 +11,7 @@ module ProductCatalog
       @product_repository = product_repository
     end
 
-    def call(event_store, command_bus)
-      cqrs = Infra::Cqrs.new(event_store, command_bus)
+    def call(cqrs)
       cqrs.register(RegisterProduct, Registration.new(@product_repository))
     end
   end

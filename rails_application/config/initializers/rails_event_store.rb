@@ -23,9 +23,8 @@ module Ecommerce
     Rails.configuration.event_store =
       RailsEventStore::Client.new(repository: repository, mapper: Mapper.new)
     Rails.configuration.command_bus = Arkency::CommandBus.new
-    Configuration.new.call(
-      Rails.configuration.event_store,
-      Rails.configuration.command_bus
-    )
+
+    cqrs = Infra::Cqrs.new(Rails.configuration.event_store, Rails.configuration.command_bus)
+    Configuration.new.call(cqrs)
   end
 end

@@ -16,7 +16,7 @@ module Ordering
         ProductCatalog::Configuration.new,
         Pricing::Configuration.new,
         Crm::Configuration.new
-      ].each { |c| c.call(event_store, command_bus) }
+      ].each { |c| c.call(cqrs) }
     end
   end
 end

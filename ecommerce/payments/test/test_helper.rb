@@ -20,7 +20,7 @@ module Payments
         Pricing::Configuration.new,
         Ordering::Configuration.new(-> { Ordering::FakeNumberGenerator.new }),
         Crm::Configuration.new
-      ].each { |c| c.call(event_store, command_bus) }
+      ].each { |c| c.call(cqrs) }
 
       cqrs.subscribe(
         ->(event) do

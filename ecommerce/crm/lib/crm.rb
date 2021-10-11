@@ -10,8 +10,7 @@ module Crm
       @repository = repository
     end
 
-    def call(event_store, command_bus)
-      cqrs = Infra::Cqrs.new(event_store, command_bus)
+    def call(cqrs)
       cqrs.register(RegisterCustomer, Registration.new(@repository))
     end
   end

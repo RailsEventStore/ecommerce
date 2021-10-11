@@ -23,8 +23,8 @@ module Orders
       @customer_repository = customer_repository
     end
 
-    def call(event_store, command_bus)
-      @cqrs = Infra::Cqrs.new(event_store, command_bus)
+    def call(cqrs)
+      @cqrs = cqrs
 
       subscribe(
         ->(event) { mark_as_submitted(event) },

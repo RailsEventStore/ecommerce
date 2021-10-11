@@ -14,7 +14,7 @@ module Pricing
       [
         Configuration.new,
         ProductCatalog::Configuration.new(product_repository)
-      ].each { |c| c.call(event_store, command_bus) }
+      ].each { |c| c.call(cqrs) }
       cqrs.subscribe(
         ProductCatalog::AssignPriceToProduct.new(product_repository),
         [Pricing::PriceSet]

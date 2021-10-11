@@ -9,7 +9,7 @@ module Inventory
 
     def before_setup
       super
-      Configuration.new.call(event_store, command_bus)
+      Configuration.new.call(cqrs)
     end
 
     private

@@ -14,16 +14,14 @@ module Payments
       @gateway = gateway
     end
 
-    def call(event_store, command_bus)
-      cqrs = Infra::Cqrs.new(event_store, command_bus)
-
+    def call(cqrs)
       cqrs.register(
         AuthorizePayment,
-        OnAuthorizePayment.new(event_store, @gateway)
+        OnAuthorizePayment.new(cqrs.event_store, @gateway)
       )
-      cqrs.register(CapturePayment, OnCapturePayment.new(event_store))
-      cqrs.register(ReleasePayment, OnReleasePayment.new(event_store))
-      cqrs.register(SetPaymentAmount, OnSetPaymentAmount.new(event_store))
+      cqrs.register(CapturePayment, OnCapturePayment.new(cqrs.event_store))
+      cqrs.register(ReleasePayment, OnReleasePayment.new(cqrs.event_store))
+      cqrs.register(SetPaymentAmount, OnSetPaymentAmount.new(cqrs.event_store))
     end
   end
 end

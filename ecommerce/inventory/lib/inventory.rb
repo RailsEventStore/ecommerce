@@ -18,11 +18,9 @@ require_relative "inventory/reservation"
 
 module Inventory
   class Configuration
-    def call(event_store, command_bus)
-      cqrs = Infra::Cqrs.new(event_store, command_bus)
-
-      reservation = ReservationService.new(event_store)
-      inventory = InventoryEntryService.new(event_store)
+    def call(cqrs)
+      reservation = ReservationService.new(cqrs.event_store)
+      inventory = InventoryEntryService.new(cqrs.event_store)
 
       cqrs.register(
         AdjustReservation,

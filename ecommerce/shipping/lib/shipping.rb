@@ -18,20 +18,18 @@ require_relative "shipping/postal_address"
 
 module Shipping
   class Configuration
-    def call(event_store, command_bus)
-      cqrs = Infra::Cqrs.new(event_store, command_bus)
-
+    def call(cqrs)
       cqrs.register(
         AddItemToShipmentPickingList,
-        OnAddItemToShipmentPickingList.new(event_store)
+        OnAddItemToShipmentPickingList.new(cqrs.event_store)
       )
       cqrs.register(
         RemoveItemFromShipmentPickingList,
-        OnRemoveItemFromShipmentPickingList.new(event_store)
+        OnRemoveItemFromShipmentPickingList.new(cqrs.event_store)
       )
       cqrs.register(
         AddShippingAddressToShipment,
-        OnAddShippingAddressToShipment.new(event_store)
+        OnAddShippingAddressToShipment.new(cqrs.event_store)
       )
     end
   end
