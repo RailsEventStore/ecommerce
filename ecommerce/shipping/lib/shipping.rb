@@ -11,6 +11,14 @@ require_relative "shipping/commands/add_shipping_address_to_shipment"
 require_relative "shipping/events/shipping_address_added_to_shipment"
 require_relative "shipping/services/on_add_shipping_address_to_shipment"
 
+require_relative "shipping/commands/submit_shipment"
+require_relative "shipping/events/shipment_submitted"
+require_relative "shipping/services/on_submit_shipment"
+
+require_relative "shipping/commands/authorize_shipment"
+require_relative "shipping/events/shipment_authorized"
+require_relative "shipping/services/on_authorize_shipment"
+
 require_relative "shipping/shipment"
 require_relative "shipping/picking_list"
 require_relative "shipping/picking_list_item"
@@ -30,6 +38,14 @@ module Shipping
       cqrs.register(
         AddShippingAddressToShipment,
         OnAddShippingAddressToShipment.new(cqrs.event_store)
+      )
+      cqrs.register(
+        SubmitShipment,
+        OnSubmitShipment.new(event_store)
+      )
+      cqrs.register(
+        AuthorizeShipment,
+        OnAuthorizeShipment.new(event_store)
       )
     end
   end

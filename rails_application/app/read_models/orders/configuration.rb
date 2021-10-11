@@ -35,7 +35,7 @@ module Orders
         [Ordering::OrderExpired]
       )
       subscribe(
-        ->(event) { change_order_state(event, "Ready to ship (paid)") },
+        ->(event) { change_order_state(event, "Paid") },
         [Ordering::OrderPaid]
       )
       subscribe(

@@ -170,6 +170,16 @@ module Ecommerce
         end,
         [Pricing::ItemRemovedFromBasket]
       )
+
+      cqrs.subscribe(
+        ShipmentProcess.new,
+        [
+          Shipping::ShippingAddressAddedToShipment,
+          Shipping::ShipmentSubmitted,
+          Ordering::OrderSubmitted,
+          Ordering::OrderPaid
+        ]
+      )
     end
   end
 end

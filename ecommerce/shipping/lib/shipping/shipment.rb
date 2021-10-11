@@ -4,6 +4,9 @@ module Shipping
     attr_reader :state, :shipping_address
 
     ItemNotFound = Class.new(StandardError)
+    ShippingAddressMissing = Class.new(StandardError)
+    NotSubmitted = Class.new(StandardError)
+    AlreadySubmitted = Class.new(StandardError)
 
     def initialize(order_id)
       @order_id = order_id
@@ -43,6 +46,28 @@ module Shipping
       )
     end
 
+    def submit
+      raise AlreadySubmitted if @state.equal?(:submitted)
+      raise ShippingAddressMissing unless @state.equal?(:address_set)
+
+      apply ShipmentSubmitted.new(
+        data: {
+          order_id: @order_id
+        }
+      )
+    end
+
+    def authorize
+      raise AlreadyAuthorized if @state.equal?(:authorized)
+      raise NotSubmitted unless @state.equal?(:submitted)
+
+      apply ShipmentAuthorized.new(
+        data: {
+          order_id: @order_id
+        }
+      )
+    end
+
     private
 
     on ItemAddedToShipmentPickingList do |event|
@@ -60,6 +85,15 @@ module Shipping
         line_3: event.data.fetch(:line_3),
         line_4: event.data.fetch(:line_4)
       )
+      @state = :address_set
+    end
+
+    on ShipmentSubmitted do |event|
+      @state = :submitted
+    end
+
+    on ShipmentAuthorized do |event|
+      @state = :authorized
     end
 
     def has_item?(product_id)
