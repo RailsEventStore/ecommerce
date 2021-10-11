@@ -1,5 +1,5 @@
 class ArchitectureController < ApplicationController
   def index
-    @cqrs = Infra::Cqrs
+    @cqrs = Rails.configuration.cqrs
   end
 end

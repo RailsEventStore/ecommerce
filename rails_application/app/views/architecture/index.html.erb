@@ -1,1 +1,10 @@
-<h1>Ecommerce Architecture</h1>
+<p>
+  <ul>
+    <% @cqrs.to_hash.each do |command, event| %>
+      <li>
+        <%=command.class %>
+
+      </li>
+    <% end %>
+  </ul>
+</p>
