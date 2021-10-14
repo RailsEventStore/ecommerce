@@ -15,6 +15,16 @@ module Pricing
     attribute :amount, Infra::Types::Price
   end
 
+  class ItemAddedToBasket < Infra::Event
+    attribute :order_id, Infra::Types::UUID
+    attribute :product_id, Infra::Types::UUID
+  end
+
+  class ItemRemovedFromBasket < Infra::Event
+    attribute :order_id, Infra::Types::UUID
+    attribute :product_id, Infra::Types::UUID
+  end
+
   class PercentageDiscountReset < Infra::Event
   end
 end
