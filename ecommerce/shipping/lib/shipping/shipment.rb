@@ -7,6 +7,7 @@ module Shipping
     ShippingAddressMissing = Class.new(StandardError)
     NotSubmitted = Class.new(StandardError)
     AlreadySubmitted = Class.new(StandardError)
+    AlreadyAuthorized = Class.new(StandardError)
 
     def initialize(order_id)
       @order_id = order_id
@@ -47,8 +48,8 @@ module Shipping
     end
 
     def submit
-      raise AlreadySubmitted if @state.equal?(:submitted)
-      raise ShippingAddressMissing unless @state.equal?(:address_set)
+      raise AlreadySubmitted if state.equal?(:submitted)
+      raise ShippingAddressMissing unless state.equal?(:address_set)
 
       apply ShipmentSubmitted.new(
         data: {
@@ -58,8 +59,8 @@ module Shipping
     end
 
     def authorize
-      raise AlreadyAuthorized if @state.equal?(:authorized)
-      raise NotSubmitted unless @state.equal?(:submitted)
+      raise AlreadyAuthorized if state.equal?(:authorized)
+      raise NotSubmitted unless state.equal?(:submitted)
 
       apply ShipmentAuthorized.new(
         data: {

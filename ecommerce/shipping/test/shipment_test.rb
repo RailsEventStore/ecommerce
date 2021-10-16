@@ -83,6 +83,77 @@ module Shipping
       )
     end
 
+    def test_submit_shipment_publishes_event
+      product_id = SecureRandom.uuid
+      shipment = Shipment.new(order_id)
+
+      shipment.add_address(
+        "Mme Anna Kowalska",
+        "Ul. Bosmanska 1",
+        "81-116 GDYNIA",
+        "POLAND"
+      )
+      shipment.submit
+
+      assert_changes(
+        shipment.unpublished_events,
+        [
+          ShippingAddressAddedToShipment.new(
+            data: {
+              order_id: order_id,
+              line_1: "Mme Anna Kowalska",
+              line_2: "Ul. Bosmanska 1",
+              line_3: "81-116 GDYNIA",
+              line_4: "POLAND"
+            }
+          ),
+          ShipmentSubmitted.new(
+            data: {
+              order_id: order_id
+            }
+          )
+        ]
+      )
+    end
+    def test_authorize_shipment_publishes_event
+      product_id = SecureRandom.uuid
+      shipment = Shipment.new(order_id)
+
+      shipment.add_address(
+        "Mme Anna Kowalska",
+        "Ul. Bosmanska 1",
+        "81-116 GDYNIA",
+        "POLAND"
+      )
+      shipment.submit
+      shipment.authorize
+
+      assert_changes(
+        shipment.unpublished_events,
+        [
+          ShippingAddressAddedToShipment.new(
+            data: {
+              order_id: order_id,
+              line_1: "Mme Anna Kowalska",
+              line_2: "Ul. Bosmanska 1",
+              line_3: "81-116 GDYNIA",
+              line_4: "POLAND"
+            }
+          ),
+          ShipmentSubmitted.new(
+            data: {
+              order_id: order_id
+            }
+          ),
+          ShipmentAuthorized.new(
+            data: {
+              order_id: order_id
+            }
+          )
+        ]
+      )
+    end
+
     def test_default_state_is_draft
       shipment = Shipment.new(order_id)
 
