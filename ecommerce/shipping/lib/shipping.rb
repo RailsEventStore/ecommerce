@@ -41,11 +41,11 @@ module Shipping
       )
       cqrs.register(
         SubmitShipment,
-        OnSubmitShipment.new(event_store)
+        OnSubmitShipment.new(cqrs.event_store)
       )
       cqrs.register(
         AuthorizeShipment,
-        OnAuthorizeShipment.new(event_store)
+        OnAuthorizeShipment.new(cqrs.event_store)
       )
     end
   end
