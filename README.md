@@ -1,6 +1,6 @@
 # ecommerce
 
-Application with CQRS and Event Sourcing built on Rails and [Rails Event Store](https://railseventstore.org). 
+Application with CQRS and Event Sourcing built on Rails and [Rails Event Store](https://railseventstore.org).
 
 👉 [ecommerce.arkademy.dev](https://ecommerce.arkademy.dev)
 
@@ -17,6 +17,7 @@ ecommerce/
 ├── payments
 ├── pricing
 └── product_catalog
+└── shipping
 ```
 
 Each one has a README introduction:
@@ -27,7 +28,7 @@ Each one has a README introduction:
 * [Payments](ecommerce/payments/README.md)
 * [Pricing](ecommerce/pricing/README.md)
 * [Product Catalog](ecommerce/product_catalog/README.md)
-
+* [Shipping](ecommerce/shipping/README.md)
 
 ## Application
 
@@ -45,7 +46,7 @@ The customer perspective is "simulated" only - via using the select box.
 
 - Add/remove some of the existing products to the order
 - Choose the customer
-- Submit the order 
+- Submit the order
   - after this you can't update the order items or customer
   - it generates the order number like "2021/03/20" (the last part is random(100))
 - Look at the order
