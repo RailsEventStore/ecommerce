@@ -94,7 +94,7 @@ class OrdersTest < Ecommerce::InMemoryRESIntegrationTestCase
     get "/orders"
     post "/orders/#{order_id}/pay"
     follow_redirect!
-    assert_select("td", text: "Ready to ship (paid)")
+    assert_select("td", text: "Paid")
     assert_payment_gateway_value(123.30)
     assert_res_browser_order_history
   end

@@ -45,7 +45,7 @@ class OrderConfirmationTest < Ecommerce::InMemoryTestCase
       Payments::CapturePayment.new(order_id: order_id)
     ].each { |cmd| Rails.configuration.command_bus.call(cmd) }
     assert_equal(
-      "Ready to ship (paid)",
+      "Paid",
       Orders::Order.find_by_uid(order_id).state
     )
   end
