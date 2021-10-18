@@ -1,7 +1,7 @@
 module Shipping
   class Shipment
     include AggregateRoot
-    attr_reader :state, :shipping_address
+    attr_reader :state
 
     ItemNotFound = Class.new(StandardError)
     ShippingAddressMissing = Class.new(StandardError)
@@ -70,6 +70,8 @@ module Shipping
     end
 
     private
+
+    attr_reader :shipping_address
 
     on ItemAddedToShipmentPickingList do |event|
       @picking_list.increase_item_quantity(event.data.fetch(:product_id))
