@@ -57,7 +57,6 @@ module Shipping
     end
 
     def test_add_address_publishes_event
-      product_id = SecureRandom.uuid
       shipment = Shipment.new(order_id)
 
       shipment.add_address(
@@ -84,7 +83,6 @@ module Shipping
     end
 
     def test_submit_shipment_publishes_event
-      product_id = SecureRandom.uuid
       shipment = Shipment.new(order_id)
 
       shipment.add_address(
@@ -116,7 +114,6 @@ module Shipping
       )
     end
     def test_authorize_shipment_publishes_event
-      product_id = SecureRandom.uuid
       shipment = Shipment.new(order_id)
 
       shipment.add_address(
