@@ -15,5 +15,6 @@ module Infra
     Price = Types::Coercible::Decimal.constrained(gt: 0)
     Value = Types::Coercible::Decimal
     PercentageDiscount = Types::Coercible::Decimal.constrained(gt: 0, lt: 100)
+    UUIDQuantityHash = Types::Hash.map(UUID, Types::Strict::Integer)
   end
 end

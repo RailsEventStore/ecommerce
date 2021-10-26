@@ -44,11 +44,11 @@ module Orders
       )
       subscribe(
         ->(event) { add_item_to_order(event) },
-        [Pricing::ItemAddedToBasket]
+        [Ordering::ItemAddedToBasket]
       )
       subscribe(
         ->(event) { remove_item_from_order(event) },
-        [Pricing::ItemRemovedFromBasket]
+        [Ordering::ItemRemovedFromBasket]
       )
       subscribe(
         ->(event) { update_discount(event) },

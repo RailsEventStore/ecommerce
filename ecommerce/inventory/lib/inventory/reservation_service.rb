@@ -4,21 +4,15 @@ module Inventory
       @repository = Infra::AggregateRootRepository.new(event_store)
     end
 
-    def adjust_reservation(command)
-      with_reservation(command.order_id) do |reservation|
-        reservation.adjust(command.product_id, command.quantity)
-      end
-    end
-
     def submit_reservation(command)
       with_reservation(command.order_id) do |reservation|
-        reserved_items = []
-        reservation.reservation_items.each do |item|
-          with_inventory_entry(item.product_id) do |entry|
-            entry.reserve(item.quantity)
+        reserved_items = {}
+        command.reservation_items.each do |product_id, quantity|
+          with_inventory_entry(product_id) do |entry|
+            entry.reserve(quantity)
           rescue InventoryEntry::StockLevelUndefined
           else
-            reserved_items << item
+            reserved_items[product_id] = quantity
           end
         end
         reservation.submit reserved_items
@@ -45,8 +39,8 @@ module Inventory
               entry.release(item.quantity)
             end
           end
+          reservation.cancel
         end
-        reservation.cancel
       end
     end
 

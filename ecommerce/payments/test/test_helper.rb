@@ -33,6 +33,41 @@ module Payments
         end,
         [Pricing::OrderTotalValueCalculated]
       )
+
+      cqrs.subscribe(
+        ->(event) do
+          cqrs.run(
+            Pricing::AddPriceItem.new(
+              order_id: event.data.fetch(:order_id),
+              product_id: event.data.fetch(:product_id)
+            )
+          )
+        end,
+        [Ordering::ItemAddedToBasket]
+      )
+
+      cqrs.subscribe(
+        ->(event) do
+          cqrs.run(
+            Pricing::RemovePriceItem.new(
+              order_id: event.data.fetch(:order_id),
+              product_id: event.data.fetch(:product_id)
+            )
+          )
+        end,
+        [Ordering::ItemRemovedFromBasket]
+      )
+
+      cqrs.subscribe(
+        ->(event) do
+          cqrs.run(
+            Pricing::CalculateTotalValue.new(
+              order_id: event.data.fetch(:order_id)
+            )
+          )
+        end,
+        [Ordering::OrderSubmitted]
+      )
     end
   end
 end

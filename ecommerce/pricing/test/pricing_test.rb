@@ -84,7 +84,7 @@ module Pricing
 
     def add_item(order_id, product_id)
       run_command(
-        AddItemToBasket.new(order_id: order_id, product_id: product_id)
+        AddPriceItem.new(order_id: order_id, product_id: product_id)
       )
     end
 

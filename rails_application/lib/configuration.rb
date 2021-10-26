@@ -20,6 +20,7 @@ module Ecommerce
 
       enable_release_payment_process(cqrs)
       enable_order_confirmation_process(cqrs)
+      enable_pricing_sync_from_ordering(cqrs)
       calculate_total_value_when_order_submitted(cqrs)
       notify_payments_about_order_total_value(cqrs)
       enable_inventory_sync_from_ordering(cqrs)
@@ -113,34 +114,9 @@ module Ecommerce
       cqrs.subscribe(
         ->(event) do
           cqrs.run(
-            Inventory::AdjustReservation.new(
-              order_id: event.data.fetch(:order_id),
-              product_id: event.data.fetch(:product_id),
-              quantity: 1
-            )
-          )
-        end,
-        [Pricing::ItemAddedToBasket]
-      )
-
-      cqrs.subscribe(
-        ->(event) do
-          cqrs.run(
-            Inventory::AdjustReservation.new(
-              order_id: event.data.fetch(:order_id),
-              product_id: event.data.fetch(:product_id),
-              quantity: -1
-            )
-          )
-        end,
-        [Pricing::ItemRemovedFromBasket]
-      )
-
-      cqrs.subscribe(
-        ->(event) do
-          cqrs.run(
             Inventory::SubmitReservation.new(
-              order_id: event.data.fetch(:order_id)
+              order_id: event.data.fetch(:order_id),
+              reservation_items: event.data.fetch(:order_lines)
             )
           )
         end,
@@ -166,18 +142,33 @@ module Ecommerce
             )
           )
         end,
-        [Ordering::OrderCancelled]
+        [Ordering::OrderCancelled, Ordering::OrderExpired]
+      )
+    end
+
+    def enable_pricing_sync_from_ordering(cqrs)
+      cqrs.subscribe(
+        ->(event) do
+          cqrs.run(
+            Pricing::AddPriceItem.new(
+              order_id: event.data.fetch(:order_id),
+              product_id: event.data.fetch(:product_id)
+            )
+          )
+        end,
+        [Ordering::ItemAddedToBasket]
       )
 
       cqrs.subscribe(
         ->(event) do
           cqrs.run(
-            Inventory::CancelReservation.new(
-              order_id: event.data.fetch(:order_id)
+            Pricing::RemovePriceItem.new(
+              order_id: event.data.fetch(:order_id),
+              product_id: event.data.fetch(:product_id)
             )
           )
         end,
-        [Ordering::OrderExpired]
+        [Ordering::ItemRemovedFromBasket]
       )
     end
 

@@ -21,11 +21,11 @@ class OrderingInventoryTest < Ecommerce::RealRESIntegrationTestCase
       ),
       Pricing::SetPrice.new(product_id: product_id, price: 39),
       Inventory::Supply.new(product_id: product_id, quantity: 1),
-      Pricing::AddItemToBasket.new(
+      Ordering::AddItemToBasket.new(
         order_id: aggregate_id,
         product_id: product_id
       ),
-      Pricing::AddItemToBasket.new(
+      Ordering::AddItemToBasket.new(
         order_id: aggregate_id,
         product_id: product_id
       )

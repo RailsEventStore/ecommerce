@@ -26,16 +26,8 @@ module Inventory
       Supply.new(product_id: product_id, quantity: quantity)
     end
 
-    def adjust_reservation(order_id, product_id, quantity)
-      AdjustReservation.new(
-        order_id: order_id,
-        product_id: product_id,
-        quantity: quantity
-      )
-    end
-
-    def submit_reservation(order_id)
-      SubmitReservation.new(order_id: order_id)
+    def submit_reservation(order_id, uuid_quantity_hash = {})
+      SubmitReservation.new(order_id: order_id, reservation_items: uuid_quantity_hash)
     end
 
     def cancel_reservation(order_id)

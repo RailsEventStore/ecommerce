@@ -2,11 +2,11 @@ require_relative "test_helper"
 
 module Ordering
   class RemoveItemFromBasketTest < Test
-    cover "Pricing::OnRemoveItemFromBasket*"
+    cover "Ordering::OnRemoveItemFromBasket*"
 
     def test_item_is_removed_from_draft_order
       aggregate_id = SecureRandom.uuid
-      stream = "Pricing::Order$#{aggregate_id}"
+      stream = "Ordering::Order$#{aggregate_id}"
 
       product_id = SecureRandom.uuid
       run_command(
@@ -15,36 +15,52 @@ module Ordering
           name: "test"
         )
       )
-      run_command(Pricing::SetPrice.new(product_id: product_id, price: 20))
 
       arrange(
-        Pricing::AddItemToBasket.new(
+        AddItemToBasket.new(
           order_id: aggregate_id,
           product_id: product_id
         )
       )
       expected_events = [
-        Pricing::ItemRemovedFromBasket.new(
+        ItemRemovedFromBasket.new(
           data: {
             order_id: aggregate_id,
             product_id: product_id
-          }
-        ),
-        Pricing::OrderTotalValueCalculated.new(
-          data: {
-            order_id: aggregate_id,
-            discounted_amount: 0,
-            total_amount: 0
           }
         )
       ]
       assert_events(stream, *expected_events) do
         act(
-          Pricing::RemoveItemFromBasket.new(
+          RemoveItemFromBasket.new(
             order_id: aggregate_id,
             product_id: product_id
           )
         )
+      end
+    end
+
+    def test_no_remove_allowed_to_created_order
+      aggregate_id = SecureRandom.uuid
+      customer_id = SecureRandom.uuid
+      command_bus.call(
+        Crm::RegisterCustomer.new(customer_id: customer_id, name: "dummy")
+      )
+      product_id = SecureRandom.uuid
+      run_command(
+        ProductCatalog::RegisterProduct.new(
+          product_id: product_id,
+          name: "test"
+        )
+      )
+      order_number = FakeNumberGenerator::FAKE_NUMBER
+      arrange(
+        AddItemToBasket.new(order_id: aggregate_id, product_id: product_id),
+        SubmitOrder.new(order_id: aggregate_id, order_number: order_number, customer_id: customer_id)
+      )
+
+      assert_raises(Order::AlreadySubmitted) do
+        act(RemoveItemFromBasket.new(order_id: aggregate_id, product_id: product_id))
       end
     end
   end
