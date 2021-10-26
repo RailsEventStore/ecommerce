@@ -8,8 +8,7 @@ module Inventory
 
       arrange(
         supply(product_id, 1),
-        adjust_reservation(order_id, product_id, 1),
-        submit_reservation(order_id)
+        submit_reservation(order_id, product_id => 1)
       )
       assert_events(
         reservation_stream(order_id),
@@ -54,7 +53,10 @@ module Inventory
     def test_canceled_reservation_cannot_be_complete
       order_id = SecureRandom.uuid
 
-      arrange(cancel_reservation(order_id))
+      arrange(
+        submit_reservation(order_id),
+        cancel_reservation(order_id)
+      )
       assert_raises(Reservation::AlreadyCanceled) do
         act(complete_reservation(order_id))
       end

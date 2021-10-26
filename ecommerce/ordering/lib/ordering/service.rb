@@ -1,4 +1,28 @@
 module Ordering
+  class OnAddItemToBasket
+    def initialize(event_store)
+      @repository = Infra::AggregateRootRepository.new(event_store)
+    end
+
+    def call(command)
+      @repository.with_aggregate(Order, command.aggregate_id) do |order|
+        order.add_item(command.product_id)
+      end
+    end
+  end
+
+  class OnRemoveItemFromBasket
+    def initialize(event_store)
+      @repository = Infra::AggregateRootRepository.new(event_store)
+    end
+
+    def call(command)
+      @repository.with_aggregate(Order, command.aggregate_id) do |order|
+        order.remove_item(command.product_id)
+      end
+    end
+  end
+
   class OnCancelOrder
     def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)

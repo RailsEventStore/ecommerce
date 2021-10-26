@@ -45,7 +45,7 @@ class OrdersController < ApplicationController
 
   def add_item
     command_bus.(
-      Pricing::AddItemToBasket.new(
+      Ordering::AddItemToBasket.new(
         order_id: params[:id],
         product_id: params[:product_id]
       )
@@ -55,7 +55,7 @@ class OrdersController < ApplicationController
 
   def remove_item
     command_bus.(
-      Pricing::RemoveItemFromBasket.new(
+      Ordering::RemoveItemFromBasket.new(
         order_id: params[:id],
         product_id: params[:product_id]
       )

@@ -15,23 +15,12 @@ module Inventory
       @reservation_items = []
     end
 
-    def adjust(product_id, quantity)
-      raise AlreadySubmitted if submitted?
-      apply ReservationAdjusted.new(
-              data: {
-                order_id: @order_id,
-                product_id: product_id,
-                quantity: quantity
-              }
-            )
-    end
-
     def submit(reserved_items)
       raise AlreadySubmitted if submitted?
       apply ReservationSubmitted.new(
               data: {
                 order_id: @order_id,
-                reservation_items: reserved_items.map(&:to_h)
+                reservation_items: reserved_items
               }
             )
     end
@@ -65,23 +54,12 @@ module Inventory
 
     private
 
-    on ReservationAdjusted do |event|
-      product_id = event.data.fetch(:product_id)
-      quantity = event.data.fetch(:quantity)
-      item = @reservation_items.find { |item| item.product_id == product_id }
-      @reservation_items <<
-        (
-          item = ReservationItem.new(product_id: product_id, quantity: 0)
-        ) unless item
-      item.quantity += quantity
-    end
-
     on ReservationSubmitted do |event|
       @reservation_items =
         event
           .data
           .fetch(:reservation_items)
-          .map { |hash| ReservationItem.new(hash) }
+          .map { |product_id, quantity| ReservationItem.new(product_id: product_id, quantity: quantity) }
       @state = :submitted
     end
 

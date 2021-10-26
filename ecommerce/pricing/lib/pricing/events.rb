@@ -15,12 +15,12 @@ module Pricing
     attribute :amount, Infra::Types::Price
   end
 
-  class ItemAddedToBasket < Infra::Event
+  class PriceItemAdded < Infra::Event
     attribute :order_id, Infra::Types::UUID
     attribute :product_id, Infra::Types::UUID
   end
 
-  class ItemRemovedFromBasket < Infra::Event
+  class PriceItemRemoved < Infra::Event
     attribute :order_id, Infra::Types::UUID
     attribute :product_id, Infra::Types::UUID
   end

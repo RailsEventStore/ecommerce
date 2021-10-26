@@ -17,7 +17,7 @@ class OrderConfirmationTest < Ecommerce::InMemoryTestCase
       Crm::RegisterCustomer.new(customer_id: customer_id, name: "test")
     )
     [
-      Pricing::AddItemToBasket.new(order_id: order_id, product_id: product_id),
+      Ordering::AddItemToBasket.new(order_id: order_id, product_id: product_id),
       Ordering::SubmitOrder.new(order_id: order_id, customer_id: customer_id),
       Payments::AuthorizePayment.new(order_id: order_id)
     ].each { |cmd| Rails.configuration.command_bus.call(cmd) }
@@ -39,7 +39,7 @@ class OrderConfirmationTest < Ecommerce::InMemoryTestCase
       Crm::RegisterCustomer.new(customer_id: customer_id, name: "test")
     )
     [
-      Pricing::AddItemToBasket.new(order_id: order_id, product_id: product_id),
+      Ordering::AddItemToBasket.new(order_id: order_id, product_id: product_id),
       Ordering::SubmitOrder.new(order_id: order_id, customer_id: customer_id),
       Payments::AuthorizePayment.new(order_id: order_id),
       Payments::CapturePayment.new(order_id: order_id)

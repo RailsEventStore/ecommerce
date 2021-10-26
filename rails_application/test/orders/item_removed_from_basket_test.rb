@@ -27,7 +27,7 @@ module Orders
       )
       order_id = SecureRandom.uuid
       event_store.publish(
-        Pricing::ItemAddedToBasket.new(
+        Ordering::ItemAddedToBasket.new(
           data: {
             order_id: order_id,
             product_id: product_id
@@ -35,7 +35,7 @@ module Orders
         )
       )
       event_store.publish(
-        Pricing::ItemAddedToBasket.new(
+        Ordering::ItemAddedToBasket.new(
           data: {
             order_id: order_id,
             product_id: product_id
@@ -43,7 +43,7 @@ module Orders
         )
       )
       event_store.publish(
-        Pricing::ItemRemovedFromBasket.new(
+        Ordering::ItemRemovedFromBasket.new(
           data: {
             order_id: order_id,
             product_id: product_id
@@ -75,7 +75,7 @@ module Orders
       )
       order_id = SecureRandom.uuid
       event_store.publish(
-        Pricing::ItemAddedToBasket.new(
+        Ordering::ItemAddedToBasket.new(
           data: {
             order_id: order_id,
             product_id: product_id
@@ -83,7 +83,7 @@ module Orders
         )
       )
       event_store.publish(
-        Pricing::ItemRemovedFromBasket.new(
+        Ordering::ItemRemovedFromBasket.new(
           data: {
             order_id: order_id,
             product_id: product_id
@@ -122,7 +122,7 @@ module Orders
       )
       order_id = SecureRandom.uuid
       event_store.publish(
-        Pricing::ItemAddedToBasket.new(
+        Ordering::ItemAddedToBasket.new(
           data: {
             order_id: order_id,
             product_id: product_id
@@ -130,7 +130,7 @@ module Orders
         )
       )
       event_store.publish(
-        Pricing::ItemAddedToBasket.new(
+        Ordering::ItemAddedToBasket.new(
           data: {
             order_id: order_id,
             product_id: product_id
@@ -138,7 +138,7 @@ module Orders
         )
       )
       event_store.publish(
-        Pricing::ItemAddedToBasket.new(
+        Ordering::ItemAddedToBasket.new(
           data: {
             order_id: order_id,
             product_id: another_product_id
@@ -146,7 +146,7 @@ module Orders
         )
       )
       event_store.publish(
-        Pricing::ItemRemovedFromBasket.new(
+        Ordering::ItemRemovedFromBasket.new(
           data: {
             order_id: order_id,
             product_id: another_product_id

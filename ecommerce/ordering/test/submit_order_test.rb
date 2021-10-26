@@ -22,7 +22,7 @@ module Ordering
 
       order_number = FakeNumberGenerator::FAKE_NUMBER
       arrange(
-        Pricing::AddItemToBasket.new(
+        AddItemToBasket.new(
           order_id: aggregate_id,
           product_id: product_id
         )
@@ -34,7 +34,8 @@ module Ordering
           data: {
             order_id: aggregate_id,
             order_number: order_number,
-            customer_id: customer_id
+            customer_id: customer_id,
+            order_lines: { product_id => 1 }
           }
         )
       ) do
@@ -75,7 +76,7 @@ module Ordering
       order_number = FakeNumberGenerator::FAKE_NUMBER
 
       arrange(
-        Pricing::AddItemToBasket.new(
+        AddItemToBasket.new(
           order_id: aggregate_id,
           product_id: product_id
         ),
@@ -112,7 +113,7 @@ module Ordering
       run_command(Pricing::SetPrice.new(product_id: product_id, price: 39))
 
       arrange(
-        Pricing::AddItemToBasket.new(
+        AddItemToBasket.new(
           order_id: aggregate_id,
           product_id: product_id
         ),

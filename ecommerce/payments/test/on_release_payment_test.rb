@@ -21,7 +21,7 @@ module Payments
         Crm::RegisterCustomer.new(customer_id: customer_id, name: "test")
       )
       arrange(
-        Pricing::AddItemToBasket.new(
+        Ordering::AddItemToBasket.new(
           order_id: order_id,
           product_id: product_id
         ),
