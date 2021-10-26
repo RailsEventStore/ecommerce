@@ -16,7 +16,7 @@ module Ordering
       )
       run_command(Pricing::SetPrice.new(product_id: product_id, price: 20))
       arrange(
-        Pricing::AddItemToBasket.new(
+        AddItemToBasket.new(
           order_id: aggregate_id,
           product_id: product_id
         )
@@ -44,7 +44,7 @@ module Ordering
         Crm::RegisterCustomer.new(customer_id: customer_id, name: "dummy")
       )
       arrange(
-        Pricing::AddItemToBasket.new(
+        AddItemToBasket.new(
           order_id: aggregate_id,
           product_id: product_id
         ),
@@ -76,7 +76,7 @@ module Ordering
         Crm::RegisterCustomer.new(customer_id: customer_id, name: "dummy")
       )
       arrange(
-        Pricing::AddItemToBasket.new(
+        AddItemToBasket.new(
           order_id: aggregate_id,
           product_id: product_id
         ),

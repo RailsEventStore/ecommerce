@@ -11,14 +11,14 @@ module Pricing
   class Configuration
     def call(cqrs)
       cqrs.register_command(
-        AddItemToBasket,
+        AddPriceItem,
         OnAddItemToBasket.new(cqrs.event_store),
-        ItemAddedToBasket
+        PriceItemAdded
       )
       cqrs.register_command(
-        RemoveItemFromBasket,
+        RemovePriceItem,
         OnRemoveItemFromBasket.new(cqrs.event_store),
-        ItemRemovedFromBasket
+        PriceItemRemoved
       )
       cqrs.register_command(
         SetPrice,
@@ -44,9 +44,9 @@ module Pricing
           )
         end,
         [
-          ItemAddedToBasket,
-          ItemRemovedFromBasket,
-          Pricing::PercentageDiscountSet
+          PriceItemAdded,
+          PriceItemRemoved,
+          PercentageDiscountSet
         ]
       )
     end

@@ -8,7 +8,7 @@ module Pricing
     end
 
     def add_item(product_id)
-      apply ItemAddedToBasket.new(
+      apply PriceItemAdded.new(
               data: {
                 order_id: @id,
                 product_id: product_id
@@ -17,7 +17,7 @@ module Pricing
     end
 
     def remove_item(product_id)
-      apply ItemRemovedFromBasket.new(
+      apply PriceItemRemoved.new(
               data: {
                 order_id: @id,
                 product_id: product_id
@@ -40,11 +40,11 @@ module Pricing
       )
     end
 
-    on ItemAddedToBasket do |event|
+    on PriceItemAdded do |event|
       @product_ids << event.data.fetch(:product_id)
     end
 
-    on ItemRemovedFromBasket do |event|
+    on PriceItemRemoved do |event|
       @product_ids.delete(event.data.fetch(:product_id))
     end
 

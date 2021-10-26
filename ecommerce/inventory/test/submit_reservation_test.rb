@@ -8,21 +8,22 @@ module Inventory
 
       arrange(
         supply(product_id, 1),
-        adjust_reservation(order_id, product_id, 1)
       )
       assert_events(
         reservation_stream(order_id),
         ReservationSubmitted.new(
           data: {
             order_id: order_id,
-            reservation_items: [product_id: product_id, quantity: 1]
+            reservation_items: { product_id => 1}
           }
         )
       ) do
         assert_events(
           inventory_entry_stream(product_id),
           StockReserved.new(data: { product_id: product_id, quantity: 1 })
-        ) { act(submit_reservation(order_id)) }
+        ) do
+          act(submit_reservation(order_id, product_id => 1))
+        end
       end
     end
 
@@ -41,10 +42,9 @@ module Inventory
 
       arrange(
         supply(product_id, 1),
-        adjust_reservation(order_id, product_id, 2)
       )
       assert_raises(Inventory::InventoryEntry::InventoryNotAvailable) do
-        act(submit_reservation(order_id))
+        act(submit_reservation(order_id, product_id => 2))
       end
     end
 
@@ -55,12 +55,10 @@ module Inventory
 
       arrange(
         supply(product_id, 1),
-        adjust_reservation(order_id, product_id, 1),
-        submit_reservation(order_id),
-        adjust_reservation(another_order_id, product_id, 1)
+        submit_reservation(order_id, product_id => 1),
       )
       assert_raises(Inventory::InventoryEntry::InventoryNotAvailable) do
-        act(submit_reservation(another_order_id))
+        act(submit_reservation(another_order_id, product_id => 1))
       end
     end
 
@@ -68,9 +66,8 @@ module Inventory
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
 
-      arrange(adjust_reservation(order_id, product_id, 1))
       assert_events(inventory_entry_stream(product_id)) do
-        act(submit_reservation(order_id))
+        act(submit_reservation(order_id, product_id => 1))
       end
     end
   end

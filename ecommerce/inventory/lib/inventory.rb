@@ -1,10 +1,8 @@
 require "infra"
-require_relative "inventory/commands/adjust_reservation"
 require_relative "inventory/commands/submit_reservation"
 require_relative "inventory/commands/cancel_reservation"
 require_relative "inventory/commands/complete_reservation"
 require_relative "inventory/commands/supply"
-require_relative "inventory/events/reservation_adjusted"
 require_relative "inventory/events/reservation_canceled"
 require_relative "inventory/events/reservation_completed"
 require_relative "inventory/events/reservation_submitted"
@@ -22,10 +20,6 @@ module Inventory
       reservation = ReservationService.new(cqrs.event_store)
       inventory = InventoryEntryService.new(cqrs.event_store)
 
-      cqrs.register(
-        AdjustReservation,
-        reservation.public_method(:adjust_reservation)
-      )
       cqrs.register(
         SubmitReservation,
         reservation.public_method(:submit_reservation)

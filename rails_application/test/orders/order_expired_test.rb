@@ -28,7 +28,7 @@ module Orders
       order_id = SecureRandom.uuid
       order_number = Ordering::FakeNumberGenerator::FAKE_NUMBER
       event_store.publish(
-        Pricing::ItemAddedToBasket.new(
+        Ordering::ItemAddedToBasket.new(
           data: {
             order_id: order_id,
             product_id: product_id
@@ -40,7 +40,8 @@ module Orders
           data: {
             order_id: order_id,
             order_number: order_number,
-            customer_id: customer_id
+            customer_id: customer_id,
+            order_lines: { product_id => 1 }
           }
         )
       )

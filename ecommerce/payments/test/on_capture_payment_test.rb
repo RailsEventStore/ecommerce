@@ -23,7 +23,7 @@ module Payments
       )
 
       arrange(
-        Pricing::AddItemToBasket.new(
+        Ordering::AddItemToBasket.new(
           order_id: order_id,
           product_id: product_id
         ),

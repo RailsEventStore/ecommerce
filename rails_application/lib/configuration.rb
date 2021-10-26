@@ -58,6 +58,30 @@ module Ecommerce
       cqrs.subscribe(
         ->(event) do
           cqrs.run(
+            Pricing::AddPriceItem.new(
+              order_id: event.data.fetch(:order_id),
+              product_id: event.data.fetch(:product_id)
+            )
+          )
+        end,
+        [Ordering::ItemAddedToBasket]
+      )
+
+      cqrs.subscribe(
+        ->(event) do
+          cqrs.run(
+            Pricing::RemovePriceItem.new(
+              order_id: event.data.fetch(:order_id),
+              product_id: event.data.fetch(:product_id)
+            )
+          )
+        end,
+        [Ordering::ItemRemovedFromBasket]
+      )
+
+      cqrs.subscribe(
+        ->(event) do
+          cqrs.run(
             Pricing::CalculateTotalValue.new(
               order_id: event.data.fetch(:order_id)
             )
@@ -81,34 +105,9 @@ module Ecommerce
       cqrs.subscribe(
         ->(event) do
           cqrs.run(
-            Inventory::AdjustReservation.new(
-              order_id: event.data.fetch(:order_id),
-              product_id: event.data.fetch(:product_id),
-              quantity: 1
-            )
-          )
-        end,
-        [Pricing::ItemAddedToBasket]
-      )
-
-      cqrs.subscribe(
-        ->(event) do
-          cqrs.run(
-            Inventory::AdjustReservation.new(
-              order_id: event.data.fetch(:order_id),
-              product_id: event.data.fetch(:product_id),
-              quantity: -1
-            )
-          )
-        end,
-        [Pricing::ItemRemovedFromBasket]
-      )
-
-      cqrs.subscribe(
-        ->(event) do
-          cqrs.run(
             Inventory::SubmitReservation.new(
-              order_id: event.data.fetch(:order_id)
+              order_id: event.data.fetch(:order_id),
+              reservation_items: event.data.fetch(:order_lines)
             )
           )
         end,
@@ -134,18 +133,7 @@ module Ecommerce
             )
           )
         end,
-        [Ordering::OrderCancelled]
-      )
-
-      cqrs.subscribe(
-        ->(event) do
-          cqrs.run(
-            Inventory::CancelReservation.new(
-              order_id: event.data.fetch(:order_id)
-            )
-          )
-        end,
-        [Ordering::OrderExpired]
+        [Ordering::OrderCancelled, Ordering::OrderExpired]
       )
 
       cqrs.subscribe(
@@ -157,8 +145,9 @@ module Ecommerce
             )
           )
         end,
-        [Pricing::ItemAddedToBasket]
+        [Ordering::ItemAddedToBasket]
       )
+
       cqrs.subscribe(
         ->(event) do
           cqrs.run(
@@ -168,7 +157,7 @@ module Ecommerce
             )
           )
         end,
-        [Pricing::ItemRemovedFromBasket]
+        [Ordering::ItemRemovedFromBasket]
       )
 
       cqrs.subscribe(
