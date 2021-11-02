@@ -1,7 +1,7 @@
 require "test_helper"
 
 class ReleasePaymentProcessTest < Ecommerce::InMemoryTestCase
-  cover "PaymentProcess*"
+  cover "ReleasePaymentProcess*"
 
   def test_happy_path
     fake = FakeCommandBus.new
