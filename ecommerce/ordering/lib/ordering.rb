@@ -19,13 +19,14 @@ module Ordering
     end
 
     def call(cqrs)
-      cqrs.register(
+      cqrs.register_command(
         SubmitOrder,
-        OnSubmitOrder.new(cqrs.event_store, @number_generator.call)
+        OnSubmitOrder.new(cqrs.event_store, @number_generator.call),
+        OrderSubmitted
       )
-      cqrs.register(SetOrderAsExpired, OnSetOrderAsExpired.new(cqrs.event_store))
-      cqrs.register(MarkOrderAsPaid, OnMarkOrderAsPaid.new(cqrs.event_store))
-      cqrs.register(CancelOrder, OnCancelOrder.new(cqrs.event_store))
+      cqrs.register_command(SetOrderAsExpired, OnSetOrderAsExpired.new(cqrs.event_store), OrderExpired)
+      cqrs.register_command(MarkOrderAsPaid, OnMarkOrderAsPaid.new(cqrs.event_store), OrderPaid)
+      cqrs.register_command(CancelOrder, OnCancelOrder.new(cqrs.event_store), OrderCancelled)
     end
   end
 end
