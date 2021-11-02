@@ -27,25 +27,30 @@ require_relative "shipping/postal_address"
 module Shipping
   class Configuration
     def call(cqrs)
-      cqrs.register(
+      cqrs.register_command(
         AddItemToShipmentPickingList,
-        OnAddItemToShipmentPickingList.new(cqrs.event_store)
+        OnAddItemToShipmentPickingList.new(cqrs.event_store),
+        ItemAddedToShipmentPickingList
       )
-      cqrs.register(
+      cqrs.register_command(
         RemoveItemFromShipmentPickingList,
-        OnRemoveItemFromShipmentPickingList.new(cqrs.event_store)
+        OnRemoveItemFromShipmentPickingList.new(cqrs.event_store),
+        ItemRemovedFromShipmentPickingList
       )
-      cqrs.register(
+      cqrs.register_command(
         AddShippingAddressToShipment,
-        OnAddShippingAddressToShipment.new(cqrs.event_store)
+        OnAddShippingAddressToShipment.new(cqrs.event_store),
+        ShippingAddressAddedToShipment
       )
-      cqrs.register(
+      cqrs.register_command(
         SubmitShipment,
-        OnSubmitShipment.new(cqrs.event_store)
+        OnSubmitShipment.new(cqrs.event_store),
+        ShipmentSubmitted
       )
-      cqrs.register(
+      cqrs.register_command(
         AuthorizeShipment,
-        OnAuthorizeShipment.new(cqrs.event_store)
+        OnAuthorizeShipment.new(cqrs.event_store),
+        ShipmentAuthorized
       )
     end
   end
