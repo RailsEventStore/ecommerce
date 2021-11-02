@@ -15,13 +15,14 @@ module Payments
     end
 
     def call(cqrs)
-      cqrs.register(
+      cqrs.register_command(
         AuthorizePayment,
-        OnAuthorizePayment.new(cqrs.event_store, @gateway)
+        OnAuthorizePayment.new(cqrs.event_store, @gateway),
+        PaymentAuthorized
       )
-      cqrs.register(CapturePayment, OnCapturePayment.new(cqrs.event_store))
-      cqrs.register(ReleasePayment, OnReleasePayment.new(cqrs.event_store))
-      cqrs.register(SetPaymentAmount, OnSetPaymentAmount.new(cqrs.event_store))
+      cqrs.register_command(CapturePayment, OnCapturePayment.new(cqrs.event_store), PaymentCaptured)
+      cqrs.register_command(ReleasePayment, OnReleasePayment.new(cqrs.event_store), PaymentReleased)
+      cqrs.register_command(SetPaymentAmount, OnSetPaymentAmount.new(cqrs.event_store), PaymentAmountSet)
     end
   end
 end
