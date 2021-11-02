@@ -22,6 +22,7 @@ module Infra
     end
 
     def register(command, command_handler)
+      @commands_to_events[command] = NoEvent.new
       @command_bus.register(command, command_handler)
     end
 
@@ -39,6 +40,12 @@ module Infra
 
     def to_hash
       @commands_to_events
+    end
+  end
+
+  class NoEvent
+    def to_s
+      ""
     end
   end
 end
