@@ -16,8 +16,8 @@ module Infra
       @event_store.subscribe_to_all_events(handler)
     end
 
-    def register_command(command, command_handler, events)
-      @commands_to_events[command_handler] = events
+    def register_command(command, command_handler, event)
+      @commands_to_events[command] = event
       @command_bus.register(command, command_handler)
     end
 

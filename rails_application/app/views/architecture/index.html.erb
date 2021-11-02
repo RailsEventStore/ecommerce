@@ -1,10 +1,11 @@
-<p>
-  <ul>
-    <% @cqrs.to_hash.each do |command, event| %>
-      <li>
-        <%=command.class %>
 
-      </li>
-    <% end %>
-  </ul>
-</p>
+<table class="table-auto">
+  <% @cqrs.to_hash.each do |klass, event| %>
+    <tr>
+      <td>
+        <%= klass %>
+      </td>
+      <td><%= event %></td>
+    </tr>
+  <% end %>
+</table>
