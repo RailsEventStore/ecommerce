@@ -22,23 +22,27 @@ module Inventory
       reservation = ReservationService.new(cqrs.event_store)
       inventory = InventoryEntryService.new(cqrs.event_store)
 
-      cqrs.register(
+      cqrs.register_command(
         AdjustReservation,
-        reservation.public_method(:adjust_reservation)
+        reservation.public_method(:adjust_reservation),
+        ReservationAdjusted
       )
-      cqrs.register(
+      cqrs.register_command(
         SubmitReservation,
-        reservation.public_method(:submit_reservation)
+        reservation.public_method(:submit_reservation),
+        ReservationSubmitted
       )
-      cqrs.register(
+      cqrs.register_command(
         CancelReservation,
-        reservation.public_method(:cancel_reservation)
+        reservation.public_method(:cancel_reservation),
+        ReservationCanceled
       )
-      cqrs.register(
+      cqrs.register_command(
         CompleteReservation,
-        reservation.public_method(:complete_reservation)
+        reservation.public_method(:complete_reservation),
+        ReservationCompleted
       )
-      cqrs.register(Supply, inventory.public_method(:supply))
+      cqrs.register_command(Supply, inventory.public_method(:supply), StockLevelChanged)
     end
   end
 end
