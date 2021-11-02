@@ -5,7 +5,7 @@ class PaymentProcessTest < Ecommerce::InMemoryTestCase
 
   def test_happy_path
     fake = FakeCommandBus.new
-    process = PaymentProcess.new(bus: fake)
+    process = ReleasePaymentProcess.new(bus: fake)
     given([order_submitted, payment_authorized, order_paid]).each do |event|
       process.call(event)
     end
@@ -14,14 +14,14 @@ class PaymentProcessTest < Ecommerce::InMemoryTestCase
 
   def test_order_expired_without_payment
     fake = FakeCommandBus.new
-    process = PaymentProcess.new(bus: fake)
+    process = ReleasePaymentProcess.new(bus: fake)
     given([order_submitted, order_expired]).each { |event| process.call(event) }
     assert_nil(fake.received)
   end
 
   def test_order_expired_after_payment_authorization
     fake = FakeCommandBus.new
-    process = PaymentProcess.new(bus: fake)
+    process = ReleasePaymentProcess.new(bus: fake)
     given([order_submitted, payment_authorized, order_expired]).each do |event|
       process.call(event)
     end
@@ -33,7 +33,7 @@ class PaymentProcessTest < Ecommerce::InMemoryTestCase
 
   def test_order_expired_after_payment_released
     fake = FakeCommandBus.new
-    process = PaymentProcess.new(bus: fake)
+    process = ReleasePaymentProcess.new(bus: fake)
     given(
       [order_submitted, payment_authorized, payment_released, order_expired]
     ).each { |event| process.call(event) }

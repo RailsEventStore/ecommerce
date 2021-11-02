@@ -35,7 +35,7 @@ module Ecommerce
         Shipping::Configuration.new
       ].each { |c| c.call(cqrs) }
       cqrs.subscribe(
-        PaymentProcess.new,
+        ReleasePaymentProcess.new,
         [
           Ordering::OrderSubmitted,
           Ordering::OrderExpired,

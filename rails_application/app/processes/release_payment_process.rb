@@ -1,4 +1,4 @@
-class PaymentProcess
+class ReleasePaymentProcess
   def initialize(
     store: Rails.configuration.event_store,
     bus: Rails.configuration.command_bus
