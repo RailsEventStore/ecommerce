@@ -22,50 +22,57 @@ module Ecommerce
       number_generator = Rails.configuration.number_generator
       payment_gateway = Rails.configuration.payment_gateway
 
-      [
-        Orders::Configuration.new(product_repository, customer_repository),
-        Products::Configuration.new(product_repository),
-        Shipments::Configuration.new,
-        Ordering::Configuration.new(number_generator),
-        Pricing::Configuration.new,
-        Payments::Configuration.new(payment_gateway),
-        ProductCatalog::Configuration.new(product_repository),
-        Crm::Configuration.new(customer_repository),
-        Inventory::Configuration.new,
-        Shipping::Configuration.new
-      ].each { |c| c.call(cqrs) }
+      configure_bounded_contexts(cqrs, customer_repository, number_generator, payment_gateway, product_repository)
+      enable_release_payment_process(cqrs)
+      enable_order_confirmation_process(cqrs)
+      assign_price_in_product_catalog(cqrs, product_repository)
+      calculate_total_value_when_order_submitted(cqrs)
+      notify_payments_about_order_total_value(cqrs)
+      enable_inventory_sync_from_ordering(cqrs)
+      enable_shipment_sync(cqrs)
+      enable_shipment_process(cqrs)
+    end
+
+    private
+
+    def enable_shipment_process(cqrs)
       cqrs.subscribe(
-        ReleasePaymentProcess.new,
+        ShipmentProcess.new,
         [
+          Shipping::ShippingAddressAddedToShipment,
+          Shipping::ShipmentSubmitted,
           Ordering::OrderSubmitted,
-          Ordering::OrderExpired,
-          Ordering::OrderPaid,
-          Payments::PaymentAuthorized,
-          Payments::PaymentReleased
+          Ordering::OrderPaid
         ]
       )
+    end
 
-      cqrs.subscribe(
-        OrderConfirmation.new,
-        [Payments::PaymentAuthorized, Payments::PaymentCaptured]
-      )
-
-      cqrs.subscribe(
-        ProductCatalog::AssignPriceToProduct.new(product_repository),
-        [Pricing::PriceSet]
-      )
-
+    def enable_shipment_sync(cqrs)
       cqrs.subscribe(
         ->(event) do
           cqrs.run(
-            Pricing::CalculateTotalValue.new(
-              order_id: event.data.fetch(:order_id)
+            Shipping::AddItemToShipmentPickingList.new(
+              order_id: event.data.fetch(:order_id),
+              product_id: event.data.fetch(:product_id)
             )
           )
         end,
-        [Ordering::OrderSubmitted]
+        [Pricing::ItemAddedToBasket]
       )
+      cqrs.subscribe(
+        ->(event) do
+          cqrs.run(
+            Shipping::RemoveItemFromShipmentPickingList.new(
+              order_id: event.data.fetch(:order_id),
+              product_id: event.data.fetch(:product_id)
+            )
+          )
+        end,
+        [Pricing::ItemRemovedFromBasket]
+      )
+    end
 
+    def notify_payments_about_order_total_value(cqrs)
       cqrs.subscribe(
         ->(event) do
           cqrs.run(
@@ -77,7 +84,29 @@ module Ecommerce
         end,
         [Pricing::OrderTotalValueCalculated]
       )
+    end
 
+    def calculate_total_value_when_order_submitted(cqrs)
+      cqrs.subscribe(
+        ->(event) do
+          cqrs.run(
+            Pricing::CalculateTotalValue.new(
+              order_id: event.data.fetch(:order_id)
+            )
+          )
+        end,
+        [Ordering::OrderSubmitted]
+      )
+    end
+
+    def assign_price_in_product_catalog(cqrs, product_repository)
+      cqrs.subscribe(
+        ProductCatalog::AssignPriceToProduct.new(product_repository),
+        [Pricing::PriceSet]
+      )
+    end
+
+    def enable_inventory_sync_from_ordering(cqrs)
       cqrs.subscribe(
         ->(event) do
           cqrs.run(
@@ -147,39 +176,41 @@ module Ecommerce
         end,
         [Ordering::OrderExpired]
       )
+    end
 
+    def enable_order_confirmation_process(cqrs)
       cqrs.subscribe(
-        ->(event) do
-          cqrs.run(
-            Shipping::AddItemToShipmentPickingList.new(
-              order_id: event.data.fetch(:order_id),
-              product_id: event.data.fetch(:product_id)
-            )
-          )
-        end,
-        [Pricing::ItemAddedToBasket]
+        OrderConfirmation.new,
+        [Payments::PaymentAuthorized, Payments::PaymentCaptured]
       )
-      cqrs.subscribe(
-        ->(event) do
-          cqrs.run(
-            Shipping::RemoveItemFromShipmentPickingList.new(
-              order_id: event.data.fetch(:order_id),
-              product_id: event.data.fetch(:product_id)
-            )
-          )
-        end,
-        [Pricing::ItemRemovedFromBasket]
-      )
+    end
 
+    def enable_release_payment_process(cqrs)
       cqrs.subscribe(
-        ShipmentProcess.new,
+        ReleasePaymentProcess.new,
         [
-          Shipping::ShippingAddressAddedToShipment,
-          Shipping::ShipmentSubmitted,
           Ordering::OrderSubmitted,
-          Ordering::OrderPaid
+          Ordering::OrderExpired,
+          Ordering::OrderPaid,
+          Payments::PaymentAuthorized,
+          Payments::PaymentReleased
         ]
       )
+    end
+
+    def configure_bounded_contexts(cqrs, customer_repository, number_generator, payment_gateway, product_repository)
+      [
+        Orders::Configuration.new(product_repository, customer_repository),
+        Products::Configuration.new(product_repository),
+        Shipments::Configuration.new,
+        Ordering::Configuration.new(number_generator),
+        Pricing::Configuration.new,
+        Payments::Configuration.new(payment_gateway),
+        ProductCatalog::Configuration.new(product_repository),
+        Crm::Configuration.new(customer_repository),
+        Inventory::Configuration.new,
+        Shipping::Configuration.new
+      ].each { |c| c.call(cqrs) }
     end
   end
 end
