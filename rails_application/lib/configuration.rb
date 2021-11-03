@@ -22,7 +22,11 @@ module Ecommerce
       number_generator = Rails.configuration.number_generator
       payment_gateway = Rails.configuration.payment_gateway
 
+      enable_orders_read_model(cqrs, customer_repository, product_repository)
+      enable_products_read_model(cqrs, product_repository)
+
       configure_bounded_contexts(cqrs, customer_repository, number_generator, payment_gateway, product_repository)
+
       enable_release_payment_process(cqrs)
       enable_order_confirmation_process(cqrs)
       assign_price_in_product_catalog(cqrs, product_repository)
@@ -34,6 +38,14 @@ module Ecommerce
     end
 
     private
+
+    def enable_products_read_model(cqrs, product_repository)
+      Products::Configuration.new(product_repository).call(cqrs)
+    end
+
+    def enable_orders_read_model(cqrs, customer_repository, product_repository)
+      Orders::Configuration.new(product_repository, customer_repository).call(cqrs)
+    end
 
     def enable_shipment_process(cqrs)
       cqrs.subscribe(
@@ -200,8 +212,6 @@ module Ecommerce
 
     def configure_bounded_contexts(cqrs, customer_repository, number_generator, payment_gateway, product_repository)
       [
-        Orders::Configuration.new(product_repository, customer_repository),
-        Products::Configuration.new(product_repository),
         Shipments::Configuration.new,
         Ordering::Configuration.new(number_generator),
         Pricing::Configuration.new,
