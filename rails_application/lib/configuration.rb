@@ -11,21 +11,12 @@ require_relative "product_repository"
 module Ecommerce
   class Configuration
     def call(cqrs)
-      [
-        RailsEventStore::LinkByEventType.new,
-        RailsEventStore::LinkByCorrelationId.new,
-        RailsEventStore::LinkByCausationId.new
-      ].each { |h| cqrs.subscribe_to_all_events(h) }
+      enable_res_infra_event_linking(cqrs)
 
-      customer_repository = CustomerRepository.new
-      product_repository = ProductRepository.new
-      number_generator = Rails.configuration.number_generator
-      payment_gateway = Rails.configuration.payment_gateway
+      enable_orders_read_model(cqrs)
+      enable_products_read_model(cqrs)
 
-      enable_orders_read_model(cqrs, customer_repository, product_repository)
-      enable_products_read_model(cqrs, product_repository)
-
-      configure_bounded_contexts(cqrs, customer_repository, number_generator, payment_gateway, product_repository)
+      configure_bounded_contexts(cqrs, Rails.configuration.number_generator, Rails.configuration.payment_gateway)
 
       enable_release_payment_process(cqrs)
       enable_order_confirmation_process(cqrs)
@@ -39,11 +30,19 @@ module Ecommerce
 
     private
 
-    def enable_products_read_model(cqrs, product_repository)
+    def enable_res_infra_event_linking(cqrs)
+      [
+        RailsEventStore::LinkByEventType.new,
+        RailsEventStore::LinkByCorrelationId.new,
+        RailsEventStore::LinkByCausationId.new
+      ].each { |h| cqrs.subscribe_to_all_events(h) }
+    end
+
+    def enable_products_read_model(cqrs)
       Products::Configuration.new(product_repository).call(cqrs)
     end
 
-    def enable_orders_read_model(cqrs, customer_repository, product_repository)
+    def enable_orders_read_model(cqrs)
       Orders::Configuration.new(product_repository, customer_repository).call(cqrs)
     end
 
@@ -210,7 +209,7 @@ module Ecommerce
       )
     end
 
-    def configure_bounded_contexts(cqrs, customer_repository, number_generator, payment_gateway, product_repository)
+    def configure_bounded_contexts(cqrs, number_generator, payment_gateway)
       [
         Shipments::Configuration.new,
         Ordering::Configuration.new(number_generator),
@@ -221,6 +220,14 @@ module Ecommerce
         Inventory::Configuration.new,
         Shipping::Configuration.new
       ].each { |c| c.call(cqrs) }
+    end
+
+    def customer_repository
+      @customer_repo ||= CustomerRepository.new
+    end
+
+    def product_repository
+      @product_repo ||= ProductRepository.new
     end
   end
 end
