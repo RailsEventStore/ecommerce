@@ -1,3 +1,4 @@
+require_relative 'test_helper'
 module ProductCatalog
   class RegistrationTest < Test
     cover "ProductCatalog*"
