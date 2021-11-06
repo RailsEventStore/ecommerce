@@ -38,6 +38,10 @@ module Infra
       )
     end
 
+    def publish(event, stream_name)
+      event_store.publish(event, stream_name: stream_name)
+    end
+
     def to_hash
       @commands_to_events
     end
