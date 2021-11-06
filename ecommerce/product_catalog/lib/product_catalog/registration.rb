@@ -1,4 +1,6 @@
 module ProductCatalog
+  AlreadyRegistered = Class.new(StandardError)
+
   class Registration
     def initialize(cqrs)
       @cqrs = cqrs
@@ -6,7 +8,7 @@ module ProductCatalog
 
     def call(cmd)
       events = @cqrs.all_events_from_stream(stream_name(cmd))
-      raise Product::AlreadyRegistered unless events.empty?
+      raise AlreadyRegistered unless events.empty?
 
       @cqrs.publish(product_registered_event(cmd), stream_name(cmd))
     end

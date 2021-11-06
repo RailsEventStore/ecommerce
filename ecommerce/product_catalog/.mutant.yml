@@ -6,5 +6,3 @@ coverage_criteria:
 matcher:
   subjects:
     - ProductCatalog*
-  ignore:
-    - ProductCatalog::Product*

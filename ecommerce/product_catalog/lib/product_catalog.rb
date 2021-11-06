@@ -1,6 +1,5 @@
 require "infra"
 require_relative "product_catalog/commands"
-require_relative "product_catalog/product"
 require_relative "product_catalog/registration"
 
 module ProductCatalog

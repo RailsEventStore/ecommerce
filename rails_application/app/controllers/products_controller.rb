@@ -17,7 +17,7 @@ class ProductsController < ApplicationController
       if params[:price].present?
         set_product_price(params[:product_id], params[:price])
       end
-    rescue ProductCatalog::Product::AlreadyRegistered
+    rescue ProductCatalog::AlreadyRegistered
       flash[:notice] = "Product was already registered"
       render "new"
     else

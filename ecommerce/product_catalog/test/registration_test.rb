@@ -10,7 +10,7 @@ module ProductCatalog
 
     def test_should_not_allow_for_double_registration
       uid = SecureRandom.uuid
-      assert_raises(Product::AlreadyRegistered) do
+      assert_raises(AlreadyRegistered) do
         register_product(uid, fake_name)
         register_product(uid, fake_name)
       end
