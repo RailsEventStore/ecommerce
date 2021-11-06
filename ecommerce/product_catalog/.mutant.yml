@@ -8,7 +8,3 @@ matcher:
     - ProductCatalog*
   ignore:
     - ProductCatalog::Product*
-    - ProductCatalog::AssignPriceToProduct*
-    - ProductCatalog::Configuration#initialize
-    - ProductCatalog::Configuration#call
-    - ProductCatalog::Test*

@@ -207,7 +207,7 @@ module Ecommerce
         Ordering::Configuration.new(number_generator),
         Pricing::Configuration.new,
         Payments::Configuration.new(payment_gateway),
-        ProductCatalog::Configuration.new(product_repository),
+        ProductCatalog::Configuration.new,
         Crm::Configuration.new(customer_repository),
         Inventory::Configuration.new,
         Shipping::Configuration.new

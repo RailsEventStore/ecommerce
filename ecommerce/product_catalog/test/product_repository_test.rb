@@ -1,5 +1,6 @@
 require_relative "test_helper"
 require_relative "../lib/product_catalog/product_repository_examples"
+require_relative "../lib/product_catalog"
 
 module ProductCatalog
   class InMemoryProductRepositoryTest < Test

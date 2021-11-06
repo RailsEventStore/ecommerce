@@ -10,6 +10,10 @@ module Products
 
     def call(cqrs)
       cqrs.subscribe(
+        -> (event) { register_product(event) },
+        [ProductCatalog::ProductRegistered]
+      )
+      cqrs.subscribe(
         ->(event) { change_stock_level(event) },
         [Inventory::StockLevelChanged]
       )
@@ -19,6 +23,10 @@ module Products
     end
 
     private
+
+    def register_product(event)
+      Product.create(id: event.data.fetch(:product_id), name: event.data.fetch(:name))
+    end
 
     def change_stock_level(event)
       product =

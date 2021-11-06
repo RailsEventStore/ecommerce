@@ -1,5 +1,3 @@
-require_relative "test_helper"
-
 module ProductCatalog
   class RegistrationTest < Test
     cover "ProductCatalog*"
@@ -7,8 +5,6 @@ module ProductCatalog
     def test_product_should_get_registered
       uid = SecureRandom.uuid
       register_product(uid, fake_name)
-      refute_nil(product_registered = product_repository.find(uid))
-      assert_equal(product_registered.name, fake_name)
     end
 
     def test_should_not_allow_for_double_registration

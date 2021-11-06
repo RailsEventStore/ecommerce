@@ -42,6 +42,10 @@ module Infra
       event_store.publish(event, stream_name: stream_name)
     end
 
+    def all_events_from_stream(name)
+      event_store.read.stream(name).to_a
+    end
+
     def to_hash
       @commands_to_events
     end

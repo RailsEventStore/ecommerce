@@ -5,12 +5,10 @@ require_relative "../lib/product_catalog"
 
 module ProductCatalog
   class Test < Infra::InMemoryTest
-    attr_reader :product_repository
 
     def before_setup
-      super
-      @product_repository = InMemoryProductRepository.new
-      Configuration.new(product_repository).call(cqrs)
+      super()
+      Configuration.new.call(cqrs)
     end
   end
 end

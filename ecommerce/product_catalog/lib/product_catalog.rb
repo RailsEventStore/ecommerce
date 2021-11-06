@@ -12,12 +12,8 @@ module ProductCatalog
   end
 
   class Configuration
-    def initialize(product_repository = InMemoryProductRepository.new)
-      @product_repository = product_repository
-    end
-
     def call(cqrs)
-      cqrs.register(RegisterProduct, Registration.new(@product_repository, cqrs))
+      cqrs.register(RegisterProduct, Registration.new(cqrs))
     end
   end
 end
