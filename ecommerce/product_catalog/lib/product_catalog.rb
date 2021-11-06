@@ -3,7 +3,6 @@ require_relative "product_catalog/commands"
 require_relative "product_catalog/product"
 require_relative "product_catalog/in_memory_product_repository"
 require_relative "product_catalog/registration"
-require_relative "product_catalog/assign_price_to_product"
 
 module ProductCatalog
   class Configuration

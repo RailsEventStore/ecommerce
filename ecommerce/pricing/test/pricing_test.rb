@@ -4,36 +4,9 @@ module Pricing
   class PricingTest < Test
     cover "Pricing*"
 
-    def test_setting_price_updates_read_model
-      product_1_id = SecureRandom.uuid
-      run_command(
-        ProductCatalog::RegisterProduct.new(
-          product_id: product_1_id,
-          name: "test"
-        )
-      )
-
-      set_price(product_1_id, 20)
-      assert_product_read_model_price(product_1_id, 20)
-      set_price(product_1_id, 40)
-      assert_product_read_model_price(product_1_id, 40)
-    end
-
     def test_calculates_total_value
       product_1_id = SecureRandom.uuid
-      run_command(
-        ProductCatalog::RegisterProduct.new(
-          product_id: product_1_id,
-          name: "test"
-        )
-      )
       product_2_id = SecureRandom.uuid
-      run_command(
-        ProductCatalog::RegisterProduct.new(
-          product_id: product_2_id,
-          name: "test2"
-        )
-      )
       set_price(product_1_id, 20)
       set_price(product_2_id, 30)
       order_id = SecureRandom.uuid
@@ -54,12 +27,6 @@ module Pricing
 
     def test_calculates_total_value_with_discount
       product_1_id = SecureRandom.uuid
-      run_command(
-        ProductCatalog::RegisterProduct.new(
-          product_id: product_1_id,
-          name: "test"
-        )
-      )
       set_price(product_1_id, 20)
       order_id = SecureRandom.uuid
       add_item(order_id, product_1_id)
@@ -92,12 +59,6 @@ module Pricing
 
     def test_setting_discounts_twice_not_possible_because_we_want_explicit_discount_change_command
       product_1_id = SecureRandom.uuid
-      run_command(
-        ProductCatalog::RegisterProduct.new(
-          product_id: product_1_id,
-          name: "test"
-        )
-      )
       set_price(product_1_id, 20)
       order_id = SecureRandom.uuid
       add_item(order_id, product_1_id)

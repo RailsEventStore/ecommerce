@@ -20,7 +20,6 @@ module Ecommerce
 
       enable_release_payment_process(cqrs)
       enable_order_confirmation_process(cqrs)
-      assign_price_in_product_catalog(cqrs, product_repository)
       calculate_total_value_when_order_submitted(cqrs)
       notify_payments_about_order_total_value(cqrs)
       enable_inventory_sync_from_ordering(cqrs)
@@ -107,13 +106,6 @@ module Ecommerce
           )
         end,
         [Ordering::OrderSubmitted]
-      )
-    end
-
-    def assign_price_in_product_catalog(cqrs, product_repository)
-      cqrs.subscribe(
-        ProductCatalog::AssignPriceToProduct.new(product_repository),
-        [Pricing::PriceSet]
       )
     end
 

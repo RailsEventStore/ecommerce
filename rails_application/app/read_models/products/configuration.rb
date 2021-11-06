@@ -13,6 +13,9 @@ module Products
         ->(event) { change_stock_level(event) },
         [Inventory::StockLevelChanged]
       )
+      cqrs.subscribe(
+        -> (event) { set_price(event) },
+        [Pricing::PriceSet])
     end
 
     private
@@ -25,5 +28,15 @@ module Products
       product.set_stock_level(event.data.fetch(:stock_level))
       @product_repository.upsert(product)
     end
+
+    def set_price(event)
+      product =
+        @product_repository.find_or_initialize_by_id(
+          event.data.fetch(:product_id)
+        )
+      product.set_price(event.data.fetch(:price))
+      @product_repository.upsert(product)
+    end
+
   end
 end
