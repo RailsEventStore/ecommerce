@@ -4,9 +4,6 @@ module Products
   end
 
   class Configuration
-    def initialize(product_repository)
-      @product_repository = product_repository
-    end
 
     def call(cqrs)
       cqrs.subscribe(
@@ -28,22 +25,16 @@ module Products
       Product.create(id: event.data.fetch(:product_id), name: event.data.fetch(:name))
     end
 
-    def change_stock_level(event)
-      product =
-        @product_repository.find_or_initialize_by_id(
-          event.data.fetch(:product_id)
-        )
-      product.set_stock_level(event.data.fetch(:stock_level))
-      @product_repository.upsert(product)
+    def set_price(event)
+      find(event.data.fetch(:product_id)).update_attribute(:price, event.data.fetch(:price))
     end
 
-    def set_price(event)
-      product =
-        @product_repository.find_or_initialize_by_id(
-          event.data.fetch(:product_id)
-        )
-      product.set_price(event.data.fetch(:price))
-      @product_repository.upsert(product)
+    def change_stock_level(event)
+      find(event.data.fetch(:product_id)).update_attribute(:stock_level, event.data.fetch(:stock_level))
+    end
+
+    def find(product_id)
+      Product.where(id: product_id).first
     end
 
   end

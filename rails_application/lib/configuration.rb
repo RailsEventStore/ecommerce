@@ -38,7 +38,7 @@ module Ecommerce
     end
 
     def enable_products_read_model(cqrs)
-      Products::Configuration.new(product_repository).call(cqrs)
+      Products::Configuration.new.call(cqrs)
     end
 
     def enable_orders_read_model(cqrs)
