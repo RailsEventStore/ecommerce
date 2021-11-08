@@ -16,22 +16,24 @@ module Ordering
       )
       run_command(Pricing::SetPrice.new(product_id: product_id, price: 39))
 
-      expected_events = [
-        ItemAddedToBasket.new(
-          data: {
-            order_id: aggregate_id,
-            product_id: product_id,
-            quantity_before: 0
-          }
-        )
-      ]
-      assert_events(stream, *expected_events) do
-        act(
-          AddItemToBasket.new(
-            order_id: aggregate_id,
-            product_id: product_id
+      [0, 1].each do |quantity_before|
+        expected_events = [
+          ItemAddedToBasket.new(
+            data: {
+              order_id: aggregate_id,
+              product_id: product_id,
+              quantity_before: quantity_before
+            }
           )
-        )
+        ]
+        assert_events(stream, *expected_events) do
+          act(
+            AddItemToBasket.new(
+              order_id: aggregate_id,
+              product_id: product_id
+            )
+          )
+        end
       end
     end
 
