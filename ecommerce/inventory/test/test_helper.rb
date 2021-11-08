@@ -15,6 +15,16 @@ module Inventory
         CheckAvailabilityOnOrderItemAddedToBasket.new(cqrs.event_store),
         [Ordering::ItemAddedToBasket]
       )
+      cqrs.subscribe(
+        ->(event) do
+          cqrs.run(
+            Inventory::SubmitReservation.new(
+              order_id: event.data.fetch(:order_id),
+              reservation_items: event.data.fetch(:order_lines)
+            )
+          )
+        end,
+        [Ordering::OrderSubmitted])
     end
 
     private
