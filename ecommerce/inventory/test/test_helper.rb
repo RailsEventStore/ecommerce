@@ -2,6 +2,7 @@ require "minitest/autorun"
 require "mutant/minitest/coverage"
 
 require_relative "../lib/inventory"
+require_relative "../../ordering/lib/ordering"
 
 module Inventory
   class Test < Infra::InMemoryTest
@@ -10,6 +11,10 @@ module Inventory
     def before_setup
       super
       Configuration.new.call(cqrs)
+      cqrs.subscribe(
+        CheckAvailabilityOnOrderItemAddedToBasket.new(cqrs.event_store),
+        [Ordering::ItemAddedToBasket]
+      )
     end
 
     private

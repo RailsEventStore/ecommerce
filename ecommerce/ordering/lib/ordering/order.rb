@@ -40,7 +40,13 @@ module Ordering
 
     def add_item(product_id)
       raise AlreadySubmitted unless @state.equal?(:draft)
-      apply ItemAddedToBasket.new(data: { order_id: @id, product_id: product_id })
+      apply ItemAddedToBasket.new(
+        data: {
+          order_id: @id,
+          product_id: product_id,
+          quantity_before: find_order_line(product_id)&.quantity || 0
+        }
+      )
     end
 
     def remove_item(product_id)

@@ -44,13 +44,18 @@ class OrdersController < ApplicationController
   end
 
   def add_item
-    command_bus.(
-      Ordering::AddItemToBasket.new(
-        order_id: params[:id],
-        product_id: params[:product_id]
+    ActiveRecord::Base.transaction do
+      command_bus.(
+        Ordering::AddItemToBasket.new(
+          order_id: params[:id],
+          product_id: params[:product_id]
+        )
       )
-    )
+    end
     redirect_to edit_order_path(params[:id])
+  rescue Inventory::InventoryEntry::InventoryNotAvailable
+    redirect_to edit_order_path(params[:id]),
+                alert: "Product not available in requested quantity!"
   end
 
   def remove_item
@@ -71,11 +76,11 @@ class OrdersController < ApplicationController
       )
     ApplicationRecord.transaction { command_bus.(cmd) }
     redirect_to order_path(Orders::Order.find_by_uid(cmd.order_id)),
-      notice: "Order was successfully submitted"
+                notice: "Order was successfully submitted"
   rescue Inventory::InventoryEntry::InventoryNotAvailable
     redirect_to order_path(Orders::Order.find_by_uid(cmd.order_id)),
-      alert:
-        "Order can not be submitted! Some products are not available"
+                alert:
+                  "Order can not be submitted! Some products are not available"
   end
 
   def expire

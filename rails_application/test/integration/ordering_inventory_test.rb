@@ -20,7 +20,6 @@ class OrderingInventoryTest < Ecommerce::RealRESIntegrationTestCase
         name: "Async Remote"
       ),
       Pricing::SetPrice.new(product_id: product_id, price: 39),
-      Inventory::Supply.new(product_id: product_id, quantity: 1),
       Ordering::AddItemToBasket.new(
         order_id: aggregate_id,
         product_id: product_id
@@ -28,7 +27,8 @@ class OrderingInventoryTest < Ecommerce::RealRESIntegrationTestCase
       Ordering::AddItemToBasket.new(
         order_id: aggregate_id,
         product_id: product_id
-      )
+      ),
+      Inventory::Supply.new(product_id: product_id, quantity: 1)
     )
     stream = "Ordering::Order$#{aggregate_id}"
     assert_events(stream) do

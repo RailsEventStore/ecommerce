@@ -13,6 +13,7 @@ require_relative "inventory/reservation_service"
 require_relative "inventory/inventory_entry_service"
 require_relative "inventory/inventory_entry"
 require_relative "inventory/reservation"
+require_relative "inventory/check_availability_on_order_item_added_to_basket"
 
 module Inventory
   class Configuration

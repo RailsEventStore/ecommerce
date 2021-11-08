@@ -26,6 +26,7 @@ module Ecommerce
       enable_inventory_sync_from_ordering(cqrs)
       enable_shipment_sync(cqrs)
       enable_shipment_process(cqrs)
+      check_product_availability_on_adding_item_to_basket(cqrs)
     end
 
     private
@@ -189,6 +190,13 @@ module Ecommerce
           Payments::PaymentAuthorized,
           Payments::PaymentReleased
         ]
+      )
+    end
+
+    def check_product_availability_on_adding_item_to_basket(cqrs)
+      cqrs.subscribe(
+        Inventory::CheckAvailabilityOnOrderItemAddedToBasket.new(cqrs.event_store),
+        [Ordering::ItemAddedToBasket]
       )
     end
 

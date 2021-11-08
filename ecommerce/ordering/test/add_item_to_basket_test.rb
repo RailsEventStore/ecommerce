@@ -20,7 +20,8 @@ module Ordering
         ItemAddedToBasket.new(
           data: {
             order_id: aggregate_id,
-            product_id: product_id
+            product_id: product_id,
+            quantity_before: 0
           }
         )
       ]
