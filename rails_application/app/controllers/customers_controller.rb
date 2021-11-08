@@ -9,7 +9,7 @@ class CustomersController < ApplicationController
 
   def create
     create_customer(params[:customer_id], params[:name])
-  rescue Crm::Customer::AlreadyRegistered
+  rescue Crm::AlreadyRegistered
     flash[:notice] = "Customer was already registered"
     render "new"
   else

@@ -15,6 +15,7 @@ module Ecommerce
 
       enable_orders_read_model(cqrs)
       enable_products_read_model(cqrs)
+      enable_customers_read_model(cqrs)
 
       configure_bounded_contexts(cqrs, Rails.configuration.number_generator, Rails.configuration.payment_gateway)
 
@@ -29,8 +30,6 @@ module Ecommerce
       check_product_availability_on_adding_item_to_basket(cqrs)
     end
 
-    private
-
     def enable_res_infra_event_linking(cqrs)
       [
         RailsEventStore::LinkByEventType.new,
@@ -41,6 +40,10 @@ module Ecommerce
 
     def enable_products_read_model(cqrs)
       Products::Configuration.new.call(cqrs)
+    end
+
+    def enable_customers_read_model(cqrs)
+      Customers::Configuration.new.call(cqrs)
     end
 
     def enable_orders_read_model(cqrs)
@@ -207,7 +210,7 @@ module Ecommerce
         Pricing::Configuration.new,
         Payments::Configuration.new(payment_gateway),
         ProductCatalog::Configuration.new,
-        Crm::Configuration.new(customer_repository),
+        Crm::Configuration.new,
         Inventory::Configuration.new,
         Shipping::Configuration.new
       ].each { |c| c.call(cqrs) }

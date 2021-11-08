@@ -8,9 +8,8 @@ module Crm
     attr_reader :customer_repository
 
     def before_setup
-      super
-      @customer_repository = InMemoryCustomerRepository.new
-      Configuration.new(customer_repository).call(cqrs)
+      super()
+      Configuration.new.call(cqrs)
     end
   end
 end
