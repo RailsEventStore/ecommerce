@@ -68,7 +68,7 @@ module Ecommerce
             )
           )
         end,
-        [Pricing::ItemAddedToBasket]
+        [Ordering::ItemAddedToBasket]
       )
       cqrs.subscribe(
         ->(event) do
@@ -79,7 +79,7 @@ module Ecommerce
             )
           )
         end,
-        [Pricing::ItemRemovedFromBasket]
+        [Ordering::ItemRemovedFromBasket]
       )
     end
 
