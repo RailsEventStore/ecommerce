@@ -1,6 +1,6 @@
 require "test_helper"
 
-class ReleasePaymentProcessTest < Ecommerce::InMemoryTestCase
+class ReleasePaymentProcessTest < InMemoryTestCase
   cover "ReleasePaymentProcess*"
 
   def test_happy_path

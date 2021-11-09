@@ -3,6 +3,7 @@ require "mutant/minitest/coverage"
 
 require_relative "../lib/inventory"
 require_relative "../../ordering/lib/ordering"
+require_relative "../../configuration"
 
 module Inventory
   class Test < Infra::InMemoryTest
@@ -11,20 +12,8 @@ module Inventory
     def before_setup
       super
       Configuration.new.call(cqrs)
-      cqrs.subscribe(
-        CheckAvailabilityOnOrderItemAddedToBasket.new(cqrs.event_store),
-        [Ordering::ItemAddedToBasket]
-      )
-      cqrs.subscribe(
-        ->(event) do
-          cqrs.run(
-            Inventory::SubmitReservation.new(
-              order_id: event.data.fetch(:order_id),
-              reservation_items: event.data.fetch(:order_lines)
-            )
-          )
-        end,
-        [Ordering::OrderSubmitted])
+      Ecommerce::Configuration.new.check_product_availability_on_adding_item_to_basket(cqrs)
+      Ecommerce::Configuration.new.enable_inventory_sync_from_ordering(cqrs)
     end
 
     private

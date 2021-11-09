@@ -1,7 +1,7 @@
 require "test_helper"
 
 module Orders
-  class OrderExpiredTest < Ecommerce::InMemoryTestCase
+  class OrderExpiredTest < InMemoryTestCase
     cover "Orders"
 
     def setup

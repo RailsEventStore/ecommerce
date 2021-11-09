@@ -1,6 +1,6 @@
 require "test_helper"
 
-class OrdersTest < Ecommerce::InMemoryRESIntegrationTestCase
+class OrdersTest < InMemoryRESIntegrationTestCase
   cover "Orders*"
 
   def setup
@@ -45,7 +45,7 @@ class OrdersTest < Ecommerce::InMemoryRESIntegrationTestCase
       )
     )
     run_command(Pricing::SetPrice.new(product_id: product_id, price: 39))
-    async_remote = Ecommerce::ProductRepository.new.find(product_id)
+    async_remote = ProductRepository.new.find(product_id)
 
     product_id = SecureRandom.uuid
     run_command(
@@ -55,7 +55,7 @@ class OrdersTest < Ecommerce::InMemoryRESIntegrationTestCase
       )
     )
     run_command(Pricing::SetPrice.new(product_id: product_id, price: 49))
-    fearless = Ecommerce::ProductRepository.new.find(product_id)
+    fearless = ProductRepository.new.find(product_id)
 
     post "/orders",
          params: {
@@ -109,7 +109,7 @@ class OrdersTest < Ecommerce::InMemoryRESIntegrationTestCase
       )
     )
     run_command(Pricing::SetPrice.new(product_id: product_id, price: 39))
-    async_remote = Ecommerce::ProductRepository.new.find(product_id)
+    async_remote = ProductRepository.new.find(product_id)
 
     post "/orders/#{order_id}/add_item?product_id=#{async_remote.id}"
     follow_redirect!
@@ -135,7 +135,7 @@ class OrdersTest < Ecommerce::InMemoryRESIntegrationTestCase
       )
     )
     run_command(Pricing::SetPrice.new(product_id: product_id, price: 39))
-    async_remote = Ecommerce::ProductRepository.new.find(product_id)
+    async_remote = ProductRepository.new.find(product_id)
 
     get "/"
     get "/orders/new"

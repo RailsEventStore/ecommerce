@@ -1,6 +1,6 @@
 require "test_helper"
 
-class OrderConfirmationTest < Ecommerce::InMemoryTestCase
+class OrderConfirmationTest < InMemoryTestCase
   cover "OrderConfirmation"
 
   def test_authorized_is_not_enough_to_confirm
