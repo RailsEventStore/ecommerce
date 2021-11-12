@@ -26,48 +26,62 @@ module Orders
     def call(cqrs)
       @cqrs = cqrs
 
-      subscribe(
+      subscribe_and_link_to_stream(
         ->(event) { mark_as_submitted(event) },
         [Ordering::OrderSubmitted]
       )
-      subscribe(
+      subscribe_and_link_to_stream(
         ->(event) { change_order_state(event, "Expired") },
         [Ordering::OrderExpired]
       )
-      subscribe(
+      subscribe_and_link_to_stream(
         ->(event) { change_order_state(event, "Paid") },
         [Ordering::OrderPaid]
       )
-      subscribe(
+      subscribe_and_link_to_stream(
         ->(event) { change_order_state(event, "Cancelled") },
         [Ordering::OrderCancelled]
       )
-      subscribe(
+      subscribe_and_link_to_stream(
         ->(event) { add_item_to_order(event) },
         [Ordering::ItemAddedToBasket]
       )
-      subscribe(
+      subscribe_and_link_to_stream(
         ->(event) { remove_item_from_order(event) },
         [Ordering::ItemRemovedFromBasket]
       )
-      subscribe(
+      subscribe_and_link_to_stream(
         ->(event) { update_discount(event) },
         [Pricing::PercentageDiscountSet]
       )
-      subscribe(
+      subscribe_and_link_to_stream(
         ->(event) { update_totals(event) },
         [Pricing::OrderTotalValueCalculated]
+      )
+
+      subscribe(
+        -> (event) { create_product(event) },
+        [ProductCatalog::ProductRegistered]
+      )
+
+      subscribe(
+        -> (event) { change_product_price(event) },
+        [Pricing::PriceSet]
       )
     end
 
     private
 
-    def subscribe(handler, events)
+    def subscribe_and_link_to_stream(handler, events)
       link_and_handle = ->(event) do
         link_to_stream(event)
         handler.call(event)
       end
       @cqrs.subscribe(link_and_handle, events)
+    end
+
+    def subscribe(handler, events)
+      @cqrs.subscribe(handler, events)
     end
 
     def mark_as_submitted(event)
@@ -147,6 +161,12 @@ module Orders
           yield(order)
           order.save!
         end
+    end
+
+    def create_product(event)
+    end
+
+    def change_product_price(event)
     end
   end
 end
