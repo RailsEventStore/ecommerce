@@ -8,13 +8,6 @@ module Ordering
       aggregate_id = SecureRandom.uuid
       stream = "Ordering::Order$#{aggregate_id}"
       product_id = SecureRandom.uuid
-      run_command(
-        ProductCatalog::RegisterProduct.new(
-          product_id: product_id,
-          name: "Async Remote"
-        )
-      )
-      run_command(Pricing::SetPrice.new(product_id: product_id, price: 39))
 
       [0, 1].each do |quantity_before|
         expected_events = [
@@ -40,17 +33,9 @@ module Ordering
     def test_no_add_allowed_to_submitted_order
       aggregate_id = SecureRandom.uuid
       customer_id = SecureRandom.uuid
-      command_bus.call(
-        Crm::RegisterCustomer.new(customer_id: customer_id, name: "dummy")
-      )
       product_id = SecureRandom.uuid
-      run_command(
-        ProductCatalog::RegisterProduct.new(
-          product_id: product_id,
-          name: "Async Remote"
-        )
-      )
       order_number = FakeNumberGenerator::FAKE_NUMBER
+
       arrange(
         AddItemToBasket.new(order_id: aggregate_id, product_id: product_id),
         SubmitOrder.new(
@@ -59,7 +44,6 @@ module Ordering
           customer_id: customer_id
         )
       )
-
       assert_raises(Order::AlreadySubmitted) do
         act(AddItemToBasket.new(order_id: aggregate_id, product_id: product_id))
       end

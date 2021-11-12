@@ -30,7 +30,7 @@ module Infra
       @command_bus.call(command)
     end
 
-    def link_event_to_stream(event, stream)
+    def link_event_to_stream(event, stream, expected_version = :any)
       @event_store.link(
         event.event_id,
         stream_name: stream,

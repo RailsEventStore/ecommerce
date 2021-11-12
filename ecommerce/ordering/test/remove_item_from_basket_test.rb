@@ -9,12 +9,6 @@ module Ordering
       stream = "Ordering::Order$#{aggregate_id}"
 
       product_id = SecureRandom.uuid
-      run_command(
-        ProductCatalog::RegisterProduct.new(
-          product_id: product_id,
-          name: "test"
-        )
-      )
 
       arrange(
         AddItemToBasket.new(
@@ -43,17 +37,9 @@ module Ordering
     def test_no_remove_allowed_to_created_order
       aggregate_id = SecureRandom.uuid
       customer_id = SecureRandom.uuid
-      command_bus.call(
-        Crm::RegisterCustomer.new(customer_id: customer_id, name: "dummy")
-      )
       product_id = SecureRandom.uuid
-      run_command(
-        ProductCatalog::RegisterProduct.new(
-          product_id: product_id,
-          name: "test"
-        )
-      )
       order_number = FakeNumberGenerator::FAKE_NUMBER
+
       arrange(
         AddItemToBasket.new(order_id: aggregate_id, product_id: product_id),
         SubmitOrder.new(order_id: aggregate_id, order_number: order_number, customer_id: customer_id)

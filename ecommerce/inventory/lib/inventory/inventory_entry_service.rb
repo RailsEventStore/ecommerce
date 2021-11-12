@@ -10,6 +10,12 @@ module Inventory
       end
     end
 
+    def check_availability(command)
+      with_inventory_entry(command.product_id) do |entry|
+        entry.check_availability!(command.desired_quantity)
+      end
+    end
+
     private
 
     def with_inventory_entry(product_id)

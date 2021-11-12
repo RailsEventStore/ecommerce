@@ -3,6 +3,7 @@ require_relative "inventory/commands/submit_reservation"
 require_relative "inventory/commands/cancel_reservation"
 require_relative "inventory/commands/complete_reservation"
 require_relative "inventory/commands/supply"
+require_relative "inventory/commands/check_availability"
 require_relative "inventory/events/reservation_canceled"
 require_relative "inventory/events/reservation_completed"
 require_relative "inventory/events/reservation_submitted"
@@ -13,7 +14,6 @@ require_relative "inventory/reservation_service"
 require_relative "inventory/inventory_entry_service"
 require_relative "inventory/inventory_entry"
 require_relative "inventory/reservation"
-require_relative "inventory/check_availability_on_order_item_added_to_basket"
 
 module Inventory
   class Configuration
@@ -36,7 +36,16 @@ module Inventory
         reservation.public_method(:complete_reservation),
         ReservationCompleted
       )
-      cqrs.register_command(Supply, inventory.public_method(:supply), StockLevelChanged)
+      cqrs.register_command(
+        Supply,
+        inventory.public_method(:supply),
+        StockLevelChanged
+      )
+      cqrs.register_command(
+        CheckAvailability,
+        inventory.public_method(:check_availability),
+        nil
+      )
     end
   end
 end

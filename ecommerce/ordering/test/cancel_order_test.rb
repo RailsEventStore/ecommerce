@@ -6,15 +6,7 @@ module Ordering
 
     def test_draft_order_cant_be_cancelled
       aggregate_id = SecureRandom.uuid
-
       product_id = SecureRandom.uuid
-      run_command(
-        ProductCatalog::RegisterProduct.new(
-          product_id: product_id,
-          name: "test"
-        )
-      )
-      run_command(Pricing::SetPrice.new(product_id: product_id, price: 20))
 
       arrange(
         AddItemToBasket.new(
@@ -31,20 +23,8 @@ module Ordering
     def test_submitted_order_can_be_cancelled
       aggregate_id = SecureRandom.uuid
       stream = "Ordering::Order$#{aggregate_id}"
-
       product_id = SecureRandom.uuid
-      run_command(
-        ProductCatalog::RegisterProduct.new(
-          product_id: product_id,
-          name: "test"
-        )
-      )
-      run_command(Pricing::SetPrice.new(product_id: product_id, price: 20))
-
       customer_id = SecureRandom.uuid
-      command_bus.call(
-        Crm::RegisterCustomer.new(customer_id: customer_id, name: "dummy")
-      )
 
       arrange(
         AddItemToBasket.new(
@@ -66,20 +46,9 @@ module Ordering
 
     def test_paid_order_cant_be_cancelled
       aggregate_id = SecureRandom.uuid
-
       product_id = SecureRandom.uuid
-      run_command(
-        ProductCatalog::RegisterProduct.new(
-          product_id: product_id,
-          name: "test"
-        )
-      )
-      run_command(Pricing::SetPrice.new(product_id: product_id, price: 20))
-
       customer_id = SecureRandom.uuid
-      command_bus.call(
-        Crm::RegisterCustomer.new(customer_id: customer_id, name: "dummy")
-      )
+
       arrange(
         AddItemToBasket.new(
           order_id: aggregate_id,
@@ -100,20 +69,9 @@ module Ordering
 
     def test_expired_order_cant_be_cancelled
       aggregate_id = SecureRandom.uuid
-
       product_id = SecureRandom.uuid
-      run_command(
-        ProductCatalog::RegisterProduct.new(
-          product_id: product_id,
-          name: "test"
-        )
-      )
-      run_command(Pricing::SetPrice.new(product_id: product_id, price: 20))
-
       customer_id = SecureRandom.uuid
-      run_command(
-        Crm::RegisterCustomer.new(customer_id: customer_id, name: "dummy")
-      )
+
       arrange(
         AddItemToBasket.new(
           order_id: aggregate_id,

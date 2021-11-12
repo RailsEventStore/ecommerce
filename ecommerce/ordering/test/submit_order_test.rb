@@ -8,18 +8,7 @@ module Ordering
       aggregate_id = SecureRandom.uuid
       stream = "Ordering::Order$#{aggregate_id}"
       customer_id = SecureRandom.uuid
-      command_bus.call(
-        Crm::RegisterCustomer.new(customer_id: customer_id, name: "dummy")
-      )
       product_id = SecureRandom.uuid
-      run_command(
-        ProductCatalog::RegisterProduct.new(
-          product_id: product_id,
-          name: "Async Remote"
-        )
-      )
-      run_command(Pricing::SetPrice.new(product_id: product_id, price: 39))
-
       order_number = FakeNumberGenerator::FAKE_NUMBER
       arrange(
         AddItemToBasket.new(
@@ -54,25 +43,8 @@ module Ordering
     def test_already_created_order_could_not_be_created_again
       aggregate_id = SecureRandom.uuid
       customer_id = SecureRandom.uuid
-      command_bus.call(
-        Crm::RegisterCustomer.new(customer_id: customer_id, name: "test")
-      )
       product_id = SecureRandom.uuid
-      run_command(
-        ProductCatalog::RegisterProduct.new(
-          product_id: product_id,
-          name: "Async Remote"
-        )
-      )
-      run_command(Pricing::SetPrice.new(product_id: product_id, price: 39))
-
       another_customer_id = SecureRandom.uuid
-      run_command(
-        Crm::RegisterCustomer.new(
-          customer_id: another_customer_id,
-          name: "another"
-        )
-      )
       order_number = FakeNumberGenerator::FAKE_NUMBER
 
       arrange(
@@ -100,17 +72,7 @@ module Ordering
     def test_expired_order_could_not_be_created
       aggregate_id = SecureRandom.uuid
       customer_id = SecureRandom.uuid
-      run_command(
-        Crm::RegisterCustomer.new(customer_id: customer_id, name: "test")
-      )
       product_id = SecureRandom.uuid
-      run_command(
-        ProductCatalog::RegisterProduct.new(
-          product_id: product_id,
-          name: "Async Remote"
-        )
-      )
-      run_command(Pricing::SetPrice.new(product_id: product_id, price: 39))
 
       arrange(
         AddItemToBasket.new(

@@ -9,9 +9,7 @@ module Shipping
 
     def before_setup
       super
-      [
-        Shipping::Configuration.new
-      ].each { |c| c.call(cqrs) }
+      Shipping::Configuration.new.call(cqrs)
     end
   end
 end

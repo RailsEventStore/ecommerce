@@ -8,13 +8,7 @@ module Ordering
       aggregate_id = SecureRandom.uuid
       stream = "Ordering::Order$#{aggregate_id}"
       product_id = SecureRandom.uuid
-      run_command(
-        ProductCatalog::RegisterProduct.new(
-          product_id: product_id,
-          name: "test"
-        )
-      )
-      run_command(Pricing::SetPrice.new(product_id: product_id, price: 20))
+
       arrange(
         AddItemToBasket.new(
           order_id: aggregate_id,
@@ -32,17 +26,8 @@ module Ordering
       aggregate_id = SecureRandom.uuid
       stream = "Ordering::Order$#{aggregate_id}"
       product_id = SecureRandom.uuid
-      run_command(
-        ProductCatalog::RegisterProduct.new(
-          product_id: product_id,
-          name: "test"
-        )
-      )
-      run_command(Pricing::SetPrice.new(product_id: product_id, price: 20))
       customer_id = SecureRandom.uuid
-      command_bus.call(
-        Crm::RegisterCustomer.new(customer_id: customer_id, name: "dummy")
-      )
+
       arrange(
         AddItemToBasket.new(
           order_id: aggregate_id,
@@ -64,17 +49,8 @@ module Ordering
     def test_paid_order_cannot_expire
       aggregate_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
-      run_command(
-        ProductCatalog::RegisterProduct.new(
-          product_id: product_id,
-          name: "test"
-        )
-      )
-      run_command(Pricing::SetPrice.new(product_id: product_id, price: 20))
       customer_id = SecureRandom.uuid
-      run_command(
-        Crm::RegisterCustomer.new(customer_id: customer_id, name: "dummy")
-      )
+
       arrange(
         AddItemToBasket.new(
           order_id: aggregate_id,

@@ -11,12 +11,7 @@ module Inventory
 
     def before_setup
       super
-      ecommerce_configuration = Ecommerce::Configuration.new
-      [
-        Configuration.new,
-        ecommerce_configuration.public_method(:check_product_availability_on_adding_item_to_basket),
-        ecommerce_configuration.public_method(:enable_inventory_sync_from_ordering)
-      ].each { |c| c.call(cqrs) }
+      Configuration.new.call(cqrs)
     end
 
     def inventory_entry_stream(product_id)

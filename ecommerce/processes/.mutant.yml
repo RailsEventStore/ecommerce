@@ -1,0 +1,14 @@
+requires:
+  - ./test/test_helper
+integration: minitest
+coverage_criteria:
+  process_abort: true
+matcher:
+  subjects:
+    - Processes*
+  ignore:
+    - Processes::Configuration*
+    - Processes::Test*
+    - Processes::ShipmentProcess*
+    - Processes::ReleasePaymentProcess*
+    - Processes::OrderConfirmation*

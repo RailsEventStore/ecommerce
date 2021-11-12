@@ -6,15 +6,7 @@ module Ordering
 
     def test_draft_order_could_not_be_marked_as_paid
       aggregate_id = SecureRandom.uuid
-
       product_id = SecureRandom.uuid
-      run_command(
-        ProductCatalog::RegisterProduct.new(
-          product_id: product_id,
-          name: "test"
-        )
-      )
-      run_command(Pricing::SetPrice.new(product_id: product_id, price: 20))
 
       arrange(
         AddItemToBasket.new(
@@ -22,7 +14,6 @@ module Ordering
           product_id: product_id
         )
       )
-
       assert_raises(Order::NotSubmitted) do
         act(MarkOrderAsPaid.new(order_id: aggregate_id))
       end
@@ -31,20 +22,9 @@ module Ordering
     def test_submitted_order_will_be_marked_as_paid
       aggregate_id = SecureRandom.uuid
       stream = "Ordering::Order$#{aggregate_id}"
-
       product_id = SecureRandom.uuid
-      run_command(
-        ProductCatalog::RegisterProduct.new(
-          product_id: product_id,
-          name: "test"
-        )
-      )
-      run_command(Pricing::SetPrice.new(product_id: product_id, price: 20))
-
       customer_id = SecureRandom.uuid
-      command_bus.call(
-        Crm::RegisterCustomer.new(customer_id: customer_id, name: "dummy")
-      )
+
       arrange(
         AddItemToBasket.new(
           order_id: aggregate_id,
@@ -64,20 +44,8 @@ module Ordering
 
     def test_expired_order_cannot_be_marked_as_paid
       aggregate_id = SecureRandom.uuid
-
       product_id = SecureRandom.uuid
-      run_command(
-        ProductCatalog::RegisterProduct.new(
-          product_id: product_id,
-          name: "test"
-        )
-      )
-      run_command(Pricing::SetPrice.new(product_id: product_id, price: 20))
-
       customer_id = SecureRandom.uuid
-      run_command(
-        Crm::RegisterCustomer.new(customer_id: customer_id, name: "dummy")
-      )
       arrange(
         AddItemToBasket.new(
           order_id: aggregate_id,

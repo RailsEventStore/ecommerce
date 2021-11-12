@@ -32,7 +32,8 @@ module Inventory
     end
 
     def reserve(quantity)
-      check_availability(quantity)
+      raise StockLevelUndefined unless stock_level_defined?
+      check_availability!(quantity)
       apply StockReserved.new(
               data: {
                 product_id: @product_id,
@@ -50,9 +51,9 @@ module Inventory
             )
     end
 
-    def check_availability(quantity)
-      raise StockLevelUndefined unless @in_stock
-      raise InventoryNotAvailable if quantity > availability
+    def check_availability!(desired_quantity)
+      return unless stock_level_defined?
+      raise InventoryNotAvailable if desired_quantity > availability
     end
 
     private
@@ -71,6 +72,10 @@ module Inventory
 
     def availability
       @in_stock - @reserved
+    end
+
+    def stock_level_defined?
+      !@in_stock.nil?
     end
   end
 end

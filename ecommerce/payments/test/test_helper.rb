@@ -15,17 +15,7 @@ module Payments
     def before_setup
       super
       @payment_gateway = FakeGateway.new
-      ecommerce_configuration = Ecommerce::Configuration.new
-      [
-        Configuration.new(-> { @payment_gateway }),
-        ProductCatalog::Configuration.new,
-        Pricing::Configuration.new,
-        Ordering::Configuration.new(-> { Ordering::FakeNumberGenerator.new }),
-        Crm::Configuration.new,
-        ecommerce_configuration.public_method(:notify_payments_about_order_total_value),
-        ecommerce_configuration.public_method(:enable_pricing_sync_from_ordering),
-        ecommerce_configuration.public_method(:calculate_total_value_when_order_submitted)
-      ].each { |c| c.call(cqrs) }
+      Configuration.new(-> { @payment_gateway }).call(cqrs)
     end
   end
 end

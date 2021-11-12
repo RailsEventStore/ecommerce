@@ -2,16 +2,13 @@ require_relative "test_helper"
 
 module Inventory
   class CheckAvailabilityTest < Test
-    def test_inventory_available_error_is_raised
+    def test_inventory_not_available_error_is_raised
       product_id = SecureRandom.uuid
-      order_id = SecureRandom.uuid
-      publish_item_added_event(order_id, product_id, 0)
-      arrange(
-        supply(product_id, 2),
-      )
-      publish_item_added_event(order_id, product_id, 1)
+      act(CheckAvailability.new(product_id: product_id, desired_quantity: 1))
+      act(Supply.new(product_id: product_id, quantity: 1))
+      act(CheckAvailability.new(product_id: product_id, desired_quantity: 1))
       assert_raises(InventoryEntry::InventoryNotAvailable) do
-        publish_item_added_event(order_id, product_id, 2)
+        act(CheckAvailability.new(product_id: product_id, desired_quantity: 2))
       end
     end
 
