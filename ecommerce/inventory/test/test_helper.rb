@@ -2,8 +2,6 @@ require "minitest/autorun"
 require "mutant/minitest/coverage"
 
 require_relative "../lib/inventory"
-require_relative "../../ordering/lib/ordering"
-require_relative "../../configuration"
 
 module Inventory
   class Test < Infra::InMemoryTest

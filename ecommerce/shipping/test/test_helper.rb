@@ -1,8 +1,7 @@
 require "minitest/autorun"
 require "mutant/minitest/coverage"
 
-require_relative "../../pricing/lib/pricing"
-require_relative "../../shipping/lib/shipping"
+require_relative "../lib/shipping"
 
 module Shipping
   class Test < Infra::InMemoryTest
