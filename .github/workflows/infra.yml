@@ -9,7 +9,7 @@ jobs:
     strategy:
       fail-fast: false
     env:
-      WORKING_DIRECTORY: ecommerce/infra
+      WORKING_DIRECTORY: infra
     services:
       postgres_11:
         image: postgres:11
@@ -49,7 +49,7 @@ jobs:
     strategy:
       fail-fast: false
     env:
-      WORKING_DIRECTORY: ecommerce/infra
+      WORKING_DIRECTORY: infra
     services:
       postgres_11:
         image: postgres:11
