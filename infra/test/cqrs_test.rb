@@ -16,7 +16,7 @@ module Infra
 
     def test_works
       cqrs = Cqrs.new(event_store, command_bus)
-      cqrs.register_command(SomeCommandHandler.new, SomeCommand, [SomeEvent])
+      cqrs.register_command(SomeCommand, SomeCommandHandler.new, [SomeEvent])
 
       assert_equal({ SomeCommand => [SomeEvent] }, cqrs.to_hash)
     end

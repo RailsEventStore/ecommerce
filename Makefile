@@ -18,11 +18,20 @@ test-rails:
 mutate-rails:
 	@make -C rails_application mutate
 
-install: install-rails $(addprefix install-, $(CONTEXTS)) ## Install all dependencies
+install-infra:
+	@make -C infra install
 
-test: test-rails $(addprefix test-, $(CONTEXTS)) ## Run all unit tests
+test-infra:
+	@make -C infra test
 
-mutate: mutate-rails $(addprefix mutate-, $(CONTEXTS)) ## Run all mutation coverage
+mutate-infra:
+	@make -C infra mutate
+
+install: install-infra install-rails $(addprefix install-, $(CONTEXTS)) ## Install all dependencies
+
+test: test-infra test-rails $(addprefix test-, $(CONTEXTS)) ## Run all unit tests
+
+mutate: mutate-infra mutate-rails $(addprefix mutate-, $(CONTEXTS)) ## Run all mutation coverage
 
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'

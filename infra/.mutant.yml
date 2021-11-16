@@ -15,3 +15,7 @@ matcher:
     - Infra::Event*
     - Infra::Command*
     - Infra::AggregateRootRepository*
+    - Infra::TestPlumbing*
+    - Infra::NoEvent*
+    - Infra::EventStore*
+    - Infra::Cqrs*
