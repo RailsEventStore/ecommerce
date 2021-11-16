@@ -13,6 +13,10 @@ module Orders
     self.table_name = "orders_products"
   end
 
+  class Customer < ApplicationRecord
+    self.table_name = "orders_customers"
+  end
+
   class OrderLine < ApplicationRecord
     self.table_name = "order_lines"
 
@@ -22,9 +26,6 @@ module Orders
   end
 
   class Configuration
-    def initialize(customer_repository)
-      @customer_repository = customer_repository
-    end
 
     def call(cqrs)
       @cqrs = cqrs
@@ -71,6 +72,11 @@ module Orders
         -> (event) { change_product_price(event) },
         [Pricing::PriceSet]
       )
+
+      subscribe_and_link_to_stream(
+        -> (event) { create_customer(event) },
+        [Crm::CustomerRegistered]
+      )
     end
 
     private
@@ -90,7 +96,7 @@ module Orders
     def mark_as_submitted(event)
       order = Order.find_or_create_by(uid: event.data.fetch(:order_id))
       order.number = event.data.fetch(:order_number)
-      order.customer = @customer_repository.find(event.data.fetch(:customer_id)).name
+      order.customer = Customer.find_by_uid(event.data.fetch(:customer_id)).name
       order.state = "Submitted"
       order.save!
     end
@@ -175,6 +181,13 @@ module Orders
 
     def change_product_price(event)
       Product.find_by_uid(event.data.fetch(:product_id)).update(price: event.data.fetch(:price))
+    end
+
+    def create_customer(event)
+      Customer.create(
+        uid:  event.data.fetch(:customer_id),
+        name: event.data.fetch(:name)
+      )
     end
   end
 end

@@ -5,8 +5,6 @@ require_relative "../lib/crm"
 
 module Crm
   class Test < Infra::InMemoryTest
-    attr_reader :customer_repository
-
     def before_setup
       super()
       Configuration.new.call(cqrs)

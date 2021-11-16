@@ -1,5 +1,4 @@
 require_relative "../../ecommerce/configuration"
-require_relative "customer_repository"
 
 class Configuration
   def call(cqrs)
@@ -34,10 +33,6 @@ class Configuration
   end
 
   def enable_orders_read_model(cqrs)
-    Orders::Configuration.new(customer_repository).call(cqrs)
-  end
-
-  def customer_repository
-    @customer_repo ||= CustomerRepository.new
+    Orders::Configuration.new.call(cqrs)
   end
 end
