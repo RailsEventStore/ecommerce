@@ -15,7 +15,7 @@ class OrdersController < ApplicationController
 
   def new
     @order_id = SecureRandom.uuid
-    @products = ProductRepository.new.all
+    @products = Products::Product.all
     @customers = CustomerRepository.new.all
   end
 
@@ -23,7 +23,7 @@ class OrdersController < ApplicationController
     @order_id = params[:id]
     @order = Orders::Order.find_by_uid(params[:id])
     @order_lines = Orders::OrderLine.where(order_uid: params[:id])
-    @products = ProductRepository.new.all
+    @products = Products::Product.all
     @customers = CustomerRepository.new.all
   end
 

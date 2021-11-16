@@ -1,6 +1,5 @@
 require_relative "../../ecommerce/configuration"
 require_relative "customer_repository"
-require_relative "product_repository"
 
 class Configuration
   def call(cqrs)

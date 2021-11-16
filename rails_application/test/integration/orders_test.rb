@@ -37,25 +37,23 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     order_id = SecureRandom.uuid
     another_order_id = SecureRandom.uuid
 
-    product_id = SecureRandom.uuid
+    async_remote_id = SecureRandom.uuid
     run_command(
       ProductCatalog::RegisterProduct.new(
-        product_id: product_id,
+        product_id: async_remote_id,
         name: "Async Remote"
       )
     )
-    run_command(Pricing::SetPrice.new(product_id: product_id, price: 39))
-    async_remote = ProductRepository.new.find(product_id)
+    run_command(Pricing::SetPrice.new(product_id: async_remote_id, price: 39))
 
-    product_id = SecureRandom.uuid
+    fearless_id = SecureRandom.uuid
     run_command(
       ProductCatalog::RegisterProduct.new(
-        product_id: product_id,
+        product_id: fearless_id,
         name: "Fearless Refactoring"
       )
     )
-    run_command(Pricing::SetPrice.new(product_id: product_id, price: 49))
-    fearless = ProductRepository.new.find(product_id)
+    run_command(Pricing::SetPrice.new(product_id: fearless_id, price: 49))
 
     post "/orders",
          params: {
@@ -67,13 +65,13 @@ class OrdersTest < InMemoryRESIntegrationTestCase
 
     get "/"
     get "/orders/new"
-    post "/orders/#{order_id}/add_item?product_id=#{async_remote.id}"
+    post "/orders/#{order_id}/add_item?product_id=#{async_remote_id}"
     follow_redirect!
     assert_select("td", "$39.00")
-    post "/orders/#{order_id}/add_item?product_id=#{fearless.id}"
+    post "/orders/#{order_id}/add_item?product_id=#{fearless_id}"
     follow_redirect!
     assert_select("td", "$88.00")
-    post "/orders/#{order_id}/add_item?product_id=#{fearless.id}"
+    post "/orders/#{order_id}/add_item?product_id=#{fearless_id}"
     follow_redirect!
     assert_select("td", "$137.00")
 
@@ -101,17 +99,16 @@ class OrdersTest < InMemoryRESIntegrationTestCase
 
   def test_expiring_orders
     order_id = SecureRandom.uuid
-    product_id = SecureRandom.uuid
+    async_remote_id = SecureRandom.uuid
     run_command(
       ProductCatalog::RegisterProduct.new(
-        product_id: product_id,
+        product_id: async_remote_id,
         name: "Async Remote"
       )
     )
-    run_command(Pricing::SetPrice.new(product_id: product_id, price: 39))
-    async_remote = ProductRepository.new.find(product_id)
+    run_command(Pricing::SetPrice.new(product_id: async_remote_id, price: 39))
 
-    post "/orders/#{order_id}/add_item?product_id=#{async_remote.id}"
+    post "/orders/#{order_id}/add_item?product_id=#{async_remote_id}"
     follow_redirect!
     assert_select("td", "$39.00")
     get "/orders"
@@ -127,19 +124,18 @@ class OrdersTest < InMemoryRESIntegrationTestCase
       Crm::RegisterCustomer.new(customer_id: shopify_id, name: "Shopify")
     )
     order_id = SecureRandom.uuid
-    product_id = SecureRandom.uuid
+    async_remote_id = SecureRandom.uuid
     run_command(
       ProductCatalog::RegisterProduct.new(
-        product_id: product_id,
+        product_id: async_remote_id,
         name: "Async Remote"
       )
     )
-    run_command(Pricing::SetPrice.new(product_id: product_id, price: 39))
-    async_remote = ProductRepository.new.find(product_id)
+    run_command(Pricing::SetPrice.new(product_id: async_remote_id, price: 39))
 
     get "/"
     get "/orders/new"
-    post "/orders/#{order_id}/add_item?product_id=#{async_remote.id}"
+    post "/orders/#{order_id}/add_item?product_id=#{async_remote_id}"
     follow_redirect!
     assert_select("td", "$39.00")
     post "/orders",
