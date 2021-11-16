@@ -13,3 +13,4 @@ matcher:
     - Orders*
   ignore:
     - Orders::Configuration#call
+    - Orders::Configuration#change_product_price

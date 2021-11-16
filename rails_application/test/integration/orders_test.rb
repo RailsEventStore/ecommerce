@@ -158,7 +158,7 @@ class OrdersTest < InMemoryRESIntegrationTestCase
   private
 
   def assert_res_browser_order_history
-    get "/res/api/streams/Orders$#{Orders::Order.last.uid}/relationships/events"
+    get "/res/api/streams/Orders$all/relationships/events"
     event_names =
       JSON
         .load(body)

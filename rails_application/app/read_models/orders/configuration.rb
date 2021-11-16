@@ -9,6 +9,10 @@ module Orders
              primary_key: :uid
   end
 
+  class Product < ApplicationRecord
+    self.table_name = "orders_products"
+  end
+
   class OrderLine < ApplicationRecord
     self.table_name = "order_lines"
 
@@ -18,8 +22,7 @@ module Orders
   end
 
   class Configuration
-    def initialize(product_repository, customer_repository)
-      @product_repository = product_repository
+    def initialize(customer_repository)
       @customer_repository = customer_repository
     end
 
@@ -59,12 +62,12 @@ module Orders
         [Pricing::OrderTotalValueCalculated]
       )
 
-      subscribe(
+      subscribe_and_link_to_stream(
         -> (event) { create_product(event) },
         [ProductCatalog::ProductRegistered]
       )
 
-      subscribe(
+      subscribe_and_link_to_stream(
         -> (event) { change_product_price(event) },
         [Pricing::PriceSet]
       )
@@ -77,7 +80,7 @@ module Orders
         link_to_stream(event)
         handler.call(event)
       end
-      @cqrs.subscribe(link_and_handle, events)
+      subscribe(link_and_handle, events)
     end
 
     def subscribe(handler, events)
@@ -93,7 +96,7 @@ module Orders
     end
 
     def link_to_stream(event)
-      @cqrs.link_event_to_stream(event, "Orders$#{event.data.fetch(:order_id)}")
+      @cqrs.link_event_to_stream(event, "Orders$all")
     end
 
     def add_item_to_order(event)
@@ -120,7 +123,7 @@ module Orders
     end
 
     def create(order_uid, product_id)
-      product = @product_repository.find(product_id)
+      product = Product.find_by_uid(product_id)
       Order
         .find_by(uid: order_uid)
         .order_lines
@@ -164,9 +167,14 @@ module Orders
     end
 
     def create_product(event)
+      Product.create(
+        uid: event.data.fetch(:product_id),
+        name: event.data.fetch(:name)
+      )
     end
 
     def change_product_price(event)
+      Product.find_by_uid(event.data.fetch(:product_id)).update(price: event.data.fetch(:price))
     end
   end
 end

@@ -74,10 +74,6 @@ module Pricing
 
     private
 
-    def assert_product_read_model_price(product_id, amount)
-      assert_equal(amount, product_repository.find(product_id).price)
-    end
-
     def set_price(product_id, amount)
       run_command(SetPrice.new(product_id: product_id, price: amount))
     end

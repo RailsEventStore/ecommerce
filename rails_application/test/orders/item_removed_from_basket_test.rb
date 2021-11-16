@@ -8,6 +8,7 @@ module Orders
       super
       Order.destroy_all
       OrderLine.destroy_all
+      Product.destroy_all
     end
 
     def test_remove_item_when_quantity_gt_1

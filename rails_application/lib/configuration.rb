@@ -35,14 +35,10 @@ class Configuration
   end
 
   def enable_orders_read_model(cqrs)
-    Orders::Configuration.new(product_repository, customer_repository).call(cqrs)
+    Orders::Configuration.new(customer_repository).call(cqrs)
   end
 
   def customer_repository
     @customer_repo ||= CustomerRepository.new
-  end
-
-  def product_repository
-    @product_repo ||= ProductRepository.new
   end
 end
