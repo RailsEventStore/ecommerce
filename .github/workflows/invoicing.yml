@@ -1,4 +1,4 @@
-name: pricing
+name: invoicing
 on:
   push:
   pull_request:
