@@ -98,8 +98,28 @@ This project has several high-level goals:
 - to allow programmers to reuse existing and popular domains
 - to build new apps like Lego 
 
+# Contributing guide
 
+We welcome all the contributors here. 
 
+As you see, this project is not an usual Rails project. 
+Many Rails conventions are not followed here. Usually there's a good reason for that.
+Trust us, but feel free to challenge our decisions.
+
+Things worth knowing about:
+
+- Zeitwerk is not used here - you need to be explicit with requires
+- Any IDE should work with this codebase
+- We use mutant for mutation testing, code that is untested breaks the build.
+- But sometimes we allow ourselves for mutant ignores (explicit mark for mutant to ignore)
+- Mutant ignores are considered technical debt.
+- REST is not followed here for routes, no need for that
+- `register_command` accepts events because it's used in the `/architecture` view. 
+  It's a visualisation/documentation of the events flow
+- Certain ideas are in the Work In Progress status - sorry about that
+- Feel free to ask.
+- After you make a contribution, we'll invite you to a special Discord
+- Contributing is a good way to learn DDD/CQRS/Event sourcing.
 
 ## I like it, where can I learn more about all those DDD concepts?
 
