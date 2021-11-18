@@ -78,8 +78,6 @@ module Pricing
       case last_event
       when PercentageDiscountSet
         Discounts::DiscountedOrder.new
-      else
-        nil
       end
     end
 
