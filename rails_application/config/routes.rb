@@ -14,6 +14,9 @@ Rails.application.routes.draw do
     end
     resource :shipping_address, only: [:new, :create]
   end
+
+  resources :invoices, only: [:show]
+
   resources :products, only: [:new, :show, :create, :index] do
     resources :supplies, only: [:new, :create]
   end
