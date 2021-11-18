@@ -15,6 +15,16 @@ module Infra
     Price = Types::Coercible::Decimal.constrained(gt: 0)
     Value = Types::Coercible::Decimal
     PercentageDiscount = Types::Coercible::Decimal.constrained(gt: 0, lt: 100)
-    UUIDQuantityHash = Types::Hash.map(UUID, Types::Strict::Integer)
+    UUIDQuantityHash = Types::Hash.map(UUID, Types::Strict::Integer.constrained(gt: 0))
+
+    class VatRate < Dry::Struct
+      include Comparable
+      attribute :code, Types::String
+      attribute :rate, Types::Coercible::Decimal.constrained(gteq: 0, lteq: 100)
+
+      def <=>(other)
+        rate <=> other.rate
+      end
+    end
   end
 end
