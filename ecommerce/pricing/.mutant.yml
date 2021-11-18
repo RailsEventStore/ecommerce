@@ -14,5 +14,6 @@ matcher:
     - Pricing::Order#remove_item
     - Pricing::OnRemoveItemFromBasket#call
     - Pricing::SetPercentageDiscountHandler#initialize
+    - Pricing::ResetPercentageDiscountHandler#initialize
     - Pricing::OnRemoveItemFromBasket#initialize
     - Pricing::Test*

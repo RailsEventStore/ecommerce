@@ -157,7 +157,7 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     assert_select("dd", "Cancelled")
   end
 
-  def test_removing_discount
+  def test_reset_discount
     shopify_id = SecureRandom.uuid
     run_command(
       Crm::RegisterCustomer.new(customer_id: shopify_id, name: "Shopify")
@@ -187,6 +187,7 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     post "/orders/#{order_id}/reset_discount"
     follow_redirect!
     assert_select("td", "$137.00")
+    assert_select("a", count: 0, text: "Reset")
   end
 
   private
