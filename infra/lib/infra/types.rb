@@ -25,6 +25,8 @@ module Infra
       def <=>(other)
         rate <=> other.rate
       end
+
+      alias to_d rate
     end
   end
 end
