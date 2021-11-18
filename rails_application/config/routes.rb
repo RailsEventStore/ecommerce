@@ -11,6 +11,7 @@ Rails.application.routes.draw do
       post :pay
       get :edit_discount
       post :update_discount
+      post :reset_discount
     end
     resource :shipping_address, only: [:new, :create]
   end

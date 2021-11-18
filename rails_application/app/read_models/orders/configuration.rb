@@ -59,6 +59,10 @@ module Orders
         [Pricing::PercentageDiscountSet]
       )
       subscribe_and_link_to_stream(
+        ->(event) { reset_discount(event) },
+        [Pricing::PercentageDiscountReset]
+      )
+      subscribe_and_link_to_stream(
         ->(event) { update_totals(event) },
         [Pricing::OrderTotalValueCalculated]
       )
@@ -150,6 +154,12 @@ module Orders
     def update_discount(event)
       with_order(event) do |order|
         order.percentage_discount = event.data.fetch(:amount)
+      end
+    end
+
+    def reset_discount(event)
+      with_order(event) do |order|
+        order.percentage_discount = nil
       end
     end
 

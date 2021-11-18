@@ -55,6 +55,20 @@ module Pricing
           Pricing::SetPercentageDiscount.new(order_id: order_id, amount: 10)
         )
       end
+      assert_events(
+        stream,
+        OrderTotalValueCalculated.new(
+          data: {
+            order_id: order_id,
+            discounted_amount: 20,
+            total_amount: 20
+          }
+        )
+      ) do
+        run_command(
+          Pricing::ResetPercentageDiscount.new(order_id: order_id)
+        )
+      end
     end
 
     def test_setting_discounts_twice_not_possible_because_we_want_explicit_discount_change_command
@@ -68,6 +82,29 @@ module Pricing
       assert_raises NotPossibleToAssignDiscountTwice do
         run_command(
           Pricing::SetPercentageDiscount.new(order_id: order_id, amount: 20)
+        )
+      end
+    end
+
+    def test_resetting_with_missing_discount_not_possible
+      product_1_id = SecureRandom.uuid
+      set_price(product_1_id, 20)
+      order_id = SecureRandom.uuid
+      add_item(order_id, product_1_id)
+      assert_raises NotPossibleToResetWithoutDiscount do
+        run_command(
+          Pricing::ResetPercentageDiscount.new(order_id: order_id)
+        )
+      end
+      run_command(
+        Pricing::SetPercentageDiscount.new(order_id: order_id, amount: 10)
+      )
+      run_command(
+        Pricing::ResetPercentageDiscount.new(order_id: order_id)
+      )
+      assert_raises NotPossibleToResetWithoutDiscount do
+        run_command(
+          Pricing::ResetPercentageDiscount.new(order_id: order_id)
         )
       end
     end
