@@ -6,7 +6,7 @@ module Invoicing
       @@available_vat_rates
     end
 
-    def initialize available_vat_rates = []
+    def initialize(available_vat_rates = [])
       @available_vat_rates = available_vat_rates
     end
 
