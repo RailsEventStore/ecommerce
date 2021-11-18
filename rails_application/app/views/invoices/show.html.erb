@@ -9,8 +9,12 @@
 <% end %>
 
 <dl class="mb-8">
+  <dt class="font-bold">Invoiced by</dt>
+  <dd class="mb-2"><%= "Arkency Ecommerce" %></dd>
+  <dt class="font-bold">Invoice date</dt>
+  <dd class="mb-2">2021.11.15</dd>
   <dt class="font-bold">Customer</dt>
-  <dd class="mb-2"><%= @order.customer || "None" %></dd>
+  <dd class="mb-2"><%= @order.customer %></dd>
 </dl>
 
 <table class="w-full">
@@ -40,6 +44,10 @@
       <td class="py-2 text-right"><%= @order.percentage_discount %>%</td>
     </tr>
     <% end %>
+    <tr class="border-t">
+      <td class="py-2" colspan="3">Sales tax:</td>
+      <td class="py-2 text-right">0%</td>
+    </tr>
     <tr class="border-t">
       <td class="py-2" colspan="3">Total</td>
       <td class="py-2 text-right font-bold"><%= number_to_currency(@order.discounted_value) %></td>

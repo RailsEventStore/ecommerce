@@ -92,6 +92,9 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     assert_select("a", "Invoice")
     get "/invoices/#{order_id}"
     assert_select("dd", "Shopify")
+    assert_select("dd", "Arkency Ecommerce")
+    assert_select("dd", "2021.11.15")
+    assert_select("td", "0%")
     get "/orders"
     post "/orders/#{order_id}/pay"
     follow_redirect!
