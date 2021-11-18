@@ -43,6 +43,17 @@ class OrdersController < ApplicationController
     redirect_to edit_order_path(@order_id)
   end
 
+  def reset_discount
+    @order_id = params[:id]
+    command_bus.(
+      Pricing::ResetPercentageDiscount.new(
+        order_id: @order_id
+      )
+    )
+
+    redirect_to edit_order_path(@order_id)
+  end
+
   def add_item
     ActiveRecord::Base.transaction do
       command_bus.(

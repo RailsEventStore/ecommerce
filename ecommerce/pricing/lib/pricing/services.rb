@@ -2,6 +2,9 @@ module Pricing
   class NotPossibleToAssignDiscountTwice < StandardError
   end
 
+  class NotPossibleToResetWithoutDiscount < StandardError
+  end
+
   class SetPercentageDiscountHandler
     def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)
@@ -36,6 +39,47 @@ module Pricing
         nil
       else
         Discounts::Order.new
+      end
+    end
+
+    def last_event(stream_name)
+      @event_store.read.stream(stream_name).last
+    end
+  end
+
+  class ResetPercentageDiscountHandler
+    def initialize(event_store)
+      @repository = Infra::AggregateRootRepository.new(event_store)
+      @event_store = event_store
+    end
+
+    def call(cmd)
+      stream_name = @repository.stream_name(Discounts::Order, cmd.order_id)
+      order = build_order(stream_name)
+      begin
+        order.reset
+      rescue NoMethodError
+        raise NotPossibleToResetWithoutDiscount
+      end
+      @event_store.publish(
+        PercentageDiscountReset.new(
+          data: {
+            order_id: cmd.order_id
+          }
+        ),
+        stream_name: stream_name
+      )
+    end
+
+    private
+
+    def build_order(stream_name)
+      last_event = last_event(stream_name)
+      case last_event
+      when PercentageDiscountSet
+        Discounts::DiscountedOrder.new
+      else
+        nil
       end
     end
 
