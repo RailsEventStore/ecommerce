@@ -17,6 +17,9 @@ module Products
       cqrs.subscribe(
         -> (event) { set_price(event) },
         [Pricing::PriceSet])
+      cqrs.subscribe(
+        -> (event) { set_vat_rate(event) },
+        [Invoicing::VatRateSet])
     end
 
     private
@@ -27,6 +30,10 @@ module Products
 
     def set_price(event)
       find(event.data.fetch(:product_id)).update_attribute(:price, event.data.fetch(:price))
+    end
+
+    def set_vat_rate(event)
+      find(event.data.fetch(:product_id)).update_attribute(:vat_rate_code, event.data.fetch(:vat_rate).fetch(:code))
     end
 
     def change_stock_level(event)

@@ -10,7 +10,11 @@ class Configuration
 
     Ecommerce::Configuration.new(
       number_generator: Rails.configuration.number_generator,
-      payment_gateway: Rails.configuration.payment_gateway
+      payment_gateway: Rails.configuration.payment_gateway,
+      available_vat_rates: [
+        Infra::Types::VatRate.new(code: "10", rate: 10),
+        Infra::Types::VatRate.new(code: "20", rate: 20)
+    ]
     ).call(cqrs)
   end
 

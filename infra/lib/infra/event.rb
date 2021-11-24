@@ -18,7 +18,7 @@ module Infra
 
       module Constructor
         def initialize(event_id: SecureRandom.uuid, metadata: nil, data: {})
-          super(event_id: event_id, metadata: metadata, data: data.deep_merge(self.class.schema.new(data).to_h))
+          super(event_id: event_id, metadata: metadata, data: data.deep_merge(self.class.schema.new(data.deep_symbolize_keys).to_h))
         end
       end
 

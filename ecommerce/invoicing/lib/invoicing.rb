@@ -1,4 +1,8 @@
-require "infra"
+require 'infra'
+require_relative 'invoicing/commands'
+require_relative 'invoicing/events'
+require_relative 'invoicing/services'
+require_relative 'invoicing/product'
 
 module Invoicing
   class Configuration
@@ -13,19 +17,7 @@ module Invoicing
     def call(cqrs)
       @@available_vat_rates = @available_vat_rates
       cqrs.register_command(GenerateInvoice, GenerateInvoiceHandler.new, InvoiceGenerated)
-    end
-  end
-
-  class GenerateInvoice < Infra::Command
-    attribute :invoice_id, Infra::Types::UUID
-  end
-
-  class InvoiceGenerated < Infra::Event
-    attribute :invoice_id, Infra::Types::UUID
-  end
-
-  class GenerateInvoiceHandler
-    def call(cmd)
+      cqrs.register_command(SetVatRate, SetVatRateHandler.new(cqrs.event_store), VatRateSet)
     end
   end
 end

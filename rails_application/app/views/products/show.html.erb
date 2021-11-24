@@ -17,6 +17,8 @@
   <dd class="mb-2"><%= @product.name %></dd>
   <dt class="font-bold">Price</dt>
   <dd class="mb-2"><%= number_to_currency @product.price %></dd>
+  <dt class="font-bold">VAT rate</dt>
+  <dd class="mb-2"><%= @product.vat_rate_code %></dd>
   <dt class="font-bold">Stock Level</dt>
   <dd class="mb-2"><%= @product.stock_level %></dd>
 </dl>
