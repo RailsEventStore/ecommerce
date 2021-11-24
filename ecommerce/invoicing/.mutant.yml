@@ -8,4 +8,5 @@ matcher:
     - Invoicing*
   ignore:
     - Invoicing::Test*
-    - Invoicing*
+    - Invoicing::Configuration*
+    - Invoicing::GenerateInvoiceHandler*
