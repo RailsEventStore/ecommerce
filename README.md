@@ -7,6 +7,8 @@ Application with CQRS and Event Sourcing built on Rails and [Rails Event Store](
 [![imgur](https://imgur.com/ymJeLnP.png)](https://ecommerce.arkademy.dev)
 ## Domains
 
+Event storming (events and commands) - [Miro documentation](https://miro.com/app/board/o9J_l7eqFP0=/)
+
 Domains exist in directories starting at [ecommerce](/ecommerce).
 
 ```
