@@ -15,7 +15,6 @@ require_relative "ordering/fake_number_generator"
 require_relative "ordering/number_generator"
 require_relative "ordering/service"
 require_relative "ordering/order"
-require_relative "ordering/order_line"
 
 module Ordering
   class Configuration
