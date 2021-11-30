@@ -11,7 +11,7 @@ module Ordering
     def initialize(id)
       @id = id
       @state = :draft
-      @order_lines = []
+      @basket = Basket.new
     end
 
     def submit(order_number, customer_id)
@@ -22,7 +22,7 @@ module Ordering
           order_id: @id,
           order_number: order_number,
           customer_id: customer_id,
-          order_lines: @order_lines.map { |line| [line.product_id, line.quantity] }.to_h
+          order_lines: @basket.order_lines
         }
       )
     end
@@ -44,7 +44,7 @@ module Ordering
         data: {
           order_id: @id,
           product_id: product_id,
-          quantity_before: find_order_line(product_id)&.quantity || 0
+          quantity_before: @basket.quantity(product_id)
         }
       )
     end
@@ -79,35 +79,34 @@ module Ordering
     end
 
     on ItemAddedToBasket do |event|
-      product_id = event.data[:product_id]
-      order_line = find_order_line(product_id)
-      unless order_line
-        order_line = create_order_line(product_id)
-        @order_lines << order_line
-      end
-      order_line.increase_quantity
+      @basket.increase_quantity(event.data[:product_id])
     end
 
     on ItemRemovedFromBasket do |event|
-      product_id = event.data[:product_id]
-      order_line = find_order_line(product_id)
-      return unless order_line
-      order_line.decrease_quantity
-      remove_order_line(order_line) if order_line.empty?
+      @basket.decrease_quantity(event.data[:product_id])
+    end
+  end
+
+  class Basket
+    def initialize
+      @order_lines = {}
     end
 
-    private
-
-    def find_order_line(product_id)
-      @order_lines.select { |line| line.product_id == product_id }.first
+    def increase_quantity(product_id)
+      @order_lines[product_id] = quantity(product_id) + 1
     end
 
-    def create_order_line(product_id)
-      OrderLine.new(product_id)
+    def decrease_quantity(product_id)
+      return unless @order_lines.has_key?(product_id)
+      @order_lines[product_id] -= 1
     end
 
-    def remove_order_line(order_line)
-      @order_lines.delete(order_line)
+    def order_lines
+      @order_lines.select { |_, quantity| quantity != 0 }
+    end
+
+    def quantity(product_id)
+      @order_lines.fetch(product_id, 0)
     end
   end
 end
