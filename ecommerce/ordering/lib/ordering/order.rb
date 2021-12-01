@@ -89,7 +89,7 @@ module Ordering
 
   class Basket
     def initialize
-      @order_lines = {}
+      @order_lines = Hash.new(0)
     end
 
     def increase_quantity(product_id)
@@ -97,7 +97,7 @@ module Ordering
     end
 
     def decrease_quantity(product_id)
-      return unless @order_lines.has_key?(product_id)
+      return unless quantity(product_id) > 0
       @order_lines[product_id] -= 1
     end
 
@@ -106,7 +106,7 @@ module Ordering
     end
 
     def quantity(product_id)
-      @order_lines.fetch(product_id, 0)
+      @order_lines[product_id]
     end
   end
 end
