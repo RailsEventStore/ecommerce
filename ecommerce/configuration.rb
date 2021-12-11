@@ -6,6 +6,7 @@ require_relative "payments/lib/payments"
 require_relative "inventory/lib/inventory"
 require_relative "shipping/lib/shipping"
 require_relative "invoicing/lib/invoicing"
+require_relative "taxes/lib/taxes"
 require_relative "processes/lib/processes"
 
 module Ecommerce
@@ -34,7 +35,8 @@ module Ecommerce
         Crm::Configuration.new,
         Inventory::Configuration.new,
         Shipping::Configuration.new,
-        Invoicing::Configuration.new(@available_vat_rates)
+        Invoicing::Configuration.new,
+        Taxes::Configuration.new(@available_vat_rates)
       ].each { |c| c.call(cqrs) }
     end
 

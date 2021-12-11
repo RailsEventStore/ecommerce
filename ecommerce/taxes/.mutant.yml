@@ -5,7 +5,7 @@ coverage_criteria:
   process_abort: true
 matcher:
   subjects:
-    - Invoicing*
+    - Taxes*
   ignore:
-    - Invoicing::Test*
-    - Invoicing*
+    - Taxes::Test*
+    - Taxes::Configuration*

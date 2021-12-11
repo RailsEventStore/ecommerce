@@ -19,7 +19,7 @@ module Products
         [Pricing::PriceSet])
       cqrs.subscribe(
         -> (event) { set_vat_rate(event) },
-        [Invoicing::VatRateSet])
+        [Taxes::VatRateSet])
     end
 
     private

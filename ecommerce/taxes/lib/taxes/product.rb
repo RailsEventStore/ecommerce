@@ -1,4 +1,4 @@
-module Invoicing
+module Taxes
   class Product
     include AggregateRoot
 
@@ -16,7 +16,7 @@ module Invoicing
     private
 
     def vat_rate_applicable?(vat_rate)
-      Configuration.AVAILABLE_VAT_RATES.include?(vat_rate)
+      Configuration.available_vat_rates.include?(vat_rate)
     end
 
     on(VatRateSet) { |_| }

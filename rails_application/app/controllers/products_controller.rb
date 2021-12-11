@@ -42,7 +42,7 @@ class ProductsController < ApplicationController
   end
 
   def set_product_vat_rate(product_id, vat_rate_code)
-    vat_rate = Invoicing::Configuration.AVAILABLE_VAT_RATES.find{|rate| rate.code == vat_rate_code}
+    vat_rate = Taxes::Configuration.available_vat_rates.find{|rate| rate.code == vat_rate_code}
     command_bus.(set_product_vat_rate_cmd(product_id, vat_rate))
   end
 
@@ -55,6 +55,6 @@ class ProductsController < ApplicationController
   end
 
   def set_product_vat_rate_cmd(product_id, vat_rate)
-    Invoicing::SetVatRate.new(product_id: product_id, vat_rate: vat_rate)
+    Taxes::SetVatRate.new(product_id: product_id, vat_rate: vat_rate)
   end
 end

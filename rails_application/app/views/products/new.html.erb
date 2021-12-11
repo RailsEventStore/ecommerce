@@ -31,6 +31,6 @@
     <label for="vat_rate" class="block font-bold">
       VAT rate
     </label>
-    <%= select_tag :vat_rate, options_from_collection_for_select(Invoicing::Configuration.AVAILABLE_VAT_RATES, :code, :code), class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-sm sm:text-sm border-gray-300 rounded-md" %>
+    <%= select_tag :vat_rate, options_from_collection_for_select(Taxes::Configuration.available_vat_rates, :code, :code), class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-sm sm:text-sm border-gray-300 rounded-md" %>
   </div>
 <% end %>
