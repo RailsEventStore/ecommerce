@@ -9,3 +9,4 @@ matcher:
   ignore:
     - Taxes::Test*
     - Taxes::Configuration*
+    - Taxes::VatRateCatalog#vat_rate_for

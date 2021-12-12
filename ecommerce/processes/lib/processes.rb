@@ -9,6 +9,7 @@ require_relative 'processes/check_availability_on_order_item_added_to_basket'
 require_relative 'processes/order_confirmation'
 require_relative 'processes/release_payment_process'
 require_relative 'processes/shipment_process'
+require_relative 'processes/determine_vat_rates_on_order_submitted'
 
 module Processes
   class Configuration
@@ -19,6 +20,7 @@ module Processes
       enable_inventory_sync_from_ordering(cqrs)
       enable_shipment_sync(cqrs)
       check_product_availability_on_adding_item_to_basket(cqrs)
+      determine_vat_rates_on_order_submitted(cqrs)
 
       enable_release_payment_process(cqrs)
       enable_order_confirmation_process(cqrs)
@@ -177,6 +179,13 @@ module Processes
       cqrs.subscribe(
         CheckAvailabilityOnOrderItemAddedToBasket.new(cqrs),
         [Ordering::ItemAddedToBasket]
+      )
+    end
+
+    def determine_vat_rates_on_order_submitted(cqrs)
+      cqrs.subscribe(
+        DetermineVatRatesOnOrderSubmitted.new(cqrs),
+        [Ordering::OrderSubmitted]
       )
     end
   end
