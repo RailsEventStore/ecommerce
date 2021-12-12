@@ -5,6 +5,7 @@ require_relative "../../crm/lib/crm"
 require_relative "../../payments/lib/payments"
 require_relative "../../inventory/lib/inventory"
 require_relative "../../shipping/lib/shipping"
+require_relative "../../taxes/lib/taxes"
 require_relative 'processes/check_availability_on_order_item_added_to_basket'
 require_relative 'processes/order_confirmation'
 require_relative 'processes/release_payment_process'
