@@ -14,7 +14,7 @@ module Infra
       Types::Strict::String.constrained(format: /\A\d{4}\/\d{2}\/\d+\z/i)
     Price = Types::Coercible::Decimal.constrained(gt: 0)
     Value = Types::Coercible::Decimal
-    PercentageDiscount = Types::Coercible::Decimal.constrained(gt: 0, lt: 100)
+    PercentageDiscount = Types::Coercible::Decimal.constrained(gt: 0, lteq: 100)
     UUIDQuantityHash = Types::Hash.map(UUID, Types::Strict::Integer.constrained(gt: 0))
 
     class VatRate < Dry::Struct

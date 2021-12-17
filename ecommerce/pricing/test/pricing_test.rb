@@ -71,6 +71,28 @@ module Pricing
       end
     end
 
+    def test_calculates_total_value_with_100_discount
+      product_1_id = SecureRandom.uuid
+      set_price(product_1_id, 20)
+      order_id = SecureRandom.uuid
+      add_item(order_id, product_1_id)
+      stream = "Pricing::Order$#{order_id}"
+      assert_events(
+        stream,
+        OrderTotalValueCalculated.new(
+          data: {
+            order_id: order_id,
+            discounted_amount: 0,
+            total_amount: 20
+          }
+        )
+      ) do
+        run_command(
+          Pricing::SetPercentageDiscount.new(order_id: order_id, amount: 100)
+        )
+      end
+    end
+
     def test_setting_discounts_twice_not_possible_because_we_want_explicit_discount_change_command
       product_1_id = SecureRandom.uuid
       set_price(product_1_id, 20)
