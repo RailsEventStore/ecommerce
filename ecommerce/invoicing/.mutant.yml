@@ -7,5 +7,6 @@ matcher:
   subjects:
     - Invoicing*
   ignore:
+    - Invoicing::Configuration*
     - Invoicing::Test*
-    - Invoicing*
+    - Invoicing::GenerateInvoiceHandler*
