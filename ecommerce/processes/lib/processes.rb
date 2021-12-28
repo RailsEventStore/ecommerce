@@ -6,11 +6,13 @@ require_relative "../../payments/lib/payments"
 require_relative "../../inventory/lib/inventory"
 require_relative "../../shipping/lib/shipping"
 require_relative "../../taxes/lib/taxes"
+require_relative "../../invoicing/lib/invoicing"
 require_relative 'processes/check_availability_on_order_item_added_to_basket'
 require_relative 'processes/order_confirmation'
 require_relative 'processes/release_payment_process'
 require_relative 'processes/shipment_process'
 require_relative 'processes/determine_vat_rates_on_order_submitted'
+require_relative 'processes/order_item_invoicing_process'
 
 module Processes
   class Configuration
@@ -26,6 +28,7 @@ module Processes
       enable_release_payment_process(cqrs)
       enable_order_confirmation_process(cqrs)
       enable_shipment_process(cqrs)
+      enable_order_item_invoicing_process(cqrs)
     end
 
     private
@@ -85,7 +88,7 @@ module Processes
       cqrs.subscribe(
         ->(event) do
           cqrs.run(
-            Pricing::CalculateTotalValue.new(
+            Pricing::CalculateTotalValueWithSubAmounts.new(
               order_id: event.data.fetch(:order_id)
             )
           )
@@ -172,6 +175,16 @@ module Processes
           Ordering::OrderPaid,
           Payments::PaymentAuthorized,
           Payments::PaymentReleased
+        ]
+      )
+    end
+
+    def enable_order_item_invoicing_process(cqrs)
+      cqrs.subscribe(
+        OrderItemInvoicingProcess.new(cqrs),
+        [
+          Pricing::PriceItemValueCalculated,
+          Taxes::VatRateDetermined
         ]
       )
     end

@@ -12,3 +12,4 @@ matcher:
     - Processes::ShipmentProcess*
     - Processes::ReleasePaymentProcess*
     - Processes::OrderConfirmation*
+    - Processes::OrderItemInvoicingProcess*
