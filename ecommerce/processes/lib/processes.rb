@@ -88,7 +88,7 @@ module Processes
       cqrs.subscribe(
         ->(event) do
           cqrs.run(
-            Pricing::CalculateTotalValueWithSubAmounts.new(
+            Pricing::CalculateTotalValue.new(
               order_id: event.data.fetch(:order_id)
             )
           )
