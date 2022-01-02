@@ -59,7 +59,7 @@ module Processes
   end
 
   class MoneySplitter
-    def initialize amount, weights
+    def initialize(amount, weights)
       raise ArgumentError unless weights.instance_of? Array
       raise ArgumentError if weights.empty?
       @amount = amount
