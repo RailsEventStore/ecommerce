@@ -1,8 +1,4 @@
 module Invoicing
-  class InvoiceGenerated < Infra::Event
-    attribute :invoice_id, Infra::Types::UUID
-  end
-
   class InvoiceItemAdded < Infra::Event
     attribute :invoice_id, Infra::Types::UUID
     attribute :product_id, Infra::Types::UUID

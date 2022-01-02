@@ -1,9 +1,4 @@
 module Invoicing
-  class GenerateInvoiceHandler
-    def call(cmd)
-    end
-  end
-
   class AddInvoiceItemHandler
     def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)

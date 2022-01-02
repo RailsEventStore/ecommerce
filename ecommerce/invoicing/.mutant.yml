@@ -9,4 +9,3 @@ matcher:
   ignore:
     - Invoicing::Configuration*
     - Invoicing::Test*
-    - Invoicing::GenerateInvoiceHandler*
