@@ -2,6 +2,8 @@ require_relative "test_helper"
 
 module Invoicing
   class InvoiceItemTest < Test
+    cover "Invoicing::Invoice"
+
     def test_initializer
       product_id = SecureRandom.uuid
       vat_rate = Infra::Types::VatRate.new(rate: 20, code: "20")

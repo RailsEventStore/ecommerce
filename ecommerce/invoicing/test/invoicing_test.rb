@@ -2,7 +2,7 @@ require_relative "test_helper"
 
 module Invoicing
   class InvoicingTest < Test
-    cover "Shipping::OnAddItemToShipmentPickingList*"
+    cover "Invoicing::AddInvoiceItemHandler"
 
     def test_generate_invoice
       assert true
@@ -11,7 +11,6 @@ module Invoicing
     def test_adding_to_invoice
       invoice_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
-      another_product_id = SecureRandom.uuid
       unit_price = 10.0.to_d
       vat_rate = Infra::Types::VatRate.new(code: "20", rate: 20)
 
