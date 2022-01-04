@@ -98,19 +98,6 @@ module Processes
       )
     end
 
-    def calculate_sub_amounts_when_order_submitted(cqrs)
-      cqrs.subscribe(
-        ->(event) do
-          cqrs.run(
-            Pricing::CalculateSubAmounts.new(
-              order_id: event.data.fetch(:order_id)
-            )
-          )
-        end,
-        [Ordering::OrderSubmitted]
-      )
-    end
-
     def enable_inventory_sync_from_ordering(cqrs)
       cqrs.subscribe(
         ->(event) do
