@@ -27,11 +27,20 @@ test-infra:
 mutate-infra:
 	@make -C infra mutate
 
-install: install-infra install-rails $(addprefix install-, $(CONTEXTS)) ## Install all dependencies
+install-math:
+	@make -C math install
 
-test: test-infra test-rails $(addprefix test-, $(CONTEXTS)) ## Run all unit tests
+test-math:
+	@make -C math test
 
-mutate: mutate-infra mutate-rails $(addprefix mutate-, $(CONTEXTS)) ## Run all mutation coverage
+mutate-math:
+	@make -C math mutate
+
+install: install-infra install-math install-rails $(addprefix install-, $(CONTEXTS)) ## Install all dependencies
+
+test: test-infra test-math test-rails $(addprefix test-, $(CONTEXTS)) ## Run all unit tests
+
+mutate: mutate-infra mutate-math mutate-rails $(addprefix mutate-, $(CONTEXTS)) ## Run all mutation coverage
 
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'

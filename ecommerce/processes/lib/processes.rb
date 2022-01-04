@@ -13,6 +13,7 @@ require_relative 'processes/release_payment_process'
 require_relative 'processes/shipment_process'
 require_relative 'processes/determine_vat_rates_on_order_submitted'
 require_relative 'processes/order_item_invoicing_process'
+require 'math'
 
 module Processes
   class Configuration
@@ -89,6 +90,19 @@ module Processes
         ->(event) do
           cqrs.run(
             Pricing::CalculateTotalValue.new(
+              order_id: event.data.fetch(:order_id)
+            )
+          )
+        end,
+        [Ordering::OrderSubmitted]
+      )
+    end
+
+    def calculate_sub_amounts_when_order_submitted(cqrs)
+      cqrs.subscribe(
+        ->(event) do
+          cqrs.run(
+            Pricing::CalculateSubAmounts.new(
               order_id: event.data.fetch(:order_id)
             )
           )

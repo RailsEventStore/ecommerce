@@ -8,6 +8,12 @@ PATH
       rake
       ruby_event_store-transformations
 
+PATH
+  remote: ../math
+  specs:
+    math (1.0.0)
+      rake
+
 GEM
   remote: https://oss:7AXfeZdAfCqL1PvHm2nvDJO6Zd9UW8IK@gem.mutant.dev/
   specs:
@@ -274,6 +280,7 @@ DEPENDENCIES
   infra!
   kaminari
   listen (~> 3.3)
+  math!
   minitest!
   mutant-license!
   mutant-minitest!
