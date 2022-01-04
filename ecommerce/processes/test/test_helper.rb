@@ -16,7 +16,7 @@ module Processes
       Configuration.new.call(cqrs)
     end
 
-    def assert_command command
+    def assert_command(command)
       assert_equal(@command_bus.received, command)
     end
 
