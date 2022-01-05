@@ -85,28 +85,28 @@ module Ordering
     on ItemRemovedFromBasket do |event|
       @basket.decrease_quantity(event.data[:product_id])
     end
-  end
 
-  class Basket
-    def initialize
-      @order_lines = Hash.new(0)
-    end
+    class Basket
+      def initialize
+        @order_lines = Hash.new(0)
+      end
 
-    def increase_quantity(product_id)
-      @order_lines[product_id] = quantity(product_id) + 1
-    end
+      def increase_quantity(product_id)
+        order_lines[product_id] = quantity(product_id) + 1
+      end
 
-    def decrease_quantity(product_id)
-      return unless quantity(product_id) > 0
-      @order_lines[product_id] -= 1
-    end
+      def decrease_quantity(product_id)
+        order_lines[product_id] -= 1
+        order_lines.delete(product_id) if order_lines.fetch(product_id).equal?(0)
+      end
 
-    def order_lines
-      @order_lines.select { |_, quantity| quantity != 0 }
-    end
+      def order_lines
+        @order_lines
+      end
 
-    def quantity(product_id)
-      @order_lines[product_id]
+      def quantity(product_id)
+        order_lines[product_id]
+      end
     end
   end
 end
