@@ -38,23 +38,7 @@ module Invoicing
             payment_date: payment_date,
           }
         )
-      ) { act(SetPaymentDate.new(invoice_id: invoice_id, payment_date: payment_date)) }
-    end
-
-    def test_setting_disposal_date
-      invoice_id = SecureRandom.uuid
-      disposal_date = Date.new(2021, 1, 5)
-      stream = "Invoicing::Invoice$#{invoice_id}"
-
-      assert_events(
-        stream,
-        InvoiceDisposalDateSet.new(
-          data: {
-            invoice_id: invoice_id,
-            disposal_date: disposal_date,
-          }
-        )
-      ) { act(SetDisposalDate.new(invoice_id: invoice_id, disposal_date: disposal_date)) }
+      ) { set_payment_date(invoice_id, payment_date) }
     end
 
     def test_issuing_invoice
@@ -67,6 +51,26 @@ module Invoicing
           data: {
             invoice_id: invoice_id,
             issue_date: issue_date,
+            disposal_date: issue_date
+          }
+        )
+      ) { issue_invoice(invoice_id, issue_date) }
+    end
+
+    def test_issuing_invoice_after_setting_payment_date
+      invoice_id = SecureRandom.uuid
+      issue_date = Date.new(2021, 1, 5)
+      payment_date = Date.new(2021, 1, 1)
+      set_payment_date(invoice_id, payment_date)
+
+      stream = "Invoicing::Invoice$#{invoice_id}"
+      assert_events(
+        stream,
+        InvoiceIssued.new(
+          data: {
+            invoice_id: invoice_id,
+            issue_date: issue_date,
+            disposal_date: payment_date
           }
         )
       ) { issue_invoice(invoice_id, issue_date) }
@@ -76,7 +80,6 @@ module Invoicing
       invoice_id = SecureRandom.uuid
       issue_invoice(invoice_id)
       assert_raises(Invoice::InvoiceAlreadyIssued) { issue_invoice(invoice_id) }
-      assert_raises(Invoice::InvoiceAlreadyIssued) { set_disposal_date(invoice_id) }
       assert_raises(Invoice::InvoiceAlreadyIssued) { set_payment_date(invoice_id) }
       assert_raises(Invoice::InvoiceAlreadyIssued) { add_item(invoice_id) }
     end
@@ -102,10 +105,6 @@ module Invoicing
 
     def issue_invoice(invoice_id, issue_date = Date.new(2021, 1, 5))
       run_command(IssueInvoice.new(invoice_id: invoice_id, issue_date: issue_date))
-    end
-
-    def set_disposal_date(invoice_id, disposal_date = Date.new(2021, 1, 5))
-      run_command(SetDisposalDate.new(invoice_id: invoice_id, disposal_date: disposal_date))
     end
 
     def set_payment_date(invoice_id, payment_date = Date.new(2021, 1, 5))

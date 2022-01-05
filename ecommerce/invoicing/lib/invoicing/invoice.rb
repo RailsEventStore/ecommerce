@@ -10,22 +10,12 @@ module Invoicing
 
     def issue(issue_date)
       raise InvoiceAlreadyIssued unless draft?
+      disposal_date = [@payment_date, issue_date].compact.min
       apply(
         InvoiceIssued.new(
           data: {
             invoice_id: @invoice_id,
-            issue_date: issue_date
-          }
-        )
-      )
-    end
-
-    def set_disposal_date(disposal_date)
-      raise InvoiceAlreadyIssued unless draft?
-      apply(
-        InvoiceDisposalDateSet.new(
-          data: {
-            invoice_id: @invoice_id,
+            issue_date: issue_date,
             disposal_date: disposal_date
           }
         )
@@ -76,10 +66,6 @@ module Invoicing
       )
     end
 
-    on InvoiceDisposalDateSet do |event|
-      @disposal_date = event.data[:disposal_date]
-    end
-
     on InvoicePaymentDateSet do |event|
       @payment_date = event.data[:payment_date]
     end
@@ -87,6 +73,7 @@ module Invoicing
     on InvoiceIssued do |event|
       @state = :issued
       @issue_date = event.data[:issue_date]
+      @disposal_date = event.data[:disposal_date]
     end
   end
 

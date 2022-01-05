@@ -20,11 +20,6 @@ module Invoicing
         InvoiceItemAdded
       )
       cqrs.register_command(
-        SetDisposalDate,
-        InvoiceService.new(cqrs.event_store).public_method(:set_disposal_date),
-        InvoiceDisposalDateSet
-      )
-      cqrs.register_command(
         SetPaymentDate,
         InvoiceService.new(cqrs.event_store).public_method(:set_payment_date),
         InvoicePaymentDateSet

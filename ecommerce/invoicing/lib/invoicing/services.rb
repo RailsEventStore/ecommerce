@@ -12,12 +12,6 @@ module Invoicing
       end
     end
 
-    def set_disposal_date(command)
-      with_invoice(command.invoice_id) do |invoice|
-        invoice.set_disposal_date(command.disposal_date)
-      end
-    end
-
     def set_payment_date(command)
       with_invoice(command.invoice_id) do |invoice|
         invoice.set_payment_date(command.payment_date)
