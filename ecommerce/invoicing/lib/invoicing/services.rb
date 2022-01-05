@@ -7,7 +7,7 @@ module Invoicing
 
     def add_item(command)
       with_invoice(command.invoice_id) do |invoice|
-        title = @titles_catalog.invoice_item_title_for(command.product_id)
+        title = @titles_catalog.invoice_item_title_for_product(command.product_id)
         invoice.add_item(command.product_id, title, command.unit_price, command.vat_rate, command.quantity)
       end
     end

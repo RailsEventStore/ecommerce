@@ -4,7 +4,7 @@ module Invoicing
       @event_store = event_store
     end
 
-    def invoice_item_title_for(product_id)
+    def invoice_item_title_for_product(product_id)
       @event_store
         .read
         .of_type(ProductNameDisplayedSet)
