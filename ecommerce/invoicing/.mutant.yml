@@ -9,3 +9,4 @@ matcher:
   ignore:
     - Invoicing::Configuration*
     - Invoicing::Test*
+    - Invoicing::InvoiceItemTitleCatalog#invoice_item_title_for

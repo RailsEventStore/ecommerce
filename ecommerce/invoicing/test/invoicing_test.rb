@@ -11,17 +11,18 @@ module Invoicing
     def test_adding_to_invoice
       invoice_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
+      title = 'test'
       unit_price = 10.0.to_d
       vat_rate = Infra::Types::VatRate.new(code: "20", rate: 20)
-
+      set_product_name_displayed(product_id, title)
       stream = "Invoicing::Invoice$#{invoice_id}"
-
       assert_events(
         stream,
         InvoiceItemAdded.new(
           data: {
             invoice_id: invoice_id,
             product_id: product_id,
+            title: title,
             vat_rate: vat_rate,
             unit_price: unit_price,
             quantity: 1,

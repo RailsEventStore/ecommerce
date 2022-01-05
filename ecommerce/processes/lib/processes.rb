@@ -25,6 +25,7 @@ module Processes
       enable_shipment_sync(cqrs)
       check_product_availability_on_adding_item_to_basket(cqrs)
       determine_vat_rates_on_order_submitted(cqrs)
+      enable_product_name_sync(cqrs)
 
       enable_release_payment_process(cqrs)
       enable_order_confirmation_process(cqrs)
@@ -202,6 +203,20 @@ module Processes
         DetermineVatRatesOnOrderSubmitted.new(cqrs),
         [Ordering::OrderSubmitted]
       )
+    end
+
+    def enable_product_name_sync(cqrs)
+        cqrs.subscribe(
+          ->(event) do
+            cqrs.run(
+              Invoicing::SetProductNameDisplayedOnInvoice.new(
+                product_id: event.data.fetch(:product_id),
+                name_displayed: event.data.fetch(:name)
+              )
+            )
+          end,
+          [ProductCatalog::ProductRegistered]
+        )
     end
   end
 end

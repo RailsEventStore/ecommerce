@@ -6,4 +6,9 @@ module Invoicing
     attribute :unit_price, Infra::Types::Price
     attribute :vat_rate, Infra::Types::VatRate
   end
+
+  class SetProductNameDisplayedOnInvoice < Infra::Command
+    attribute :product_id, Infra::Types::UUID
+    attribute :name_displayed, Infra::Types::String
+  end
 end
