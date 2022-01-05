@@ -8,6 +8,16 @@ module Invoicing
     attribute :vat_rate, Infra::Types::VatRate
   end
 
+  class DisposalDateSet < Infra::Event
+    attribute :invoice_id, Infra::Types::UUID
+    attribute :disposal_date, Infra::Types::Date
+  end
+
+  class PaymentDateSet < Infra::Event
+    attribute :invoice_id, Infra::Types::UUID
+    attribute :payment_date, Infra::Types::Date
+  end
+
   class ProductNameDisplayedSet < Infra::Event
     attribute :product_id, Infra::Types::UUID
     attribute :name_displayed, Infra::Types::String

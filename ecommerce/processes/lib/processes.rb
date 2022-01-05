@@ -25,6 +25,7 @@ module Processes
       enable_shipment_sync(cqrs)
       check_product_availability_on_adding_item_to_basket(cqrs)
       determine_vat_rates_on_order_submitted(cqrs)
+      set_invoice_payment_date_when_order_paid(cqrs)
       enable_product_name_sync(cqrs)
 
       enable_release_payment_process(cqrs)
@@ -217,6 +218,20 @@ module Processes
           end,
           [ProductCatalog::ProductRegistered]
         )
+    end
+
+    def set_invoice_payment_date_when_order_paid(cqrs)
+      cqrs.subscribe(
+        ->(event) do
+          cqrs.run(
+            Invoicing::SetPaymentDate.new(
+              invoice_id: event.data.fetch(:order_id),
+              payment_date: Time.zone.at(event.metadata.fetch(:timestamp)).to_date
+            )
+          )
+        end,
+        [Ordering::OrderPaid]
+      )
     end
   end
 end

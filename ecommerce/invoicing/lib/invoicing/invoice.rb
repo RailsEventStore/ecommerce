@@ -7,6 +7,28 @@ module Invoicing
       @invoice_items = []
     end
 
+    def set_disposal_date(disposal_date)
+      apply(
+        DisposalDateSet.new(
+          data: {
+            invoice_id: @invoice_id,
+            disposal_date: disposal_date
+          }
+        )
+      )
+    end
+
+    def set_payment_date(payment_date)
+      apply(
+        PaymentDateSet.new(
+          data: {
+            invoice_id: @invoice_id,
+            payment_date: payment_date
+          }
+        )
+      )
+    end
+
     def add_item(product_id, title, unit_price, vat_rate, quantity)
       apply(
         InvoiceItemAdded.new(
@@ -32,6 +54,14 @@ module Invoicing
         event.data[:vat_rate],
         event.data[:quantity]
       )
+    end
+
+    on DisposalDateSet do |event|
+      @disposal_date = event.data[:disposal_date]
+    end
+
+    on PaymentDateSet do |event|
+      @payment_date = event.data[:payment_date]
     end
   end
 

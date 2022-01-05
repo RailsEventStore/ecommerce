@@ -15,6 +15,16 @@ module Invoicing
         SetProductNameDisplayedOnInvoiceHandler.new(cqrs.event_store),
         ProductNameDisplayedSet
       )
+      cqrs.register_command(
+        SetDisposalDate,
+        SetDateHandler.new(cqrs.event_store).public_method(:set_disposal_date),
+        DisposalDateSet
+      )
+      cqrs.register_command(
+        SetPaymentDate,
+        SetDateHandler.new(cqrs.event_store).public_method(:set_payment_date),
+        PaymentDateSet
+      )
     end
   end
 end

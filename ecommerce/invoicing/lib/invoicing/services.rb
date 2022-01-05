@@ -13,6 +13,24 @@ module Invoicing
     end
   end
 
+  class SetDateHandler
+    def initialize(event_store)
+      @repository = Infra::AggregateRootRepository.new(event_store)
+    end
+
+    def set_disposal_date(command)
+      @repository.with_aggregate(Invoice, command.invoice_id) do |invoice|
+        invoice.set_disposal_date(command.disposal_date)
+      end
+    end
+
+    def set_payment_date(command)
+      @repository.with_aggregate(Invoice, command.invoice_id) do |invoice|
+        invoice.set_payment_date(command.payment_date)
+      end
+    end
+  end
+
   class SetProductNameDisplayedOnInvoiceHandler
     def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)
