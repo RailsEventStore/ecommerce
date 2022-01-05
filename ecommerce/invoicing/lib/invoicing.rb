@@ -9,21 +9,30 @@ require_relative 'invoicing/product'
 module Invoicing
   class Configuration
     def call(cqrs)
-      cqrs.register_command(AddInvoiceItem, AddInvoiceItemHandler.new(cqrs.event_store), InvoiceItemAdded)
       cqrs.register_command(
         SetProductNameDisplayedOnInvoice,
         SetProductNameDisplayedOnInvoiceHandler.new(cqrs.event_store),
         ProductNameDisplayedSet
       )
       cqrs.register_command(
+        AddInvoiceItem,
+        InvoiceService.new(cqrs.event_store).public_method(:add_item),
+        InvoiceItemAdded
+      )
+      cqrs.register_command(
         SetDisposalDate,
-        SetDateHandler.new(cqrs.event_store).public_method(:set_disposal_date),
-        DisposalDateSet
+        InvoiceService.new(cqrs.event_store).public_method(:set_disposal_date),
+        InvoiceDisposalDateSet
       )
       cqrs.register_command(
         SetPaymentDate,
-        SetDateHandler.new(cqrs.event_store).public_method(:set_payment_date),
-        PaymentDateSet
+        InvoiceService.new(cqrs.event_store).public_method(:set_payment_date),
+        InvoicePaymentDateSet
+      )
+      cqrs.register_command(
+        IssueInvoice,
+        InvoiceService.new(cqrs.event_store).public_method(:issue),
+        InvoiceIssued
       )
     end
   end

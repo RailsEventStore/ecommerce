@@ -7,6 +7,11 @@ module Invoicing
     attribute :vat_rate, Infra::Types::VatRate
   end
 
+  class IssueInvoice < Infra::Command
+    attribute :invoice_id, Infra::Types::UUID
+    attribute :issue_date, Infra::Types::Date
+  end
+
   class SetDisposalDate < Infra::Command
     attribute :invoice_id, Infra::Types::UUID
     attribute :disposal_date, Infra::Types::Date
