@@ -51,7 +51,8 @@ module Invoicing
           data: {
             invoice_id: invoice_id,
             issue_date: issue_date,
-            disposal_date: issue_date
+            disposal_date: issue_date,
+            invoice_number: '1/01/2021'
           }
         )
       ) { issue_invoice(invoice_id, issue_date) }
@@ -70,7 +71,8 @@ module Invoicing
           data: {
             invoice_id: invoice_id,
             issue_date: issue_date,
-            disposal_date: payment_date
+            disposal_date: payment_date,
+            invoice_number: '1/01/2021'
           }
         )
       ) { issue_invoice(invoice_id, issue_date) }

@@ -5,6 +5,7 @@ require_relative 'invoicing/services'
 require_relative 'invoicing/invoice'
 require_relative 'invoicing/invoice_item_title_catalog'
 require_relative 'invoicing/product'
+require_relative 'invoicing/invoice_number_generator'
 
 module Invoicing
   class Configuration
@@ -28,6 +29,18 @@ module Invoicing
         IssueInvoice,
         InvoiceService.new(cqrs.event_store).public_method(:issue),
         InvoiceIssued
+      )
+      cqrs.subscribe(
+        ->(event) do
+          stream_name = "InvoiceIssued$#{event.data.fetch(:issue_date).strftime("%Y-%m")}"
+          ordinal_number = event.data.fetch(:invoice_number).split('/').first.to_i
+          cqrs.event_store.link(
+            event.event_id,
+            stream_name: stream_name,
+            expected_version: ordinal_number - 2
+          )
+        end,
+        [Invoicing::InvoiceIssued]
       )
     end
   end

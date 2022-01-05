@@ -8,7 +8,7 @@ module Invoicing
       @invoice_items = []
     end
 
-    def issue(issue_date)
+    def issue(issue_date, invoice_number)
       raise InvoiceAlreadyIssued unless draft?
       disposal_date = [@payment_date, issue_date].compact.min
       apply(
@@ -16,7 +16,8 @@ module Invoicing
           data: {
             invoice_id: @invoice_id,
             issue_date: issue_date,
-            disposal_date: disposal_date
+            disposal_date: disposal_date,
+            invoice_number: invoice_number
           }
         )
       )

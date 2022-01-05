@@ -3,6 +3,7 @@ module Invoicing
     def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)
       @titles_catalog = InvoiceItemTitleCatalog.new(event_store)
+      @number_generator = InvoiceNumberGenerator.new(event_store)
     end
 
     def add_item(command)
@@ -20,7 +21,8 @@ module Invoicing
 
     def issue(command)
       with_invoice(command.invoice_id) do |invoice|
-        invoice.issue(command.issue_date)
+        invoice_number = @number_generator.call(command.issue_date)
+        invoice.issue(command.issue_date, invoice_number)
       end
     end
 
