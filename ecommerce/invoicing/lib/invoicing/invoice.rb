@@ -1,6 +1,7 @@
 module Invoicing
   class Invoice
     InvoiceAlreadyIssued = Class.new(StandardError)
+    InvoiceNumberInUse = Class.new(StandardError)
     include AggregateRoot
 
     def initialize(invoice_id)

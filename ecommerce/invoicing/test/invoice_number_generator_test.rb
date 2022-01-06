@@ -1,3 +1,5 @@
+require_relative "test_helper"
+
 module Invoicing
   class InvoiceNumberGeneratorTest < Test
     cover "Invoicing::InvoiceNumberGenerator"

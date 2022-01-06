@@ -39,6 +39,8 @@ module Invoicing
             stream_name: stream_name,
             expected_version: ordinal_number - 2
           )
+        rescue RubyEventStore::WrongExpectedEventVersion
+          raise Invoice::InvoiceNumberInUse
         end,
         [Invoicing::InvoiceIssued]
       )

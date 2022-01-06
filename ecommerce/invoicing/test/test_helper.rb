@@ -2,6 +2,7 @@ require "minitest/autorun"
 require "mutant/minitest/coverage"
 
 require_relative "../lib/invoicing"
+require_relative '../lib/invoicing/fake_concurrent_invoice_number_generator'
 
 module Invoicing
   class Test < Infra::InMemoryTest

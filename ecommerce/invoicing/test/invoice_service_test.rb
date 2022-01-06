@@ -1,3 +1,5 @@
+require_relative "test_helper"
+
 module Invoicing
   class InvoiceServiceTest < Test
     cover "Invoicing::InvoiceService"
@@ -78,6 +80,33 @@ module Invoicing
       ) { issue_invoice(invoice_id, issue_date) }
     end
 
+    def test_issuing_invoice_with_faked_race_condition
+      invoice_id = SecureRandom.uuid
+      another_invoice_id = SecureRandom.uuid
+      issue_date = Date.new(2021, 1, 5)
+
+      mocked_service = InvoiceService.new(
+        cqrs.event_store,
+        FakeConcurrentInvoiceNumberGenerator.new
+      ).public_method(:issue)
+
+      stream = "Invoicing::Invoice$#{invoice_id}"
+      assert_events(
+        stream,
+        InvoiceIssued.new(
+          data: {
+            invoice_id: invoice_id,
+            issue_date: issue_date,
+            disposal_date: issue_date,
+            invoice_number: '1/01/2021'
+          }
+        )
+      ) { mocked_service.(issue_invoice_command(invoice_id, issue_date)) }
+      assert_raises(Invoice::InvoiceNumberInUse) do
+        mocked_service.(issue_invoice_command(another_invoice_id, issue_date))
+      end
+    end
+
     def test_issued_invoice_is_a_final_state
       invoice_id = SecureRandom.uuid
       issue_invoice(invoice_id)
@@ -106,7 +135,11 @@ module Invoicing
     end
 
     def issue_invoice(invoice_id, issue_date = Date.new(2021, 1, 5))
-      run_command(IssueInvoice.new(invoice_id: invoice_id, issue_date: issue_date))
+      run_command(issue_invoice_command(invoice_id, issue_date))
+    end
+
+    def issue_invoice_command(invoice_id, issue_date)
+      IssueInvoice.new(invoice_id: invoice_id, issue_date: issue_date)
     end
 
     def set_payment_date(invoice_id, payment_date = Date.new(2021, 1, 5))

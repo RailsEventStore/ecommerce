@@ -12,7 +12,7 @@ module Invoicing
 
     def next_number(issue_date)
       stream_name = "InvoiceIssued$#{issue_date.strftime("%Y-%m")}"
-      @event_store.read.stream(stream_name).to_a.size + 1
+      @event_store.read.stream(stream_name).count + 1
     end
   end
 end

@@ -1,9 +1,9 @@
 module Invoicing
   class InvoiceService
-    def initialize(event_store)
+    def initialize(event_store, number_generator = InvoiceNumberGenerator.new(event_store))
       @repository = Infra::AggregateRootRepository.new(event_store)
       @titles_catalog = InvoiceItemTitleCatalog.new(event_store)
-      @number_generator = InvoiceNumberGenerator.new(event_store)
+      @number_generator = number_generator
     end
 
     def add_item(command)
