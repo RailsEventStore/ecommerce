@@ -6,7 +6,7 @@ module Shipping
 
     def test_add_item_to_shipment_picking_list
       order_id = SecureRandom.uuid
-      product_id = SecureRandom.uuid
+      address = fake_address
       stream = "Shipping::Shipment$#{order_id}"
 
       assert_events(
@@ -14,20 +14,14 @@ module Shipping
         ShippingAddressAddedToShipment.new(
           data: {
             order_id: order_id,
-            line_1: "Mme Anna Kowalska",
-            line_2: "Ul. Bosmanska 1",
-            line_3: "81-116 GDYNIA",
-            line_4: "POLAND"
+            postal_address: address
           }
         )
       ) do
         act(
           AddShippingAddressToShipment.new(
             order_id: order_id,
-            line_1: "Mme Anna Kowalska",
-            line_2: "Ul. Bosmanska 1",
-            line_3: "81-116 GDYNIA",
-            line_4: "POLAND"
+            postal_address: address
           )
         )
       end

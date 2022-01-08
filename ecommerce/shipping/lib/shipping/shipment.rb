@@ -35,14 +35,11 @@ module Shipping
       )
     end
 
-    def add_address(line_1, line_2, line_3, line_4)
+    def add_address(postal_address)
       apply ShippingAddressAddedToShipment.new(
         data: {
           order_id: @order_id,
-          line_1: line_1,
-          line_2: line_2,
-          line_3: line_3,
-          line_4: line_4
+          postal_address: postal_address
         }
       )
     end
@@ -82,12 +79,7 @@ module Shipping
     end
 
     on ShippingAddressAddedToShipment do |event|
-      @shipping_address = PostalAddress.new(
-        line_1: event.data.fetch(:line_1),
-        line_2: event.data.fetch(:line_2),
-        line_3: event.data.fetch(:line_3),
-        line_4: event.data.fetch(:line_4)
-      )
+      @shipping_address = event.data.fetch(:postal_address)
       @state = :address_set
     end
 

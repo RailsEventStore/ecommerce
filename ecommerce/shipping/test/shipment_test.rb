@@ -58,13 +58,9 @@ module Shipping
 
     def test_add_address_publishes_event
       shipment = Shipment.new(order_id)
+      address = fake_address
 
-      shipment.add_address(
-        "Mme Anna Kowalska",
-        "Ul. Bosmanska 1",
-        "81-116 GDYNIA",
-        "POLAND"
-      )
+      shipment.add_address(address)
 
       assert_changes(
         shipment.unpublished_events,
@@ -72,10 +68,7 @@ module Shipping
           ShippingAddressAddedToShipment.new(
             data: {
               order_id: order_id,
-              line_1: "Mme Anna Kowalska",
-              line_2: "Ul. Bosmanska 1",
-              line_3: "81-116 GDYNIA",
-              line_4: "POLAND"
+              postal_address: address
             }
           )
         ]
@@ -84,13 +77,9 @@ module Shipping
 
     def test_submit_shipment_publishes_event
       shipment = Shipment.new(order_id)
+      address = fake_address
 
-      shipment.add_address(
-        "Mme Anna Kowalska",
-        "Ul. Bosmanska 1",
-        "81-116 GDYNIA",
-        "POLAND"
-      )
+      shipment.add_address(address)
       shipment.submit
 
       assert_changes(
@@ -99,10 +88,7 @@ module Shipping
           ShippingAddressAddedToShipment.new(
             data: {
               order_id: order_id,
-              line_1: "Mme Anna Kowalska",
-              line_2: "Ul. Bosmanska 1",
-              line_3: "81-116 GDYNIA",
-              line_4: "POLAND"
+              postal_address: address
             }
           ),
           ShipmentSubmitted.new(
@@ -115,13 +101,9 @@ module Shipping
     end
     def test_authorize_shipment_publishes_event
       shipment = Shipment.new(order_id)
+      address = fake_address
 
-      shipment.add_address(
-        "Mme Anna Kowalska",
-        "Ul. Bosmanska 1",
-        "81-116 GDYNIA",
-        "POLAND"
-      )
+      shipment.add_address(address)
       shipment.submit
       shipment.authorize
 
@@ -131,10 +113,7 @@ module Shipping
           ShippingAddressAddedToShipment.new(
             data: {
               order_id: order_id,
-              line_1: "Mme Anna Kowalska",
-              line_2: "Ul. Bosmanska 1",
-              line_3: "81-116 GDYNIA",
-              line_4: "POLAND"
+              postal_address: address
             }
           ),
           ShipmentSubmitted.new(

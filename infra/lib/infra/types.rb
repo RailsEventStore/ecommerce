@@ -29,5 +29,12 @@ module Infra
 
       alias to_d rate
     end
+
+    class PostalAddress < Dry::Struct
+      attribute :line_1, Types::String
+      attribute :line_2, Types::String
+      attribute :line_3, Types::String
+      attribute :line_4, Types::String
+    end
   end
 end

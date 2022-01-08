@@ -6,15 +6,13 @@ module Shipping
 
     def test_submit_shipment
       order_id = SecureRandom.uuid
+      address = fake_address
       stream = "Shipping::Shipment$#{order_id}"
 
       run_command(
         AddShippingAddressToShipment.new(
           order_id: order_id,
-          line_1: "Mme Anna Kowalska",
-          line_2: "Ul. Bosmanska 1",
-          line_3: "81-116 GDYNIA",
-          line_4: "POLAND"
+          postal_address: address
         )
       )
 
@@ -30,7 +28,6 @@ module Shipping
 
     def test_shipment_cannot_be_submitted_when_shipping_address_is_missing
       order_id = SecureRandom.uuid
-      stream = "Shipping::Shipment$#{order_id}"
 
       assert_raises(Shipment::ShippingAddressMissing) do
         act(SubmitShipment.new(order_id: order_id))
@@ -39,15 +36,12 @@ module Shipping
 
     def test_shipment_cannot_be_submitted_when_already_submitted
       order_id = SecureRandom.uuid
-      stream = "Shipping::Shipment$#{order_id}"
+      address = fake_address
 
       arrange(
         AddShippingAddressToShipment.new(
           order_id: order_id,
-          line_1: "Mme Anna Kowalska",
-          line_2: "Ul. Bosmanska 1",
-          line_3: "81-116 GDYNIA",
-          line_4: "POLAND"
+          postal_address: address
         ),
         SubmitShipment.new(order_id: order_id)
       )

@@ -6,15 +6,13 @@ module Shipping
 
     def test_authorize_shipment
       order_id = SecureRandom.uuid
+      address = fake_address
       stream = "Shipping::Shipment$#{order_id}"
 
       arrange(
         AddShippingAddressToShipment.new(
           order_id: order_id,
-          line_1: "Mme Anna Kowalska",
-          line_2: "Ul. Bosmanska 1",
-          line_3: "81-116 GDYNIA",
-          line_4: "POLAND"
+          postal_address: address
         ),
         SubmitShipment.new(order_id: order_id)
       )
@@ -31,7 +29,6 @@ module Shipping
 
     def test_shipment_cannot_be_authorized_when_not_submitted
       order_id = SecureRandom.uuid
-      stream = "Shipping::Shipment$#{order_id}"
 
       assert_raises(Shipment::NotSubmitted) do
         act(AuthorizeShipment.new(order_id: order_id))
@@ -40,15 +37,12 @@ module Shipping
 
     def test_shipment_cannot_be_authorized_when_already_authorized
       order_id = SecureRandom.uuid
-      stream = "Shipping::Shipment$#{order_id}"
+      address = fake_address
 
       arrange(
         AddShippingAddressToShipment.new(
           order_id: order_id,
-          line_1: "Mme Anna Kowalska",
-          line_2: "Ul. Bosmanska 1",
-          line_3: "81-116 GDYNIA",
-          line_4: "POLAND"
+          postal_address: address
         ),
         SubmitShipment.new(order_id: order_id),
         AuthorizeShipment.new(order_id: order_id)

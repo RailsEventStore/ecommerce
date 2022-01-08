@@ -22,7 +22,6 @@ require_relative "shipping/services/on_authorize_shipment"
 require_relative "shipping/shipment"
 require_relative "shipping/picking_list"
 require_relative "shipping/picking_list_item"
-require_relative "shipping/postal_address"
 
 module Shipping
   class Configuration

@@ -10,5 +10,16 @@ module Shipping
       super
       Shipping::Configuration.new.call(cqrs)
     end
+
+    private
+
+    def fake_address
+      Infra::Types::PostalAddress.new(
+        line_1: "Mme Anna Kowalska",
+        line_2: "Ul. Bosmanska 1",
+        line_3: "81-116 GDYNIA",
+        line_4: "POLAND"
+      )
+    end
   end
 end

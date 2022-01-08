@@ -9,12 +9,7 @@ module Shipping
         Shipment.new(command.order_id),
         "Shipping::Shipment$#{command.order_id}"
       ) do |shipment|
-        shipment.add_address(
-          command.line_1,
-          command.line_2,
-          command.line_3,
-          command.line_4
-        )
+        shipment.add_address(command.postal_address)
       end
     end
   end
