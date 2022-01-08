@@ -8,10 +8,12 @@ class ShippingAddressesController < ApplicationController
     cmd =
       Shipping::AddShippingAddressToShipment.new(
         order_id: params[:order_id],
-        line_1: address_params[:address_line_1],
-        line_2: address_params[:address_line_2],
-        line_3: address_params[:address_line_3],
-        line_4: address_params[:address_line_4],
+        postal_address: {
+          line_1: address_params[:address_line_1],
+          line_2: address_params[:address_line_2],
+          line_3: address_params[:address_line_3],
+          line_4: address_params[:address_line_4]
+        }
       )
     ApplicationRecord.transaction { command_bus.(cmd) }
     redirect_to edit_order_path(params[:order_id]),
