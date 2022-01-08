@@ -17,6 +17,12 @@ module Invoicing
     attribute :payment_date, Infra::Types::Date
   end
 
+  class SetBillingAddress < Infra::Command
+    attribute :invoice_id, Infra::Types::UUID
+    attribute :tax_id_number, Infra::Types::String.optional
+    attribute :postal_address, Infra::Types::PostalAddress
+  end
+
   class SetProductNameDisplayedOnInvoice < Infra::Command
     attribute :product_id, Infra::Types::UUID
     attribute :name_displayed, Infra::Types::String

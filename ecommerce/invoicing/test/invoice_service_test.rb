@@ -27,11 +27,28 @@ module Invoicing
       ) { add_item(invoice_id, product_id, vat_rate, unit_price, title) }
     end
 
+    def test_setting_billing_address
+      invoice_id = SecureRandom.uuid
+      billing_address = fake_address
+      tax_id_number = "PL1111111111"
+      stream = "Invoicing::Invoice$#{invoice_id}"
+      assert_events(
+        stream,
+        BillingAddressSet.new(
+          data: {
+            invoice_id: invoice_id,
+            postal_address: fake_address,
+            tax_id_number: tax_id_number
+          }
+        )
+      ) { set_billing_address(invoice_id, billing_address, tax_id_number) }
+    end
+
     def test_setting_payment_date
       invoice_id = SecureRandom.uuid
       payment_date = Date.new(2021, 1, 5)
-      stream = "Invoicing::Invoice$#{invoice_id}"
 
+      stream = "Invoicing::Invoice$#{invoice_id}"
       assert_events(
         stream,
         InvoicePaymentDateSet.new(
@@ -46,6 +63,8 @@ module Invoicing
     def test_issuing_invoice
       invoice_id = SecureRandom.uuid
       issue_date = Date.new(2021, 1, 5)
+      set_billing_address(invoice_id)
+
       stream = "Invoicing::Invoice$#{invoice_id}"
       assert_events(
         stream,
@@ -65,6 +84,7 @@ module Invoicing
       issue_date = Date.new(2021, 1, 5)
       payment_date = Date.new(2021, 1, 1)
       set_payment_date(invoice_id, payment_date)
+      set_billing_address(invoice_id)
 
       stream = "Invoicing::Invoice$#{invoice_id}"
       assert_events(
@@ -84,6 +104,8 @@ module Invoicing
       invoice_id = SecureRandom.uuid
       another_invoice_id = SecureRandom.uuid
       issue_date = Date.new(2021, 1, 5)
+      set_billing_address(invoice_id)
+      set_billing_address(another_invoice_id)
 
       mocked_service = InvoiceService.new(
         cqrs.event_store,
@@ -109,10 +131,17 @@ module Invoicing
 
     def test_issued_invoice_is_a_final_state
       invoice_id = SecureRandom.uuid
+      set_billing_address(invoice_id)
       issue_invoice(invoice_id)
       assert_raises(Invoice::InvoiceAlreadyIssued) { issue_invoice(invoice_id) }
       assert_raises(Invoice::InvoiceAlreadyIssued) { set_payment_date(invoice_id) }
       assert_raises(Invoice::InvoiceAlreadyIssued) { add_item(invoice_id) }
+      assert_raises(Invoice::InvoiceAlreadyIssued) { set_billing_address(invoice_id) }
+    end
+
+    def test_invoice_can_not_be_issued_without_billing_address
+      invoice_id = SecureRandom.uuid
+      assert_raises(Invoice::BillingAddressNotSpecified) { issue_invoice(invoice_id) }
     end
 
     private

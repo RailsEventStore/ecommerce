@@ -19,6 +19,12 @@ module Invoicing
       end
     end
 
+    def set_billing_address(command)
+      with_invoice(command.invoice_id) do |invoice|
+        invoice.set_billing_address(command.tax_id_number, command.postal_address)
+      end
+    end
+
     def issue(command)
       with_invoice(command.invoice_id) do |invoice|
         invoice_number = @number_generator.call(command.issue_date)

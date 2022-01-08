@@ -23,6 +23,12 @@ module Invoicing
     attribute :issue_date, Infra::Types::Date
   end
 
+  class BillingAddressSet < Infra::Event
+    attribute :invoice_id, Infra::Types::UUID
+    attribute :tax_id_number, Infra::Types::String.optional
+    attribute :postal_address, Infra::Types::PostalAddress
+  end
+
   class ProductNameDisplayedSet < Infra::Event
     attribute :product_id, Infra::Types::UUID
     attribute :name_displayed, Infra::Types::String

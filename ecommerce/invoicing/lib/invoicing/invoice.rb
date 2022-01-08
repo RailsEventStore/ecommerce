@@ -2,6 +2,7 @@ module Invoicing
   class Invoice
     InvoiceAlreadyIssued = Class.new(StandardError)
     InvoiceNumberInUse = Class.new(StandardError)
+    BillingAddressNotSpecified = Class.new(StandardError)
     include AggregateRoot
 
     def initialize(invoice_id)
@@ -10,6 +11,7 @@ module Invoicing
     end
 
     def issue(issue_date, invoice_number)
+      raise BillingAddressNotSpecified unless @postal_address
       raise InvoiceAlreadyIssued unless draft?
       disposal_date = [@payment_date, issue_date].compact.min
       apply(
@@ -52,6 +54,17 @@ module Invoicing
       )
     end
 
+    def set_billing_address(tax_id_number, postal_address)
+      raise InvoiceAlreadyIssued unless draft?
+      apply BillingAddressSet.new(
+        data: {
+          invoice_id: @invoice_id,
+          postal_address: postal_address,
+          tax_id_number: tax_id_number
+        }
+      )
+    end
+
     private
 
     def draft?
@@ -76,6 +89,11 @@ module Invoicing
       @state = :issued
       @issue_date = event.data[:issue_date]
       @disposal_date = event.data[:disposal_date]
+    end
+
+    on BillingAddressSet do |event|
+      @tax_id_number = event.data.fetch(:tax_id_number)
+      @postal_address = event.data.fetch(:postal_address)
     end
   end
 

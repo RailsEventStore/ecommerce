@@ -30,6 +30,11 @@ module Invoicing
         InvoiceService.new(cqrs.event_store).public_method(:issue),
         InvoiceIssued
       )
+      cqrs.register_command(
+        SetBillingAddress,
+        InvoiceService.new(cqrs.event_store).public_method(:set_billing_address),
+        BillingAddressSet
+      )
       cqrs.subscribe(
         ->(event) do
           stream_name = "InvoiceIssued$#{event.data.fetch(:issue_date).strftime("%Y-%m")}"
