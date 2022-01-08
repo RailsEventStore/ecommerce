@@ -12,13 +12,21 @@ module Pricing
       end
 
       def apply(total)
-        total - (total * @value / 100)
+        total - discount(total)
+      end
+
+      def discount(total)
+        total * @value / 100
       end
     end
 
     class NoPercentageDiscount
       def apply(total)
         total
+      end
+
+      def discount(total)
+        0
       end
     end
 

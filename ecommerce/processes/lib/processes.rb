@@ -20,6 +20,7 @@ module Processes
     def call(cqrs)
       enable_pricing_sync_from_ordering(cqrs)
       calculate_total_value_when_order_submitted(cqrs)
+      calculate_sub_amounts_when_order_submitted(cqrs)
       notify_payments_about_order_total_value(cqrs)
       enable_inventory_sync_from_ordering(cqrs)
       enable_shipment_sync(cqrs)
@@ -92,6 +93,19 @@ module Processes
         ->(event) do
           cqrs.run(
             Pricing::CalculateTotalValue.new(
+              order_id: event.data.fetch(:order_id)
+            )
+          )
+        end,
+        [Ordering::OrderSubmitted]
+      )
+    end
+
+    def calculate_sub_amounts_when_order_submitted(cqrs)
+      cqrs.subscribe(
+        ->(event) do
+          cqrs.run(
+            Pricing::CalculateSubAmounts.new(
               order_id: event.data.fetch(:order_id)
             )
           )

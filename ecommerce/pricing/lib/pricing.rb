@@ -1,4 +1,5 @@
 require "infra"
+require "math"
 require_relative "pricing/discounts"
 require_relative "pricing/commands"
 require_relative "pricing/events"
@@ -29,6 +30,11 @@ module Pricing
         CalculateTotalValue,
         OnCalculateTotalValue.new(cqrs.event_store),
         OrderTotalValueCalculated
+      )
+      cqrs.register_command(
+        CalculateSubAmounts,
+        OnCalculateTotalValue.new(cqrs.event_store).public_method(:calculate_sub_amounts),
+        PriceItemValueCalculated
       )
       cqrs.register_command(
         SetPercentageDiscount,
