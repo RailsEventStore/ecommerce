@@ -32,7 +32,11 @@
   <dt class="font-bold">Shipping Details</dt>
   <dd class="mb-2">
     <% unless @shipment %>
-      Shipping addres is missing. <%= link_to "Add", new_order_shipping_address_path(@order.uid) %>
+      Shipping addres is missing.
+      <%= link_to "Add",
+                  edit_order_shipping_address_path(@order.uid),
+                  class: 'px-2 py-1 border rounded-md shadow-sm text-xs font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 border-transparent text-white bg-blue-600 hover:bg-blue-700'
+      %>
     <% else %>
       Your shipment has been queued for processing.
     <% end %>

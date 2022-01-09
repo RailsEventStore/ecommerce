@@ -12,7 +12,7 @@
   <% end %>
 <% end %>
 
-<%= form_with(model: @shipment, url: order_shipping_address_path(@shipment.order_uid), method: "post", id: "form") do |form| %>
+<%= form_with(model: @shipment, url: order_shipping_address_path(@shipment.order_uid), method: "patch", id: "form") do |form| %>
   <div>
     <label for="name" class="block font-bold">
       Addressee's full name (Person or Company)

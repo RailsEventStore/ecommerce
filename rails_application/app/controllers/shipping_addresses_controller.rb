@@ -1,10 +1,10 @@
 class ShippingAddressesController < ApplicationController
 
-  def new
+  def edit
     @shipment = Shipments::Shipment.find_or_initialize_by(order_uid: params[:order_id])
   end
 
-  def create
+  def update
     cmd =
       Shipping::AddShippingAddressToShipment.new(
         order_id: params[:order_id],
