@@ -118,7 +118,7 @@ class OrdersController < ApplicationController
     rescue Ordering::Order::NotSubmitted
       flash[:alert] = "You can't pay for an order which is not submitted"
     end
-    redirect_to order_path(params[:id])
+    redirect_to orders_path
   end
 
   private
