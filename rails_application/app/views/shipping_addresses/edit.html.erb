@@ -4,7 +4,11 @@
 
 <% content_for(:actions) do %>
   <%= secondary_action_button do %>
-    <%= link_to 'Back', edit_order_path(@shipment.order_uid) %>
+    <% if @order.submitted? %>
+      <%= link_to 'Back', order_path(@order.uid) %>
+    <% else %>
+      <%= link_to 'Back', edit_order_path(@order.uid) %>
+    <% end %>
   <% end %>
 
   <%= primary_form_action_button do %>
@@ -25,7 +29,7 @@
     </label>
     <%= form.text_field :address_line_2, required: true, class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" %>
   </div>
-    <div>
+  <div>
     <label for="name" class="block font-bold">
       City or town and postal code
     </label>

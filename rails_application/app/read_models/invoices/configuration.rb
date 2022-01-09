@@ -9,6 +9,10 @@ module Invoices
     belongs_to :invoice
   end
 
+  class Order < ApplicationRecord
+    self.table_name = "invoices_orders"
+  end
+
   class Configuration
     def call(cqrs)
       cqrs.subscribe(
@@ -26,6 +30,10 @@ module Invoices
       cqrs.subscribe(
         ->(event) { mark_as_issued(event) },
         [Invoicing::InvoiceIssued]
+      )
+      cqrs.subscribe(
+        ->(event) { mark_order_submitted(event) },
+        [Ordering::OrderSubmitted]
       )
     end
 
@@ -69,6 +77,10 @@ module Invoices
         invoice.disposal_date = event.data.fetch(:disposal_date)
         invoice.number = event.data.fetch(:invoice_number)
       end
+    end
+
+    def mark_order_submitted(event)
+      Order.find_or_initialize_by(uid: event.data.fetch(:order_id)).update!(submitted: true)
     end
 
     def with_invoice(uid)

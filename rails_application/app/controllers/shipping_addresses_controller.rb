@@ -2,6 +2,7 @@ class ShippingAddressesController < ApplicationController
 
   def edit
     @shipment = Shipments::Shipment.find_or_initialize_by(order_uid: params[:order_id])
+    @order = Shipments::Order.find_or_initialize_by(uid: params[:order_id])
   end
 
   def update
@@ -16,8 +17,9 @@ class ShippingAddressesController < ApplicationController
         }
       )
     command_bus.(cmd)
-    redirect_back fallback_location: order_path(params[:order_id]),
-                  notice: "Shippping Address was successfully updated"
+    @order = Shipments::Order.find_or_initialize_by(uid: params[:order_id])
+    redirect_to @order.submitted? ? order_path(params[:order_id]) : edit_order_path(params[:order_id]),
+                notice: "Shippping Address was successfully updated"
   end
 
   private
