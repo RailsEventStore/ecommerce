@@ -11,6 +11,7 @@ class OrdersController < ApplicationController
     @order = Orders::Order.find_by_uid(params[:id])
     @order_lines = Orders::OrderLine.where(order_uid: @order.uid)
     @shipment = Shipments::Shipment.find_by(order_uid: @order.uid)
+    @invoice = Invoices::Invoice.find_or_initialize_by(order_uid: @order.uid)
   end
 
   def new
