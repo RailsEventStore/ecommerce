@@ -10,13 +10,13 @@ module Invoicing
 
   class InvoicePaymentDateSet < Infra::Event
     attribute :invoice_id, Infra::Types::UUID
-    attribute :payment_date, Infra::Types::Date
+    attribute :payment_date, Infra::Types::Params::Date
   end
 
   class InvoiceIssued < Infra::Event
     attribute :invoice_id, Infra::Types::UUID
-    attribute :issue_date, Infra::Types::Date
-    attribute :disposal_date, Infra::Types::Date
+    attribute :issue_date, Infra::Types::Params::Date
+    attribute :disposal_date, Infra::Types::Params::Date
     attribute :invoice_number, Infra::Types::String
   end
 
