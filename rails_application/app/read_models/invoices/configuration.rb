@@ -55,6 +55,7 @@ module Invoices
       with_invoice(event.data.fetch(:invoice_id)) do |invoice|
         item = InvoiceItem.create(
           invoice: invoice,
+          name: event.data.fetch(:title),
           vat_rate: event.data.fetch(:vat_rate).fetch(:rate),
           unit_price: event.data.fetch(:unit_price),
           quantity: event.data.fetch(:quantity),
