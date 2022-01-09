@@ -108,6 +108,12 @@ As you see, this project is not an usual Rails project.
 Many Rails conventions are not followed here. Usually there's a good reason for that.
 Trust us, but feel free to challenge our decisions.
 
+As for the local dev setup:
+
+- we use Makefile, so `make install` should simplify a lot
+- there's docker-compose in the rails_application, if you're into Docker
+
+
 Things worth knowing about:
 
 - Zeitwerk is not used here - you need to be explicit with requires
