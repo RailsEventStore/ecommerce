@@ -1,13 +1,14 @@
-class ShippingAddressesController < ApplicationController
+class BillingAddressesController < ApplicationController
 
   def edit
-    @shipment = Shipments::Shipment.find_or_initialize_by(order_uid: params[:order_id])
+    @invoice = Invoices::Invoice.find_or_initialize_by(order_uid: params[:order_id])
   end
 
   def update
     cmd =
-      Shipping::AddShippingAddressToShipment.new(
-        order_id: params[:order_id],
+      Invoicing::SetBillingAddress.new(
+        invoice_id: params[:order_id],
+        tax_id_number: address_params[:tax_id_number],
         postal_address: {
           line_1: address_params[:address_line_1],
           line_2: address_params[:address_line_2],
@@ -17,13 +18,14 @@ class ShippingAddressesController < ApplicationController
       )
     command_bus.(cmd)
     redirect_back fallback_location: order_path(params[:order_id]),
-                  notice: "Shippping Address was successfully updated"
+                  notice: "Billing Address was successfully updated"
   end
 
   private
 
   def address_params
-    params.require(:shipments_shipment).permit(
+    params.require(:invoices_invoice).permit(
+      :tax_id_number,
       :address_line_1,
       :address_line_2,
       :address_line_3,

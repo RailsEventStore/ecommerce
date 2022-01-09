@@ -15,6 +15,10 @@
     <%= link_to "Edit Shipping Address", edit_order_shipping_address_path(@order_id) %>
   <% end %>
 
+  <%= secondary_action_button do %>
+    <%= link_to "Edit Billing Address", edit_order_billing_address_path(@order_id) %>
+  <% end %>
+
   <%= primary_form_action_button do %>
     Submit Order
   <% end %>

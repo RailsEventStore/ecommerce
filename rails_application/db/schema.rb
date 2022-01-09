@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_11_24_220955) do
+ActiveRecord::Schema.define(version: 2022_01_09_162627) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
@@ -44,6 +44,32 @@ ActiveRecord::Schema.define(version: 2021_11_24_220955) do
     t.index ["created_at"], name: "index_event_store_events_in_streams_on_created_at"
     t.index ["stream", "event_id"], name: "index_event_store_events_in_streams_on_stream_and_event_id", unique: true
     t.index ["stream", "position"], name: "index_event_store_events_in_streams_on_stream_and_position", unique: true
+  end
+
+  create_table "invoice_items", force: :cascade do |t|
+    t.bigint "invoice_id"
+    t.string "name"
+    t.decimal "unit_price", precision: 8, scale: 2
+    t.decimal "vat_rate", precision: 4, scale: 1
+    t.integer "quantity"
+    t.decimal "value", precision: 8, scale: 2
+    t.index ["invoice_id"], name: "index_invoice_items_on_invoice_id"
+  end
+
+  create_table "invoices", force: :cascade do |t|
+    t.string "order_uid", null: false
+    t.string "number"
+    t.string "tax_id_number"
+    t.string "address_line_1"
+    t.string "address_line_2"
+    t.string "address_line_3"
+    t.string "address_line_4"
+    t.boolean "address_present", default: false
+    t.boolean "issued", default: false
+    t.date "issue_date"
+    t.date "disposal_date"
+    t.date "payment_date"
+    t.decimal "total_value", precision: 8, scale: 2
   end
 
   create_table "order_lines", force: :cascade do |t|

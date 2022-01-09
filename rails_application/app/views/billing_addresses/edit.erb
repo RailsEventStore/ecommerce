@@ -1,0 +1,46 @@
+<% content_for(:header) do %>
+  Add Billing Address
+<% end %>
+
+<% content_for(:actions) do %>
+  <%= secondary_action_button do %>
+    <%= link_to 'Back', edit_order_path(@invoice.order_uid) %>
+  <% end %>
+
+  <%= primary_form_action_button do %>
+    Save
+  <% end %>
+<% end %>
+
+<%= form_with(model: @invoice, url: order_billing_address_path(@invoice.order_uid), method: "patch", id: "form") do |form| %>
+  <div>
+    <label for="name" class="block font-bold">
+      Tax Identification Number (optional)
+    </label>
+    <%= form.text_field :tax_id_number, required: false, class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" %>
+  </div>
+  <div>
+    <label for="name" class="block font-bold">
+      Addressee's full name (Person or Company)
+    </label>
+    <%= form.text_field :address_line_1, required: true, class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" %>
+  </div>
+  <div>
+    <label for="name" class="block font-bold">
+      Street address or post office box number
+    </label>
+    <%= form.text_field :address_line_2, required: true, class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" %>
+  </div>
+    <div>
+    <label for="name" class="block font-bold">
+      City or town and postal code
+    </label>
+    <%= form.text_field :address_line_3, required: true, class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" %>
+  </div>
+  <div>
+    <label for="name" class="block font-bold">
+      Country
+    </label>
+    <%= form.text_field :address_line_4, required: true, class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-sm sm:text-sm border-gray-300 rounded-md" %>
+  </div>
+<% end %>
