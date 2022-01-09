@@ -27,7 +27,6 @@ module Invoicing
     end
 
     def set_payment_date(payment_date)
-      raise InvoiceAlreadyIssued unless draft?
       apply(
         InvoicePaymentDateSet.new(
           data: {
