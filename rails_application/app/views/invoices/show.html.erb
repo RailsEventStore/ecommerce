@@ -4,7 +4,7 @@
 
 <% content_for(:actions) do %>
   <%= secondary_action_button do %>
-    <%= link_to 'Back', order_path(@order) %>
+    <%= link_to 'Back', order_path(@order.uid) %>
   <% end %>
 <% end %>
 

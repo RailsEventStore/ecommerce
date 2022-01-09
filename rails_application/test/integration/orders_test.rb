@@ -153,7 +153,7 @@ class OrdersTest < InMemoryRESIntegrationTestCase
          }
 
     run_command(Ordering::CancelOrder.new(order_id: order_id))
-    get "/orders/#{Orders::Order.last.id}"
+    get "/orders/#{order_id}"
     assert_select("dd", "Cancelled")
   end
 

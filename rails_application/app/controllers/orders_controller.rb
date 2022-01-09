@@ -8,7 +8,7 @@ class OrdersController < ApplicationController
   end
 
   def show
-    @order = Orders::Order.find(params[:id])
+    @order = Orders::Order.find_by_uid(params[:id])
     @order_lines = Orders::OrderLine.where(order_uid: @order.uid)
     @shipment = Shipments::Shipment.find_by(order_uid: @order.uid)
   end
@@ -86,10 +86,10 @@ class OrdersController < ApplicationController
         customer_id: params[:customer_id]
       )
     ApplicationRecord.transaction { command_bus.(cmd) }
-    redirect_to order_path(Orders::Order.find_by_uid(cmd.order_id)),
+    redirect_to order_path(cmd.order_id),
                 notice: "Order was successfully submitted"
   rescue Inventory::InventoryEntry::InventoryNotAvailable
-    redirect_to order_path(Orders::Order.find_by_uid(cmd.order_id)),
+    redirect_to order_path(cmd.order_id),
                 alert:
                   "Order can not be submitted! Some products are not available"
   end
