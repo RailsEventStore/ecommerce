@@ -30,4 +30,7 @@ end
   command_bus.call(
     Pricing::SetPrice.new(product_id: product_id, price: name_price_tuple[1])
   )
+  command_bus.call(
+    Taxes::SetVatRate.new(product_id: product_id, vat_rate: Taxes::Configuration.available_vat_rates.first)
+  )
 end
