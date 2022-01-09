@@ -15,13 +15,9 @@ class ShippingAddressesController < ApplicationController
           line_4: address_params[:address_line_4]
         }
       )
-    ApplicationRecord.transaction { command_bus.(cmd) }
+    command_bus.(cmd)
     redirect_to edit_order_path(params[:order_id]),
       notice: "Shippping Address was successfully updated"
-  rescue Inventory::InventoryEntry::InventoryNotAvailable
-    redirect_to order_path(Orders::Order.find_by_uid(cmd.order_id)),
-      alert:
-        "Order can not be submitted! Some products are not available"
   end
 
   private
