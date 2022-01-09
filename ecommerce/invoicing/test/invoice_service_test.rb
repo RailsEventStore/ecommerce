@@ -134,7 +134,6 @@ module Invoicing
       set_billing_address(invoice_id)
       issue_invoice(invoice_id)
       assert_raises(Invoice::InvoiceAlreadyIssued) { issue_invoice(invoice_id) }
-      assert_raises(Invoice::InvoiceAlreadyIssued) { set_payment_date(invoice_id) }
       assert_raises(Invoice::InvoiceAlreadyIssued) { add_item(invoice_id) }
       assert_raises(Invoice::InvoiceAlreadyIssued) { set_billing_address(invoice_id) }
     end
