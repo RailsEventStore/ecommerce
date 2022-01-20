@@ -11,7 +11,7 @@ module Crm
 
     def test_should_not_allow_for_double_registration
       uid = SecureRandom.uuid
-      assert_raises(AlreadyRegistered) do
+      assert_raises(Customer::AlreadyRegistered) do
         register_customer(uid, fake_name)
         register_customer(uid, fake_name)
       end
