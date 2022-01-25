@@ -6,3 +6,6 @@ coverage_criteria:
 matcher:
   subjects:
     - Crm*
+  ignore:
+    - Crm::Configuration#call
+
