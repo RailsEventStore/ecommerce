@@ -28,7 +28,6 @@ module Crm
         )
     end
 
-    #not sure if we should handle this info this way or just b using some stream name with id of record?
     on CustomerRegistered do |event|
       @registered = true
     end

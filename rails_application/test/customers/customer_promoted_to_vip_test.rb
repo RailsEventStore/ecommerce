@@ -28,10 +28,6 @@ module Customers
           )
       )
 
-      # run_command(
-      #     Crm::PromoteCustomerToVip.new(customer_id: customer_id)
-      # )
-
       customer = Customer.find_by(id: customer_id)
       assert_equal(customer.vip, true)
     end
