@@ -23,7 +23,7 @@ Rails.application.routes.draw do
   resources :products, only: [:new, :show, :create, :index] do
     resources :supplies, only: [:new, :create]
   end
-  resources :customers, only: [:new, :create, :index]
+  resources :customers, only: [:new, :create, :index, :update]
 
   match("architecture", to: "architecture#index", via: :get)
   mount RailsEventStore::Browser => "/res"
