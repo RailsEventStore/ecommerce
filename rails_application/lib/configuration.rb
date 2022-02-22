@@ -8,6 +8,7 @@ class Configuration
     enable_products_read_model(cqrs)
     enable_customers_read_model(cqrs)
     enable_invoices_read_model(cqrs)
+    enable_client_orders_read_model(cqrs)
 
     Ecommerce::Configuration.new(
       number_generator: Rails.configuration.number_generator,
@@ -43,5 +44,9 @@ class Configuration
 
   def enable_invoices_read_model(cqrs)
     Invoices::Configuration.new.call(cqrs)
+  end
+
+  def enable_client_orders_read_model(cqrs)
+    ClientOrders::Configuration.new.call(cqrs)
   end
 end
