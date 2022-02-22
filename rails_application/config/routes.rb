@@ -25,6 +25,10 @@ Rails.application.routes.draw do
   end
   resources :customers, only: [:new, :create, :index, :update]
 
+  get "/client", to: "client_orders#index"
+  get "/client/:id", to: "client_orders#show"
+  post "/client", to: "client_orders#login"
+
   match("architecture", to: "architecture#index", via: :get)
   mount RailsEventStore::Browser => "/res"
 end
