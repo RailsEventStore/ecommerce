@@ -23,7 +23,7 @@ class ProductsController < ApplicationController
     rescue ProductCatalog::AlreadyRegistered
       flash[:notice] = "Product was already registered"
       render "new"
-    rescue Invoicing::Product::VatRateNotApplicable
+    rescue Taxes::Product::VatRateNotApplicable
       flash[:notice] = "Selected VAT rate not applicable"
       render "new"
     else
