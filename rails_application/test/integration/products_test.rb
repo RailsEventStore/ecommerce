@@ -3,10 +3,6 @@ require "test_helper"
 class ProductsTest < InMemoryRESIntegrationTestCase
   cover "Products*"
 
-  def setup
-    Taxes::Configuration.available_vat_rates
-  end
-
   def test_add_product_with_worng_vat_rate_code
     product_id = SecureRandom.uuid
     post "/products",
