@@ -1,6 +1,6 @@
 # ecommerce
 
-Application with CQRS and Event Sourcing built on Rails and [Rails Event Store](https://railseventstore.org).
+A non-trivial application with DDD, CQRS and Event Sourcing built on Rails and [Rails Event Store](https://railseventstore.org).
 
 👉 [ecommerce.arkademy.dev](https://ecommerce.arkademy.dev)
 
