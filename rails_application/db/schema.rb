@@ -10,8 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_02_19_162101) do
-
+ActiveRecord::Schema[7.0].define(version: 2022_02_19_162101) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -21,22 +20,22 @@ ActiveRecord::Schema.define(version: 2022_02_19_162101) do
     t.string "number"
     t.uuid "order_uid"
     t.string "state"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "clients", force: :cascade do |t|
     t.uuid "uid"
     t.string "name"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "customers", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.datetime "registered_at"
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
+    t.datetime "registered_at", precision: nil
     t.boolean "vip", default: false, null: false
   end
 
@@ -45,8 +44,8 @@ ActiveRecord::Schema.define(version: 2022_02_19_162101) do
     t.string "event_type", null: false
     t.jsonb "metadata"
     t.jsonb "data", null: false
-    t.datetime "created_at", null: false
-    t.datetime "valid_at"
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "valid_at", precision: nil
     t.index ["created_at"], name: "index_event_store_events_on_created_at"
     t.index ["event_id"], name: "index_event_store_events_on_event_id", unique: true
     t.index ["event_type"], name: "index_event_store_events_on_event_type"
@@ -57,7 +56,7 @@ ActiveRecord::Schema.define(version: 2022_02_19_162101) do
     t.string "stream", null: false
     t.integer "position"
     t.uuid "event_id", null: false
-    t.datetime "created_at", null: false
+    t.datetime "created_at", precision: nil, null: false
     t.index ["created_at"], name: "index_event_store_events_in_streams_on_created_at"
     t.index ["stream", "event_id"], name: "index_event_store_events_in_streams_on_stream_and_event_id", unique: true
     t.index ["stream", "position"], name: "index_event_store_events_in_streams_on_stream_and_position", unique: true
@@ -127,7 +126,7 @@ ActiveRecord::Schema.define(version: 2022_02_19_162101) do
     t.string "name"
     t.decimal "price", precision: 8, scale: 2
     t.integer "stock_level"
-    t.datetime "registered_at"
+    t.datetime "registered_at", precision: nil
     t.string "vat_rate_code"
   end
 
