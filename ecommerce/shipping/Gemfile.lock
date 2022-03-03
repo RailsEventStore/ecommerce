@@ -9,8 +9,12 @@ PATH
       ruby_event_store-transformations
 
 GEM
-  remote: https://rubygems.org/
   remote: https://oss:7AXfeZdAfCqL1PvHm2nvDJO6Zd9UW8IK@gem.mutant.dev/
+  specs:
+    mutant-license (0.1.1.2.1627430819213747598431630701693729869473.4)
+
+GEM
+  remote: https://rubygems.org/
   specs:
     activejob (6.1.4.1)
       activesupport (= 6.1.4.1)
@@ -71,7 +75,6 @@ GEM
       parser (~> 3.0.0)
       regexp_parser (~> 2.0, >= 2.0.3)
       unparser (~> 0.6.0)
-    mutant-license (0.1.1.2.1627430819213747598431630701693729869473.4)
     mutant-minitest (0.10.34)
       minitest (~> 5.11)
       mutant (= 0.10.34)
@@ -129,4 +132,4 @@ DEPENDENCIES
   mutant-minitest!
 
 BUNDLED WITH
-   2.1.4
+   2.3.8
