@@ -1,5 +1,6 @@
 require "minitest/autorun"
 require "mutant/minitest/coverage"
+require "active_support/isolated_execution_state"
 
 require_relative "../lib/invoicing"
 require_relative '../lib/invoicing/fake_concurrent_invoice_number_generator'
