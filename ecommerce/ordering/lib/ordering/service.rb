@@ -35,6 +35,18 @@ module Ordering
     end
   end
 
+  class OnOrderArchived
+    def initialize(event_store)
+      @repository = Infra::AggregateRootRepository.new(event_store)
+    end
+
+    def call(command)
+      @repository.with_aggregate(Order, command.aggregate_id) do |order|
+        order.archive
+      end
+    end
+  end
+
   class OnMarkOrderAsPaid
     def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)
