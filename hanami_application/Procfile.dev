@@ -1,0 +1,2 @@
+web: bundle exec guard --no-notify --no-interactions
+assets: yarn run start

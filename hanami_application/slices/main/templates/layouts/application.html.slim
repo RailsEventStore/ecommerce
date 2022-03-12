@@ -1,0 +1,15 @@
+doctype html
+html
+  head
+    meta charset="utf-8"
+    title
+      - if content_for :title
+        ==> content_for :title
+        ' /
+      ' Ecommerce
+    meta name="title" content="Ecommerce"
+    link rel="stylesheet" type="text/css" href=assets["main/public.css"]
+    script src=assets["main/public.js"] defer=true
+
+  body
+    == yield
