@@ -12,8 +12,8 @@ RSpec.configure do |config|
   config.include Test::DB::Helpers, :db
 
   # Configure per-slice factories here
-  config.define_derived_metadata(file_path: /main/) do |metadata|
-    metadata[:factory] = :main
+  config.define_derived_metadata(file_path: /crm/) do |metadata|
+    metadata[:factory] = :crm
   end
   config.include(Test::DB::FactoryHelper.new(:main), factory: :main)
 

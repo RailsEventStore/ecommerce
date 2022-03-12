@@ -3,7 +3,7 @@
 
 require "ecommerce/repository"
 
-module Main
+module Crm
   class Repository < Ecommerce::Repository
     struct_namespace Entities
   end

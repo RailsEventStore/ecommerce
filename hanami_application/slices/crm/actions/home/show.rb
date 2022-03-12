@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Main
+module Crm
   module Actions
     module Home
       class Show < Action::Base

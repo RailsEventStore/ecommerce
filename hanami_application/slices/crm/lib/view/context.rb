@@ -2,7 +2,7 @@
 
 require "ecommerce/view/context"
 
-module Main
+module Crm
   module View
     class Context < Ecommerce::View::Context
     end

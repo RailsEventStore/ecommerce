@@ -33,8 +33,8 @@ module Test
         @entity_namespace ||=
           begin
             case type
-            when :main
-              Main::Entities
+            when :crm
+              Crm::Entities
             else
               Ecommerce::Entities
             end

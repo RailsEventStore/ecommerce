@@ -2,7 +2,7 @@
 
 require "ecommerce/view/part"
 
-module Main
+module Crm
   module View
     class Part < Ecommerce::View::Part
     end

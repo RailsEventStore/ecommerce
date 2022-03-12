@@ -3,7 +3,7 @@
 
 require "ecommerce/action/base"
 
-module Main
+module Crm
   module Action
     class Base < Ecommerce::Action::Base
     end

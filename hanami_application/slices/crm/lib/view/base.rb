@@ -3,7 +3,7 @@
 
 require "ecommerce/view/base"
 
-module Main
+module Crm
   module View
     class Base < Ecommerce::View::Base
     end
