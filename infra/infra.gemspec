@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "rake"
   spec.add_dependency "dry-struct"
   spec.add_dependency "dry-types"
-  spec.add_dependency "rails_event_store", "~> 2.3.0"
-  spec.add_dependency "activerecord-import", '~> 1.3'
+  spec.add_dependency "activesupport"
+  spec.add_dependency "ruby_event_store", "~> 2.3.0"
   spec.add_dependency "ruby_event_store-transformations"
 end
