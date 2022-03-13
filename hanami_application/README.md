@@ -1,22 +1,9 @@
 # Ecommerce
 
-This is a Hanami 2 application.
+This is an integration of Hanami 2 application with Arkency's ecommerce domain.
 
-## Docker development
 
-To bootstrap and setup the app and its assets server, just run:
-
-```
-script/setup docker
-```
-
-To start the app:
-
-```
-docker-compose up app
-```
-
-## Local development
+## Development
 
 ### Requirements
 
@@ -38,30 +25,12 @@ After cloning, run:
 ./script/bootstrap
 ```
 
-#### Running supporting services
-
-To start the supporting services, run:
-
-```
-./script/support
-```
-
-These must be running before completing the following steps.
-
 #### Setup
 
 After the supporting services have started, run:
 
 ```
 ./script/setup
-```
-
-### After pulling changes
-
-After pulling changes from the remote, run:
-
-```
-./script/update
 ```
 
 #### Running the app
