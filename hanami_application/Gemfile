@@ -58,8 +58,10 @@ group :test do
   gem "simplecov", "~> 0.17"
 end
 
+gem "ruby_event_store", "~> 2.3.0"
+gem "ruby_event_store-rom", "~> 2.0"
+gem "ruby_event_store-transformations"
 gem "arkency-command_bus"
 gem "aggregate_root"
 gem "math", path: "../math"
-gem "ruby_event_store", "~> 2.3.0"
-gem "ruby_event_store-transformations"
+gem 'infra', path: "../infra"

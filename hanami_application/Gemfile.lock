@@ -1,4 +1,15 @@
 PATH
+  remote: ../infra
+  specs:
+    infra (1.0.0)
+      activesupport
+      dry-struct
+      dry-types
+      rake
+      ruby_event_store (~> 2.3.0)
+      ruby_event_store-transformations
+
+PATH
   remote: ../math
   specs:
     math (1.0.0)
@@ -307,6 +318,15 @@ GEM
     ruby_event_store (2.3.0)
       concurrent-ruby (~> 1.0, >= 1.1.6)
       ruby2_keywords
+    ruby_event_store-rom (2.0.0)
+      dry-container (>= 0.6)
+      dry-initializer (>= 3.0)
+      dry-types (>= 1.0)
+      rom-changeset (>= 5.0)
+      rom-repository (>= 5.0)
+      rom-sql (>= 3.0)
+      ruby_event_store (>= 2.0.0, < 3.0.0)
+      sequel (>= 5.11.0)
     ruby_event_store-transformations (0.1.0)
       activesupport (>= 5.0)
       ruby_event_store (>= 2.0.0, < 3.0.0)
@@ -374,6 +394,7 @@ DEPENDENCIES
   hanami-utils (~> 2.0.0.alpha)
   hanami-view (~> 2.0.0.alpha)
   i18n (~> 1.8)
+  infra!
   math!
   pg
   pry
@@ -386,6 +407,7 @@ DEPENDENCIES
   rom-sql (~> 3.2)
   rspec (~> 3.9)
   ruby_event_store (~> 2.3.0)
+  ruby_event_store-rom (~> 2.0)
   ruby_event_store-transformations
   sequel (~> 5.32)
   simplecov (~> 0.17)
