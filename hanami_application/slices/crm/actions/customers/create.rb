@@ -10,12 +10,13 @@ module Crm
 
         def handle(req, res)
           params = JSON.parse(req.body.read, symbolize_names: true)
-          create_customer(SecureRandom.uuid, params[:name])
+          create_customer(params[:customer_id], params[:name])
         rescue Crm::Customer::AlreadyRegistered
           flash[:notice] = "Customer was already registered"
           render "new"
         else
-          redirect_to customers_path, notice: "Customer was successfully created"
+          res.status = 200
+          res.body = { message: "Customer was successfully created" }
         end
 
         private
