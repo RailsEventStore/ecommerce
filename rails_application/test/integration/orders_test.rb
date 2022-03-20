@@ -193,7 +193,7 @@ class OrdersTest < InMemoryRESIntegrationTestCase
         .load(body)
         .fetch("data")
         .map { |data| data.fetch("attributes").fetch("event_type") }
-    assert(event_names.include?("Ordering::OrderPaid"))
+    assert(event_names.include?("Ordering::OrderConfirmed"))
     assert(event_names.include?("Ordering::ItemAddedToBasket"))
     assert(event_names.include?("Pricing::OrderTotalValueCalculated"))
     assert(event_names.include?("Ordering::OrderSubmitted"))

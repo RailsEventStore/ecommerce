@@ -17,7 +17,7 @@ module Processes
       given([order_submitted, payment_authorized, payment_captured]).each do |event|
         process.call(event)
       end
-      assert_command(Ordering::MarkOrderAsPaid.new(order_id: order_id))
+      assert_command(Ordering::ConfirmOrder.new(order_id: order_id))
     end
   end
 end

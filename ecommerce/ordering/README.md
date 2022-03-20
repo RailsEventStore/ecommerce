@@ -6,20 +6,20 @@ The `Ordering::Order` aggregate manages the state machine of an order:
 
 - draft
 - submitted
-- paid
+- confirmed
 - expired
 - cancelled
 
 After each successful change an appropriate event is published in the Order stream.
 This object is fully event sourced.
 
-| Order     | draft | submitted | paid | expired | cancelled |
-| --------- | :---: | :-------: | :--: | :-----: | :-------: |
-| draft     |       |    ✅     |      |   ✅    |           |
-| submitted |       |           |  ✅  |         |    ✅     |
-| paid      |       |           |      |         |           |
-| expired   |       |           |      |         |           |
-| cancelled |       |           |      |         |           |
+| Order     | draft | submitted | confirmed | expired | cancelled |
+| --------- | :---: | :-------: | :--:      | :-----: | :-------: |
+| draft     |       |    ✅     |           |   ✅    |           |
+| submitted |       |           |  ✅       |         |    ✅     |
+| confirmed |       |           |           |         |           |
+| expired   |       |           |           |         |           |
+| cancelled |       |           |           |         |           |
 
 #### Up and running
 

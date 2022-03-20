@@ -49,8 +49,8 @@ module Processes
           @order_id = event.data.fetch(:order_id)
         when Ordering::OrderExpired
           @order = :expired
-        when Ordering::OrderPaid
-          @order = :paid
+        when Ordering::OrderConfirmed
+          @order = :confirmed
         end
       end
 

@@ -1,5 +1,5 @@
 module Ordering
-  class OrderPaid < Infra::Event
+  class OrderConfirmed < Infra::Event
     attribute :order_id, Infra::Types::UUID
   end
 end

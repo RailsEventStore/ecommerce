@@ -40,7 +40,7 @@ module Orders
       )
       subscribe_and_link_to_stream(
         ->(event) { change_order_state(event, "Paid") },
-        [Ordering::OrderPaid]
+        [Ordering::OrderConfirmed]
       )
       subscribe_and_link_to_stream(
         ->(event) { change_order_state(event, "Cancelled") },

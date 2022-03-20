@@ -71,7 +71,7 @@ expiring orders.
 It takes the following events as the input:
 - Ordering::OrderSubmitted
 - Ordering::OrderExpired
-- Ordering::OrderPaid
+- Ordering::OrderConfirmed
 - Payments::PaymentAuthorized
 - Payments::PaymentReleased
 

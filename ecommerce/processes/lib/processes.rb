@@ -26,7 +26,7 @@ module Processes
       enable_shipment_sync(cqrs)
       check_product_availability_on_adding_item_to_basket(cqrs)
       determine_vat_rates_on_order_submitted(cqrs)
-      set_invoice_payment_date_when_order_paid(cqrs)
+      set_invoice_payment_date_when_order_confirmed(cqrs)
       enable_product_name_sync(cqrs)
 
       enable_release_payment_process(cqrs)
@@ -44,7 +44,7 @@ module Processes
           Shipping::ShippingAddressAddedToShipment,
           Shipping::ShipmentSubmitted,
           Ordering::OrderSubmitted,
-          Ordering::OrderPaid
+          Ordering::OrderConfirmed
         ]
       )
     end
@@ -135,7 +135,7 @@ module Processes
             )
           )
         end,
-        [Ordering::OrderPaid]
+        [Ordering::OrderConfirmed]
       )
 
       cqrs.subscribe(
@@ -189,7 +189,7 @@ module Processes
         [
           Ordering::OrderSubmitted,
           Ordering::OrderExpired,
-          Ordering::OrderPaid,
+          Ordering::OrderConfirmed,
           Payments::PaymentAuthorized,
           Payments::PaymentReleased
         ]
@@ -234,7 +234,7 @@ module Processes
         )
     end
 
-    def set_invoice_payment_date_when_order_paid(cqrs)
+    def set_invoice_payment_date_when_order_confirmed(cqrs)
       cqrs.subscribe(
         ->(event) do
           cqrs.run(
@@ -244,7 +244,7 @@ module Processes
             )
           )
         end,
-        [Ordering::OrderPaid]
+        [Ordering::OrderConfirmed]
       )
     end
   end

@@ -47,7 +47,7 @@ module Ordering
     end
   end
 
-  class OnMarkOrderAsPaid
+  class OnConfirmOrder
     def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)
     end

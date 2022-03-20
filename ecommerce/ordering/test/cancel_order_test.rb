@@ -44,7 +44,7 @@ module Ordering
       ) { act(CancelOrder.new(order_id: aggregate_id)) }
     end
 
-    def test_paid_order_cant_be_cancelled
+    def test_confirmed_order_cant_be_cancelled
       aggregate_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
       customer_id = SecureRandom.uuid
@@ -59,7 +59,7 @@ module Ordering
           order_number: "2018/12/1",
           customer_id: customer_id
         ),
-        MarkOrderAsPaid.new(order_id: aggregate_id)
+        ConfirmOrder.new(order_id: aggregate_id)
       )
 
       assert_raises(Order::NotSubmitted) do

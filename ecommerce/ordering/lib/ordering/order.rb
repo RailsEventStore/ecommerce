@@ -3,7 +3,7 @@ module Ordering
     include AggregateRoot
 
     AlreadySubmitted = Class.new(StandardError)
-    AlreadyPaid = Class.new(StandardError)
+    AlreadyConfirmed = Class.new(StandardError)
     NotSubmitted = Class.new(StandardError)
     OrderHasExpired = Class.new(StandardError)
     MissingCustomer = Class.new(StandardError)
@@ -30,11 +30,11 @@ module Ordering
     def confirm
       raise OrderHasExpired if @state.equal?(:expired)
       raise NotSubmitted unless @state.equal?(:submitted)
-      apply OrderPaid.new(data: { order_id: @id })
+      apply OrderConfirmed.new(data: { order_id: @id })
     end
 
     def expire
-      raise AlreadyPaid if @state.equal?(:paid)
+      raise AlreadyConfirmed if @state.equal?(:confirmed)
       apply OrderExpired.new(data: { order_id: @id })
     end
 
@@ -70,8 +70,8 @@ module Ordering
       @state = :submitted
     end
 
-    on OrderPaid do |event|
-      @state = :paid
+    on OrderConfirmed do |event|
+      @state = :confirmed
     end
 
     on OrderExpired do |event|

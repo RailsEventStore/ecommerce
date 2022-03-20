@@ -39,7 +39,7 @@ module Processes
       end
 
       def process(event)
-        @cqrs.run(Ordering::MarkOrderAsPaid.new(order_id: @order_id)) if event.class.equal?(Payments::PaymentCaptured)
+        @cqrs.run(Ordering::ConfirmOrder.new(order_id: @order_id)) if event.class.equal?(Payments::PaymentCaptured)
       end
 
       def apply(events)

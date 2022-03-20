@@ -10,7 +10,7 @@ module ClientOrders
       Order.destroy_all
     end
 
-    def test_order_paid
+    def test_order_confirmed
       event_store = Rails.configuration.event_store
       customer_id = SecureRandom.uuid
       order_id = SecureRandom.uuid

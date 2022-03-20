@@ -52,8 +52,8 @@ module Processes
         when Ordering::OrderSubmitted
           @order = :submitted
           @order_id = event.data.fetch(:order_id)
-        when Ordering::OrderPaid
-          @order = :paid
+        when Ordering::OrderConfirmed
+          @order = :confirmed
         end
       end
 
@@ -64,7 +64,7 @@ module Processes
       end
 
       def authorize?
-        @shipment == :address_set && @order == :paid
+        @shipment == :address_set && @order == :confirmed
       end
     end
   end

@@ -46,7 +46,7 @@ module Ordering
       ) { act(ArchiveOrder.new(order_id: aggregate_id)) }
     end
 
-    def test_paid_order_can_be_archived
+    def test_confirmed_order_can_be_archived
       aggregate_id = SecureRandom.uuid
       stream = "Ordering::Order$#{aggregate_id}"
       product_id = SecureRandom.uuid
@@ -62,7 +62,7 @@ module Ordering
           order_number: "2018/12/1",
           customer_id: customer_id
         ),
-        MarkOrderAsPaid.new(order_id: aggregate_id)
+        ConfirmOrder.new(order_id: aggregate_id)
       )
 
       assert_events(

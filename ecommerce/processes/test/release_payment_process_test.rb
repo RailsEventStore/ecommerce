@@ -6,7 +6,7 @@ module Processes
 
     def test_happy_path
       process = ReleasePaymentProcess.new(cqrs)
-      given([order_submitted, payment_authorized, order_paid]).each do |event|
+      given([order_submitted, payment_authorized, order_confirmed]).each do |event|
         process.call(event)
       end
       assert_no_command
