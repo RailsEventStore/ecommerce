@@ -78,6 +78,9 @@ class OrdersController < ApplicationController
       )
     )
     redirect_to edit_order_path(params[:id])
+  rescue Ordering::Order::CannotRemoveZeroQuantityItem
+    redirect_to edit_order_path(params[:id]),
+                alert: "Cannot remove the product with 0 quantity"
   end
 
   def create

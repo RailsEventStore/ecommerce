@@ -7,6 +7,7 @@ module Ordering
     NotSubmitted = Class.new(StandardError)
     OrderHasExpired = Class.new(StandardError)
     MissingCustomer = Class.new(StandardError)
+    CannotRemoveZeroQuantityItem = Class.new(StandardError)
 
     def initialize(id)
       @id = id
@@ -51,6 +52,7 @@ module Ordering
 
     def remove_item(product_id)
       raise AlreadySubmitted unless @state.equal?(:draft)
+      raise CannotRemoveZeroQuantityItem if @basket.quantity(product_id).zero?
       apply ItemRemovedFromBasket.new(data: { order_id: @id, product_id: product_id })
     end
 
