@@ -40,7 +40,7 @@ jobs:
               }]
             }
         env:
-          CI_WEBHOOK_URL: ${{ secrets.CI_WEBHOOK }}
+          SLACK_WEBHOOK_URL: ${{ secrets.CI_WEBHOOK }}
         if: always()
         continue-on-error: true
 
@@ -80,7 +80,7 @@ jobs:
               }]
             }
         env:
-          CI_WEBHOOK_URL: ${{ secrets.CI_WEBHOOK }}
+          SLACK_WEBHOOK_URL: ${{ secrets.CI_WEBHOOK }}
         if: always()
         continue-on-error: true
 
