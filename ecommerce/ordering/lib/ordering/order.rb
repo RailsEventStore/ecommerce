@@ -62,10 +62,6 @@ module Ordering
       apply OrderCancelled.new(data: { order_id: @id })
     end
 
-    def archive
-      apply OrderArchived.new(data: { order_id: @id })
-    end
-
     on OrderSubmitted do |event|
       @customer_id = event.data[:customer_id]
       @number = event.data[:order_number]
@@ -82,10 +78,6 @@ module Ordering
 
     on OrderCancelled do |event|
       @state = :cancelled
-    end
-
-    on OrderArchived do |event|
-      @state = :archived
     end
 
     on ItemAddedToBasket do |event|
