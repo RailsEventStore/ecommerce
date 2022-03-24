@@ -17,6 +17,8 @@ module Infra
         stream_name(aggregate_class, aggregate_id),
         &block
       )
+    rescue RubyEventStore::WrongExpectedEventVersion
+      retry
     end
 
     def stream_name(aggregate_class, aggregate_id)
