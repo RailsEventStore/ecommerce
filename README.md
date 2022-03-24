@@ -129,6 +129,11 @@ Things worth knowing about:
 - After you make a contribution, we'll invite you to a special Discord
 - Contributing is a good way to learn DDD/CQRS/Event sourcing.
 
+## Discord
+
+There's a Discord server connected with RailsEventStore and with this Ecommerce project.
+Feel free to join [here](https://discord.gg/2xDJPgPjc8) to ask questions or discuss the vision.
+
 ## I like it, where can I learn more about all those DDD concepts?
 
 Over time we have developed a number of DDD-related online courses. We now sell them as part of one membership access via [arkademy.dev](https://arkademy.dev).
