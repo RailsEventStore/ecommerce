@@ -134,6 +134,8 @@ Things worth knowing about:
 There's a Discord server connected with RailsEventStore and with this Ecommerce project.
 Feel free to join [here](https://discord.gg/2xDJPgPjc8) to ask questions or discuss the vision.
 
+<iframe src="https://discord.com/widget?id=804002481075781703&theme=dark" width="350" height="500" allowtransparency="true" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe>
+
 ## I like it, where can I learn more about all those DDD concepts?
 
 Over time we have developed a number of DDD-related online courses. We now sell them as part of one membership access via [arkademy.dev](https://arkademy.dev).
