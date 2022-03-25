@@ -81,6 +81,11 @@ module Orders
         -> (event) { create_customer(event) },
         [Crm::CustomerRegistered]
       )
+
+      subscribe_and_link_to_stream(
+        -> (event) { assign_customer(event, event.data.fetch(:customer_id)) },
+        [Crm::CustomerAssignedToOrder]
+      )
     end
 
     private
@@ -100,7 +105,6 @@ module Orders
     def mark_as_submitted(event)
       order = Order.find_or_create_by(uid: event.data.fetch(:order_id))
       order.number = event.data.fetch(:order_number)
-      order.customer = Customer.find_by_uid(event.data.fetch(:customer_id)).name
       order.state = "Submitted"
       order.save!
     end
@@ -198,6 +202,10 @@ module Orders
         uid:  event.data.fetch(:customer_id),
         name: event.data.fetch(:name)
       )
+    end
+
+    def assign_customer(event, customer_id)
+      with_order(event) { |order| order.customer = Customer.find_by_uid(customer_id).name }
     end
   end
 end

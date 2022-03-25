@@ -84,16 +84,19 @@ class OrdersController < ApplicationController
   end
 
   def create
-    cmd =
-      Ordering::SubmitOrder.new(
+    ApplicationRecord.transaction do
+      command_bus.(Ordering::SubmitOrder.new(
+        order_id: params[:order_id]
+      ))
+      command_bus.(Crm::AssignCustomerToOrder.new(
         order_id: params[:order_id],
         customer_id: params[:customer_id]
-      )
-    ApplicationRecord.transaction { command_bus.(cmd) }
-    redirect_to order_path(cmd.order_id),
+      ))
+    end
+    redirect_to order_path(params[:order_id]),
                 notice: "Order was successfully submitted"
   rescue Inventory::InventoryEntry::InventoryNotAvailable
-    redirect_to order_path(cmd.order_id),
+    redirect_to order_path(params[:order_id]),
                 alert:
                   "Order can not be submitted! Some products are not available"
   end

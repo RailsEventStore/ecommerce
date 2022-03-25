@@ -41,6 +41,11 @@ module ClientOrders
         ->(event) { change_order_state(event, "Cancelled") },
         [Ordering::OrderCancelled]
       )
+
+      subscribe_and_link_to_stream(
+        -> (event) { assign_customer(event, event.data.fetch(:customer_id)) },
+        [Crm::CustomerAssignedToOrder]
+      )
     end
 
     private
@@ -71,7 +76,6 @@ module ClientOrders
     def mark_as_submitted(event)
       order = Order.find_or_create_by(order_uid: event.data.fetch(:order_id))
       order.number = event.data.fetch(:order_number)
-      order.client_uid = event.data.fetch(:customer_id)
       order.state = "Submitted"
       order.save!
     end
@@ -90,6 +94,10 @@ module ClientOrders
           order.save!
         end
       end
+    end
+
+    def assign_customer(event, customer_id)
+      with_order(event) { |order| order.client_uid = customer_id }
     end
   end
 end

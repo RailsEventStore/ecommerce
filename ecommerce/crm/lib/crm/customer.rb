@@ -4,6 +4,7 @@ module Crm
 
     AlreadyVip = Class.new(StandardError)
     AlreadyRegistered = Class.new(StandardError)
+    NotExists = Class.new(StandardError)
 
     def initialize(id)
       @id = id

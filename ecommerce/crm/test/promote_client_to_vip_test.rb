@@ -41,9 +41,5 @@ module Crm
     def promote_to_vip(uid)
       run_command(PromoteCustomerToVip.new(customer_id: uid))
     end
-
-    def fake_name
-      "Fake name"
-    end
   end
 end

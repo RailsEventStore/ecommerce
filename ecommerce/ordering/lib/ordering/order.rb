@@ -6,7 +6,6 @@ module Ordering
     AlreadyConfirmed = Class.new(StandardError)
     NotSubmitted = Class.new(StandardError)
     OrderHasExpired = Class.new(StandardError)
-    MissingCustomer = Class.new(StandardError)
     CannotRemoveZeroQuantityItem = Class.new(StandardError)
 
     def initialize(id)
@@ -15,14 +14,13 @@ module Ordering
       @basket = Basket.new
     end
 
-    def submit(order_number, customer_id)
+    def submit(order_number)
       raise AlreadySubmitted if @state.equal?(:submitted)
       raise OrderHasExpired if @state.equal?(:expired)
       apply OrderSubmitted.new(
         data: {
           order_id: @id,
           order_number: order_number,
-          customer_id: customer_id,
           order_lines: @basket.order_lines
         }
       )

@@ -28,7 +28,6 @@ module ClientOrders
           data: {
             order_id: order_id,
             order_number: order_number,
-            customer_id: customer_id,
             order_lines: { }
           }
         )
