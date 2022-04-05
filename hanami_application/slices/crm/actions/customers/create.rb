@@ -6,7 +6,7 @@ module Crm
   module Actions
     module Customers
       class Create < Action::Base
-        include Deps['application.command_bus']
+        include Deps['application.command_bus', 'repositories.customers']
 
         def handle(req, res)
           params = JSON.parse(req.body.read, symbolize_names: true)

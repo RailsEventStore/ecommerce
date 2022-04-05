@@ -1,4 +1,4 @@
-# # frozen_string_literal: true
+# frozen_string_literal: true
 
 Hanami.application.register_provider :event_store do |container|
   start do

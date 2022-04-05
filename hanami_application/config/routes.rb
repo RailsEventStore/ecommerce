@@ -7,8 +7,8 @@ module Ecommerce
     define do
       slice :crm, at: "/crm" do
         root to: "home.show"
-        post '/customers', to: "customers.create"
-        # , only: [:new, :create, :index, :update]
+        post '/customers', to: 'customers.create'
+        get '/customers', to: 'customers.index'
       end
     end
   end

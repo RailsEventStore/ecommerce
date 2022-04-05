@@ -12,4 +12,5 @@ require "rack/method_override"
 use Rack::MethodOverride
 
 require "hanami/boot"
+
 run Hanami.rack_app
