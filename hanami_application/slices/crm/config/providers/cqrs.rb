@@ -1,15 +1,16 @@
 # frozen_string_literal: true
 
-Crm::Container.register_provider :subscriptions do |container|
+Crm::Container.register_provider :cqrs do |container|
   prepare do
-    pp 'CRM subscriptions prepared'
+    cqrs = container['application.cqrs']
+    require_relative '../../../../../ecommerce/crm/lib/crm'
+    Crm::Configuration.new.call(cqrs)
   end
 
   start do
     cqrs = container['application.cqrs']
     repo = container['repositories.customers']
 
-    pp 'CRM subscriptions started'
     cqrs.subscribe(
       -> (event) { repo.create(id: event.data.fetch(:customer_id), name: event.data.fetch(:name)) },
       [Crm::CustomerRegistered]
