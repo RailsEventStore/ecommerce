@@ -1,3 +1,19 @@
+GIT
+  remote: https://github.com/swilgosz/rails_event_store
+  revision: a31e750e5b0b9245295267316f65addc7d3c594f
+  branch: hanami-integration
+  glob: contrib/ruby_event_store-rom/*.gemspec
+  specs:
+    ruby_event_store-rom (2.0.0)
+      dry-container (>= 0.6)
+      dry-initializer (>= 3.0)
+      dry-types (>= 1.0)
+      rom-changeset (>= 5.0)
+      rom-repository (>= 5.0)
+      rom-sql (>= 3.0)
+      ruby_event_store (>= 2.0.0, < 3.0.0)
+      sequel (>= 5.11.0)
+
 PATH
   remote: ../infra
   specs:
@@ -318,15 +334,6 @@ GEM
     ruby_event_store (2.3.0)
       concurrent-ruby (~> 1.0, >= 1.1.6)
       ruby2_keywords
-    ruby_event_store-rom (2.0.0)
-      dry-container (>= 0.6)
-      dry-initializer (>= 3.0)
-      dry-types (>= 1.0)
-      rom-changeset (>= 5.0)
-      rom-repository (>= 5.0)
-      rom-sql (>= 3.0)
-      ruby_event_store (>= 2.0.0, < 3.0.0)
-      sequel (>= 5.11.0)
     ruby_event_store-transformations (0.1.0)
       activesupport (>= 5.0)
       ruby_event_store (>= 2.0.0, < 3.0.0)
@@ -407,7 +414,7 @@ DEPENDENCIES
   rom-sql (~> 3.2)
   rspec (~> 3.9)
   ruby_event_store (~> 2.3.0)
-  ruby_event_store-rom (~> 2.0)
+  ruby_event_store-rom (~> 2.0)!
   ruby_event_store-transformations
   sequel (~> 5.32)
   simplecov (~> 0.17)

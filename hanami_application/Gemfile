@@ -59,7 +59,7 @@ group :test do
 end
 
 gem "ruby_event_store", "~> 2.3.0"
-gem "ruby_event_store-rom", "~> 2.0"
+gem "ruby_event_store-rom", "~> 2.0", git: "https://github.com/swilgosz/rails_event_store", branch: 'hanami-integration', glob: 'contrib/ruby_event_store-rom/*.gemspec'
 gem "ruby_event_store-transformations"
 gem "arkency-command_bus"
 gem "aggregate_root"
