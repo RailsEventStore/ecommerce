@@ -36,4 +36,9 @@ module Pricing
   class PercentageDiscountReset < Infra::Event
     attribute :order_id, Infra::Types::UUID
   end
+
+  class PercentageDiscountChanged < Infra::Event
+    attribute :order_id, Infra::Types::UUID
+    attribute :amount, Infra::Types::Price
+  end
 end

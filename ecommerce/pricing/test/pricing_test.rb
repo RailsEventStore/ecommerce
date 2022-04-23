@@ -120,6 +120,20 @@ module Pricing
         OrderTotalValueCalculated.new(
           data: {
             order_id: order_id,
+            discounted_amount: 10,
+            total_amount: 20
+          }
+        )
+      ) do
+        run_command(
+          Pricing::ChangePercentageDiscount.new(order_id: order_id, amount: 50)
+        )
+      end
+      assert_events(
+        stream,
+        OrderTotalValueCalculated.new(
+          data: {
+            order_id: order_id,
             discounted_amount: 20,
             total_amount: 20
           }
@@ -164,6 +178,137 @@ module Pricing
       assert_raises NotPossibleToAssignDiscountTwice do
         run_command(
           Pricing::SetPercentageDiscount.new(order_id: order_id, amount: 20)
+        )
+      end
+    end
+
+    def test_setting_discount_not_possible_when_discount_has_been_set_and_then_changed
+      product_1_id = SecureRandom.uuid
+      set_price(product_1_id, 20)
+      order_id = SecureRandom.uuid
+      add_item(order_id, product_1_id)
+      run_command(
+        Pricing::SetPercentageDiscount.new(order_id: order_id, amount: 10)
+      )
+      run_command(
+        Pricing::ChangePercentageDiscount.new(order_id: order_id, amount: 20)
+      )
+
+      assert_raises NotPossibleToAssignDiscountTwice do
+        run_command(
+          Pricing::SetPercentageDiscount.new(order_id: order_id, amount: 20)
+        )
+      end
+    end
+
+    def test_changing_discount_not_possible_when_discount_is_not_set
+      product_1_id = SecureRandom.uuid
+      set_price(product_1_id, 20)
+      order_id = SecureRandom.uuid
+      add_item(order_id, product_1_id)
+
+      assert_raises NotPossibleToChangeDiscount do
+        run_command(
+          Pricing::ChangePercentageDiscount.new(order_id: order_id, amount: 20)
+        )
+      end
+    end
+
+    def test_changing_discount_not_possible_when_discount_is_reset
+      product_1_id = SecureRandom.uuid
+      set_price(product_1_id, 20)
+      order_id = SecureRandom.uuid
+      add_item(order_id, product_1_id)
+      run_command(
+        Pricing::SetPercentageDiscount.new(order_id: order_id, amount: 10)
+      )
+      run_command(
+        Pricing::ResetPercentageDiscount.new(order_id: order_id)
+      )
+
+      assert_raises NotPossibleToChangeDiscount do
+        run_command(
+          Pricing::ChangePercentageDiscount.new(order_id: order_id, amount: 20)
+        )
+      end
+    end
+
+    def test_changing_discount_possible_when_discount_is_set
+      product_1_id = SecureRandom.uuid
+      set_price(product_1_id, 20)
+      order_id = SecureRandom.uuid
+      add_item(order_id, product_1_id)
+      stream = "Pricing::Discounts::Order$#{order_id}"
+      run_command(
+        Pricing::SetPercentageDiscount.new(order_id: order_id, amount: 10)
+      )
+
+      assert_events(
+        stream,
+        PercentageDiscountChanged.new(
+          data: {
+            order_id: order_id,
+            amount: 100
+          }
+        )
+      ) do
+        run_command(
+          Pricing::ChangePercentageDiscount.new(order_id: order_id, amount: 100)
+        )
+      end
+    end
+
+    def test_changing_discount_possible_more_than_once
+      product_1_id = SecureRandom.uuid
+      set_price(product_1_id, 20)
+      order_id = SecureRandom.uuid
+      add_item(order_id, product_1_id)
+      stream = "Pricing::Discounts::Order$#{order_id}"
+      run_command(
+        Pricing::SetPercentageDiscount.new(order_id: order_id, amount: 10)
+      )
+      run_command(
+        Pricing::ChangePercentageDiscount.new(order_id: order_id, amount: 20)
+      )
+
+      assert_events(
+        stream,
+        PercentageDiscountChanged.new(
+          data: {
+            order_id: order_id,
+            amount: 100
+          }
+        )
+      ) do
+        run_command(
+          Pricing::ChangePercentageDiscount.new(order_id: order_id, amount: 100)
+        )
+      end
+    end
+
+    def test_resetting_discount_possible_when_discount_has_been_set_and_then_changed
+      product_1_id = SecureRandom.uuid
+      set_price(product_1_id, 20)
+      order_id = SecureRandom.uuid
+      add_item(order_id, product_1_id)
+      stream = "Pricing::Discounts::Order$#{order_id}"
+      run_command(
+        Pricing::SetPercentageDiscount.new(order_id: order_id, amount: 10)
+      )
+      run_command(
+        Pricing::ChangePercentageDiscount.new(order_id: order_id, amount: 20)
+      )
+
+      assert_events(
+        stream,
+        PercentageDiscountReset.new(
+          data: {
+            order_id: order_id
+          }
+        )
+      ) do
+        run_command(
+          Pricing::ResetPercentageDiscount.new(order_id: order_id)
         )
       end
     end

@@ -56,7 +56,7 @@ module Orders
       )
       subscribe_and_link_to_stream(
         ->(event) { update_discount(event) },
-        [Pricing::PercentageDiscountSet]
+        [Pricing::PercentageDiscountSet, Pricing::PercentageDiscountChanged]
       )
       subscribe_and_link_to_stream(
         ->(event) { reset_discount(event) },

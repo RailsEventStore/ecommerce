@@ -34,12 +34,21 @@ class OrdersController < ApplicationController
 
   def update_discount
     @order_id = params[:id]
-    command_bus.(
-      Pricing::SetPercentageDiscount.new(
-        order_id: @order_id,
-        amount: params[:amount]
+    if Orders::Order.find_by_uid(params[:id]).percentage_discount
+      command_bus.(
+        Pricing::ChangePercentageDiscount.new(
+          order_id: @order_id,
+          amount: params[:amount]
+        )
       )
-    )
+    else
+      command_bus.(
+        Pricing::SetPercentageDiscount.new(
+          order_id: @order_id,
+          amount: params[:amount]
+        )
+      )
+    end
 
     redirect_to edit_order_path(@order_id)
   end

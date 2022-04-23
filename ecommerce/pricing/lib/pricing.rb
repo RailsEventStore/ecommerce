@@ -46,6 +46,11 @@ module Pricing
         ResetPercentageDiscountHandler.new(cqrs.event_store),
         PercentageDiscountReset
       )
+      cqrs.register_command(
+        ChangePercentageDiscount,
+        ChangePercentageDiscountHandler.new(cqrs.event_store),
+        PercentageDiscountChanged
+      )
       cqrs.subscribe(
         ->(event) do
           cqrs.run(
@@ -58,7 +63,8 @@ module Pricing
           PriceItemAdded,
           PriceItemRemoved,
           PercentageDiscountSet,
-          PercentageDiscountReset
+          PercentageDiscountReset,
+          PercentageDiscountChanged
         ]
       )
     end
