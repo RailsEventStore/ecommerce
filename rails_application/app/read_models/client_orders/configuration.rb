@@ -2,7 +2,7 @@ module ClientOrders
   class Client < ApplicationRecord
     self.table_name = "clients"
 
-    has_many :orders,
+    has_many :client_orders,
              -> { client(id: :asc) },
              class_name: "ClientOrders::Order",
              foreign_key: :client_uid,
@@ -11,6 +11,8 @@ module ClientOrders
 
   class Order < ApplicationRecord
     self.table_name = "client_orders"
+
+    belongs_to :order, class_name: "Orders::Order", foreign_key: :order_uid, primary_key: :uid
   end
 
   class Configuration

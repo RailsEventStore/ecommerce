@@ -1,6 +1,7 @@
 require "test_helper"
 
 class ClientOrdersTests < InMemoryRESIntegrationTestCase
+  include ActionView::Helpers::NumberHelper
   cover "ClientOrders*"
 
   def setup
@@ -16,7 +17,7 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
     arkency_id = register_customer('Arkency')
     async_remote_id = register_product("Async Remote", 39, 10)
 
-    get "/client"
+    get "/clients"
 
     assert_select("button", "Login")
     assert_select("select", "Shopify\nArkency")
@@ -29,7 +30,11 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
     submit_order_for_customer(arkency_id, order_id)
 
     login(arkency_id)
+
+    order_price = number_to_currency(Orders::Order.find_by(uid: order_id).discounted_value)
+
     assert_select("td", "Submitted")
+    assert_select("td", order_price)
 
     pay_order(order_id)
 
@@ -84,7 +89,7 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
   end
 
   def login(arkency_id)
-    post "/client", params: { client_id: arkency_id }
+    post "/login", params: { client_id: arkency_id }
     follow_redirect!
   end
 end
