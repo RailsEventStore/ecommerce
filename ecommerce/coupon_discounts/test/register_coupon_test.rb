@@ -1,8 +1,8 @@
 require_relative "test_helper"
 
-module Coupons
+module CouponDiscounts
   class RegistrationTest < Test
-    cover "Coupons*"
+    cover "CouponDiscounts*"
 
     def test_coupon_should_get_registered
       uid = SecureRandom.uuid
@@ -11,12 +11,11 @@ module Coupons
     end
 
     def test_should_not_allow_for_duplicates
-      uid = SecureRandom.uuid
-      assert_raises(Coupons::Coupon::AlreadyRegistered) do
+      assert_raises(CouponDiscounts::Coupon::AlreadyRegistered) do
         code = fake_name.chars.shuffle.join
         discount = rand(1..20)
-        register_coupon(uid, fake_name, code, discount)
-        register_coupon(uid, fake_name, code, discount)
+        register_coupon(SecureRandom.uuid, fake_name, code, discount)
+        register_coupon(SecureRandom.uuid, fake_name, code, discount)
       end
     end
 
@@ -26,7 +25,7 @@ module Coupons
       discount = rand(1..20)
       data = { coupon_id: uid, name: fake_name, code: code, discount: discount }
       coupon_registered = CouponRegistered.new(data: data)
-      assert_events("Coupons::Coupon$#{uid}", coupon_registered) do
+      assert_events("CouponDiscounts::Coupon$#{uid}", coupon_registered) do
         register_coupon(uid, fake_name, code, discount)
       end
     end

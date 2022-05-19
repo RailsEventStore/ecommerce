@@ -1,4 +1,4 @@
-module Coupons
+module CouponDiscounts
   class CouponRegistered < Infra::Event
     attribute :coupon_id, Infra::Types::UUID
     attribute :name, Infra::Types::String

@@ -1,0 +1,22 @@
+<% content_for(:header) do %>
+  New Customer
+<% end %>
+
+<% content_for(:actions) do %>
+  <%= secondary_action_button do %>
+    <%= link_to 'Back', customers_path %>
+  <% end %>
+
+  <%= primary_form_action_button do %>
+    Create Customer
+  <% end %>
+<% end %>
+
+<%= form_tag({controller: "customers", action: "create"}, method: "post", id: "form") do %>
+  <%= hidden_field_tag(:customer_id, @customer_id) %>
+
+  <label for="customer" class="block font-bold">
+    Name
+  </label>
+  <%= text_field_tag :name, "", required: true, class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-sm sm:text-sm border-gray-300 rounded-md" %>
+<% end %>

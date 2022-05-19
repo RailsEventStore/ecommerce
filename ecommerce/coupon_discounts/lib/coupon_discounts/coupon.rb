@@ -1,5 +1,5 @@
 
-module Coupons
+module CouponDiscounts
   class Coupon
     include AggregateRoot
 
@@ -11,7 +11,7 @@ module Coupons
 
     def register(name, code, discount)
       raise AlreadyRegistered if @registered
-
+      pp self.public_methods - Object.public_methods
       apply CouponRegistered.new(
         data: {
           coupon_id: @id,

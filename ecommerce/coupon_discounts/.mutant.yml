@@ -7,5 +7,5 @@ matcher:
   subjects:
     - Coupons*
   ignore:
-    - Coupons::Configuration#call
+    - CouponDiscounts::Configuration#call
 
