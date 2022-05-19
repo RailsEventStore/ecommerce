@@ -1,9 +1,9 @@
 require "minitest/autorun"
 require "mutant/minitest/coverage"
 
-require_relative "../lib/coupons"
+require_relative "../lib/coupon_discounts"
 
-module Coupons
+module CouponDiscounts
   class Test < Infra::InMemoryTest
     def before_setup
       super()

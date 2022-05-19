@@ -1,4 +1,4 @@
-module Coupons
+module CouponDiscounts
   class OnCouponRegister
     def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)
