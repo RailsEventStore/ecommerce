@@ -13,13 +13,17 @@ Domains exist in directories starting at [ecommerce](/ecommerce).
 
 ```
 ecommerce/
+├── coupons
 ├── crm
 ├── inventory
+├── invoicing
 ├── ordering
 ├── payments
 ├── pricing
-└── product_catalog
-└── shipping
+├── processes
+├── product_catalog
+├── shipping
+└── taxes
 ```
 
 Each one has a README introduction:
