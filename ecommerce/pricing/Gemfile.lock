@@ -16,12 +16,8 @@ PATH
       rake
 
 GEM
-  remote: https://oss:7AXfeZdAfCqL1PvHm2nvDJO6Zd9UW8IK@gem.mutant.dev/
-  specs:
-    mutant-license (0.1.1.2.1627430819213747598431630701693729869473.4)
-
-GEM
   remote: https://rubygems.org/
+  remote: https://oss:7AXfeZdAfCqL1PvHm2nvDJO6Zd9UW8IK@gem.mutant.dev/
   specs:
     activejob (6.1.4.1)
       activesupport (= 6.1.4.1)
@@ -82,6 +78,7 @@ GEM
       parser (~> 3.0.0)
       regexp_parser (~> 2.0, >= 2.0.3)
       unparser (~> 0.6.0)
+    mutant-license (0.1.1.2.1627430819213747598431630701693729869473.4)
     mutant-minitest (0.10.34)
       minitest (~> 5.11)
       mutant (= 0.10.34)
@@ -132,6 +129,7 @@ GEM
 PLATFORMS
   arm64-darwin-20
   arm64-darwin-21
+  ruby
   x86_64-darwin-20
   x86_64-linux
 

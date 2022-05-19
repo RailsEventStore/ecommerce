@@ -10,12 +10,13 @@ module CouponDiscounts
       register_coupon(uid, fake_name, code, rand(1..20))
     end
 
-    def test_should_not_allow_for_duplicates
+    def test_should_not_allow_for_id_based_duplicates
       assert_raises(CouponDiscounts::Coupon::AlreadyRegistered) do
         code = fake_name.chars.shuffle.join
         discount = rand(1..20)
-        register_coupon(SecureRandom.uuid, fake_name, code, discount)
-        register_coupon(SecureRandom.uuid, fake_name, code, discount)
+        uid = SecureRandom.uuid
+        register_coupon(uid, fake_name, code, discount)
+        register_coupon(uid, fake_name, code, discount)
       end
     end
 
