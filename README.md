@@ -26,15 +26,19 @@ ecommerce/
 └── taxes
 ```
 
-Each one has a README introduction:
+(almost) Each one has a README introduction:
 
+* [Coupons](ecommerce/coupons/README.md)
 * [CRM](ecommerce/crm/README.md)
 * [Inventory](ecommerce/inventory/README.md)
+* [Invoicing](ecommerce/invoicing/README.md)
 * [Ordering](ecommerce/ordering/README.md)
 * [Payments](ecommerce/payments/README.md)
 * [Pricing](ecommerce/pricing/README.md)
+* [Processes](ecommerce/processes/README.md)
 * [Product Catalog](ecommerce/product_catalog/README.md)
 * [Shipping](ecommerce/shipping/README.md)
+* [Shipping](ecommerce/taxes/README.md)
 
 ## Application
 
@@ -42,7 +46,7 @@ Order management application lives at [rails_application](/rails_application) di
 
 This application simulates a process of managing orders.
 
-We start with a list of exiting products and customers (populated with seeds).
+We start with a list of exiting products, customers and coupons (populated with seeds).
 
 ### UI flow
 
