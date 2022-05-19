@@ -20,8 +20,13 @@ Rails.application.routes.draw do
 
   resources :invoices, only: [:show]
 
+
   resources :products, only: [:new, :show, :create, :index] do
     resources :supplies, only: [:new, :create]
+  end
+
+  resources :coupons, only: [:new, :show, :create, :index] do
+
   end
   resources :customers, only: [:new, :create, :index, :update]
 

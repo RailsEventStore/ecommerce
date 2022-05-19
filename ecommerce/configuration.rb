@@ -1,3 +1,4 @@
+require_relative "coupons/lib/coupons"
 require_relative "ordering/lib/ordering"
 require_relative "pricing/lib/pricing"
 require_relative "product_catalog/lib/product_catalog"
@@ -36,7 +37,8 @@ module Ecommerce
         Inventory::Configuration.new,
         Shipping::Configuration.new,
         Invoicing::Configuration.new,
-        Taxes::Configuration.new(@available_vat_rates)
+        Taxes::Configuration.new(@available_vat_rates),
+      Coupons::Configuration.new
       ].each { |c| c.call(cqrs) }
     end
 

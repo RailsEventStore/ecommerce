@@ -1,0 +1,11 @@
+requires:
+  - ./test/test_helper
+integration: minitest
+coverage_criteria:
+  process_abort: true
+matcher:
+  subjects:
+    - Coupons*
+  ignore:
+    - Coupons::Configuration#call
+
