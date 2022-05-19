@@ -1,0 +1,29 @@
+<% content_for(:header) do %>
+  Coupons
+<% end %>
+
+<% content_for(:actions) do %>
+  <%= primary_action_button do %>
+    <%= link_to 'New Coupon', new_coupon_path %>
+  <% end %>
+<% end %>
+
+<table class="w-full">
+  <thead>
+  <tr>
+    <th class="text-left py-2">Name</th>
+    <th class="text-left py-2">Code</th>
+    <th class="text-left py-2">Discount %</th>
+  </tr>
+  </thead>
+
+  <tbody>
+  <% @coupons.each do |coupon| %>
+    <tr class="border-t">
+      <td class="py-2"><%= coupon.name %></td>
+      <td class="py-2"><%= coupon.code %></td>
+      <td class="py-2"><%= coupon.discount %></td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
