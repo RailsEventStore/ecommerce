@@ -1,8 +1,8 @@
 require "infra"
 require_relative "coupon_discounts/commands/register_coupon"
 require_relative "coupon_discounts/events/coupon_registered"
-require_relative "coupon_discounts/services/on_coupon_register" #command handler
-require_relative "coupon_discounts/coupon" #aggregate root
+require_relative "coupon_discounts/services/on_coupon_register"
+require_relative "coupon_discounts/coupon"
 
 module CouponDiscounts
   class Configuration

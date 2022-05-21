@@ -9,7 +9,6 @@ module CouponDiscounts
       @id = id
     end
 
-    # TODO: do not allow for duplicates name and value coupons
     def register(name, code, discount)
       raise AlreadyRegistered if @registered
 
