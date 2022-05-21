@@ -116,6 +116,8 @@ As you see, this project is not an usual Rails project.
 Many Rails conventions are not followed here. Usually there's a good reason for that.
 Trust us, but feel free to challenge our decisions.
 
+Do not leave comments in the code by default. Just leave an GitHub issue instead of a TODO comment for example.
+
 As for the local dev setup:
 
 - we use Makefile, so `make install` should simplify a lot
