@@ -13,7 +13,6 @@ Domains exist in directories starting at [ecommerce](/ecommerce).
 
 ```
 ecommerce/
-├── coupons
 ├── crm
 ├── inventory
 ├── invoicing
@@ -28,7 +27,6 @@ ecommerce/
 
 (almost) Each one has a README introduction:
 
-* [Coupons](ecommerce/coupons/README.md)
 * [CRM](ecommerce/crm/README.md)
 * [Inventory](ecommerce/inventory/README.md)
 * [Invoicing](ecommerce/invoicing/README.md)

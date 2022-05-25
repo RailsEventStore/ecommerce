@@ -7,7 +7,7 @@ module Coupons
     def call(cqrs)
       cqrs.subscribe(
         -> (event) { register_coupon(event) },
-        [CouponDiscounts::CouponRegistered]
+        [Pricing::Coupon::CouponRegistered]
       )
     end
 
