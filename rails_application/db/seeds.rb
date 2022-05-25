@@ -20,7 +20,7 @@ end
   ["Addict", 'product_addict', 20]
 ].each do |coupon|
   command_bus.call(
-    CouponDiscounts::RegisterCoupon.new(
+    Pricing::RegisterCoupon.new(
       coupon_id: SecureRandom.uuid,
       name: coupon[0],
       code: coupon[1],
