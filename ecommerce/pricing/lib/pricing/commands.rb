@@ -37,6 +37,14 @@ module Pricing
     attribute :order_id, Infra::Types::UUID
   end
 
+  class RegisterCoupon < Infra::Command
+    attribute :coupon_id, Infra::Types::UUID
+    attribute :name, Infra::Types::String
+    attribute :code, Infra::Types::String
+    attribute :discount, Infra::Types::CouponDiscount
+    alias aggregate_id coupon_id
+  end
+
   class ChangePercentageDiscount < Infra::Command
     attribute :order_id, Infra::Types::UUID
     attribute :amount, Infra::Types::PercentageDiscount
