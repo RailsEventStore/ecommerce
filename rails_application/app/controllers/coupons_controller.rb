@@ -9,7 +9,7 @@ class CouponsController < ApplicationController
 
   def create
     create_coupon(params[:coupon_id], params[:name], params[:code], params[:discount])
-  rescue CouponDiscounts::Coupon::AlreadyRegistered
+  rescue Pricing::Coupon::AlreadyRegistered
     flash[:notice] = "Coupon is already registered"
     render "new"
   else
@@ -23,7 +23,7 @@ class CouponsController < ApplicationController
   end
 
   def create_coupon_cmd(coupon_id, name, code, discount)
-    CouponDiscounts::RegisterCoupon.new(coupon_id: coupon_id, name: name, code: code, discount: discount)
+    Pricing::RegisterCoupon.new(coupon_id: coupon_id, name: name, code: code, discount: discount)
   end
 
 end

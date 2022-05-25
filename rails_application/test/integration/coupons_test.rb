@@ -4,7 +4,7 @@ require "test_helper"
 class CouponsTest < InMemoryRESIntegrationTestCase
   def test_list_coupons
     run_command(
-      CouponDiscounts::RegisterCoupon.new(
+      Pricing::RegisterCoupon.new(
         coupon_id: SecureRandom.uuid,
         name: "Coupon Number Uno",
         code: "enterme",
