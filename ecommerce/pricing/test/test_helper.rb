@@ -10,5 +10,15 @@ module Pricing
       super
       Configuration.new.call(cqrs)
     end
+
+    private
+
+    def register_coupon(uid, name, code, discount)
+      run_command(RegisterCoupon.new(coupon_id: uid, name: name, code: code, discount: discount))
+    end
+
+    def fake_name
+      "Fake name"
+    end
   end
 end
