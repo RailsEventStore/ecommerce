@@ -2,7 +2,7 @@ source "https://rubygems.org"
 
 ruby "2.7.6"
 
-gem "rails", "~> 7.0.2", ">= 7.0.2.2"
+gem "rails", "7.0.3"
 gem "pg", "~> 1.1"
 gem "puma", "~> 5.6"
 gem "bootsnap", ">= 1.4.4", require: false
@@ -17,7 +17,7 @@ group :development do
 end
 
 group :development, :test do
-  gem "byebug", platforms: [:mri, :mingw, :x64_mingw]
+  gem "byebug", platforms: %i[mri mingw x64_mingw]
   gem "dotenv-rails"
 end
 
@@ -28,6 +28,4 @@ end
 gem "infra", path: "../infra"
 gem "math", path: "../math"
 
-gem "tzinfo-data", platforms: [:mingw, :mswin, :x64_mingw, :jruby]
-
-
+gem "tzinfo-data", platforms: %i[mingw mswin x64_mingw jruby]
