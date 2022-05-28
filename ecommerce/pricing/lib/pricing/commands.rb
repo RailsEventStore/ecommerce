@@ -28,6 +28,13 @@ module Pricing
     attribute :price, Infra::Types::Price
   end
 
+  class CreateHappyHour < Infra::Command
+    attribute :product_id, Infra::Types::UUID
+    attribute :discount, Infra::Types::PercentageDiscount
+    attribute :start_hour, Infra::Types::Hour
+    attribute :end_hour, Infra::Types::Hour
+  end
+
   class SetPercentageDiscount < Infra::Command
     attribute :order_id, Infra::Types::UUID
     attribute :amount, Infra::Types::PercentageDiscount
