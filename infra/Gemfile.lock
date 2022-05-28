@@ -4,7 +4,7 @@ PATH
     infra (1.0.0)
       dry-struct
       dry-types
-      rails_event_store (~> 2.4.0)
+      rails_event_store (~> 2.4.1)
       rake
       ruby_event_store-transformations
 
@@ -29,8 +29,8 @@ GEM
       i18n (>= 1.6, < 2)
       minitest (>= 5.1)
       tzinfo (~> 2.0)
-    aggregate_root (2.4.0)
-      ruby_event_store (= 2.4.0)
+    aggregate_root (2.4.1)
+      ruby_event_store (= 2.4.1)
     arkency-command_bus (0.4.1)
       concurrent-ruby
     ast (2.4.2)
@@ -79,25 +79,25 @@ GEM
     rack (2.2.3.1)
     rack-protection (2.2.0)
       rack
-    rails_event_store (2.4.0)
+    rails_event_store (2.4.1)
       activejob (>= 3.0)
       activemodel (>= 3.0)
       activesupport (>= 3.0)
-      aggregate_root (= 2.4.0)
+      aggregate_root (= 2.4.1)
       arkency-command_bus (>= 0.4)
-      rails_event_store_active_record (= 2.4.0)
-      ruby_event_store (= 2.4.0)
-      ruby_event_store-browser (= 2.4.0)
-    rails_event_store_active_record (2.4.0)
+      rails_event_store_active_record (= 2.4.1)
+      ruby_event_store (= 2.4.1)
+      ruby_event_store-browser (= 2.4.1)
+    rails_event_store_active_record (2.4.1)
       activerecord (>= 6.0)
-      ruby_event_store (= 2.4.0)
+      ruby_event_store (= 2.4.1)
     rake (13.0.6)
     regexp_parser (2.1.1)
     ruby2_keywords (0.0.5)
-    ruby_event_store (2.4.0)
+    ruby_event_store (2.4.1)
       concurrent-ruby (~> 1.0, >= 1.1.6)
-    ruby_event_store-browser (2.4.0)
-      ruby_event_store (= 2.4.0)
+    ruby_event_store-browser (2.4.1)
+      ruby_event_store (= 2.4.1)
       sinatra
     ruby_event_store-transformations (0.1.0)
       activesupport (>= 5.0)
