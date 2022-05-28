@@ -191,7 +191,7 @@ module Pricing
           )
         ) { calculate_total_value(order_id) }
 
-        create_happy_hour(product_1_id, 50, 13, 18)
+        add_product_to_happy_hour(product_1_id, 50, 13, 18)
 
         assert_events(
           stream,
@@ -244,8 +244,8 @@ module Pricing
           )
         ) { calculate_sub_amounts(order_id) }
 
-        create_happy_hour(product_1_id, 50, 13, 18)
-        create_happy_hour(product_2_id, 20, 14, 16)
+        add_product_to_happy_hour(product_1_id, 50, 13, 18)
+        add_product_to_happy_hour(product_2_id, 20, 14, 16)
 
         assert_events(
           stream,
@@ -460,9 +460,9 @@ module Pricing
       run_command(CalculateSubAmounts.new(order_id: order_id))
     end
 
-    def create_happy_hour(product_id, discount, start_hour, end_hour)
+    def add_product_to_happy_hour(product_id, discount, start_hour, end_hour)
       run_command(
-        CreateHappyHour.new(
+        AddProductToHappyHour.new(
           product_id: product_id,
           discount: discount,
           start_hour: start_hour,
