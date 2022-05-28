@@ -4,6 +4,8 @@ module Pricing
 
     OverlappingHappyHour = Class.new(StandardError)
 
+    attr_reader :happy_hours_schedule
+
     def initialize(id)
       @id = id
       @happy_hours_schedule = HappyHoursSchedule.new(Hash.new(0))
@@ -28,8 +30,6 @@ module Pricing
 
     private
 
-    attr_reader :happy_hours_schedule
-
     on(PriceSet) { |_| }
 
     on HappyHourCreated do |event|
@@ -41,6 +41,8 @@ module Pricing
     end
 
     class HappyHoursSchedule
+      attr_reader :schedule
+
       def initialize(schedule)
         @schedule = schedule
       end
@@ -54,8 +56,6 @@ module Pricing
       end
 
       private
-
-      attr_reader :schedule
 
       def overlapping_hours?(new_schedule)
         (schedule.keys & new_schedule.keys).any?
