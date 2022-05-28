@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-ruby "2.7.6"
+ruby ENV["RUBY_VERSION"] if ENV["RUBY_VERSION"]
 
 gem "rails", "7.0.3"
 gem "pg", "~> 1.1"
