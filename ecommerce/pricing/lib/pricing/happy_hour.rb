@@ -12,7 +12,7 @@ module Pricing
       raise AlreadyCreated if @created
 
       apply HappyHourCreated.new(
-        data: kwargs.merge(happy_hour_id: @id)
+        data: kwargs.merge(id: @id)
       )
     end
 
