@@ -57,7 +57,7 @@ module Pricing
     attribute :product_ids, Infra::Types::Array.of(Infra::Types::UUID)
     attribute :name, Infra::Types::String
     attribute :code, Infra::Types::String
-    attribute :discount, Infra::Types::PercentageDiscount
+    attribute :discount, Infra::Types::HappyHourDiscount
     attribute :start_hour, Infra::Types::Hour
     attribute :end_hour, Infra::Types::Hour
   end
