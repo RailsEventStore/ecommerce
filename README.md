@@ -121,6 +121,11 @@ As for the local dev setup:
 - we use Makefile, so `make install` should simplify a lot
 - there's docker-compose in the rails_application, if you're into Docker
 
+**Bundler note**
+
+Please check that your bundler version is not ancient, and up to date. For more details check:
+`git show 6dc6e1c2ea833e1ea5821cc9bc9bd5dfadbfda9a` which explains the problem and proposes a solution.
+A sign that you have a problem will be unusual changes in `Gemfile.lock` i.e. changes in remote sources and placement of gems definitions.
 
 Things worth knowing about:
 
