@@ -114,7 +114,31 @@ As you see, this project is not an usual Rails project.
 Many Rails conventions are not followed here. Usually there's a good reason for that.
 Trust us, but feel free to challenge our decisions.
 
+**Code comments**
+
 Do not leave comments in the code by default. Just leave an GitHub issue instead of a TODO comment for example.
+
+**Technical debt**
+
+One of the goals of this project is educational - to show how to implement certain features with DDD.
+As such we treat the actual code as business value.
+That's why (as opposed to "normal" projects") we can treat technical debt as part of the "backlog".
+
+Whenever you add a temporary hack to the codebase, add a Github issue - maybe someone else will be able to help or clean.
+When you work on certain are and see some not pretty code - fix it or create an issue and add the "debt" label.
+
+**Backlog**
+
+If you're somehow experienced with ecommerce (even when not as a dev) - your experience can help us. 
+Please create new Github issues with features that can exist in typical ecommerces. 
+Our goal is to cover as many features as possible - especially the tricky ones.
+
+If you're a developer working on ecommerce and you want to learn how to implement a specific feature - feel free to add this as a ticket too.
+
+All tickets should bring business value and be consistent with previous features.
+It's fine to create vague tickets at the beginning and let them be more specific later. 
+
+**Local setup**
 
 As for the local dev setup:
 
