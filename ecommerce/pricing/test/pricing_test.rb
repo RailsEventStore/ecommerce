@@ -21,6 +21,7 @@ module Pricing
           data: {
             order_id: order_id,
             discounted_amount: 50,
+            happy_hour_amount: 50,
             total_amount: 50
           }
         )
@@ -99,6 +100,7 @@ module Pricing
           data: {
             order_id: order_id,
             discounted_amount: 20,
+            happy_hour_amount: 20,
             total_amount: 20
           }
         )
@@ -109,6 +111,7 @@ module Pricing
           data: {
             order_id: order_id,
             discounted_amount: 18,
+            happy_hour_amount: 20,
             total_amount: 20
           }
         )
@@ -123,6 +126,7 @@ module Pricing
           data: {
             order_id: order_id,
             discounted_amount: 10,
+            happy_hour_amount: 20,
             total_amount: 20
           }
         )
@@ -137,6 +141,7 @@ module Pricing
           data: {
             order_id: order_id,
             discounted_amount: 20,
+            happy_hour_amount: 20,
             total_amount: 20
           }
         )
@@ -159,6 +164,7 @@ module Pricing
           data: {
             order_id: order_id,
             discounted_amount: 0,
+            happy_hour_amount: 20,
             total_amount: 20
           }
         )
@@ -186,6 +192,7 @@ module Pricing
             data: {
               order_id: order_id,
               discounted_amount: 20,
+              happy_hour_amount: 20,
               total_amount: 20
             }
           )
@@ -199,7 +206,8 @@ module Pricing
             data: {
               order_id: order_id,
               discounted_amount: 10,
-              total_amount: 10
+              happy_hour_amount: 10,
+              total_amount: 20
             }
           )
         ) { calculate_total_value(order_id) }
@@ -254,7 +262,7 @@ module Pricing
               order_id: order_id,
               product_id: product_1_id,
               quantity: 1,
-              amount: 10,
+              amount: 20,
               discounted_amount: 10
             }
           ),
@@ -263,7 +271,7 @@ module Pricing
               order_id: order_id,
               product_id: product_2_id,
               quantity: 2,
-              amount: 48,
+              amount: 60,
               discounted_amount: 48
             }
           )
