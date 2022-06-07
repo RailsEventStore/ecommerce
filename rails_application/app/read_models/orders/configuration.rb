@@ -169,7 +169,9 @@ module Orders
 
     def update_totals(event)
       with_order(event) do |order|
+        order.happy_hour_value = event.data.fetch(:happy_hour_amount)
         order.discounted_value = event.data.fetch(:discounted_amount)
+        order.total_value = event.data.fetch(:total_amount)
       end
     end
 
