@@ -49,10 +49,22 @@
     </tr>
   <% end %>
   </tbody>
-  <tfoot>
+  <tfoot class="border-t-4">
+  <% if @order.discounted_value != @order.total_value %>
+    <tr class="border-t">
+      <td class="py-2" colspan="3">Before discounts</td>
+      <td class="py-2"><%= number_to_currency(@order.total_value) %></td>
+    </tr>
+  <% end %>
+  <% if @order.happy_hour_value != @order.total_value %>
+    <tr class="border-t">
+      <td class="py-2" colspan="3">After happy hour discounts</td>
+      <td class="py-2"><%= number_to_currency(@order.happy_hour_value) %></td>
+    </tr>
+  <% end %>
   <% if @order.percentage_discount %>
     <tr class="border-t">
-      <td class="py-2" colspan="3">Discount</td>
+      <td class="py-2" colspan="3">General discount</td>
       <td class="py-2"><%= @order.percentage_discount %>%</td>
       <td class="py-2 text-right" colspan="2"><%= link_to "Reset", reset_discount_order_path(id: @order_id), {method: :post, class: "hover:underline text-blue-500"} %></td>
     </tr>
