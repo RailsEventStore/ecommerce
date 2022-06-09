@@ -7,10 +7,7 @@ class CustomersTest < InMemoryRESIntegrationTestCase
   end
 
   def test_cancel
-    customer_id = SecureRandom.uuid
-    run_command(
-        Crm::RegisterCustomer.new(customer_id: customer_id, name: "Customer Shop")
-    )
+    customer_id = register_customer("Customer Shop")
     patch "/customers/#{customer_id}"
     follow_redirect!
     assert_select("td", "Already a VIP")

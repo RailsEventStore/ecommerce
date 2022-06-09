@@ -10,10 +10,7 @@ class OrdersTest < InMemoryRESIntegrationTestCase
   end
 
   def test_submitting_empty_order
-    arkency_id = SecureRandom.uuid
-    run_command(
-      Crm::RegisterCustomer.new(customer_id: arkency_id, name: "Arkency")
-    )
+    arkency_id = register_customer("Arkency")
 
     get "/"
     assert_select "h1", "Orders"
@@ -29,10 +26,7 @@ class OrdersTest < InMemoryRESIntegrationTestCase
   end
 
   def test_happy_path
-    shopify_id = SecureRandom.uuid
-    run_command(
-      Crm::RegisterCustomer.new(customer_id: shopify_id, name: "Shopify")
-    )
+    shopify_id = register_customer("Shopify")
 
     order_id = SecureRandom.uuid
     another_order_id = SecureRandom.uuid
@@ -119,10 +113,8 @@ class OrdersTest < InMemoryRESIntegrationTestCase
   end
 
   def test_cancel
-    shopify_id = SecureRandom.uuid
-    run_command(
-      Crm::RegisterCustomer.new(customer_id: shopify_id, name: "Shopify")
-    )
+    shopify_id = register_customer("Shopify")
+
     order_id = SecureRandom.uuid
     async_remote_id = SecureRandom.uuid
     run_command(
@@ -152,11 +144,7 @@ class OrdersTest < InMemoryRESIntegrationTestCase
   end
 
   def test_reset_discount
-    shopify_id = SecureRandom.uuid
-    run_command(
-      Crm::RegisterCustomer.new(customer_id: shopify_id, name: "Shopify")
-    )
-
+    register_customer("Shopify")
     order_id = SecureRandom.uuid
 
     async_remote_id = SecureRandom.uuid

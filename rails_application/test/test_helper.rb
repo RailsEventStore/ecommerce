@@ -62,6 +62,12 @@ class InMemoryRESIntegrationTestCase < ActionDispatch::IntegrationTest
     result
   end
 
+  def register_customer(name)
+    customer_id = SecureRandom.uuid
+    post "/customers", params: { customer_id: customer_id, name: name }
+    customer_id
+  end
+
   def run_command(command)
     Rails.configuration.command_bus.call(command)
   end

@@ -57,12 +57,6 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
     async_remote_id
   end
 
-  def register_customer(name)
-    customer_id = SecureRandom.uuid
-    post "/customers", params: { customer_id: customer_id, name: name }
-    customer_id
-  end
-
   def submit_order_for_customer(customer_id, order_id)
     post "/orders", params: { order_id: order_id, customer_id: customer_id }
     follow_redirect!
