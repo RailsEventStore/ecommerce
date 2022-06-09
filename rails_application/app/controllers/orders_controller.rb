@@ -134,6 +134,11 @@ class OrdersController < ApplicationController
     redirect_to orders_path
   end
 
+  def cancel
+    command_bus.(Ordering::CancelOrder.new(order_id: params[:id]))
+    redirect_to root_path, notice: "Order cancelled"
+  end
+
   private
 
   def submit_order(order_id, customer_id)

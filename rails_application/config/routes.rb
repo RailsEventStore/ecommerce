@@ -9,6 +9,7 @@ Rails.application.routes.draw do
       post :add_item
       post :remove_item
       post :pay
+      post :cancel
       get :edit_discount
       post :update_discount
       post :reset_discount

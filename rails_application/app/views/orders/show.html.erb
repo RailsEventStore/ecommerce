@@ -22,6 +22,10 @@
   <%= primary_action_button do %>
     <%= link_to("Pay", pay_order_path(@order.uid), method: :post) %>
   <% end if @order.state == "Submitted" %>
+
+  <%= primary_action_button do %>
+    <%= link_to("Cancel Order", cancel_order_path(@order.uid), method: :post) %>
+  <% end unless @order.state == "Cancelled" %>
 <% end %>
 
 <dl class="mb-8">

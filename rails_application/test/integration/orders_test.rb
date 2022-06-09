@@ -109,7 +109,8 @@ class OrdersTest < InMemoryRESIntegrationTestCase
            "commit" => "Submit order"
          }
 
-    run_command(Ordering::CancelOrder.new(order_id: order_id))
+    post "/orders/#{order_id}/cancel"
+    follow_redirect!
     get "/orders/#{order_id}"
     assert_select("dd", "Cancelled")
   end

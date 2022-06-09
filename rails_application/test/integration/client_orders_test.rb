@@ -65,6 +65,10 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
     post "/orders/#{order_id}/pay"
   end
 
+  def cancel_order(order_id)
+    post "/orders/#{order_id}/cancel"
+  end
+
   def cancel_submitted_order_for_customer(customer_id)
     order_id = SecureRandom.uuid
     anti_if = register_product('Anti If', 99, 10)
@@ -72,8 +76,7 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
     add_item_to_basket_for_order(anti_if, order_id)
     add_item_to_basket_for_order(anti_if, order_id)
     submit_order_for_customer(customer_id, order_id)
-
-    run_command(Ordering::CancelOrder.new(order_id: order_id))
+    cancel_order(order_id)
   end
 
   def login(arkency_id)
