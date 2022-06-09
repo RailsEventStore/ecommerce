@@ -75,6 +75,7 @@ class InMemoryRESIntegrationTestCase < ActionDispatch::IntegrationTest
   end
 
   def run_command(command)
+    puts "Command: #{command.class} used in integrations test."
     Rails.configuration.command_bus.call(command)
   end
 end
