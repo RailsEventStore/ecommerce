@@ -54,12 +54,7 @@ module Pricing
 
   class CreateHappyHour < Infra::Command
     attribute :id, Infra::Types::UUID.meta(omittable: true)
-    attribute :product_ids, Infra::Types::Array.of(Infra::Types::UUID)
-    attribute :name, Infra::Types::String
-    attribute :code, Infra::Types::String
-    attribute :discount, Infra::Types::HappyHourDiscount
-    attribute :start_hour, Infra::Types::Hour
-    attribute :end_hour, Infra::Types::Hour
+    attribute :details, Infra::Types::HappyHourDetails
   end
 
   class ChangePercentageDiscount < Infra::Command
