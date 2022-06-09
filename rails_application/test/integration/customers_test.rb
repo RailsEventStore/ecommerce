@@ -6,7 +6,7 @@ class CustomersTest < InMemoryRESIntegrationTestCase
     assert_response :success
   end
 
-  def test_cancel
+  def test_vips
     customer_id = register_customer("Customer Shop")
     patch "/customers/#{customer_id}"
     follow_redirect!
