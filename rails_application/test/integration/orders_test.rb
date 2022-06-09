@@ -31,23 +31,8 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     order_id = SecureRandom.uuid
     another_order_id = SecureRandom.uuid
 
-    async_remote_id = SecureRandom.uuid
-    run_command(
-      ProductCatalog::RegisterProduct.new(
-        product_id: async_remote_id,
-        name: "Async Remote"
-      )
-    )
-    run_command(Pricing::SetPrice.new(product_id: async_remote_id, price: 39))
-
-    fearless_id = SecureRandom.uuid
-    run_command(
-      ProductCatalog::RegisterProduct.new(
-        product_id: fearless_id,
-        name: "Fearless Refactoring"
-      )
-    )
-    run_command(Pricing::SetPrice.new(product_id: fearless_id, price: 49))
+    async_remote_id = register_product("Async Remote", 39, 10)
+    fearless_id     = register_product("Fearless Refactoring", 49, 10)
 
     post "/orders",
          params: {
@@ -93,14 +78,7 @@ class OrdersTest < InMemoryRESIntegrationTestCase
 
   def test_expiring_orders
     order_id = SecureRandom.uuid
-    async_remote_id = SecureRandom.uuid
-    run_command(
-      ProductCatalog::RegisterProduct.new(
-        product_id: async_remote_id,
-        name: "Async Remote"
-      )
-    )
-    run_command(Pricing::SetPrice.new(product_id: async_remote_id, price: 39))
+    async_remote_id = register_product("Async Remote", 39, 10)
 
     post "/orders/#{order_id}/add_item?product_id=#{async_remote_id}"
     follow_redirect!
@@ -116,14 +94,7 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     shopify_id = register_customer("Shopify")
 
     order_id = SecureRandom.uuid
-    async_remote_id = SecureRandom.uuid
-    run_command(
-      ProductCatalog::RegisterProduct.new(
-        product_id: async_remote_id,
-        name: "Async Remote"
-      )
-    )
-    run_command(Pricing::SetPrice.new(product_id: async_remote_id, price: 39))
+    async_remote_id = register_product("Async Remote", 39, 10)
 
     get "/"
     get "/orders/new"
@@ -147,14 +118,7 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     register_customer("Shopify")
     order_id = SecureRandom.uuid
 
-    async_remote_id = SecureRandom.uuid
-    run_command(
-      ProductCatalog::RegisterProduct.new(
-        product_id: async_remote_id,
-        name: "Async Remote"
-      )
-    )
-    run_command(Pricing::SetPrice.new(product_id: async_remote_id, price: 137))
+    async_remote_id = register_product("Async Remote", 137, 10)
 
     get "/"
     get "/orders/new"
