@@ -115,28 +115,6 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     assert_select("dd", "Cancelled")
   end
 
-  def test_reset_discount
-    register_customer("Shopify")
-    order_id = SecureRandom.uuid
-
-    async_remote_id = register_product("Async Remote", 137, 10)
-
-    get "/"
-    get "/orders/new"
-    post "/orders/#{order_id}/add_item?product_id=#{async_remote_id}"
-    follow_redirect!
-    assert_select("td", "$137.00")
-    assert_select("a", count: 0, text: "Reset")
-
-    apply_discount_10_percent(order_id)
-
-    assert_select("a", "Reset")
-    post "/orders/#{order_id}/reset_discount"
-    follow_redirect!
-    assert_select("td", "$137.00")
-    assert_select("a", count: 0, text: "Reset")
-  end
-
   private
 
   def assert_res_browser_order_history
