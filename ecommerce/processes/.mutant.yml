@@ -14,3 +14,4 @@ matcher:
     - Processes::ShipmentProcess*
     - Processes::ReleasePaymentProcess*
     - Processes::OrderItemInvoicingProcess*
+    - Processes::SyncPricingFromOrdering*

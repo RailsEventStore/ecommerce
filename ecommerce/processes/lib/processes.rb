@@ -13,14 +13,14 @@ require_relative 'processes/release_payment_process'
 require_relative 'processes/shipment_process'
 require_relative 'processes/determine_vat_rates_on_order_submitted'
 require_relative 'processes/order_item_invoicing_process'
+require_relative 'processes/sync_pricing_from_ordering'
+
 require 'math'
 
 module Processes
   class Configuration
     def call(cqrs)
       enable_pricing_sync_from_ordering(cqrs)
-      calculate_total_value_when_order_submitted(cqrs)
-      calculate_sub_amounts_when_order_submitted(cqrs)
       notify_payments_about_order_total_value(cqrs)
       enable_inventory_sync_from_ordering(cqrs)
       enable_shipment_sync(cqrs)
@@ -88,32 +88,6 @@ module Processes
       )
     end
 
-    def calculate_total_value_when_order_submitted(cqrs)
-      cqrs.subscribe(
-        ->(event) do
-          cqrs.run(
-            Pricing::CalculateTotalValue.new(
-              order_id: event.data.fetch(:order_id)
-            )
-          )
-        end,
-        [Ordering::OrderSubmitted]
-      )
-    end
-
-    def calculate_sub_amounts_when_order_submitted(cqrs)
-      cqrs.subscribe(
-        ->(event) do
-          cqrs.run(
-            Pricing::CalculateSubAmounts.new(
-              order_id: event.data.fetch(:order_id)
-            )
-          )
-        end,
-        [Ordering::OrderSubmitted]
-      )
-    end
-
     def enable_inventory_sync_from_ordering(cqrs)
       cqrs.subscribe(
         ->(event) do
@@ -151,29 +125,7 @@ module Processes
     end
 
     def enable_pricing_sync_from_ordering(cqrs)
-      cqrs.subscribe(
-        ->(event) do
-          cqrs.run(
-            Pricing::AddPriceItem.new(
-              order_id: event.data.fetch(:order_id),
-              product_id: event.data.fetch(:product_id)
-            )
-          )
-        end,
-        [Ordering::ItemAddedToBasket]
-      )
-
-      cqrs.subscribe(
-        ->(event) do
-          cqrs.run(
-            Pricing::RemovePriceItem.new(
-              order_id: event.data.fetch(:order_id),
-              product_id: event.data.fetch(:product_id)
-            )
-          )
-        end,
-        [Ordering::ItemRemovedFromBasket]
-      )
+      SyncPricingFromOrdering.new(cqrs)
     end
 
     def enable_order_confirmation_process(cqrs)
