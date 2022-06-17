@@ -15,6 +15,7 @@ require_relative 'processes/determine_vat_rates_on_order_submitted'
 require_relative 'processes/order_item_invoicing_process'
 require_relative 'processes/sync_pricing_from_ordering'
 require_relative 'processes/notify_payments_about_order_value'
+require_relative 'processes/sync_shipment_from_ordering'
 require_relative 'processes/three_plus_one_free'
 
 require 'math'
