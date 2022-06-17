@@ -14,6 +14,7 @@ require_relative 'processes/shipment_process'
 require_relative 'processes/determine_vat_rates_on_order_submitted'
 require_relative 'processes/order_item_invoicing_process'
 require_relative 'processes/sync_pricing_from_ordering'
+require_relative 'processes/notify_payments_about_order_value'
 
 require 'math'
 
@@ -75,17 +76,7 @@ module Processes
     end
 
     def notify_payments_about_order_total_value(cqrs)
-      cqrs.subscribe(
-        ->(event) do
-          cqrs.run(
-            Payments::SetPaymentAmount.new(
-              order_id: event.data.fetch(:order_id),
-              amount: event.data.fetch(:discounted_amount).to_f
-            )
-          )
-        end,
-        [Pricing::OrderTotalValueCalculated]
-      )
+      NotifyPaymentsAboutOrderValue.new(cqrs)
     end
 
     def enable_inventory_sync_from_ordering(cqrs)
