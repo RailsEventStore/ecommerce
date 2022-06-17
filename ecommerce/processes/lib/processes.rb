@@ -39,15 +39,7 @@ module Processes
     private
 
     def enable_shipment_process(cqrs)
-      cqrs.subscribe(
-        ShipmentProcess.new(cqrs),
-        [
-          Shipping::ShippingAddressAddedToShipment,
-          Shipping::ShipmentSubmitted,
-          Ordering::OrderSubmitted,
-          Ordering::OrderConfirmed
-        ]
-      )
+      ShipmentProcess.new(cqrs)
     end
 
     def enable_shipment_sync(cqrs)

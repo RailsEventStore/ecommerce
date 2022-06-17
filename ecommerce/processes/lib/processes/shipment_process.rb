@@ -2,6 +2,15 @@ module Processes
   class ShipmentProcess
     def initialize(cqrs)
       @cqrs = cqrs
+      @cqrs.subscribe(
+        self,
+        [
+          Shipping::ShippingAddressAddedToShipment,
+          Shipping::ShipmentSubmitted,
+          Ordering::OrderSubmitted,
+          Ordering::OrderConfirmed
+        ]
+      )
     end
 
     def call(event)
