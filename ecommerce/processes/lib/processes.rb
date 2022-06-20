@@ -16,6 +16,7 @@ require_relative 'processes/order_item_invoicing_process'
 require_relative 'processes/sync_pricing_from_ordering'
 require_relative 'processes/notify_payments_about_order_value'
 require_relative 'processes/sync_shipment_from_ordering'
+require_relative 'processes/sync_inventory_from_ordering'
 require_relative 'processes/three_plus_one_free'
 
 require 'math'
@@ -74,39 +75,7 @@ module Processes
     end
 
     def enable_inventory_sync_from_ordering(cqrs)
-      cqrs.subscribe(
-        ->(event) do
-          cqrs.run(
-            Inventory::SubmitReservation.new(
-              order_id: event.data.fetch(:order_id),
-              reservation_items: event.data.fetch(:order_lines)
-            )
-          )
-        end,
-        [Ordering::OrderSubmitted]
-      )
-
-      cqrs.subscribe(
-        ->(event) do
-          cqrs.run(
-            Inventory::CompleteReservation.new(
-              order_id: event.data.fetch(:order_id)
-            )
-          )
-        end,
-        [Ordering::OrderConfirmed]
-      )
-
-      cqrs.subscribe(
-        ->(event) do
-          cqrs.run(
-            Inventory::CancelReservation.new(
-              order_id: event.data.fetch(:order_id)
-            )
-          )
-        end,
-        [Ordering::OrderCancelled, Ordering::OrderExpired]
-      )
+      SyncInventoryFromOrdering.new(cqrs)
     end
 
     def enable_pricing_sync_from_ordering(cqrs)
