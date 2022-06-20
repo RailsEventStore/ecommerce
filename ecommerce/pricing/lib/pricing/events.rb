@@ -48,4 +48,9 @@ module Pricing
     attribute :order_id, Infra::Types::UUID
     attribute :amount, Infra::Types::Price
   end
+
+  class ProductMadeFreeForOrder < Infra::Event
+    attribute :order_id, Infra::Types::UUID
+    attribute :product_id, Infra::Types::UUID
+  end
 end

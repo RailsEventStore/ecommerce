@@ -49,4 +49,9 @@ module Pricing
     attribute :order_id, Infra::Types::UUID
     attribute :amount, Infra::Types::PercentageDiscount
   end
+
+  class MakeProductFreeForOrder < Infra::Command
+    attribute :order_id, Infra::Types::UUID
+    attribute :product_id, Infra::Types::UUID
+  end
 end

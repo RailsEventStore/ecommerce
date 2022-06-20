@@ -15,3 +15,4 @@ matcher:
     - Processes::ReleasePaymentProcess*
     - Processes::OrderItemInvoicingProcess*
     - Processes::SyncPricingFromOrdering*
+    - Processes::ThreePlusOneFree*
