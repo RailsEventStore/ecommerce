@@ -46,28 +46,7 @@ module Processes
     end
 
     def enable_shipment_sync(cqrs)
-      cqrs.subscribe(
-        ->(event) do
-          cqrs.run(
-            Shipping::AddItemToShipmentPickingList.new(
-              order_id: event.data.fetch(:order_id),
-              product_id: event.data.fetch(:product_id)
-            )
-          )
-        end,
-        [Ordering::ItemAddedToBasket]
-      )
-      cqrs.subscribe(
-        ->(event) do
-          cqrs.run(
-            Shipping::RemoveItemFromShipmentPickingList.new(
-              order_id: event.data.fetch(:order_id),
-              product_id: event.data.fetch(:product_id)
-            )
-          )
-        end,
-        [Ordering::ItemRemovedFromBasket]
-      )
+      SyncShipmentFromOrdering.new(cqrs)
     end
 
     def notify_payments_about_order_total_value(cqrs)
