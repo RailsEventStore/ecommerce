@@ -37,5 +37,5 @@ Rails.application.routes.draw do
 
 
   match("architecture", to: "architecture#index", via: :get)
-  mount RailsEventStore::Browser => "/res"
+  mount RailsEventStore::Browser => "/res", :as => :ruby_event_store_browser_app
 end
