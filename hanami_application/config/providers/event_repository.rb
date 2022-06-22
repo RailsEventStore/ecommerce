@@ -6,7 +6,7 @@ Hanami.application.register_provider :event_repository do |container|
     repository =
       RubyEventStore::ROM::EventRepository.new(
         rom: container['persistence.rom'],
-        serializer: RubyEventStore::NULL
+        serializer: JSON
       )
     register "event_repository", repository
   end
