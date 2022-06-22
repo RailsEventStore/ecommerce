@@ -118,12 +118,9 @@ class OrdersTest < InMemoryRESIntegrationTestCase
   private
 
   def assert_res_browser_order_history
-    get "/res/api/streams/Orders$all/relationships/events"
-    event_names =
-      JSON
-        .load(body)
-        .fetch("data")
-        .map { |data| data.fetch("attributes").fetch("event_type") }
+    get "/res/api/streams/Orders%24all/relationships/events"
+    event_names = JSON.load(body).fetch("data").map { |data| data.fetch("attributes").fetch("event_type") }
+
     assert(event_names.include?("Ordering::OrderConfirmed"))
     assert(event_names.include?("Ordering::ItemAddedToBasket"))
     assert(event_names.include?("Pricing::OrderTotalValueCalculated"))
