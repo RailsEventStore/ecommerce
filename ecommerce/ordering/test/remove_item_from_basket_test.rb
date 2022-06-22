@@ -49,5 +49,14 @@ module Ordering
         act(RemoveItemFromBasket.new(order_id: aggregate_id, product_id: product_id))
       end
     end
+
+    def test_no_remove_allowed_if_item_quantity_eq_zero
+      aggregate_id = SecureRandom.uuid
+      product_id = SecureRandom.uuid
+
+      assert_raises(Order::CannotRemoveZeroQuantityItem) do
+        act(RemoveItemFromBasket.new(order_id: aggregate_id, product_id: product_id))
+      end
+    end
   end
 end

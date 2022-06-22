@@ -14,7 +14,7 @@ module Inventory
 
     private
 
-    def publish_item_added_event order_id, product_id, quantity_before
+    def publish_item_added_event(order_id, product_id, quantity_before)
       event_store.publish(
         Ordering::ItemAddedToBasket.new(
           data: {

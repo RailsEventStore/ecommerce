@@ -10,10 +10,7 @@ class OrdersTest < InMemoryRESIntegrationTestCase
   end
 
   def test_submitting_empty_order
-    arkency_id = SecureRandom.uuid
-    run_command(
-      Crm::RegisterCustomer.new(customer_id: arkency_id, name: "Arkency")
-    )
+    arkency_id = register_customer("Arkency")
 
     get "/"
     assert_select "h1", "Orders"
@@ -29,31 +26,13 @@ class OrdersTest < InMemoryRESIntegrationTestCase
   end
 
   def test_happy_path
-    shopify_id = SecureRandom.uuid
-    run_command(
-      Crm::RegisterCustomer.new(customer_id: shopify_id, name: "Shopify")
-    )
+    shopify_id = register_customer("Shopify")
 
     order_id = SecureRandom.uuid
     another_order_id = SecureRandom.uuid
 
-    async_remote_id = SecureRandom.uuid
-    run_command(
-      ProductCatalog::RegisterProduct.new(
-        product_id: async_remote_id,
-        name: "Async Remote"
-      )
-    )
-    run_command(Pricing::SetPrice.new(product_id: async_remote_id, price: 39))
-
-    fearless_id = SecureRandom.uuid
-    run_command(
-      ProductCatalog::RegisterProduct.new(
-        product_id: fearless_id,
-        name: "Fearless Refactoring"
-      )
-    )
-    run_command(Pricing::SetPrice.new(product_id: fearless_id, price: 49))
+    async_remote_id = register_product("Async Remote", 39, 10)
+    fearless_id     = register_product("Fearless Refactoring", 49, 10)
 
     post "/orders",
          params: {
@@ -99,14 +78,7 @@ class OrdersTest < InMemoryRESIntegrationTestCase
 
   def test_expiring_orders
     order_id = SecureRandom.uuid
-    async_remote_id = SecureRandom.uuid
-    run_command(
-      ProductCatalog::RegisterProduct.new(
-        product_id: async_remote_id,
-        name: "Async Remote"
-      )
-    )
-    run_command(Pricing::SetPrice.new(product_id: async_remote_id, price: 39))
+    async_remote_id = register_product("Async Remote", 39, 10)
 
     post "/orders/#{order_id}/add_item?product_id=#{async_remote_id}"
     follow_redirect!
@@ -119,19 +91,10 @@ class OrdersTest < InMemoryRESIntegrationTestCase
   end
 
   def test_cancel
-    shopify_id = SecureRandom.uuid
-    run_command(
-      Crm::RegisterCustomer.new(customer_id: shopify_id, name: "Shopify")
-    )
+    shopify_id = register_customer("Shopify")
+
     order_id = SecureRandom.uuid
-    async_remote_id = SecureRandom.uuid
-    run_command(
-      ProductCatalog::RegisterProduct.new(
-        product_id: async_remote_id,
-        name: "Async Remote"
-      )
-    )
-    run_command(Pricing::SetPrice.new(product_id: async_remote_id, price: 39))
+    async_remote_id = register_product("Async Remote", 39, 10)
 
     get "/"
     get "/orders/new"
@@ -146,54 +109,19 @@ class OrdersTest < InMemoryRESIntegrationTestCase
            "commit" => "Submit order"
          }
 
-    run_command(Ordering::CancelOrder.new(order_id: order_id))
+    post "/orders/#{order_id}/cancel"
+    follow_redirect!
     get "/orders/#{order_id}"
     assert_select("dd", "Cancelled")
-  end
-
-  def test_reset_discount
-    shopify_id = SecureRandom.uuid
-    run_command(
-      Crm::RegisterCustomer.new(customer_id: shopify_id, name: "Shopify")
-    )
-
-    order_id = SecureRandom.uuid
-
-    async_remote_id = SecureRandom.uuid
-    run_command(
-      ProductCatalog::RegisterProduct.new(
-        product_id: async_remote_id,
-        name: "Async Remote"
-      )
-    )
-    run_command(Pricing::SetPrice.new(product_id: async_remote_id, price: 137))
-
-    get "/"
-    get "/orders/new"
-    post "/orders/#{order_id}/add_item?product_id=#{async_remote_id}"
-    follow_redirect!
-    assert_select("td", "$137.00")
-    assert_select("a", count: 0, text: "Reset")
-
-    apply_discount_10_percent(order_id)
-
-    assert_select("a", "Reset")
-    post "/orders/#{order_id}/reset_discount"
-    follow_redirect!
-    assert_select("td", "$137.00")
-    assert_select("a", count: 0, text: "Reset")
   end
 
   private
 
   def assert_res_browser_order_history
-    get "/res/api/streams/Orders$all/relationships/events"
-    event_names =
-      JSON
-        .load(body)
-        .fetch("data")
-        .map { |data| data.fetch("attributes").fetch("event_type") }
-    assert(event_names.include?("Ordering::OrderPaid"))
+    get "/res/api/streams/Orders%24all/relationships/events"
+    event_names = JSON.load(body).fetch("data").map { |data| data.fetch("attributes").fetch("event_type") }
+
+    assert(event_names.include?("Ordering::OrderConfirmed"))
     assert(event_names.include?("Ordering::ItemAddedToBasket"))
     assert(event_names.include?("Pricing::OrderTotalValueCalculated"))
     assert(event_names.include?("Ordering::OrderSubmitted"))

@@ -13,20 +13,24 @@ require_relative 'processes/release_payment_process'
 require_relative 'processes/shipment_process'
 require_relative 'processes/determine_vat_rates_on_order_submitted'
 require_relative 'processes/order_item_invoicing_process'
+require_relative 'processes/sync_pricing_from_ordering'
+require_relative 'processes/notify_payments_about_order_value'
+require_relative 'processes/sync_shipment_from_ordering'
+require_relative 'processes/sync_inventory_from_ordering'
+require_relative 'processes/three_plus_one_free'
+
 require 'math'
 
 module Processes
   class Configuration
     def call(cqrs)
       enable_pricing_sync_from_ordering(cqrs)
-      calculate_total_value_when_order_submitted(cqrs)
-      calculate_sub_amounts_when_order_submitted(cqrs)
       notify_payments_about_order_total_value(cqrs)
       enable_inventory_sync_from_ordering(cqrs)
       enable_shipment_sync(cqrs)
       check_product_availability_on_adding_item_to_basket(cqrs)
       determine_vat_rates_on_order_submitted(cqrs)
-      set_invoice_payment_date_when_order_paid(cqrs)
+      set_invoice_payment_date_when_order_confirmed(cqrs)
       enable_product_name_sync(cqrs)
 
       enable_release_payment_process(cqrs)
@@ -38,142 +42,23 @@ module Processes
     private
 
     def enable_shipment_process(cqrs)
-      cqrs.subscribe(
-        ShipmentProcess.new(cqrs),
-        [
-          Shipping::ShippingAddressAddedToShipment,
-          Shipping::ShipmentSubmitted,
-          Ordering::OrderSubmitted,
-          Ordering::OrderPaid
-        ]
-      )
+      ShipmentProcess.new(cqrs)
     end
 
     def enable_shipment_sync(cqrs)
-      cqrs.subscribe(
-        ->(event) do
-          cqrs.run(
-            Shipping::AddItemToShipmentPickingList.new(
-              order_id: event.data.fetch(:order_id),
-              product_id: event.data.fetch(:product_id)
-            )
-          )
-        end,
-        [Ordering::ItemAddedToBasket]
-      )
-      cqrs.subscribe(
-        ->(event) do
-          cqrs.run(
-            Shipping::RemoveItemFromShipmentPickingList.new(
-              order_id: event.data.fetch(:order_id),
-              product_id: event.data.fetch(:product_id)
-            )
-          )
-        end,
-        [Ordering::ItemRemovedFromBasket]
-      )
+      SyncShipmentFromOrdering.new(cqrs)
     end
 
     def notify_payments_about_order_total_value(cqrs)
-      cqrs.subscribe(
-        ->(event) do
-          cqrs.run(
-            Payments::SetPaymentAmount.new(
-              order_id: event.data.fetch(:order_id),
-              amount: event.data.fetch(:discounted_amount).to_f
-            )
-          )
-        end,
-        [Pricing::OrderTotalValueCalculated]
-      )
-    end
-
-    def calculate_total_value_when_order_submitted(cqrs)
-      cqrs.subscribe(
-        ->(event) do
-          cqrs.run(
-            Pricing::CalculateTotalValue.new(
-              order_id: event.data.fetch(:order_id)
-            )
-          )
-        end,
-        [Ordering::OrderSubmitted]
-      )
-    end
-
-    def calculate_sub_amounts_when_order_submitted(cqrs)
-      cqrs.subscribe(
-        ->(event) do
-          cqrs.run(
-            Pricing::CalculateSubAmounts.new(
-              order_id: event.data.fetch(:order_id)
-            )
-          )
-        end,
-        [Ordering::OrderSubmitted]
-      )
+      NotifyPaymentsAboutOrderValue.new(cqrs)
     end
 
     def enable_inventory_sync_from_ordering(cqrs)
-      cqrs.subscribe(
-        ->(event) do
-          cqrs.run(
-            Inventory::SubmitReservation.new(
-              order_id: event.data.fetch(:order_id),
-              reservation_items: event.data.fetch(:order_lines)
-            )
-          )
-        end,
-        [Ordering::OrderSubmitted]
-      )
-
-      cqrs.subscribe(
-        ->(event) do
-          cqrs.run(
-            Inventory::CompleteReservation.new(
-              order_id: event.data.fetch(:order_id)
-            )
-          )
-        end,
-        [Ordering::OrderPaid]
-      )
-
-      cqrs.subscribe(
-        ->(event) do
-          cqrs.run(
-            Inventory::CancelReservation.new(
-              order_id: event.data.fetch(:order_id)
-            )
-          )
-        end,
-        [Ordering::OrderCancelled, Ordering::OrderExpired]
-      )
+      SyncInventoryFromOrdering.new(cqrs)
     end
 
     def enable_pricing_sync_from_ordering(cqrs)
-      cqrs.subscribe(
-        ->(event) do
-          cqrs.run(
-            Pricing::AddPriceItem.new(
-              order_id: event.data.fetch(:order_id),
-              product_id: event.data.fetch(:product_id)
-            )
-          )
-        end,
-        [Ordering::ItemAddedToBasket]
-      )
-
-      cqrs.subscribe(
-        ->(event) do
-          cqrs.run(
-            Pricing::RemovePriceItem.new(
-              order_id: event.data.fetch(:order_id),
-              product_id: event.data.fetch(:product_id)
-            )
-          )
-        end,
-        [Ordering::ItemRemovedFromBasket]
-      )
+      SyncPricingFromOrdering.new(cqrs)
     end
 
     def enable_order_confirmation_process(cqrs)
@@ -189,7 +74,7 @@ module Processes
         [
           Ordering::OrderSubmitted,
           Ordering::OrderExpired,
-          Ordering::OrderPaid,
+          Ordering::OrderConfirmed,
           Payments::PaymentAuthorized,
           Payments::PaymentReleased
         ]
@@ -234,7 +119,7 @@ module Processes
         )
     end
 
-    def set_invoice_payment_date_when_order_paid(cqrs)
+    def set_invoice_payment_date_when_order_confirmed(cqrs)
       cqrs.subscribe(
         ->(event) do
           cqrs.run(
@@ -244,7 +129,7 @@ module Processes
             )
           )
         end,
-        [Ordering::OrderPaid]
+        [Ordering::OrderConfirmed]
       )
     end
   end

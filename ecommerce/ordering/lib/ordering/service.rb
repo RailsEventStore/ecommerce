@@ -35,19 +35,7 @@ module Ordering
     end
   end
 
-  class OnOrderArchived
-    def initialize(event_store)
-      @repository = Infra::AggregateRootRepository.new(event_store)
-    end
-
-    def call(command)
-      @repository.with_aggregate(Order, command.aggregate_id) do |order|
-        order.archive
-      end
-    end
-  end
-
-  class OnMarkOrderAsPaid
+  class OnConfirmOrder
     def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)
     end
@@ -80,7 +68,7 @@ module Ordering
     def call(command)
       @repository.with_aggregate(Order, command.aggregate_id) do |order|
         order_number = @number_generator.call
-        order.submit(order_number, command.customer_id)
+        order.submit(order_number)
       end
     end
   end

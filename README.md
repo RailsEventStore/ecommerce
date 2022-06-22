@@ -15,22 +15,28 @@ Domains exist in directories starting at [ecommerce](/ecommerce).
 ecommerce/
 ├── crm
 ├── inventory
+├── invoicing
 ├── ordering
 ├── payments
 ├── pricing
-└── product_catalog
-└── shipping
+├── processes
+├── product_catalog
+├── shipping
+└── taxes
 ```
 
-Each one has a README introduction:
+(almost) Each one has a README introduction:
 
 * [CRM](ecommerce/crm/README.md)
 * [Inventory](ecommerce/inventory/README.md)
+* [Invoicing](ecommerce/invoicing/README.md)
 * [Ordering](ecommerce/ordering/README.md)
 * [Payments](ecommerce/payments/README.md)
 * [Pricing](ecommerce/pricing/README.md)
+* [Processes](ecommerce/processes/README.md)
 * [Product Catalog](ecommerce/product_catalog/README.md)
 * [Shipping](ecommerce/shipping/README.md)
+* [Shipping](ecommerce/taxes/README.md)
 
 ## Application
 
@@ -38,7 +44,7 @@ Order management application lives at [rails_application](/rails_application) di
 
 This application simulates a process of managing orders.
 
-We start with a list of exiting products and customers (populated with seeds).
+We start with a list of exiting products, customers and coupons (populated with seeds).
 
 ### UI flow
 
@@ -71,7 +77,7 @@ expiring orders.
 It takes the following events as the input:
 - Ordering::OrderSubmitted
 - Ordering::OrderExpired
-- Ordering::OrderPaid
+- Ordering::OrderConfirmed
 - Payments::PaymentAuthorized
 - Payments::PaymentReleased
 
@@ -108,11 +114,42 @@ As you see, this project is not an usual Rails project.
 Many Rails conventions are not followed here. Usually there's a good reason for that.
 Trust us, but feel free to challenge our decisions.
 
+**Code comments**
+
+Do not leave comments in the code by default. Just leave an GitHub issue instead of a TODO comment for example.
+
+**Technical debt**
+
+One of the goals of this project is educational - to show how to implement certain features with DDD.
+As such we treat the actual code as business value.
+That's why (as opposed to "normal" projects") we can treat technical debt as part of the "backlog".
+
+Whenever you add a temporary hack to the codebase, add a Github issue - maybe someone else will be able to help or clean.
+When you work on certain are and see some not pretty code - fix it or create an issue and add the "debt" label.
+
+**Backlog**
+
+If you're somehow experienced with ecommerce (even when not as a dev) - your experience can help us. 
+Please create new Github issues with features that can exist in typical ecommerces. 
+Our goal is to cover as many features as possible - especially the tricky ones.
+
+If you're a developer working on ecommerce and you want to learn how to implement a specific feature - feel free to add this as a ticket too.
+
+All tickets should bring business value and be consistent with previous features.
+It's fine to create vague tickets at the beginning and let them be more specific later. 
+
+**Local setup**
+
 As for the local dev setup:
 
 - we use Makefile, so `make install` should simplify a lot
 - there's docker-compose in the rails_application, if you're into Docker
 
+**Bundler note**
+
+Please check that your bundler version is not ancient, and up to date. For more details check:
+`git show 6dc6e1c2ea833e1ea5821cc9bc9bd5dfadbfda9a` which explains the problem and proposes a solution.
+A sign that you have a problem will be unusual changes in `Gemfile.lock` i.e. changes in remote sources and placement of gems definitions.
 
 Things worth knowing about:
 
@@ -129,6 +166,11 @@ Things worth knowing about:
 - After you make a contribution, we'll invite you to a special Discord
 - Contributing is a good way to learn DDD/CQRS/Event sourcing.
 
+## Discord
+
+There's a Discord server connected with RailsEventStore and with this Ecommerce project.
+Feel free to join [here](https://discord.gg/2xDJPgPjc8) to ask questions or discuss the vision.
+
 ## I like it, where can I learn more about all those DDD concepts?
 
-Over time we have developed a number of DDD-related online courses. We now sell them as part of one membership access via [arkademy.dev](https://arkademy.dev) for $49/month.
+Over time we have developed a number of DDD-related online courses. We now sell them as part of one membership access via [arkademy.dev](https://arkademy.dev).

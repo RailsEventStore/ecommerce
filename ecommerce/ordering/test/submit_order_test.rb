@@ -23,20 +23,11 @@ module Ordering
           data: {
             order_id: aggregate_id,
             order_number: order_number,
-            customer_id: customer_id,
             order_lines: { product_id => 1 }
           }
         )
       ) do
         act(SubmitOrder.new(order_id: aggregate_id, customer_id: customer_id))
-      end
-    end
-
-    def test_could_not_create_order_where_customer_is_not_given
-      aggregate_id = SecureRandom.uuid
-
-      assert_raises(Infra::Command::Invalid) do
-        act(SubmitOrder.new(order_id: aggregate_id, customer_id: nil))
       end
     end
 

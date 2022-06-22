@@ -1,8 +1,8 @@
 source "https://rubygems.org"
 
-ruby "2.7.4"
+ruby ENV["HEROKU_RUBY_VERSION"] if ENV["HEROKU_RUBY_VERSION"]
 
-gem "rails", "~> 7.0.2", ">= 7.0.2.2"
+gem "rails", "7.0.3"
 gem "pg", "~> 1.1"
 gem "puma", "~> 5.6"
 gem "bootsnap", ">= 1.4.4", require: false
@@ -11,13 +11,14 @@ gem "skylight"
 gem "tailwindcss-rails"
 gem "kaminari"
 gem "sprockets-rails"
+gem "rails_event_store", "2.5.0"
 
 group :development do
   gem "listen", "~> 3.3"
 end
 
 group :development, :test do
-  gem "byebug", platforms: [:mri, :mingw, :x64_mingw]
+  gem "byebug", platforms: %i[mri mingw x64_mingw]
   gem "dotenv-rails"
 end
 
@@ -28,6 +29,4 @@ end
 gem "infra", path: "../infra"
 gem "math", path: "../math"
 
-gem "tzinfo-data", platforms: [:mingw, :mswin, :x64_mingw, :jruby]
-
-
+gem "tzinfo-data", platforms: %i[mingw mswin x64_mingw jruby]

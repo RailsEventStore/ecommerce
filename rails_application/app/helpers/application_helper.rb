@@ -52,7 +52,7 @@ module ApplicationHelper
   end
 
   def order_history_link(id, options = {})
-    stream_browser_link("History", "Orders$#{id}", options)
+    stream_browser_link("History", "Ordering::Order$#{id}", options)
   end
 
   def current_link_to(label, path, **kwargs)

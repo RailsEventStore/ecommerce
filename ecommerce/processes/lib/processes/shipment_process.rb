@@ -2,6 +2,15 @@ module Processes
   class ShipmentProcess
     def initialize(cqrs)
       @cqrs = cqrs
+      @cqrs.subscribe(
+        self,
+        [
+          Shipping::ShippingAddressAddedToShipment,
+          Shipping::ShipmentSubmitted,
+          Ordering::OrderSubmitted,
+          Ordering::OrderConfirmed
+        ]
+      )
     end
 
     def call(event)
@@ -52,8 +61,8 @@ module Processes
         when Ordering::OrderSubmitted
           @order = :submitted
           @order_id = event.data.fetch(:order_id)
-        when Ordering::OrderPaid
-          @order = :paid
+        when Ordering::OrderConfirmed
+          @order = :confirmed
         end
       end
 
@@ -64,7 +73,7 @@ module Processes
       end
 
       def authorize?
-        @shipment == :address_set && @order == :paid
+        @shipment == :address_set && @order == :confirmed
       end
     end
   end

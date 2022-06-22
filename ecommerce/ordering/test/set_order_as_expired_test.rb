@@ -46,7 +46,7 @@ module Ordering
       ) { act(SetOrderAsExpired.new(order_id: aggregate_id)) }
     end
 
-    def test_paid_order_cannot_expire
+    def test_confirmed_order_cannot_expire
       aggregate_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
       customer_id = SecureRandom.uuid
@@ -61,10 +61,10 @@ module Ordering
           order_number: "2018/12/1",
           customer_id: customer_id
         ),
-        MarkOrderAsPaid.new(order_id: aggregate_id)
+        ConfirmOrder.new(order_id: aggregate_id)
       )
 
-      assert_raises(Order::AlreadyPaid) do
+      assert_raises(Order::AlreadyConfirmed) do
         act(SetOrderAsExpired.new(order_id: aggregate_id))
       end
     end

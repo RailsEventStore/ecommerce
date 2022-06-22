@@ -24,15 +24,5 @@ module Crm
         register_customer(uid, fake_name)
       end
     end
-
-    private
-
-    def register_customer(uid, name)
-      run_command(RegisterCustomer.new(customer_id: uid, name: name))
-    end
-
-    def fake_name
-      "Fake name"
-    end
   end
 end

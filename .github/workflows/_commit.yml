@@ -26,6 +26,6 @@ jobs:
               }]
             }
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_WEBHOOK_URL: ${{ secrets.COMMIT_WEBHOOK }}
         if: always()
         continue-on-error: true

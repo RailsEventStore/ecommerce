@@ -35,6 +35,8 @@ GEM
 
 PLATFORMS
   arm64-darwin-20
+  arm64-darwin-21
+  ruby
   x86_64-darwin-20
   x86_64-linux
 
@@ -45,4 +47,4 @@ DEPENDENCIES
   mutant-minitest!
 
 BUNDLED WITH
-   2.3.8
+   2.3.14

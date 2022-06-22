@@ -1,6 +1,7 @@
 require "infra"
 require "math"
 require_relative "pricing/discounts"
+require_relative "pricing/coupon"
 require_relative "pricing/commands"
 require_relative "pricing/events"
 require_relative "pricing/services"
@@ -46,6 +47,16 @@ module Pricing
         ResetPercentageDiscountHandler.new(cqrs.event_store),
         PercentageDiscountReset
       )
+      cqrs.register_command(
+        ChangePercentageDiscount,
+        ChangePercentageDiscountHandler.new(cqrs.event_store),
+        PercentageDiscountChanged
+      )
+      cqrs.register_command(
+        RegisterCoupon,
+        OnCouponRegister.new(cqrs.event_store),
+        CouponRegistered
+      )
       cqrs.subscribe(
         ->(event) do
           cqrs.run(
@@ -58,7 +69,8 @@ module Pricing
           PriceItemAdded,
           PriceItemRemoved,
           PercentageDiscountSet,
-          PercentageDiscountReset
+          PercentageDiscountReset,
+          PercentageDiscountChanged
         ]
       )
     end

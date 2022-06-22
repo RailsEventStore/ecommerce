@@ -9,7 +9,7 @@
 
   <%= secondary_action_button do %>
     <%= link_to "Edit discount", edit_discount_order_path(@order_id) %>
-  <% end unless @order.percentage_discount %>
+  <% end %>
 
   <%= secondary_action_button do %>
     <%= link_to "Edit Shipping Address", edit_order_shipping_address_path(@order_id) %>

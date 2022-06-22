@@ -1,7 +1,7 @@
 require "test_helper"
 
 module Customers
-  class CustomerPromotedTovipTest < InMemoryTestCase
+  class CustomerPromotedToVipTest < InMemoryTestCase
     cover "Customers"
 
     def setup

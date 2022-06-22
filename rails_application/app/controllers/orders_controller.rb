@@ -34,12 +34,21 @@ class OrdersController < ApplicationController
 
   def update_discount
     @order_id = params[:id]
-    command_bus.(
-      Pricing::SetPercentageDiscount.new(
-        order_id: @order_id,
-        amount: params[:amount]
+    if Orders::Order.find_by_uid(params[:id]).percentage_discount
+      command_bus.(
+        Pricing::ChangePercentageDiscount.new(
+          order_id: @order_id,
+          amount: params[:amount]
+        )
       )
-    )
+    else
+      command_bus.(
+        Pricing::SetPercentageDiscount.new(
+          order_id: @order_id,
+          amount: params[:amount]
+        )
+      )
+    end
 
     redirect_to edit_order_path(@order_id)
   end
@@ -78,19 +87,23 @@ class OrdersController < ApplicationController
       )
     )
     redirect_to edit_order_path(params[:id])
+  rescue Ordering::Order::CannotRemoveZeroQuantityItem
+    redirect_to edit_order_path(params[:id]),
+                alert: "Cannot remove the product with 0 quantity"
   end
 
   def create
-    cmd =
-      Ordering::SubmitOrder.new(
-        order_id: params[:order_id],
-        customer_id: params[:customer_id]
-      )
-    ApplicationRecord.transaction { command_bus.(cmd) }
-    redirect_to order_path(cmd.order_id),
+    ApplicationRecord.transaction do
+      submit_order(params[:order_id], params[:customer_id])
+    end
+    redirect_to order_path(params[:order_id]),
                 notice: "Order was successfully submitted"
+  rescue Crm::Customer::NotExists
+    redirect_to order_path(params[:order_id]),
+                alert:
+                  "Order can not be submitted! Customer does not exist."
   rescue Inventory::InventoryEntry::InventoryNotAvailable
-    redirect_to order_path(cmd.order_id),
+    redirect_to order_path(params[:order_id]),
                 alert:
                   "Order can not be submitted! Some products are not available"
   end
@@ -121,7 +134,22 @@ class OrdersController < ApplicationController
     redirect_to orders_path
   end
 
+  def cancel
+    command_bus.(Ordering::CancelOrder.new(order_id: params[:id]))
+    redirect_to root_path, notice: "Order cancelled"
+  end
+
   private
+
+  def submit_order(order_id, customer_id)
+    command_bus.(Ordering::SubmitOrder.new(
+      order_id: order_id
+    ))
+    command_bus.(Crm::AssignCustomerToOrder.new(
+      order_id: order_id,
+      customer_id: customer_id
+    ))
+  end
 
   def authorize_payment(order_id)
     command_bus.call(authorize_payment_cmd(order_id))

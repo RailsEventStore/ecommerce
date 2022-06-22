@@ -1,4 +1,11 @@
 module Pricing
+  class CouponRegistered < Infra::Event
+    attribute :coupon_id, Infra::Types::UUID
+    attribute :name, Infra::Types::String
+    attribute :code, Infra::Types::String
+    attribute :discount, Infra::Types::CouponDiscount
+  end
+
   class PriceSet < Infra::Event
     attribute :product_id, Infra::Types::UUID
     attribute :price, Infra::Types::Price
@@ -35,5 +42,15 @@ module Pricing
 
   class PercentageDiscountReset < Infra::Event
     attribute :order_id, Infra::Types::UUID
+  end
+
+  class PercentageDiscountChanged < Infra::Event
+    attribute :order_id, Infra::Types::UUID
+    attribute :amount, Infra::Types::Price
+  end
+
+  class ProductMadeFreeForOrder < Infra::Event
+    attribute :order_id, Infra::Types::UUID
+    attribute :product_id, Infra::Types::UUID
   end
 end

@@ -3,10 +3,10 @@ module Ordering
     include AggregateRoot
 
     AlreadySubmitted = Class.new(StandardError)
-    AlreadyPaid = Class.new(StandardError)
+    AlreadyConfirmed = Class.new(StandardError)
     NotSubmitted = Class.new(StandardError)
     OrderHasExpired = Class.new(StandardError)
-    MissingCustomer = Class.new(StandardError)
+    CannotRemoveZeroQuantityItem = Class.new(StandardError)
 
     def initialize(id)
       @id = id
@@ -14,14 +14,13 @@ module Ordering
       @basket = Basket.new
     end
 
-    def submit(order_number, customer_id)
+    def submit(order_number)
       raise AlreadySubmitted if @state.equal?(:submitted)
       raise OrderHasExpired if @state.equal?(:expired)
       apply OrderSubmitted.new(
         data: {
           order_id: @id,
           order_number: order_number,
-          customer_id: customer_id,
           order_lines: @basket.order_lines
         }
       )
@@ -30,11 +29,11 @@ module Ordering
     def confirm
       raise OrderHasExpired if @state.equal?(:expired)
       raise NotSubmitted unless @state.equal?(:submitted)
-      apply OrderPaid.new(data: { order_id: @id })
+      apply OrderConfirmed.new(data: { order_id: @id })
     end
 
     def expire
-      raise AlreadyPaid if @state.equal?(:paid)
+      raise AlreadyConfirmed if @state.equal?(:confirmed)
       apply OrderExpired.new(data: { order_id: @id })
     end
 
@@ -51,6 +50,7 @@ module Ordering
 
     def remove_item(product_id)
       raise AlreadySubmitted unless @state.equal?(:draft)
+      raise CannotRemoveZeroQuantityItem if @basket.quantity(product_id).zero?
       apply ItemRemovedFromBasket.new(data: { order_id: @id, product_id: product_id })
     end
 
@@ -60,18 +60,14 @@ module Ordering
       apply OrderCancelled.new(data: { order_id: @id })
     end
 
-    def archive
-      apply OrderArchived.new(data: { order_id: @id })
-    end
-
     on OrderSubmitted do |event|
       @customer_id = event.data[:customer_id]
       @number = event.data[:order_number]
       @state = :submitted
     end
 
-    on OrderPaid do |event|
-      @state = :paid
+    on OrderConfirmed do |event|
+      @state = :confirmed
     end
 
     on OrderExpired do |event|
@@ -80,10 +76,6 @@ module Ordering
 
     on OrderCancelled do |event|
       @state = :cancelled
-    end
-
-    on OrderArchived do |event|
-      @state = :archived
     end
 
     on ItemAddedToBasket do |event|

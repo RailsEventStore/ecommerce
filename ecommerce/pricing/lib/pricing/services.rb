@@ -5,6 +5,9 @@ module Pricing
   class NotPossibleToResetWithoutDiscount < StandardError
   end
 
+  class NotPossibleToChangeDiscount < StandardError
+  end
+
   class SetPercentageDiscountHandler
     def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)
@@ -35,7 +38,7 @@ module Pricing
     def build_order(stream_name)
       last_event = last_event(stream_name)
       case last_event
-      when PercentageDiscountSet
+      when PercentageDiscountSet, PercentageDiscountChanged
         nil
       else
         Discounts::Order.new
@@ -76,7 +79,47 @@ module Pricing
     def build_order(stream_name)
       last_event = last_event(stream_name)
       case last_event
-      when PercentageDiscountSet
+      when PercentageDiscountSet, PercentageDiscountChanged
+        Discounts::DiscountedOrder.new
+      end
+    end
+
+    def last_event(stream_name)
+      @event_store.read.stream(stream_name).last
+    end
+  end
+
+  class ChangePercentageDiscountHandler
+    def initialize(event_store)
+      @repository = Infra::AggregateRootRepository.new(event_store)
+      @event_store = event_store
+    end
+
+    def call(cmd)
+      stream_name = @repository.stream_name(Discounts::Order, cmd.order_id)
+      order = build_order(stream_name)
+      begin
+        order.change_discount
+      rescue NoMethodError
+        raise NotPossibleToChangeDiscount
+      end
+      @event_store.publish(
+        PercentageDiscountChanged.new(
+          data: {
+            order_id: cmd.order_id,
+            amount: cmd.amount
+          }
+        ),
+        stream_name: stream_name
+      )
+    end
+
+    private
+
+    def build_order(stream_name)
+      last_event = last_event(stream_name)
+      case last_event
+      when PercentageDiscountSet, PercentageDiscountChanged
         Discounts::DiscountedOrder.new
       end
     end
@@ -149,7 +192,7 @@ module Pricing
     def build_percentage_discount(order_id)
       last_event = last_discount_order_event(order_id)
       case last_event
-      when PercentageDiscountSet
+      when PercentageDiscountSet, PercentageDiscountChanged
         Discounts::PercentageDiscount.new(last_event.data.fetch(:amount))
       else
         Discounts::NoPercentageDiscount.new
@@ -161,6 +204,18 @@ module Pricing
         .read
         .stream(@repository.stream_name(Discounts::Order, order_id))
         .last
+    end
+  end
+
+  class OnCouponRegister
+    def initialize(event_store)
+      @repository = Infra::AggregateRootRepository.new(event_store)
+    end
+
+    def call(command)
+      @repository.with_aggregate(Coupon, command.aggregate_id) do |coupon|
+        coupon.register(command.name, command.code, command.discount)
+      end
     end
   end
 end

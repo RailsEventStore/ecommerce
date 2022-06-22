@@ -65,8 +65,8 @@ module Processes
       Ordering::OrderExpired.new(data: { order_id: order_id })
     end
 
-    def order_paid
-      Ordering::OrderPaid.new(data: { order_id: order_id })
+    def order_confirmed
+      Ordering::OrderConfirmed.new(data: { order_id: order_id })
     end
 
     def payment_authorized

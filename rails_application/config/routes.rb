@@ -9,6 +9,7 @@ Rails.application.routes.draw do
       post :add_item
       post :remove_item
       post :pay
+      post :cancel
       get :edit_discount
       post :update_discount
       post :reset_discount
@@ -23,12 +24,18 @@ Rails.application.routes.draw do
   resources :products, only: [:new, :show, :create, :index] do
     resources :supplies, only: [:new, :create]
   end
+
+  resources :coupons, only: [:new, :show, :create, :index] do
+
+  end
   resources :customers, only: [:new, :create, :index, :update]
 
-  get "/client", to: "client_orders#index"
-  get "/client/:id", to: "client_orders#show"
-  post "/client", to: "client_orders#login"
+  resources :clients, only: :index do
+    resources :orders, only: [:index, :show], controller: 'client/orders'
+  end
+  post :login, to: "clients#login"
+
 
   match("architecture", to: "architecture#index", via: :get)
-  mount RailsEventStore::Browser => "/res"
+  mount RailsEventStore::Browser => "/res", :as => :ruby_event_store_browser_app
 end

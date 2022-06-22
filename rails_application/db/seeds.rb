@@ -15,6 +15,21 @@ command_bus = Rails.configuration.command_bus
 end
 
 [
+  ["DDDVeteran", 'ddd', 5],
+  ["VIP", 'vip', 15],
+  ["Addict", 'product_addict', 20]
+].each do |coupon|
+  command_bus.call(
+    Pricing::RegisterCoupon.new(
+      coupon_id: SecureRandom.uuid,
+      name: coupon[0],
+      code: coupon[1],
+      discount: coupon[2]
+    )
+  )
+end
+
+[
   ["Fearless Refactoring: Rails controllers", 49],
   ["Rails meets React.js", 49],
   ["Developers Oriented Project Management", 39],

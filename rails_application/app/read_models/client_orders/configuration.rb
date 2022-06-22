@@ -2,7 +2,7 @@ module ClientOrders
   class Client < ApplicationRecord
     self.table_name = "clients"
 
-    has_many :orders,
+    has_many :client_orders,
              -> { client(id: :asc) },
              class_name: "ClientOrders::Order",
              foreign_key: :client_uid,
@@ -11,6 +11,8 @@ module ClientOrders
 
   class Order < ApplicationRecord
     self.table_name = "client_orders"
+
+    belongs_to :order, class_name: "Orders::Order", foreign_key: :order_uid, primary_key: :uid
   end
 
   class Configuration
@@ -34,12 +36,17 @@ module ClientOrders
 
       subscribe_and_link_to_stream(
         ->(event) { change_order_state(event, "Paid") },
-        [Ordering::OrderPaid]
+        [Ordering::OrderConfirmed]
       )
 
       subscribe_and_link_to_stream(
         ->(event) { change_order_state(event, "Cancelled") },
         [Ordering::OrderCancelled]
+      )
+
+      subscribe_and_link_to_stream(
+        -> (event) { assign_customer(event, event.data.fetch(:customer_id)) },
+        [Crm::CustomerAssignedToOrder]
       )
     end
 
@@ -71,7 +78,6 @@ module ClientOrders
     def mark_as_submitted(event)
       order = Order.find_or_create_by(order_uid: event.data.fetch(:order_id))
       order.number = event.data.fetch(:order_number)
-      order.client_uid = event.data.fetch(:customer_id)
       order.state = "Submitted"
       order.save!
     end
@@ -90,6 +96,10 @@ module ClientOrders
           order.save!
         end
       end
+    end
+
+    def assign_customer(event, customer_id)
+      with_order(event) { |order| order.client_uid = customer_id }
     end
   end
 end
