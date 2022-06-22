@@ -12,6 +12,8 @@ Gem::Specification.new do |spec|
   spec.add_dependency "rake"
   spec.add_dependency "dry-struct"
   spec.add_dependency "dry-types"
-  spec.add_dependency "rails_event_store", "~> 2.5.0"
+  spec.add_dependency "aggregate_root", "2.5.0"
+  spec.add_dependency "arkency-command_bus"
+  spec.add_dependency "ruby_event_store", "2.5.0"
   spec.add_dependency "ruby_event_store-transformations"
 end
