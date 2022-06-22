@@ -49,7 +49,7 @@ module Processes
         case event
         when Ordering::ItemAddedToBasket
           @basket.increase_quantity(event.data.fetch(:product_id))
-        when Ordering::RemoveItemFromBasket
+        when Ordering::ItemRemovedFromBasket
           @basket.decrease_quantity(event.data.fetch(:product_id))
         end
       end
