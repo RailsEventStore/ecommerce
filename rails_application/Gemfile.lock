@@ -2,12 +2,10 @@ PATH
   remote: ../infra
   specs:
     infra (1.0.0)
-      aggregate_root (= 2.5.0)
-      arkency-command_bus
       dry-struct
       dry-types
+      rails_event_store (~> 2.5.0)
       rake
-      ruby_event_store (= 2.5.0)
       ruby_event_store-transformations
 
 PATH
@@ -20,12 +18,6 @@ GEM
   remote: https://oss:7AXfeZdAfCqL1PvHm2nvDJO6Zd9UW8IK@gem.mutant.dev/
   specs:
     mutant-license (0.1.1.2.1627430819213747598431630701693729869473.4)
-    rails_event_store_active_record (2.5.0)
-      activerecord (>= 6.0)
-      ruby_event_store (= 2.5.0)
-    ruby_event_store-browser (2.5.0)
-      rack
-      ruby_event_store (= 2.5.0)
 
 GEM
   remote: https://rubygems.org/
@@ -233,6 +225,9 @@ GEM
       rails_event_store_active_record (= 2.5.0)
       ruby_event_store (= 2.5.0)
       ruby_event_store-browser (= 2.5.0)
+    rails_event_store_active_record (2.5.0)
+      activerecord (>= 6.0)
+      ruby_event_store (= 2.5.0)
     railties (7.0.3)
       actionpack (= 7.0.3)
       activesupport (= 7.0.3)
@@ -247,6 +242,9 @@ GEM
     regexp_parser (2.1.1)
     ruby_event_store (2.5.0)
       concurrent-ruby (~> 1.0, >= 1.1.6)
+    ruby_event_store-browser (2.5.0)
+      rack
+      ruby_event_store (= 2.5.0)
     ruby_event_store-transformations (0.1.0)
       activesupport (>= 5.0)
       ruby_event_store (>= 2.0.0, < 3.0.0)
@@ -295,7 +293,6 @@ DEPENDENCIES
   pg (~> 1.1)
   puma (~> 5.6)
   rails (= 7.0.3)
-  rails_event_store (= 2.5.0)
   skylight
   sprockets-rails
   tailwindcss-rails
