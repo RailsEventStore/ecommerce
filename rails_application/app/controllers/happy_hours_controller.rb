@@ -32,7 +32,7 @@ class HappyHoursController < ApplicationController
   end
 
   def create_happy_hour_cmd(**kwargs)
-    Pricing::CreateHappyHour.new(details: kwargs.symbolize_keys)
+    Pricing::CreateHappyHour.new(**kwargs.symbolize_keys)
   end
 
   def product_names_for(happy_hour)
