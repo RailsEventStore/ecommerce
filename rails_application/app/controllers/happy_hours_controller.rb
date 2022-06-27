@@ -15,7 +15,7 @@ class HappyHoursController < ApplicationController
       )
     )
   rescue Pricing::HappyHour::AlreadyCreated
-    flash[:alert] = "Happy hour is already created"
+    flash[:error] = "Happy hour is already created"
     @happy_hour_id = SecureRandom.uuid
     @products = Products::Product.all
     render "new"
