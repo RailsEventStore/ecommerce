@@ -8,8 +8,6 @@ module Pricing
   class NotPossibleToChangeDiscount < StandardError
   end
 
-  class OverlappingHappyHours < StandardError; end
-
   class SetPercentageDiscountHandler
     def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)
@@ -146,19 +144,10 @@ module Pricing
   class CreateHappyHourHandler
     def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)
-      @event_store = event_store
     end
 
     def call(cmd)
       happy_hour_id = cmd.id || SecureRandom.uuid
-      helper = Pricing::Helpers::HappyHoursForProduct.new(@event_store)
-      overlapping_products = helper.products_with_overlapping_happy_hours(cmd.product_ids, cmd.start_hour, cmd.end_hour)
-
-      if overlapping_products.present?
-        raise OverlappingHappyHours.new(
-          "Products with following ids do already have happy hours in given range: #{overlapping_products}"
-        )
-      end
 
       @repository.with_aggregate(HappyHour, happy_hour_id) do |happy_hour|
         happy_hour.create(**cmd.to_h.slice(:name, :code, :discount, :start_hour, :end_hour, :product_ids))
