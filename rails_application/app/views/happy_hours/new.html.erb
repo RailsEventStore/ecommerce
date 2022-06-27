@@ -13,6 +13,8 @@
 <% end %>
 
 <%= form_tag({ controller: "happy_hours", action: "create" }, method: "post", id: "form") do %>
+  <%= hidden_field_tag(:happy_hour_id, @happy_hour_id) %>
+
   <label for="name" class="block font-bold">
     Name
   </label>
@@ -37,7 +39,7 @@
   <%= number_field_tag :discount, nil,
     min: 1,
     max: 100,
-    step: 1,
+    step: 0.01,
     id: "discount",
     required: true,
     class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
