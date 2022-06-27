@@ -14,8 +14,8 @@ module HappyHours
     private
 
     def create_happy_hour(event)
-      event_data = event.data[:details]
-      HappyHour.create(**event_data.merge(id: event.data[:id]))
+      event_data = event.data
+      HappyHour.create(**event_data)
     end
   end
 end
