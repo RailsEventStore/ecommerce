@@ -9,6 +9,9 @@ module Pricing
     end
 
     def create(**kwargs)
+      # This is an implicit validation based on the @id only.
+      # The id is internal and user does not specify it.
+      # I'd rather validate it by code or another user input that we want to keep unique.
       raise AlreadyCreated if @created
 
       apply HappyHourCreated.new(
