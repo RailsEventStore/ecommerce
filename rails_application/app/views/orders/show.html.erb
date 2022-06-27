@@ -91,13 +91,13 @@
     <% if @order.discounted_value != @order.total_value %>
       <tr class="border-t">
         <td class="py-2" colspan="3">Before discounts</td>
-        <td class="py-2 text-right" id="before-discounts-value"><%= number_to_currency(@order.total_value) %></td>
+        <td class="py-2 text-right"><%= number_to_currency(@order.total_value) %></td>
       </tr>
     <% end %>
     <% if @order.happy_hour_value != @order.total_value %>
       <tr class="border-t">
         <td class="py-2" colspan="3">After happy hour discounts</td>
-        <td class="py-2 text-right" id="happy-hour-value"><%= number_to_currency(@order.happy_hour_value) %></td>
+        <td class="py-2 text-right"><%= number_to_currency(@order.happy_hour_value) %></td>
       </tr>
     <% end %>
     <% if @order.percentage_discount %>
