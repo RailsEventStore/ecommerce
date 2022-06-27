@@ -35,6 +35,12 @@ module Pricing
       assert_raises Pricing::Product::OverlappingHappyHour do
         add_product_to_happy_hour(product_id, 50, 13, 16)
       end
+
+      add_product_to_happy_hour(product_id, 30, 15, 18)
+
+      assert_raises Pricing::Product::OverlappingHappyHour do
+        add_product_to_happy_hour(product_id, 50, 12, 15)
+      end
     end
 
     private
