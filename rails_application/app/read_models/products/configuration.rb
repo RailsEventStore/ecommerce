@@ -4,6 +4,7 @@ module Products
   end
 
   class Configuration
+
     def call(cqrs)
       cqrs.subscribe(
         -> (event) { register_product(event) },
@@ -42,5 +43,6 @@ module Products
     def find(product_id)
       Product.where(id: product_id).first
     end
+
   end
 end
