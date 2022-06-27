@@ -87,14 +87,13 @@ module Pricing
       )
       cqrs.subscribe(
         ->(event) do
-          data = event.data[:details]
-          data[:product_ids].each do |product_id|
+          event.data[:product_ids].each do |product_id|
             cqrs.run(
               Pricing::AddProductToHappyHour.new(
                 product_id: product_id,
-                discount: data.details[:discount],
-                start_hour: data.details[:start_hour],
-                end_hour: data.details[:end_hour]
+                discount: event.data[:discount],
+                start_hour: event.data[:start_hour],
+                end_hour: event.data[:end_hour]
               )
             )
           end
