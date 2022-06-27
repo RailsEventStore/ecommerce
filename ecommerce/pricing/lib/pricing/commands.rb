@@ -28,7 +28,7 @@ module Pricing
     attribute :price, Infra::Types::Price
   end
 
-  class AddProductToHappyHour < Infra::Command
+  class CreateHappyHour < Infra::Command
     attribute :product_id, Infra::Types::UUID
     attribute :discount, Infra::Types::PercentageDiscount
     attribute :start_hour, Infra::Types::Hour

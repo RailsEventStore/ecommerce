@@ -5,7 +5,7 @@ module Pricing
     end
 
     def discount_for(product_id, hour)
-      events = @event_store.read.stream("Pricing::Product$#{product_id}").of_type(ProductAddedToHappyHour).to_a
+      events = @event_store.read.stream("Pricing::Product$#{product_id}").of_type(HappyHourCreated).to_a
 
       product = Product.new(product_id)
 

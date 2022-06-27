@@ -15,9 +15,9 @@ module Pricing
       apply(PriceSet.new(data: { product_id: @id, price: price }))
     end
 
-    def add_product_to_happy_hour(discount, start_hour, end_hour)
+    def create_happy_hour(discount, start_hour, end_hour)
       apply(
-        ProductAddedToHappyHour.new(
+        HappyHourCreated.new(
           data: {
             product_id: @id,
             discount: discount,
@@ -32,7 +32,7 @@ module Pricing
 
     on(PriceSet) { |_| }
 
-    on ProductAddedToHappyHour do |event|
+    on HappyHourCreated do |event|
       @happy_hours_schedule = happy_hours_schedule.add(
         event.data[:discount],
         event.data[:start_hour],

@@ -59,9 +59,9 @@ module Pricing
         CouponRegistered
       )
       cqrs.register_command(
-        AddProductToHappyHour,
-        AddProductToHappyHourHandler.new(cqrs.event_store),
-        ProductAddedToHappyHour
+        CreateHappyHour,
+        CreateHappyHourHandler.new(cqrs.event_store),
+        HappyHourCreated
       )
       cqrs.subscribe(
         ->(event) do
