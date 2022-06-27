@@ -8,7 +8,7 @@ module Pricing
 
     def initialize(id)
       @id = id
-      @happy_hours_schedule = HappyHoursSchedule.new(Hash.new(0))
+      @happy_hours_schedule = HappyHoursSchedule.new({})
     end
 
     def set_price(price)
