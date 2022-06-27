@@ -8,7 +8,7 @@ require_relative "pricing/services"
 require_relative "pricing/order"
 require_relative "pricing/product"
 require_relative "pricing/pricing_catalog"
-require_relative "pricing/happy_hour"
+require_relative "pricing/happy_hours"
 require_relative "pricing/helpers/happy_hours_for_product"
 
 module Pricing
@@ -58,11 +58,6 @@ module Pricing
         RegisterCoupon,
         OnCouponRegister.new(cqrs.event_store),
         CouponRegistered
-      )
-      cqrs.register_command(
-        CreateHappyHour,
-        CreateHappyHourHandler.new(cqrs.event_store),
-        HappyHourCreated
       )
       cqrs.register_command(
         AddProductToHappyHour,
