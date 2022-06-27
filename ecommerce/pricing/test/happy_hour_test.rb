@@ -12,7 +12,7 @@ module Pricing
       @end_hour = 18
       @product_ids = []
       @data = {
-        id: @uid,
+        happy_hour_id: @uid,
         name: fake_name,
         code: @code,
         discount: @discount,
