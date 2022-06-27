@@ -152,10 +152,7 @@ module Pricing
     def call(cmd)
       happy_hour_id = cmd.id || SecureRandom.uuid
       helper = Pricing::Helpers::HappyHoursForProduct.new(@event_store)
-      details = cmd.details
-      overlapping_products = helper.products_with_overlapping_happy_hours(
-        details.product_ids, details.start_hour, details.end_hour
-      )
+      overlapping_products = helper.products_with_overlapping_happy_hours(cmd.product_ids, cmd.start_hour, cmd.end_hour)
 
       if overlapping_products.present?
         raise OverlappingHappyHours.new(
@@ -164,7 +161,7 @@ module Pricing
       end
 
       @repository.with_aggregate(HappyHour, happy_hour_id) do |happy_hour|
-        happy_hour.create(**details.to_h.slice(:name, :code, :discount, :start_hour, :end_hour, :product_ids))
+        happy_hour.create(**cmd.to_h.slice(:name, :code, :discount, :start_hour, :end_hour, :product_ids))
       end
     end
   end

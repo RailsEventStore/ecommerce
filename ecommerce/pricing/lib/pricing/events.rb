@@ -13,7 +13,12 @@ module Pricing
 
   class HappyHourCreated < Infra::Event
     attribute :id, Infra::Types::UUID
-    attribute :details, Infra::Types::HappyHourDetails
+    attribute :product_ids, Infra::Types::Array.of(Infra::Types::UUID)
+    attribute :name, Infra::Types::String
+    attribute :code, Infra::Types::String
+    attribute :discount, Infra::Types::HappyHourDiscount
+    attribute :start_hour, Infra::Types::Hour
+    attribute :end_hour, Infra::Types::Hour
   end
 
   class ProductAddedToHappyHour < Infra::Event
