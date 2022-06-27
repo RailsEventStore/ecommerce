@@ -4,21 +4,19 @@ class HappyHoursController < ApplicationController
   end
 
   def new
+    @happy_hour_id = SecureRandom.uuid
     @products = Products::Product.all
   end
 
   def create
     create_happy_hour(
       **params.permit(
-        :name, :code, :discount, :start_hour, :end_hour, product_ids: []
+        :happy_hour_id, :name, :code, :discount, :start_hour, :end_hour, product_ids: []
       )
     )
   rescue Pricing::HappyHour::AlreadyCreated
-    flash[:alert] = "Happy hour with generated id is already created (not useful to the user)"
-    @products = Products::Product.all
-    render "new"
-  rescue Pricing::OverlappingHappyHours => e
-    flash[:alert] = e.message
+    flash[:alert] = "Happy hour is already created"
+    @happy_hour_id = SecureRandom.uuid
     @products = Products::Product.all
     render "new"
   else
