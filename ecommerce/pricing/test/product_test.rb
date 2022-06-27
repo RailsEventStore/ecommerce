@@ -16,24 +16,24 @@ module Pricing
       start_hour = 15
       end_hour = 18
 
-      add_product_to_happy_hour(product_id, discount_in_percent, start_hour, end_hour)
+      create_happy_hour(product_id, discount_in_percent, start_hour, end_hour)
     end
 
     def test_can_add_more_happy_hours
       product_id = SecureRandom.uuid
 
-      add_product_to_happy_hour(product_id, 50, 12, 15)
-      add_product_to_happy_hour(product_id, 30, 15, 18)
-      add_product_to_happy_hour(product_id, 10, 18, 20)
+      create_happy_hour(product_id, 50, 12, 15)
+      create_happy_hour(product_id, 30, 15, 18)
+      create_happy_hour(product_id, 10, 18, 20)
     end
 
     def test_cannot_add_overlapping_happy_hours
       product_id = SecureRandom.uuid
 
-      add_product_to_happy_hour(product_id, 50, 12, 15)
+      create_happy_hour(product_id, 50, 12, 15)
 
       assert_raises Pricing::Product::OverlappingHappyHour do
-        add_product_to_happy_hour(product_id, 50, 13, 16)
+        create_happy_hour(product_id, 50, 13, 16)
       end
     end
 
@@ -43,9 +43,9 @@ module Pricing
       run_command(SetPrice.new(product_id: product_id, price: amount))
     end
 
-    def add_product_to_happy_hour(product_id, discount, start_hour, end_hour)
+    def create_happy_hour(product_id, discount, start_hour, end_hour)
       run_command(
-        AddProductToHappyHour.new(
+        CreateHappyHour.new(
           product_id: product_id,
           discount: discount,
           start_hour: start_hour,
