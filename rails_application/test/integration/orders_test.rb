@@ -115,63 +115,6 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     assert_select("dd", "Cancelled")
   end
 
-  def test_have_happy_hour_applied
-    shopify_id = SecureRandom.uuid
-    run_command(
-      Crm::RegisterCustomer.new(customer_id: shopify_id, name: "Shopify")
-    )
-
-    order_id = SecureRandom.uuid
-
-    async_remote_id = SecureRandom.uuid
-    run_command(
-      ProductCatalog::RegisterProduct.new(
-        product_id: async_remote_id,
-        name: "Async Remote"
-      )
-    )
-    run_command(Pricing::SetPrice.new(product_id: async_remote_id, price: 39))
-
-    run_command(
-      Pricing::CreateHappyHour.new(
-        details: {
-          name: "Night Owls",
-          code: "owls",
-          discount: "25",
-          start_hour: "20",
-          end_hour: "2",
-          product_ids: [async_remote_id]
-        }
-      )
-    )
-
-    timestamp = DateTime.new(2021, 11, 24, 01, 04, 44).utc
-
-    travel_to(timestamp) do
-      get "/"
-      get "/orders/new"
-      post "/orders/#{order_id}/add_item?product_id=#{async_remote_id}"
-      follow_redirect!
-      assert_select("td", "Before discounts")
-      assert_select("td#before-discounts-value", "$39.00")
-      assert_select("td", "After happy hour discounts")
-      assert_select("td#happy-hour-value", "$29.25")
-
-      post "/orders",
-          params: {
-            "authenticity_token" => "[FILTERED]",
-            "order_id" => order_id,
-            "customer_id" => shopify_id,
-            "commit" => "Submit order"
-          }
-      follow_redirect!
-      assert_select("td", "Before discounts")
-      assert_select("td", "$39.00")
-      assert_select("td", "After happy hour discounts")
-      assert_select("td", "$29.25")
-    end
-  end
-
   private
 
   def assert_res_browser_order_history
