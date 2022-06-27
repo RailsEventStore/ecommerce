@@ -17,7 +17,6 @@ module Infra
     Value = Types::Coercible::Decimal
     PercentageDiscount = Types::Coercible::Decimal.constrained(gt: 0, lteq: 100)
     CouponDiscount = Types::Coercible::Float.constrained(gt: 0, lteq: 100)
-    HappyHourDiscount = Types::Coercible::Integer.constrained(gt: 0, lteq: 100)
     UUIDQuantityHash = Types::Hash.map(UUID, Quantity)
     Hour = Types::Coercible::Integer.constrained(lt: 24)
 
