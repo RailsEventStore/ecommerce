@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_05_28_213429) do
+ActiveRecord::Schema[7.0].define(version: 2022_05_19_094635) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -69,19 +69,6 @@ ActiveRecord::Schema[7.0].define(version: 2022_05_28_213429) do
     t.index ["created_at"], name: "index_event_store_events_in_streams_on_created_at"
     t.index ["stream", "event_id"], name: "index_event_store_events_in_streams_on_stream_and_event_id", unique: true
     t.index ["stream", "position"], name: "index_event_store_events_in_streams_on_stream_and_position", unique: true
-  end
-
-  create_table "happy_hours", force: :cascade do |t|
-    t.uuid "uid", null: false
-    t.string "name"
-    t.string "code"
-    t.integer "discount"
-    t.integer "start_hour"
-    t.integer "end_hour"
-    t.string "product_ids", array: true
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["uid"], name: "index_happy_hours_on_uid", unique: true
   end
 
   create_table "invoice_items", force: :cascade do |t|
