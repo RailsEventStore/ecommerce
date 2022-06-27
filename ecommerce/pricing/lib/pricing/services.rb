@@ -147,9 +147,7 @@ module Pricing
     end
 
     def call(cmd)
-      happy_hour_id = cmd.id || SecureRandom.uuid
-
-      @repository.with_aggregate(HappyHour, happy_hour_id) do |happy_hour|
+      @repository.with_aggregate(HappyHour, cmd.happy_hour_id) do |happy_hour|
         happy_hour.create(**cmd.to_h.slice(:name, :code, :discount, :start_hour, :end_hour, :product_ids))
       end
     end
