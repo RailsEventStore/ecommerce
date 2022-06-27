@@ -3,3 +3,7 @@ source "https://rubygems.org"
 eval_gemfile "../../infra/Gemfile.test"
 gem "infra", path: "../../infra"
 gem "math", path: "../../math"
+
+group :test do
+  gem "timecop"
+end
