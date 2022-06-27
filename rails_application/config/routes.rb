@@ -25,9 +25,9 @@ Rails.application.routes.draw do
     resources :supplies, only: [:new, :create]
   end
 
-  resources :coupons, only: [:new, :show, :create, :index]
-  resources :happy_hours, only: [:new, :show, :create, :index]
+  resources :coupons, only: [:new, :show, :create, :index] do
 
+  end
   resources :customers, only: [:new, :create, :index, :update]
 
   resources :clients, only: :index do
