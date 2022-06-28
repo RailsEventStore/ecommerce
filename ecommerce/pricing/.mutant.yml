@@ -7,7 +7,6 @@ matcher:
   subjects:
     - Pricing*
   ignore:
-    - Pricing::SetPriceHandler#call
     - Pricing::Configuration*
     - Pricing::OnCalculateTotalValue#last_discount_order_event
     - Pricing::SetPercentageDiscountHandler#last_event
