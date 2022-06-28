@@ -54,7 +54,7 @@ module Processes
 
     def item_added_to_basket(order_id, product_id, times)
       times.times.collect do
-        Ordering::ItemAddedToBasket.new(
+        Pricing::PriceItemAdded.new(
           data: {
             order_id: order_id,
             product_id: product_id
@@ -65,7 +65,7 @@ module Processes
 
     def item_removed_from_basket(order_id, product_id, times)
       times.times.collect do
-        Ordering::ItemRemovedFromBasket.new(
+        Pricing::PriceItemRemoved.new(
           data: {
             order_id: order_id,
             product_id: product_id
