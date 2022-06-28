@@ -13,12 +13,14 @@ module Pricing
       @product_ids = []
       @data = {
         id: @uid,
-        name: fake_name,
-        code: @code,
-        discount: @discount,
-        start_hour: @start_hour,
-        end_hour: @end_hour,
-        product_ids: @product_ids
+        details: {
+          name: fake_name,
+          code: @code,
+          discount: @discount,
+          start_hour: @start_hour,
+          end_hour: @end_hour,
+          product_ids: @product_ids
+        }
       }
       @stream = "Pricing::HappyHour$#{@uid}"
       @event = HappyHourCreated.new(data: @data)

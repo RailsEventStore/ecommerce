@@ -15,7 +15,10 @@ module Pricing
       raise AlreadyCreated if @created
 
       apply HappyHourCreated.new(
-        data: kwargs.merge(id: @id)
+        data: {
+          id: @id,
+          details: kwargs
+        }
       )
     end
 
