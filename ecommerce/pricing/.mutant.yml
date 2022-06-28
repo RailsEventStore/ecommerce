@@ -15,5 +15,8 @@ matcher:
     - Pricing::ChangePercentageDiscountHandler#initialize
     - Pricing::OnRemoveItemFromBasket#initialize
     - Pricing::Discounts::NoPercentageDiscount#discount
+    - Pricing::Order#calculate_sub_amounts
     - Pricing::Product::HappyHoursSchedule#create_schedule_from
+    - Pricing::Helpers::HappyHoursForProduct*
+    - Pricing::CreateHappyHourHandler*
     - Pricing::Test*
