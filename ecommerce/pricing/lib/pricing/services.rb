@@ -141,14 +141,14 @@ module Pricing
     end
   end
 
-  class CreateHappyHourHandler
+  class AddProductToHappyHourHandler
     def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)
     end
 
     def call(cmd)
       @repository.with_aggregate(Product, cmd.product_id) do |product|
-        product.create_happy_hour(cmd.discount, cmd.start_hour, cmd.end_hour)
+        product.add_product_to_happy_hour(cmd.discount, cmd.start_hour, cmd.end_hour)
       end
     end
   end
