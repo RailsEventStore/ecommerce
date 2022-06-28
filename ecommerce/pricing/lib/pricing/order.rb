@@ -101,7 +101,7 @@ module Pricing
 
     def calculate_value_with_happy_hours(product_id, pricing_catalog, happy_hours)
       catalog_price = pricing_catalog.price_for(product_id)
-      happy_hour_discount = happy_hours.discount_for(product_id, Time.now.utc.hour).to_i
+      happy_hour_discount = happy_hours.discount_for(product_id, current_time).to_i
       discount_object =
         if happy_hour_discount.positive?
           Discounts::PercentageDiscount.new(happy_hour_discount)
@@ -110,6 +110,10 @@ module Pricing
         end
 
       discount_object.apply(catalog_price)
+    end
+
+    def current_time
+      Time.now.utc.hour
     end
   end
 end
