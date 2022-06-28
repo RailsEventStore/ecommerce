@@ -92,9 +92,9 @@ module Pricing
             cqrs.run(
               Pricing::AddProductToHappyHour.new(
                 product_id: product_id,
-                discount: data.details[:discount],
-                start_hour: data.details[:start_hour],
-                end_hour: data.details[:end_hour]
+                discount: data[:discount],
+                start_hour: data[:start_hour],
+                end_hour: data[:end_hour]
               )
             )
           end
