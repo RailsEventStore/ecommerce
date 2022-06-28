@@ -9,6 +9,7 @@ require_relative "pricing/order"
 require_relative "pricing/product"
 require_relative "pricing/pricing_catalog"
 require_relative "pricing/happy_hours"
+require_relative "pricing/helpers/happy_hours_for_product"
 
 module Pricing
   class Configuration
