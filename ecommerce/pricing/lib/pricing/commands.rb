@@ -52,6 +52,17 @@ module Pricing
     alias aggregate_id coupon_id
   end
 
+  class CreateHappyHour < Infra::Command
+    attribute :happy_hour_id, Infra::Types::UUID
+    attribute :product_ids, Infra::Types::Array.of(Infra::Types::UUID)
+    attribute :name, Infra::Types::String
+    attribute :code, Infra::Types::String
+    attribute :discount, Infra::Types::PercentageDiscount
+    attribute :start_hour, Infra::Types::Hour
+    attribute :end_hour, Infra::Types::Hour
+    alias aggregate_id happy_hour_id
+  end
+
   class ChangePercentageDiscount < Infra::Command
     attribute :order_id, Infra::Types::UUID
     attribute :amount, Infra::Types::PercentageDiscount
