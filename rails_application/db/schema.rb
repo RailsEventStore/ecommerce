@@ -71,8 +71,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_05_28_213429) do
     t.index ["stream", "position"], name: "index_event_store_events_in_streams_on_stream_and_position", unique: true
   end
 
-  create_table "happy_hours", force: :cascade do |t|
-    t.uuid "uid", null: false
+  create_table "happy_hours", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "name"
     t.string "code"
     t.integer "discount"
@@ -81,7 +80,6 @@ ActiveRecord::Schema[7.0].define(version: 2022_05_28_213429) do
     t.string "product_ids", array: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["uid"], name: "index_happy_hours_on_uid", unique: true
   end
 
   create_table "invoice_items", force: :cascade do |t|
