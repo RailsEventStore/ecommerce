@@ -1,0 +1,82 @@
+<% content_for(:header) do %>
+  New Happy Hour
+<% end %>
+
+<% content_for(:actions) do %>
+  <%= secondary_action_button do %>
+    <%= link_to 'Back', happy_hours_path %>
+  <% end %>
+
+  <%= primary_form_action_button do %>
+    Create Happy Hour
+  <% end %>
+<% end %>
+
+<%= form_tag({ controller: "happy_hours", action: "create" }, method: "post", id: "form") do %>
+  <%= hidden_field_tag(:happy_hour_id, @happy_hour_id) %>
+
+  <label for="name" class="block font-bold">
+    Name
+  </label>
+  <%= text_field_tag :name, "",
+    id: "name",
+    required: true,
+    class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
+  %>
+
+  <label for="code" class="block font-bold">
+    Code
+  </label>
+  <%= text_field_tag :code, "",
+    id: "code",
+    required: true,
+    class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
+  %>
+
+  <label for="discount" class="block font-bold">
+    Discount
+  </label>
+  <%= number_field_tag :discount, nil,
+    min: 1,
+    max: 100,
+    step: 0.01,
+    id: "discount",
+    required: true,
+    class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
+  %>
+
+  <label for="start_hour" class="block font-bold">
+    Start hour
+  </label>
+  <%= number_field_tag :start_hour, nil,
+    min: 0,
+    max: 23,
+    step: 1,
+    id: "start_hour",
+    required: true,
+    class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
+  %>
+
+  <label for="end_hour" class="block font-bold">
+    End hour
+  </label>
+  <%= number_field_tag :end_hour, nil,
+    min: 0,
+    max: 23,
+    step: 1,
+    id: "end_hour",
+    required: true,
+    class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
+  %>
+
+  <label for="products" class="block font-bold">
+    Discounted products
+  </label>
+  <%= select_tag(:product_ids,  options_from_collection_for_select(@products, :id, :name),
+    id: "products",
+    required: true,
+    multiple: true,
+    size: 5,
+    class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-sm sm:text-sm border-gray-300 rounded-md")
+  %>
+<% end %>
