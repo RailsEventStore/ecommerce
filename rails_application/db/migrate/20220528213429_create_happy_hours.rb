@@ -1,7 +1,6 @@
 class CreateHappyHours < ActiveRecord::Migration[7.0]
   def change
-    create_table :happy_hours do |t|
-      t.uuid :uid, null: false
+    create_table :happy_hours, id: :uuid, default: -> { "gen_random_uuid()" } do |t|
       t.string :name
       t.string :code
       t.integer :discount
@@ -11,7 +10,5 @@ class CreateHappyHours < ActiveRecord::Migration[7.0]
 
       t.timestamps
     end
-
-    add_index :happy_hours, :uid, unique: true
   end
 end
