@@ -11,8 +11,6 @@ matcher:
     - Pricing::Configuration*
     - Pricing::OnCalculateTotalValue#last_discount_order_event
     - Pricing::SetPercentageDiscountHandler#last_event
-    - Pricing::Order#remove_item
-    - Pricing::OnRemoveItemFromBasket#call
     - Pricing::SetPercentageDiscountHandler#initialize
     - Pricing::ResetPercentageDiscountHandler#initialize
     - Pricing::ChangePercentageDiscountHandler#initialize

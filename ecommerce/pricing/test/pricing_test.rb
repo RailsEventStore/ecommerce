@@ -338,20 +338,6 @@ module Pricing
 
     private
 
-    def set_price(product_id, amount)
-      run_command(SetPrice.new(product_id: product_id, price: amount))
-    end
-
-    def add_item(order_id, product_id)
-      run_command(
-        AddPriceItem.new(order_id: order_id, product_id: product_id)
-      )
-    end
-
-    def calculate_total_value(order_id)
-      run_command(CalculateTotalValue.new(order_id: order_id))
-    end
-
     def calculate_sub_amounts(order_id)
       run_command(CalculateSubAmounts.new(order_id: order_id))
     end
