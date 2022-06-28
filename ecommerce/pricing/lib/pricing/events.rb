@@ -31,6 +31,7 @@ module Pricing
   class OrderTotalValueCalculated < Infra::Event
     attribute :order_id, Infra::Types::UUID
     attribute :discounted_amount, Infra::Types::Value
+    attribute :happy_hour_amount, Infra::Types::Value
     attribute :total_amount, Infra::Types::Value
   end
 
