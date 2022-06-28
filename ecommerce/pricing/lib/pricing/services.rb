@@ -213,7 +213,7 @@ module Pricing
 
     def call(command)
       pricing_catalog = PricingCatalog.new(@event_store)
-      happy_hours = Pricing::Helpers::HappyHoursForProduct.new(@event_store)
+      happy_hours = Helpers::HappyHoursForProduct.new(@event_store)
       percentage_discount = build_percentage_discount(command.order_id)
       @repository.with_aggregate(Order, command.aggregate_id) do |order|
         order.calculate_total_value(pricing_catalog, percentage_discount, happy_hours)
@@ -222,7 +222,7 @@ module Pricing
 
     def calculate_sub_amounts(command)
       pricing_catalog = PricingCatalog.new(@event_store)
-      happy_hours = Pricing::Helpers::HappyHoursForProduct.new(@event_store)
+      happy_hours = Helpers::HappyHoursForProduct.new(@event_store)
       percentage_discount = build_percentage_discount(command.order_id)
       @repository.with_aggregate(Order, command.aggregate_id) do |order|
         order.calculate_sub_amounts(pricing_catalog, percentage_discount, happy_hours)
