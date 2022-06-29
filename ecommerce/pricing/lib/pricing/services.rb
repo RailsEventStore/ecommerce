@@ -151,7 +151,7 @@ module Pricing
 
     def call(cmd)
       happy_hour_id = cmd.id || SecureRandom.uuid
-      helper = Pricing::Helpers::HappyHoursForProduct.new(@event_store)
+      helper = Helpers::HappyHoursForProduct.new(@event_store)
       details = cmd.details
       overlapping_products = helper.products_with_overlapping_happy_hours(
         details.product_ids, details.start_hour, details.end_hour
