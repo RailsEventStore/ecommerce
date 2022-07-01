@@ -20,6 +20,10 @@ module Processes
       assert_equal(@command_bus.received, command)
     end
 
+    def assert_all_commands(*commands)
+      assert_equal(@command_bus.all_received, commands)
+    end
+
     def assert_no_command
       assert_nil(@command_bus.received)
     end
@@ -27,10 +31,11 @@ module Processes
     private
 
     class FakeCommandBus
-      attr_reader :received
+      attr_reader :received, :all_received
 
       def call(command)
         @received = command
+        @all_received = @all_received ? @all_received << command : [command]
       end
     end
 
