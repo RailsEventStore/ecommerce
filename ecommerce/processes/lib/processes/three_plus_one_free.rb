@@ -38,24 +38,22 @@ module Processes
     end
 
     class ProcessState
-      attr_reader :order_id, :current_free_product
+      attr_reader :order_id, :order_lines
 
       def initialize(order_id)
         @order_id = order_id
-        @basket = Ordering::Order::Basket.new
+        @order_lines = Hash.new(0)
       end
 
       def call(event)
+        product_id = event.data.fetch(:product_id)
         case event
         when Pricing::PriceItemAdded
-          @basket.increase_quantity(event.data.fetch(:product_id))
+          order_lines[product_id] += 1
         when Pricing::PriceItemRemoved
-          @basket.decrease_quantity(event.data.fetch(:product_id))
+          order_lines[product_id] -= 1
+          order_lines.delete(product_id) if order_lines.fetch(product_id) <= 0
         end
-      end
-
-      def order_lines
-        @basket.order_lines
       end
 
       def total_quantity
