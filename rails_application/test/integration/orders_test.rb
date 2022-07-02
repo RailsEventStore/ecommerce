@@ -145,6 +145,9 @@ class OrdersTest < InMemoryRESIntegrationTestCase
 
     post "/orders/#{order_id}/update_discount?amount=10"
     follow_redirect!
-    assert_select("td", "$123.30")
+    assert_select("td", "Before discounts")
+    assert_select("td#before-discounts-value", "$137.00")
+    assert_select("td", "Total")
+    assert_select("td#after-discounts-value", "$123.30")
   end
 end
