@@ -25,32 +25,28 @@ module Pricing
       )
     end
 
-    def calculate_total_value(pricing_catalog, percentage_discount, happy_hours)
+    def calculate_total_value(pricing_catalog, percentage_discount)
       total_value = @product_ids.sum { |product_id| pricing_catalog.price_for(product_id) }
-      happy_hour_value = @product_ids.sum do |product_id|
-        calculate_value_with_happy_hours(product_id, pricing_catalog, happy_hours)
-      end
 
-      discounted_value = percentage_discount.apply(happy_hour_value)
+      discounted_value = percentage_discount.apply(total_value)
       apply(
         OrderTotalValueCalculated.new(
           data: {
             order_id: @id,
             total_amount: total_value,
-            happy_hour_amount: happy_hour_value,
             discounted_amount: discounted_value
           }
         )
       )
     end
 
-    def calculate_sub_amounts(pricing_catalog, percentage_discount, happy_hours)
+    def calculate_sub_amounts(pricing_catalog, percentage_discount)
       return if @product_ids.empty?
 
       sub_amounts_total = product_quantity_hash.map do |product_id, quantity|
         quantity * pricing_catalog.price_for(product_id)
       end
-      sub_discounts = calculate_total_sub_discounts(pricing_catalog, percentage_discount, happy_hours)
+      sub_discounts = calculate_total_sub_discounts(pricing_catalog, percentage_discount)
 
       product_ids = product_quantity_hash.keys
       quantities = product_quantity_hash.values
@@ -89,31 +85,13 @@ module Pricing
       @product_quantity_hash ||= @product_ids.tally
     end
 
-    def calculate_total_sub_discounts(pricing_catalog, percentage_discount, happy_hours)
+    def calculate_total_sub_discounts(pricing_catalog, percentage_discount)
       product_quantity_hash.map do |product_id, quantity|
         catalog_price_for_single = pricing_catalog.price_for(product_id)
-        happy_hours_single = calculate_value_with_happy_hours(product_id, pricing_catalog, happy_hours)
-        with_total_discount_single = percentage_discount.apply(happy_hours_single)
+        with_total_discount_single = percentage_discount.apply(catalog_price_for_single)
 
         quantity * (catalog_price_for_single - with_total_discount_single)
       end
-    end
-
-    def calculate_value_with_happy_hours(product_id, pricing_catalog, happy_hours)
-      catalog_price = pricing_catalog.price_for(product_id)
-      happy_hour_discount = happy_hours.discount_for(product_id, current_time).to_i
-      discount_object =
-        if happy_hour_discount.positive?
-          Discounts::PercentageDiscount.new(happy_hour_discount)
-        else
-          Discounts::NoPercentageDiscount.new
-        end
-
-      discount_object.apply(catalog_price)
-    end
-
-    def current_time
-      Time.now.utc.hour
     end
   end
 end

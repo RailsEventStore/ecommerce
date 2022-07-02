@@ -10,7 +10,6 @@ module Pricing
       @discount = 20
       @start_hour = 13
       @end_hour = 18
-      @product_ids = []
       @data = {
         id: @uid,
         details: {
@@ -18,8 +17,7 @@ module Pricing
           code: @code,
           discount: @discount,
           start_hour: @start_hour,
-          end_hour: @end_hour,
-          product_ids: @product_ids
+          end_hour: @end_hour
         }
       }
       @stream = "Pricing::HappyHour$#{@uid}"

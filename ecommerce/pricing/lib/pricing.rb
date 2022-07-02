@@ -64,11 +64,6 @@ module Pricing
         CreateHappyHourHandler.new(cqrs.event_store),
         HappyHourCreated
       )
-      cqrs.register_command(
-        AddProductToHappyHour,
-        AddProductToHappyHourHandler.new(cqrs.event_store),
-        ProductAddedToHappyHour
-      )
       cqrs.subscribe(
         ->(event) do
           cqrs.run(
@@ -83,24 +78,6 @@ module Pricing
           PercentageDiscountSet,
           PercentageDiscountReset,
           PercentageDiscountChanged
-        ]
-      )
-      cqrs.subscribe(
-        ->(event) do
-          data = event.data[:details]
-          data[:product_ids].each do |product_id|
-            cqrs.run(
-              Pricing::AddProductToHappyHour.new(
-                product_id: product_id,
-                discount: data[:discount],
-                start_hour: data[:start_hour],
-                end_hour: data[:end_hour]
-              )
-            )
-          end
-        end,
-        [
-          HappyHourCreated
         ]
       )
     end

@@ -16,7 +16,6 @@ module Pricing
           data: {
             order_id: order_id,
             discounted_amount: 20,
-            happy_hour_amount: 20,
             total_amount: 20
           }
         )
@@ -28,7 +27,6 @@ module Pricing
           data: {
             order_id: order_id,
             discounted_amount: 0,
-            happy_hour_amount: 0,
             total_amount: 0
           }
         )
