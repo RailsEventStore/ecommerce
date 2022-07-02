@@ -16,7 +16,6 @@
     <th class="text-left py-2">Discount %</th>
     <th class="text-left py-2">Start Hour</th>
     <th class="text-left py-2">End Hour</th>
-    <th class="text-left py-2 w-1/2">Products discounted</th>
   </tr>
   </thead>
 
@@ -28,7 +27,6 @@
       <td class="py-2"><%= happy_hour.discount %></td>
       <td class="py-2"><%= happy_hour.start_hour %></td>
       <td class="py-2"><%= happy_hour.end_hour %></td>
-      <td class="py-2"><%= product_names_for(happy_hour) %></td>
     </tr>
   <% end %>
   </tbody>

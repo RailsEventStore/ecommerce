@@ -16,17 +16,9 @@ module Pricing
     attribute :details, Infra::Types::HappyHourDetails
   end
 
-  class ProductAddedToHappyHour < Infra::Event
-    attribute :product_id, Infra::Types::UUID
-    attribute :discount, Infra::Types::PercentageDiscount
-    attribute :start_hour, Infra::Types::Hour
-    attribute :end_hour, Infra::Types::Hour
-  end
-
   class OrderTotalValueCalculated < Infra::Event
     attribute :order_id, Infra::Types::UUID
     attribute :discounted_amount, Infra::Types::Value
-    attribute :happy_hour_amount, Infra::Types::Value
     attribute :total_amount, Infra::Types::Value
   end
 

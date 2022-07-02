@@ -46,7 +46,6 @@ module Infra
       attribute :discount, Infra::Types::HappyHourDiscount
       attribute :start_hour, Infra::Types::Hour
       attribute :end_hour, Infra::Types::Hour
-      attribute :product_ids, Infra::Types::Array.of(Infra::Types::UUID)
     end
   end
 end

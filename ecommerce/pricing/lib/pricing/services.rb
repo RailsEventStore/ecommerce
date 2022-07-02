@@ -151,32 +151,10 @@ module Pricing
 
     def call(cmd)
       happy_hour_id = cmd.id || SecureRandom.uuid
-      helper = Helpers::HappyHoursForProduct.new(@event_store)
       details = cmd.details
-      overlapping_products = helper.products_with_overlapping_happy_hours(
-        details.product_ids, details.start_hour, details.end_hour
-      )
-
-      if overlapping_products.present?
-        raise OverlappingHappyHours.new(
-          "Products with following ids do already have happy hours in given range: #{overlapping_products}"
-        )
-      end
 
       @repository.with_aggregate(HappyHour, happy_hour_id) do |happy_hour|
-        happy_hour.create(**details.to_h.slice(:name, :code, :discount, :start_hour, :end_hour, :product_ids))
-      end
-    end
-  end
-
-  class AddProductToHappyHourHandler
-    def initialize(event_store)
-      @repository = Infra::AggregateRootRepository.new(event_store)
-    end
-
-    def call(cmd)
-      @repository.with_aggregate(Product, cmd.product_id) do |product|
-        product.add_product_to_happy_hour(cmd.discount, cmd.start_hour, cmd.end_hour)
+        happy_hour.create(**details.to_h.slice(:name, :code, :discount, :start_hour, :end_hour))
       end
     end
   end
@@ -213,19 +191,17 @@ module Pricing
 
     def call(command)
       pricing_catalog = PricingCatalog.new(@event_store)
-      happy_hours = Helpers::HappyHoursForProduct.new(@event_store)
       percentage_discount = build_percentage_discount(command.order_id)
       @repository.with_aggregate(Order, command.aggregate_id) do |order|
-        order.calculate_total_value(pricing_catalog, percentage_discount, happy_hours)
+        order.calculate_total_value(pricing_catalog, percentage_discount)
       end
     end
 
     def calculate_sub_amounts(command)
       pricing_catalog = PricingCatalog.new(@event_store)
-      happy_hours = Helpers::HappyHoursForProduct.new(@event_store)
       percentage_discount = build_percentage_discount(command.order_id)
       @repository.with_aggregate(Order, command.aggregate_id) do |order|
-        order.calculate_sub_amounts(pricing_catalog, percentage_discount, happy_hours)
+        order.calculate_sub_amounts(pricing_catalog, percentage_discount)
       end
     end
 

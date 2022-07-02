@@ -66,15 +66,4 @@
     required: true,
     class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
   %>
-
-  <label for="products" class="block font-bold">
-    Discounted products
-  </label>
-  <%= select_tag(:product_ids,  options_from_collection_for_select(@products, :id, :name),
-    id: "products",
-    required: true,
-    multiple: true,
-    size: 5,
-    class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-sm sm:text-sm border-gray-300 rounded-md")
-  %>
 <% end %>
