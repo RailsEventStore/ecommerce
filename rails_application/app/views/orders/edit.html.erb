@@ -65,7 +65,7 @@
   <% end %>
     <tr class="border-t">
       <td class="py-2" colspan="3">Total</td>
-      <td class="py-2 font-bold"><%= number_to_currency(@order.discounted_value) %></td>
+      <td class="py-2 font-bold" id="after-discounts-value"><%= number_to_currency(@order.discounted_value) %></td>
     </tr>
   </tfoot>
 </table>
