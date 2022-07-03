@@ -153,7 +153,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_07_03_133431) do
     t.boolean "submitted", default: false
   end
 
-  create_table "time_promotions", force: :cascade do |t|
+  create_table "time_promotions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.string "label"
     t.string "code"
     t.integer "discount"
