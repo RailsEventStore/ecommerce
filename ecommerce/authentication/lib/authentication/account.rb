@@ -6,7 +6,6 @@ module Authentication
 
     def initialize(id)
       @id = id
-      @login = nil
     end
 
     def register

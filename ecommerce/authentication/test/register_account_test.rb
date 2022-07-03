@@ -16,6 +16,13 @@ module Authentication
       end
     end
 
+    def test_should_not_allow_for_double_registration
+      assert_raises(Account::AlreadyRegistered) do
+        register_account(@uid)
+        register_account(@uid)
+      end
+    end
+
     private
 
     def register_account(account_id)
