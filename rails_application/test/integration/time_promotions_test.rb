@@ -60,8 +60,6 @@ class TimePromotionsTest < InMemoryRESIntegrationTestCase
       end_time: "2022-07-01 00:00:00 UTC"
     }
 
-    # Problem here - it fails intermittently, there is a race condition. Sometimes there is still not entry in DB,
-    # when discount is applied. How to solve this?
     assert_match(/Key \(code\)=\(lmj22\) already exists/, flash.now[:alert].to_s)
   end
 end
