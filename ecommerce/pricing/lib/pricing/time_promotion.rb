@@ -2,8 +2,6 @@ module Pricing
   class TimePromotion
     include AggregateRoot
 
-    AlreadyCreated = Class.new(StandardError)
-
     def initialize(id)
       @id = id
     end
