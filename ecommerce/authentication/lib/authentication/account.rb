@@ -22,6 +22,10 @@ module Authentication
       apply PasswordHashSet.new(data: { account_id: @id, password_hash: password_hash })
     end
 
+    def connect_client(client_id)
+      apply AccountConnectedToClient.new(data: { account_id: @id, client_id: client_id })
+    end
+
     on AccountRegistered do |event|
       @registered = true
     end
@@ -32,6 +36,10 @@ module Authentication
 
     on PasswordHashSet do |event|
       @password_hash = event.data[:password_hash]
+    end
+
+    on AccountConnectedToClient do |event|
+      @client_id = event.data[:client_id]
     end
   end
 end
