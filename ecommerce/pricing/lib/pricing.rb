@@ -8,7 +8,7 @@ require_relative "pricing/services"
 require_relative "pricing/order"
 require_relative "pricing/product"
 require_relative "pricing/pricing_catalog"
-require_relative "pricing/happy_hour"
+require_relative "pricing/time_promotion"
 
 module Pricing
   class Configuration
@@ -59,9 +59,19 @@ module Pricing
         CouponRegistered
       )
       cqrs.register_command(
-        CreateHappyHour,
-        CreateHappyHourHandler.new(cqrs.event_store),
-        HappyHourCreated
+        CreateTimePromotion,
+        CreateTimePromotionHandler.new(cqrs.event_store),
+        TimePromotionCreated
+      )
+      cqrs.register_command(
+        SetTimePromotionDiscount,
+        SetTimePromotionDiscountHandler.new(cqrs.event_store),
+        TimePromotionDiscountSet
+      )
+      cqrs.register_command(
+        SetTimePromotionRange,
+        SetTimePromotionRangeHandler.new(cqrs.event_store),
+        TimePromotionRangeSet
       )
       cqrs.subscribe(
         ->(event) do

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_06_07_201447) do
+ActiveRecord::Schema[7.0].define(version: 2022_07_03_133431) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -69,17 +69,6 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_07_201447) do
     t.index ["created_at"], name: "index_event_store_events_in_streams_on_created_at"
     t.index ["stream", "event_id"], name: "index_event_store_events_in_streams_on_stream_and_event_id", unique: true
     t.index ["stream", "position"], name: "index_event_store_events_in_streams_on_stream_and_position", unique: true
-  end
-
-  create_table "happy_hours", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
-    t.string "name"
-    t.string "code"
-    t.integer "discount"
-    t.integer "start_hour"
-    t.integer "end_hour"
-    t.string "product_ids", array: true
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
   end
 
   create_table "invoice_items", force: :cascade do |t|
@@ -162,6 +151,18 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_07_201447) do
   create_table "shipments_orders", force: :cascade do |t|
     t.uuid "uid", null: false
     t.boolean "submitted", default: false
+  end
+
+  create_table "time_promotions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "label"
+    t.string "code"
+    t.integer "discount"
+    t.datetime "start_time"
+    t.datetime "end_time"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.boolean "active", default: false
+    t.index ["code"], name: "index_time_promotions_on_code", unique: true
   end
 
 end

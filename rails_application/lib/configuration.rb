@@ -10,7 +10,7 @@ class Configuration
     enable_invoices_read_model(cqrs)
     enable_client_orders_read_model(cqrs)
     enable_coupons_read_model(cqrs)
-    enable_happy_hours_read_model(cqrs)
+    enable_time_promotions_read_model(cqrs)
 
     Ecommerce::Configuration.new(
       number_generator: Rails.configuration.number_generator,
@@ -56,7 +56,7 @@ class Configuration
     Coupons::Configuration.new.call(cqrs)
   end
 
-  def enable_happy_hours_read_model(cqrs)
-    HappyHours::Configuration.new.call(cqrs)
+  def enable_time_promotions_read_model(cqrs)
+    TimePromotions::Configuration.new.call(cqrs)
   end
 end

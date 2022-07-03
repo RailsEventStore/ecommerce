@@ -143,18 +143,38 @@ module Pricing
     end
   end
 
-  class CreateHappyHourHandler
+  class CreateTimePromotionHandler
     def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)
-      @event_store = event_store
     end
 
     def call(cmd)
-      happy_hour_id = cmd.id || SecureRandom.uuid
-      details = cmd.details
+      @repository.with_aggregate(TimePromotion, cmd.time_promotion_id) do |time_promotion|
+        time_promotion.create(label: cmd.label, code: cmd.code)
+      end
+    end
+  end
 
-      @repository.with_aggregate(HappyHour, happy_hour_id) do |happy_hour|
-        happy_hour.create(**details.to_h.slice(:name, :code, :discount, :start_hour, :end_hour))
+  class SetTimePromotionDiscountHandler
+    def initialize(event_store)
+      @repository = Infra::AggregateRootRepository.new(event_store)
+    end
+
+    def call(cmd)
+      @repository.with_aggregate(TimePromotion, cmd.time_promotion_id) do |time_promotion|
+        time_promotion.set_discount(discount: cmd.discount)
+      end
+    end
+  end
+
+  class SetTimePromotionRangeHandler
+    def initialize(event_store)
+      @repository = Infra::AggregateRootRepository.new(event_store)
+    end
+
+    def call(cmd)
+      @repository.with_aggregate(TimePromotion, cmd.time_promotion_id) do |time_promotion|
+        time_promotion.set_range(start_time: cmd.start_time, end_time: cmd.end_time)
       end
     end
   end

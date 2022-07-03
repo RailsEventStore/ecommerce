@@ -26,7 +26,7 @@ Rails.application.routes.draw do
   end
 
   resources :coupons, only: [:new, :show, :create, :index]
-  resources :happy_hours, only: [:new, :show, :create, :index]
+  resources :time_promotions, only: [:new, :show, :create, :index]
 
   resources :customers, only: [:new, :create, :index, :update]
 
