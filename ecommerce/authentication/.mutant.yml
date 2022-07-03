@@ -1,0 +1,10 @@
+requires:
+  - ./test/test_helper
+integration: minitest
+coverage_criteria:
+  process_abort: true
+matcher:
+  subjects:
+    - Authentication*
+  ignore:
+    - Authentication::Configuration#call
