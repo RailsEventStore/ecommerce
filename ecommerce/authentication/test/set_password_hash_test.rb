@@ -4,11 +4,6 @@ module Authentication
   class SetPasswordHashTest < Test
     cover "Authentication*"
 
-    def setup
-      @uid = SecureRandom.uuid
-      @data = { account_id: @uid }
-    end
-
     def test_password_hash_should_get_set
       account_id = SecureRandom.uuid
       password_hash = SecureRandom.hex(10)

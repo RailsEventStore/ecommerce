@@ -4,11 +4,6 @@ module Authentication
   class SetLoginTest < Test
     cover "Authentication*"
 
-    def setup
-      @uid = SecureRandom.uuid
-      @data = { account_id: @uid }
-    end
-
     def test_login_should_get_set
       account_id = SecureRandom.uuid
 
