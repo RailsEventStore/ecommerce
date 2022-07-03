@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_07_03_123059) do
+ActiveRecord::Schema[7.0].define(version: 2022_07_03_133431) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -161,6 +161,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_07_03_123059) do
     t.datetime "end_time"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "active", default: false
+    t.index ["code"], name: "index_time_promotions_on_code", unique: true
   end
 
 end

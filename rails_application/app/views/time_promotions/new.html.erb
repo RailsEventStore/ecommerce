@@ -1,23 +1,23 @@
 <% content_for(:header) do %>
-  New Happy Hour
+  New Time Promotion
 <% end %>
 
 <% content_for(:actions) do %>
   <%= secondary_action_button do %>
-    <%= link_to 'Back', happy_hours_path %>
+    <%= link_to 'Back', time_promotions_path %>
   <% end %>
 
   <%= primary_form_action_button do %>
-    Create Happy Hour
+    Create Time Promotion
   <% end %>
 <% end %>
 
-<%= form_tag({ controller: "happy_hours", action: "create" }, method: "post", id: "form") do %>
-  <label for="name" class="block font-bold">
-    Name
+<%= form_tag({ controller: "time_promotions", action: "create" }, method: "post", id: "form") do %>
+  <label for="label" class="block font-bold">
+    Label
   </label>
-  <%= text_field_tag :name, "",
-    id: "name",
+  <%= text_field_tag :label, "",
+    id: "label",
     required: true,
     class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
   %>
@@ -43,27 +43,19 @@
     class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
   %>
 
-  <label for="start_hour" class="block font-bold">
-    Start hour
+  <label for="start_time" class="block font-bold">
+    Start time
   </label>
-  <%= number_field_tag :start_hour, nil,
-    min: 0,
-    max: 23,
-    step: 1,
-    id: "start_hour",
-    required: true,
+  <%= datetime_field_tag :start_time, nil,
+    id: "start_time",
     class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
   %>
 
-  <label for="end_hour" class="block font-bold">
-    End hour
+  <label for="end_time" class="block font-bold">
+    End time
   </label>
-  <%= number_field_tag :end_hour, nil,
-    min: 0,
-    max: 23,
-    step: 1,
-    id: "end_hour",
-    required: true,
+  <%= datetime_field_tag :end_time, nil,
+    id: "end_time",
     class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
   %>
 <% end %>

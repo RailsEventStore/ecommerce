@@ -45,9 +45,25 @@ module Pricing
     alias aggregate_id coupon_id
   end
 
-  class CreateHappyHour < Infra::Command
-    attribute :id, Infra::Types::UUID.meta(omittable: true)
-    attribute :details, Infra::Types::HappyHourDetails
+  class CreateTimePromotion < Infra::Command
+    attribute :time_promotion_id, Infra::Types::UUID.meta(omittable: true)
+    attribute :label, Infra::Types::String
+    attribute :code, Infra::Types::String
+  end
+
+  class SetTimePromotionDiscount < Infra::Command
+    attribute :time_promotion_id, Infra::Types::UUID
+    attribute :discount, Infra::Types::PercentageDiscount
+  end
+
+  class SetTimePromotionRange < Infra::Command
+    attribute :time_promotion_id, Infra::Types::UUID
+    attribute :start_time, Infra::Types::Params::DateTime
+    attribute :end_time, Infra::Types::Params::DateTime
+  end
+
+  class ActivateTimePromotion < Infra::Command
+    attribute :time_promotion_id, Infra::Types::UUID
   end
 
   class ChangePercentageDiscount < Infra::Command

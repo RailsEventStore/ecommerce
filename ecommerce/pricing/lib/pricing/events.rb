@@ -11,9 +11,26 @@ module Pricing
     attribute :price, Infra::Types::Price
   end
 
-  class HappyHourCreated < Infra::Event
-    attribute :id, Infra::Types::UUID
-    attribute :details, Infra::Types::HappyHourDetails
+  class TimePromotionCreated < Infra::Event
+    attribute :time_promotion_id, Infra::Types::UUID
+    attribute :label, Infra::Types::String
+    attribute :code, Infra::Types::String
+  end
+
+  class TimePromotionDiscountSet < Infra::Event
+    attribute :time_promotion_id, Infra::Types::UUID
+    attribute :discount, Infra::Types::PercentageDiscount
+  end
+
+  class TimePromotionRangeSet < Infra::Event
+    attribute :time_promotion_id, Infra::Types::UUID
+    attribute :start_time, Infra::Types::DateTime
+    attribute :end_time, Infra::Types::DateTime
+  end
+
+  class TimePromotionActivated < Infra::Event
+    attribute :time_promotion_id, Infra::Types::UUID
+    attribute :active, Infra::Types::Bool
   end
 
   class OrderTotalValueCalculated < Infra::Event

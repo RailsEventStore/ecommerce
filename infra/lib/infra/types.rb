@@ -17,9 +17,7 @@ module Infra
     Value = Types::Coercible::Decimal
     PercentageDiscount = Types::Coercible::Decimal.constrained(gt: 0, lteq: 100)
     CouponDiscount = Types::Coercible::Float.constrained(gt: 0, lteq: 100)
-    HappyHourDiscount = Types::Coercible::Integer.constrained(gt: 0, lteq: 100)
     UUIDQuantityHash = Types::Hash.map(UUID, Quantity)
-    Hour = Types::Coercible::Integer.constrained(gteq: 0, lt: 24)
 
     class VatRate < Dry::Struct
       include Comparable
@@ -38,14 +36,6 @@ module Infra
       attribute :line_2, Types::String
       attribute :line_3, Types::String
       attribute :line_4, Types::String
-    end
-
-    class HappyHourDetails < Dry::Struct
-      attribute :name, Infra::Types::String
-      attribute :code, Infra::Types::String
-      attribute :discount, Infra::Types::HappyHourDiscount
-      attribute :start_hour, Infra::Types::Hour
-      attribute :end_hour, Infra::Types::Hour
     end
   end
 end

@@ -1,8 +1,8 @@
 require_relative "test_helper"
 
 module Pricing
-  class HappyHourTest < Test
-    cover "Pricing::HappyHour*"
+  class TimePromotionTest < Test
+    cover "Pricing::TimePromotion*"
 
     def setup
       @uid = SecureRandom.uuid
@@ -20,8 +20,8 @@ module Pricing
           end_hour: @end_hour
         }
       }
-      @stream = "Pricing::HappyHour$#{@uid}"
-      @event = HappyHourCreated.new(data: @data)
+      @stream = "Pricing::TimePromotion$#{@uid}"
+      @event = TimePromotionCreated.new(data: @data)
     end
 
     def test_happy_hour_is_created
@@ -30,18 +30,11 @@ module Pricing
       end
     end
 
-    def test_should_not_allow_for_id_based_duplicates
-      assert_raises(Pricing::HappyHour::AlreadyCreated) do
-        create_happy_hour(**@data)
-        create_happy_hour(**@data)
-      end
-    end
-
     private
 
     def create_happy_hour(**kwargs)
       run_command(
-        CreateHappyHour.new(kwargs)
+        CreateTimePromotion.new(kwargs)
       )
     end
   end
