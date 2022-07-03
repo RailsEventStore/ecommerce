@@ -24,7 +24,7 @@ module TimePromotions
     def create_time_promotion(event)
       id = event.data[:time_promotion_id]
 
-      TimePromotion.create(event.data.slice(:label, :code).merge(id: id))
+      TimePromotion.create!(event.data.slice(:label, :code).merge(id: id))
     end
 
     def set_discount(event)
