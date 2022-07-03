@@ -9,5 +9,11 @@ module Authentication
       super()
       Configuration.new.call(cqrs)
     end
+
+    private
+
+    def fake_login
+      "fake_login"
+    end
   end
 end
