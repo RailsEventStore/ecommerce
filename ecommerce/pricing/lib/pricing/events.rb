@@ -24,8 +24,8 @@ module Pricing
 
   class TimePromotionRangeSet < Infra::Event
     attribute :time_promotion_id, Infra::Types::UUID
-    attribute :start_time, Infra::Types::DateTime
-    attribute :end_time, Infra::Types::DateTime
+    attribute :start_time, Infra::Types::Params::DateTime
+    attribute :end_time, Infra::Types::Params::DateTime
   end
 
   class TimePromotionActivated < Infra::Event
