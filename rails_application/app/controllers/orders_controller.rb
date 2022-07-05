@@ -26,6 +26,7 @@ class OrdersController < ApplicationController
     @order_lines = Orders::OrderLine.where(order_uid: params[:id])
     @products = Products::Product.all
     @customers = Customers::Customer.all
+    @time_promotions = TimePromotions::TimePromotion.current
   end
 
   def edit_discount
