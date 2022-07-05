@@ -75,6 +75,22 @@ module Pricing
       def test_calculates_floats_too
         assert_equal(90.45, PercentageDiscount.new(10).apply(100.50))
       end
+
+      def test_can_add_another_discount
+        first_discount = PercentageDiscount.new(20)
+        second_discount = PercentageDiscount.new(15)
+        combined = first_discount.add(second_discount)
+
+        assert_equal(65, combined.apply(100))
+      end
+
+      def test_cannot_add_to_more_than_100
+        first_discount = PercentageDiscount.new(50)
+        second_discount = PercentageDiscount.new(65)
+        combined = first_discount.add(second_discount)
+
+        assert_equal(0, combined.apply(100))
+      end
     end
 
     class NoPercentageDiscountTest < Test

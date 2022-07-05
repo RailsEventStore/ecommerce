@@ -211,7 +211,11 @@ module Pricing
 
     def call(command)
       pricing_catalog = PricingCatalog.new(@event_store)
-      percentage_discount = build_percentage_discount(command.order_id)
+      promotions_calendar = PromotionsCalendar.new(@event_store)
+      order_discount = build_percentage_discount(command.order_id)
+      time_promotions_discount = wrap_percentage_discount(promotions_calendar.current_time_promotions_discount)
+      percentage_discount = order_discount.add(time_promotions_discount)
+
       @repository.with_aggregate(Order, command.aggregate_id) do |order|
         order.calculate_total_value(pricing_catalog, percentage_discount)
       end
@@ -219,7 +223,11 @@ module Pricing
 
     def calculate_sub_amounts(command)
       pricing_catalog = PricingCatalog.new(@event_store)
-      percentage_discount = build_percentage_discount(command.order_id)
+      promotions_calendar = PromotionsCalendar.new(@event_store)
+      order_discount = build_percentage_discount(command.order_id)
+      time_promotions_discount = wrap_percentage_discount(promotions_calendar.current_time_promotions_discount)
+      percentage_discount = order_discount.add(time_promotions_discount)
+
       @repository.with_aggregate(Order, command.aggregate_id) do |order|
         order.calculate_sub_amounts(pricing_catalog, percentage_discount)
       end
@@ -229,12 +237,9 @@ module Pricing
 
     def build_percentage_discount(order_id)
       last_event = last_discount_order_event(order_id)
-      case last_event
-      when PercentageDiscountSet, PercentageDiscountChanged
-        Discounts::PercentageDiscount.new(last_event.data.fetch(:amount))
-      else
-        Discounts::NoPercentageDiscount.new
-      end
+      amount = last_event.data.fetch(:amount) if percentage_discount_event?(last_event)
+
+      wrap_percentage_discount(amount)
     end
 
     def last_discount_order_event(order_id)
@@ -242,6 +247,14 @@ module Pricing
         .read
         .stream(@repository.stream_name(Discounts::Order, order_id))
         .last
+    end
+
+    def percentage_discount_event?(event)
+      [PercentageDiscountSet, PercentageDiscountChanged].any? { |event_type| event.instance_of?(event_type) }
+    end
+
+    def wrap_percentage_discount(amount)
+      amount&.positive? ? Discounts::PercentageDiscount.new(amount) : Discounts::NoPercentageDiscount.new
     end
   end
 

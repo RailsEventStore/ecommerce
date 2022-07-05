@@ -4,6 +4,8 @@ module Pricing
     end
 
     class PercentageDiscount
+      attr_reader :value
+
       def initialize(value)
         raise UnacceptableDiscountRange if value <= 0
         raise UnacceptableDiscountRange if value > 100
@@ -16,7 +18,13 @@ module Pricing
       end
 
       def discount(total)
-        total * @value / 100
+        total * value / 100
+      end
+
+      def add(other_discount)
+        new_value = [value + other_discount.value, 100].min
+
+        PercentageDiscount.new(new_value)
       end
     end
 
@@ -25,7 +33,15 @@ module Pricing
         total
       end
 
-      def discount(total)
+      def discount(_)
+        0
+      end
+
+      def add(other_discount)
+        other_discount
+      end
+
+      def value
         0
       end
     end
