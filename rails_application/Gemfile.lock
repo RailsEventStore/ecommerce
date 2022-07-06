@@ -15,8 +15,12 @@ PATH
       rake
 
 GEM
-  remote: https://rubygems.org/
   remote: https://oss:7AXfeZdAfCqL1PvHm2nvDJO6Zd9UW8IK@gem.mutant.dev/
+  specs:
+    mutant-license (0.1.1.2.1627430819213747598431630701693729869473.4)
+
+GEM
+  remote: https://rubygems.org/
   specs:
     actioncable (7.0.3)
       actionpack (= 7.0.3)
@@ -153,6 +157,7 @@ GEM
     marcel (1.0.2)
     method_source (1.0.0)
     mini_mime (1.1.2)
+    mini_portile2 (2.8.0)
     minitest (5.15.0)
     msgpack (1.4.2)
     mutant (0.10.34)
@@ -160,7 +165,6 @@ GEM
       parser (~> 3.0.0)
       regexp_parser (~> 2.0, >= 2.0.3)
       unparser (~> 0.6.0)
-    mutant-license (0.1.1.2.1627430819213747598431630701693729869473.4)
     mutant-minitest (0.10.34)
       minitest (~> 5.11)
       mutant (= 0.10.34)
@@ -179,6 +183,9 @@ GEM
       net-protocol
       timeout
     nio4r (2.5.8)
+    nokogiri (1.13.6)
+      mini_portile2 (~> 2.8.0)
+      racc (~> 1.4)
     nokogiri (1.13.6-arm64-darwin)
       racc (~> 1.4)
     nokogiri (1.13.6-x86_64-darwin)
@@ -211,7 +218,7 @@ GEM
     rails-dom-testing (2.0.3)
       activesupport (>= 4.2.0)
       nokogiri (>= 1.6)
-    rails-html-sanitizer (1.4.2)
+    rails-html-sanitizer (1.4.3)
       loofah (~> 2.3)
     rails_event_store (2.5.1)
       activejob (>= 3.0)
