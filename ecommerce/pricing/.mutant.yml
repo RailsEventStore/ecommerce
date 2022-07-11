@@ -15,5 +15,4 @@ matcher:
     - Pricing::ChangePercentageDiscountHandler#initialize
     - Pricing::OnRemoveItemFromBasket#initialize
     - Pricing::Discounts::NoPercentageDiscount#discount
-    - Pricing::Order#calculate_sub_amounts
     - Pricing::Test*

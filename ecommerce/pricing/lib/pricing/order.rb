@@ -41,8 +41,6 @@ module Pricing
     end
 
     def calculate_sub_amounts(pricing_catalog, percentage_discount)
-      return if @product_ids.empty?
-
       sub_amounts_total = product_quantity_hash.map do |product_id, quantity|
         quantity * pricing_catalog.price_for(product_id)
       end
