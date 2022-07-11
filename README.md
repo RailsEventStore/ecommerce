@@ -62,10 +62,9 @@ The customer perspective is "simulated" only - via using the select box.
 
 ### Read models
 
-There's only one read model - which helps us listing all the orders
-and individual order details.
+Read models live at the application level. In our case it's in the Rails app:
 
-It consists of 2 ActiveRecord classes: `Order` and `OrderItem`.
+[Read models](https://github.com/RailsEventStore/ecommerce/tree/master/rails_application/app/read_models)
 
 ### Process Managers
 
