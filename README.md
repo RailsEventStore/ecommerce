@@ -36,7 +36,7 @@ ecommerce/
 * [Processes](ecommerce/processes/README.md)
 * [Product Catalog](ecommerce/product_catalog/README.md)
 * [Shipping](ecommerce/shipping/README.md)
-* [Shipping](ecommerce/taxes/README.md)
+* [Taxes](ecommerce/taxes/README.md)
 
 ## Application
 
