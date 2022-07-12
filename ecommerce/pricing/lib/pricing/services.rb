@@ -128,21 +128,20 @@ module Pricing
     end
 
     def call(command)
-      pricing_catalog = PricingCatalog.new(@event_store)
-      promotions_calendar = PromotionsCalendar.new(@event_store)
-      time_promotions_discount = promotions_calendar.current_time_promotions_discount
-      if time_promotions_discount.zero?
-        time_percentage_discount = Discounts::NoPercentageDiscount.new
-      else
-        time_percentage_discount = Discounts::PercentageDiscount.new(time_promotions_discount)
-      end
       @repository.with_aggregate(Order, command.aggregate_id) do |order|
-        order.calculate_total_value(pricing_catalog, time_percentage_discount)
+        order.calculate_total_value(PricingCatalog.new(@event_store), time_promotions_discount)
       end
     end
 
     def calculate_sub_amounts(command)
-      pricing_catalog = PricingCatalog.new(@event_store)
+      @repository.with_aggregate(Order, command.aggregate_id) do |order|
+        order.calculate_sub_amounts(PricingCatalog.new(@event_store), time_promotions_discount)
+      end
+    end
+
+    private
+
+    def time_promotions_discount
       promotions_calendar = PromotionsCalendar.new(@event_store)
       time_promotions_discount = promotions_calendar.current_time_promotions_discount
       if time_promotions_discount.zero?
@@ -150,9 +149,7 @@ module Pricing
       else
         time_percentage_discount = Discounts::PercentageDiscount.new(time_promotions_discount)
       end
-      @repository.with_aggregate(Order, command.aggregate_id) do |order|
-        order.calculate_sub_amounts(pricing_catalog, time_percentage_discount)
-      end
+      time_percentage_discount
     end
 
   end
