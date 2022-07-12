@@ -55,10 +55,10 @@ module Pricing
       )
     end
 
-    def calculate_total_value(pricing_catalog, percentage_discount)
+    def calculate_total_value(pricing_catalog, time_promotion_discount)
       total_value = @product_ids.sum { |product_id| pricing_catalog.price_for(product_id) }
 
-      discounted_value = @discount.add(percentage_discount).apply(total_value)
+      discounted_value = @discount.add(time_promotion_discount).apply(total_value)
       apply(
         OrderTotalValueCalculated.new(
           data: {
