@@ -75,4 +75,9 @@ module Pricing
     attribute :order_id, Infra::Types::UUID
     attribute :product_id, Infra::Types::UUID
   end
+
+  class FreeProductRemovedFromOrder < Infra::Event
+    attribute :order_id, Infra::Types::UUID
+    attribute :product_id, Infra::Types::UUID
+  end
 end

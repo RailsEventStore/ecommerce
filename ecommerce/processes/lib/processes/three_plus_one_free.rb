@@ -1,6 +1,5 @@
 module Processes
   class ThreePlusOneFree
-    MIN_ORDER_LINES_QUANTITY = 4
 
     def initialize(cqrs)
       @cqrs = cqrs
@@ -8,7 +7,9 @@ module Processes
 
     def call(event)
       state = build_state(event)
-      make_product_free(state) if order_eligible_for_free_product?(state)
+      return if event_only_for_state_building?(event)
+
+      make_or_remove_free_product(state)
     end
 
     private
@@ -26,19 +27,34 @@ module Processes
       retry
     end
 
-    def make_product_free(state)
+    def make_or_remove_free_product(state)
       pricing_catalog = Pricing::PricingCatalog.new(@cqrs.event_store)
-      free_product_id = FreeProductResolver.new(state.order_lines, pricing_catalog).call
+      free_product_id = FreeProductResolver.new(state, pricing_catalog).call
 
-      @cqrs.run(Pricing::MakeProductFreeForOrder.new(order_id: state.order_id, product_id: free_product_id))
+      return if current_free_product_not_changed?(free_product_id, state)
+
+      remove_old_free_product(state)
+      make_new_product_for_free(state, free_product_id)
     end
 
-    def order_eligible_for_free_product?(state)
-      state.total_quantity >= MIN_ORDER_LINES_QUANTITY
+    def event_only_for_state_building?(event)
+      event.instance_of?(Pricing::FreeProductRemovedFromOrder) || event.instance_of?(Pricing::ProductMadeFreeForOrder)
+    end
+
+    def current_free_product_not_changed?(free_product_id, state)
+      free_product_id == state.current_free_product_id
+    end
+
+    def remove_old_free_product(state)
+      @cqrs.run(Pricing::RemoveFreeProductFromOrder.new(order_id: state.order_id, product_id: state.current_free_product_id)) if state.current_free_product_id
+    end
+
+    def make_new_product_for_free(state, free_product_id)
+      @cqrs.run(Pricing::MakeProductFreeForOrder.new(order_id: state.order_id, product_id: free_product_id)) if free_product_id
     end
 
     class ProcessState
-      attr_reader :order_id, :order_lines
+      attr_reader :order_id, :order_lines, :current_free_product_id
 
       def initialize(order_id)
         @order_id = order_id
@@ -53,6 +69,10 @@ module Processes
         when Pricing::PriceItemRemoved
           order_lines[product_id] -= 1
           order_lines.delete(product_id) if order_lines.fetch(product_id) <= 0
+        when Pricing::ProductMadeFreeForOrder
+          @current_free_product_id = product_id
+        when Pricing::FreeProductRemovedFromOrder
+          @current_free_product_id = nil
         end
       end
 
@@ -62,21 +82,27 @@ module Processes
     end
 
     class FreeProductResolver
-      def initialize(order_lines, pricing_catalog)
-        @order_lines = order_lines
+      MIN_ORDER_LINES_QUANTITY = 4
+
+      def initialize(state, pricing_catalog)
+        @state = state
         @pricing_catalog = pricing_catalog
       end
 
       def call
-        cheapest_product
+        cheapest_product if eligible_for_free_product?
       end
 
       private
 
-      attr_reader :order_lines, :pricing_catalog
+      attr_reader :state, :pricing_catalog
 
       def cheapest_product
-        order_lines.keys.sort_by { |product_id| pricing_catalog.price_for(product_id) }.first
+        state.order_lines.keys.sort_by { |product_id| pricing_catalog.price_for(product_id) }.first
+      end
+
+      def eligible_for_free_product?
+        state.total_quantity >= MIN_ORDER_LINES_QUANTITY
       end
     end
   end

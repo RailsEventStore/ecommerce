@@ -4,16 +4,6 @@ module Processes
   class ThreePlusOneFreeTest < Test
     cover "Processes::ThreePlusOneFree*"
 
-    def test_when_order_lines_qty_has_never_reached_the_min_qty_limit_for_free_product
-      product_id = SecureRandom.uuid
-      order_id = SecureRandom.uuid
-      process = ThreePlusOneFree.new(cqrs)
-      given(item_added_event(order_id, product_id, 1) + item_removed_event(order_id, product_id, 1)).each do |event|
-        process.call(event)
-      end
-      assert_no_command
-    end
-
     def test_one_order_line_is_not_eligible_for_free_product
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
@@ -35,15 +25,86 @@ module Processes
       assert_command(Pricing::MakeProductFreeForOrder.new(order_id: order_id, product_id: product_id))
     end
 
-    def test_five_order_lines_are_eligible_for_free_product
+    def test_remove_free_product_when_order_lines_qtn_is_less_than_four
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
       process = ThreePlusOneFree.new(cqrs)
       given([set_price(product_id, 20)])
-      given(item_added_event(order_id, product_id, 5)).each do |event|
+      given(item_added_event(order_id, product_id, 4) +
+              product_made_for_free(order_id, product_id) +
+              item_removed_event(order_id, product_id, 1) +
+              free_product_removed(order_id, product_id)).each do |event|
         process.call(event)
       end
-      assert_command(Pricing::MakeProductFreeForOrder.new(order_id: order_id, product_id: product_id))
+
+      assert_all_commands(Pricing::MakeProductFreeForOrder.new(order_id: order_id, product_id: product_id),
+                          Pricing::RemoveFreeProductFromOrder.new(order_id: order_id, product_id: product_id))
+    end
+
+    def test_change_free_product_if_new_order_line_is_the_cheapest
+      product_id = SecureRandom.uuid
+      cheapest_product_id = SecureRandom.uuid
+      order_id = SecureRandom.uuid
+      process = ThreePlusOneFree.new(cqrs)
+      given([set_price(product_id, 20)])
+      given([set_price(cheapest_product_id, 1)])
+
+      given(item_added_event(order_id, product_id, 4) +
+               product_made_for_free(order_id, product_id) +
+               item_added_event(order_id, cheapest_product_id, 1) +
+               free_product_removed(order_id, product_id) +
+               product_made_for_free(order_id, cheapest_product_id)
+      ).each do |event|
+        process.call(event)
+      end
+
+      assert_all_commands(Pricing::MakeProductFreeForOrder.new(order_id: order_id, product_id: product_id),
+                          Pricing::RemoveFreeProductFromOrder.new(order_id: order_id, product_id: product_id),
+                          Pricing::MakeProductFreeForOrder.new(order_id: order_id, product_id: cheapest_product_id))
+    end
+
+    def test_do_not_change_free_product_if_new_order_line_is_more_expensive
+      product_id = SecureRandom.uuid
+      more_expensive_product_id = SecureRandom.uuid
+      order_id = SecureRandom.uuid
+      process = ThreePlusOneFree.new(cqrs)
+      given([set_price(product_id, 20)])
+      given([set_price(more_expensive_product_id, 50)])
+
+      given(item_added_event(order_id, product_id, 4) +
+              product_made_for_free(order_id, product_id) +
+              item_added_event(order_id, more_expensive_product_id, 1)).each do |event|
+        process.call(event)
+      end
+
+      assert_all_commands(Pricing::MakeProductFreeForOrder.new(order_id: order_id, product_id: product_id))
+    end
+
+    def test_change_free_product_if_the_cheapest_order_line_is_removed
+      product_id = SecureRandom.uuid
+      cheapest_product_id = SecureRandom.uuid
+      order_id = SecureRandom.uuid
+      process = ThreePlusOneFree.new(cqrs)
+      given([set_price(product_id, 20)])
+      given([set_price(cheapest_product_id, 1)])
+
+      given(item_added_event(order_id, product_id, 4) +
+              product_made_for_free(order_id, product_id) +
+              item_added_event(order_id, cheapest_product_id, 1) +
+              free_product_removed(order_id, product_id) +
+              product_made_for_free(order_id, cheapest_product_id) +
+              item_removed_event(order_id, cheapest_product_id, 1) +
+              free_product_removed(order_id, cheapest_product_id) +
+              product_made_for_free(order_id, product_id)).each do |event|
+        process.call(event)
+      end
+
+      assert_all_commands(Pricing::MakeProductFreeForOrder.new(order_id: order_id, product_id: product_id),
+                          Pricing::RemoveFreeProductFromOrder.new(order_id: order_id, product_id: product_id),
+                          Pricing::MakeProductFreeForOrder.new(order_id: order_id, product_id: cheapest_product_id),
+                          Pricing::RemoveFreeProductFromOrder.new(order_id: order_id, product_id: cheapest_product_id),
+                          Pricing::MakeProductFreeForOrder.new(order_id: order_id, product_id: product_id)
+      )
     end
 
     private
@@ -72,6 +133,28 @@ module Processes
           }
         )
       end
+    end
+
+    def product_made_for_free(order_id, product_id)
+      [
+        Pricing::ProductMadeFreeForOrder.new(
+          data: {
+            order_id: order_id,
+            product_id: product_id
+          }
+        )
+      ]
+    end
+
+    def free_product_removed(order_id, product_id)
+      [
+        Pricing::FreeProductRemovedFromOrder.new(
+          data: {
+            order_id: order_id,
+            product_id: product_id
+          }
+        )
+      ]
     end
   end
 end
