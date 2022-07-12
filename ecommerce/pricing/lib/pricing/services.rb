@@ -17,38 +17,9 @@ module Pricing
     end
 
     def call(cmd)
-      stream_name = @repository.stream_name(Discounts::Order, cmd.order_id)
-      order = build_order(stream_name)
-      begin
-        order.discount
-      rescue NoMethodError
-        raise NotPossibleToAssignDiscountTwice
+      @repository.with_aggregate(Order, cmd.aggregate_id) do |order|
+        order.apply_discount(Discounts::PercentageDiscount.new(cmd.amount))
       end
-      @event_store.publish(
-        PercentageDiscountSet.new(
-          data: {
-            order_id: cmd.order_id,
-            amount: cmd.amount
-          }
-        ),
-        stream_name: stream_name
-      )
-    end
-
-    private
-
-    def build_order(stream_name)
-      last_event = last_event(stream_name)
-      case last_event
-      when PercentageDiscountSet, PercentageDiscountChanged
-        nil
-      else
-        Discounts::Order.new
-      end
-    end
-
-    def last_event(stream_name)
-      @event_store.read.stream(stream_name).last
     end
   end
 
@@ -59,35 +30,9 @@ module Pricing
     end
 
     def call(cmd)
-      stream_name = @repository.stream_name(Discounts::Order, cmd.order_id)
-      order = build_order(stream_name)
-      begin
-        order.reset
-      rescue NoMethodError
-        raise NotPossibleToResetWithoutDiscount
+      @repository.with_aggregate(Order, cmd.aggregate_id) do |order|
+        order.reset_discount
       end
-      @event_store.publish(
-        PercentageDiscountReset.new(
-          data: {
-            order_id: cmd.order_id
-          }
-        ),
-        stream_name: stream_name
-      )
-    end
-
-    private
-
-    def build_order(stream_name)
-      last_event = last_event(stream_name)
-      case last_event
-      when PercentageDiscountSet, PercentageDiscountChanged
-        Discounts::DiscountedOrder.new
-      end
-    end
-
-    def last_event(stream_name)
-      @event_store.read.stream(stream_name).last
     end
   end
 
@@ -98,36 +43,9 @@ module Pricing
     end
 
     def call(cmd)
-      stream_name = @repository.stream_name(Discounts::Order, cmd.order_id)
-      order = build_order(stream_name)
-      begin
-        order.change_discount
-      rescue NoMethodError
-        raise NotPossibleToChangeDiscount
+      @repository.with_aggregate(Order, cmd.aggregate_id) do |order|
+        order.change_discount(Discounts::PercentageDiscount.new(cmd.amount))
       end
-      @event_store.publish(
-        PercentageDiscountChanged.new(
-          data: {
-            order_id: cmd.order_id,
-            amount: cmd.amount
-          }
-        ),
-        stream_name: stream_name
-      )
-    end
-
-    private
-
-    def build_order(stream_name)
-      last_event = last_event(stream_name)
-      case last_event
-      when PercentageDiscountSet, PercentageDiscountChanged
-        Discounts::DiscountedOrder.new
-      end
-    end
-
-    def last_event(stream_name)
-      @event_store.read.stream(stream_name).last
     end
   end
 
@@ -212,50 +130,31 @@ module Pricing
     def call(command)
       pricing_catalog = PricingCatalog.new(@event_store)
       promotions_calendar = PromotionsCalendar.new(@event_store)
-      order_discount = build_percentage_discount(command.order_id)
-      time_promotions_discount = wrap_percentage_discount(promotions_calendar.current_time_promotions_discount)
-      percentage_discount = order_discount.add(time_promotions_discount)
-
+      time_promotions_discount = promotions_calendar.current_time_promotions_discount
+      if time_promotions_discount.zero?
+        time_percentage_discount = Discounts::NoPercentageDiscount.new
+      else
+        time_percentage_discount = Discounts::PercentageDiscount.new(time_promotions_discount)
+      end
       @repository.with_aggregate(Order, command.aggregate_id) do |order|
-        order.calculate_total_value(pricing_catalog, percentage_discount)
+        order.calculate_total_value(pricing_catalog, time_percentage_discount)
       end
     end
 
     def calculate_sub_amounts(command)
       pricing_catalog = PricingCatalog.new(@event_store)
       promotions_calendar = PromotionsCalendar.new(@event_store)
-      order_discount = build_percentage_discount(command.order_id)
-      time_promotions_discount = wrap_percentage_discount(promotions_calendar.current_time_promotions_discount)
-      percentage_discount = order_discount.add(time_promotions_discount)
-
+      time_promotions_discount = promotions_calendar.current_time_promotions_discount
+      if time_promotions_discount.zero?
+        time_percentage_discount = Discounts::NoPercentageDiscount.new
+      else
+        time_percentage_discount = Discounts::PercentageDiscount.new(time_promotions_discount)
+      end
       @repository.with_aggregate(Order, command.aggregate_id) do |order|
-        order.calculate_sub_amounts(pricing_catalog, percentage_discount)
+        order.calculate_sub_amounts(pricing_catalog, time_percentage_discount)
       end
     end
 
-    private
-
-    def build_percentage_discount(order_id)
-      last_event = last_discount_order_event(order_id)
-      amount = last_event.data.fetch(:amount) if percentage_discount_event?(last_event)
-
-      wrap_percentage_discount(amount)
-    end
-
-    def last_discount_order_event(order_id)
-      @event_store
-        .read
-        .stream(@repository.stream_name(Discounts::Order, order_id))
-        .last
-    end
-
-    def percentage_discount_event?(event)
-      [PercentageDiscountSet, PercentageDiscountChanged].any? { |event_type| event.instance_of?(event_type) }
-    end
-
-    def wrap_percentage_discount(amount)
-      amount&.positive? ? Discounts::PercentageDiscount.new(amount) : Discounts::NoPercentageDiscount.new
-    end
   end
 
   class OnCouponRegister

@@ -45,21 +45,5 @@ module Pricing
         0
       end
     end
-
-    class Order
-      def discount
-        DiscountedOrder.new
-      end
-    end
-
-    class DiscountedOrder
-      def change_discount
-        DiscountedOrder.new
-      end
-
-      def reset
-        Order.new
-      end
-    end
   end
 end

@@ -105,6 +105,12 @@ module Pricing
       ) { run_command(CalculateTotalValue.new(order_id: order_id)) }
       assert_events(
         stream,
+        PercentageDiscountSet.new(
+          data: {
+            order_id: order_id,
+            amount: 10
+          }
+        ),
         OrderTotalValueCalculated.new(
           data: {
             order_id: order_id,
@@ -119,6 +125,12 @@ module Pricing
       end
       assert_events(
         stream,
+        PercentageDiscountChanged.new(
+          data: {
+            order_id: order_id,
+            amount: 50
+          }
+        ),
         OrderTotalValueCalculated.new(
           data: {
             order_id: order_id,
@@ -133,6 +145,11 @@ module Pricing
       end
       assert_events(
         stream,
+        PercentageDiscountReset.new(
+          data: {
+            order_id: order_id,
+          }
+        ),
         OrderTotalValueCalculated.new(
           data: {
             order_id: order_id,
@@ -155,6 +172,12 @@ module Pricing
       stream = "Pricing::Order$#{order_id}"
       assert_events(
         stream,
+        PercentageDiscountSet.new(
+          data: {
+            order_id: order_id,
+            amount: 100
+          }
+        ),
         OrderTotalValueCalculated.new(
           data: {
             order_id: order_id,
@@ -240,7 +263,7 @@ module Pricing
       set_price(product_1_id, 20)
       order_id = SecureRandom.uuid
       add_item(order_id, product_1_id)
-      stream = "Pricing::Discounts::Order$#{order_id}"
+      stream = "Pricing::Order$#{order_id}"
       run_command(
         Pricing::SetPercentageDiscount.new(order_id: order_id, amount: 10)
       )
@@ -251,6 +274,13 @@ module Pricing
           data: {
             order_id: order_id,
             amount: 100
+          }
+        ),
+        OrderTotalValueCalculated.new(
+          data: {
+            order_id: order_id,
+            discounted_amount: 0,
+            total_amount: 20
           }
         )
       ) do
@@ -265,7 +295,7 @@ module Pricing
       set_price(product_1_id, 20)
       order_id = SecureRandom.uuid
       add_item(order_id, product_1_id)
-      stream = "Pricing::Discounts::Order$#{order_id}"
+      stream = "Pricing::Order$#{order_id}"
       run_command(
         Pricing::SetPercentageDiscount.new(order_id: order_id, amount: 10)
       )
@@ -280,6 +310,13 @@ module Pricing
             order_id: order_id,
             amount: 100
           }
+        ),
+        OrderTotalValueCalculated.new(
+          data: {
+            order_id: order_id,
+            discounted_amount: 0,
+            total_amount: 20
+          }
         )
       ) do
         run_command(
@@ -293,7 +330,7 @@ module Pricing
       set_price(product_1_id, 20)
       order_id = SecureRandom.uuid
       add_item(order_id, product_1_id)
-      stream = "Pricing::Discounts::Order$#{order_id}"
+      stream = "Pricing::Order$#{order_id}"
       run_command(
         Pricing::SetPercentageDiscount.new(order_id: order_id, amount: 10)
       )
@@ -306,6 +343,13 @@ module Pricing
         PercentageDiscountReset.new(
           data: {
             order_id: order_id
+          }
+        ),
+        OrderTotalValueCalculated.new(
+          data: {
+            order_id: order_id,
+            discounted_amount: 20,
+            total_amount: 20
           }
         )
       ) do
@@ -396,8 +440,8 @@ module Pricing
           OrderTotalValueCalculated.new(
             data: {
               order_id: order_id,
+              total_amount: 20,
               discounted_amount: 10,
-              total_amount: 20
             }
           )
         ) { calculate_total_value(order_id) }

@@ -31,10 +31,12 @@ module Pricing
   class SetPercentageDiscount < Infra::Command
     attribute :order_id, Infra::Types::UUID
     attribute :amount, Infra::Types::PercentageDiscount
+    alias aggregate_id order_id
   end
 
   class ResetPercentageDiscount < Infra::Command
     attribute :order_id, Infra::Types::UUID
+    alias aggregate_id order_id
   end
 
   class RegisterCoupon < Infra::Command
@@ -69,6 +71,7 @@ module Pricing
   class ChangePercentageDiscount < Infra::Command
     attribute :order_id, Infra::Types::UUID
     attribute :amount, Infra::Types::PercentageDiscount
+    alias aggregate_id order_id
   end
 
   class MakeProductFreeForOrder < Infra::Command

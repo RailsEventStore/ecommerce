@@ -2,42 +2,6 @@ require_relative "test_helper"
 
 module Pricing
   module Discounts
-    class OrderTest < Test
-      cover "Pricing::Discounts*"
-
-      def setup
-        @order = Order.new
-      end
-
-      def test_can_be_discounted
-        @order.discount
-      end
-    end
-
-    class DiscountedOrderTest < Test
-      cover "Pricing::Discounts*"
-
-      def test_can_change_its_discount_value
-        @order = Order.new
-        @order.discount.change_discount
-      end
-
-      def test_can_change_many_times
-        Order.new.discount.change_discount.change_discount
-      end
-
-      def test_can_reset_discount
-        Order.new.discount.reset
-      end
-    end
-
-    class OrderWithClearedDiscount < Test
-      cover "Pricing::Discounts*"
-
-      def test_can_be_discounted_again
-        Order.new.discount.reset.discount
-      end
-    end
 
     class PercentageDiscountTest < Test
       cover "Pricing::Discounts*"
