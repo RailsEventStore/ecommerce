@@ -8,6 +8,5 @@ matcher:
     - Pricing*
   ignore:
     - Pricing::Configuration*
-    - Pricing::OnRemoveItemFromBasket#initialize
     - Pricing::Discounts::NoPercentageDiscount#discount
     - Pricing::Test*
