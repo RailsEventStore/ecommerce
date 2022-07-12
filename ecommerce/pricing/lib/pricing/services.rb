@@ -13,7 +13,6 @@ module Pricing
   class SetPercentageDiscountHandler
     def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)
-      @event_store = event_store
     end
 
     def call(cmd)
@@ -26,7 +25,6 @@ module Pricing
   class ResetPercentageDiscountHandler
     def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)
-      @event_store = event_store
     end
 
     def call(cmd)
@@ -39,7 +37,6 @@ module Pricing
   class ChangePercentageDiscountHandler
     def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)
-      @event_store = event_store
     end
 
     def call(cmd)

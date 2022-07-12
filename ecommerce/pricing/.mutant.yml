@@ -8,11 +8,6 @@ matcher:
     - Pricing*
   ignore:
     - Pricing::Configuration*
-    - Pricing::OnCalculateTotalValue#last_discount_order_event
-    - Pricing::SetPercentageDiscountHandler#last_event
-    - Pricing::SetPercentageDiscountHandler#initialize
-    - Pricing::ResetPercentageDiscountHandler#initialize
-    - Pricing::ChangePercentageDiscountHandler#initialize
     - Pricing::OnRemoveItemFromBasket#initialize
     - Pricing::Discounts::NoPercentageDiscount#discount
     - Pricing::Test*
