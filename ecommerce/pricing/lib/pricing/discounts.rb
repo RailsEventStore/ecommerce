@@ -17,24 +17,22 @@ module Pricing
         total - discount(total)
       end
 
-      def discount(total)
-        total * value / 100
-      end
-
       def add(other_discount)
         new_value = [value + other_discount.value, 100].min
 
         PercentageDiscount.new(new_value)
+      end
+
+      private
+
+      def discount(total)
+        total * value / 100
       end
     end
 
     class NoPercentageDiscount
       def apply(total)
         total
-      end
-
-      def discount(_)
-        0
       end
 
       def add(other_discount)

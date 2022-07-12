@@ -8,5 +8,4 @@ matcher:
     - Pricing*
   ignore:
     - Pricing::Configuration*
-    - Pricing::Discounts::NoPercentageDiscount#discount
     - Pricing::Test*
