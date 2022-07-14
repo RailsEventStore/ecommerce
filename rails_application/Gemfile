@@ -12,6 +12,8 @@ gem "tailwindcss-rails"
 gem "kaminari"
 gem "sprockets-rails"
 
+gem "rails_event_store", "~> 2.5.1"
+
 group :development do
   gem "listen", "~> 3.3"
 end

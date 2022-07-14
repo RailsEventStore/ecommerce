@@ -2,10 +2,12 @@ PATH
   remote: ../infra
   specs:
     infra (1.0.0)
+      aggregate_root (~> 2.5.1)
+      arkency-command_bus
       dry-struct
       dry-types
-      rails_event_store (~> 2.5.1)
       rake
+      ruby_event_store (~> 2.5.1)
       ruby_event_store-transformations
 
 PATH
@@ -298,6 +300,7 @@ DEPENDENCIES
   pg (~> 1.1)
   puma (~> 5.6)
   rails (= 7.0.3)
+  rails_event_store (~> 2.5.1)
   skylight
   sprockets-rails
   tailwindcss-rails
