@@ -4,7 +4,7 @@ module Pricing
 
     def initialize(id)
       @id = id
-      @product_ids = []
+      @products = []
       @discount = Discounts::NoPercentageDiscount.new
     end
 
@@ -56,7 +56,7 @@ module Pricing
     end
 
     def calculate_total_value(pricing_catalog, time_promotion_discount)
-      total_value = @product_ids.sum { |product_id| pricing_catalog.price_for(product_id) }
+      total_value = @products.sum { |product| pricing_catalog.price_for(product.id) }
 
       discounted_value = @discount.add(time_promotion_discount).apply(total_value)
       apply(
@@ -71,19 +71,19 @@ module Pricing
     end
 
     def calculate_sub_amounts(pricing_catalog, time_promotions_discount)
-      sub_amounts_total = product_quantity_hash.map do |product_id, quantity|
-        quantity * pricing_catalog.price_for(product_id)
+      sub_amounts_total = product_quantity_hash.map do |product, quantity|
+        quantity * pricing_catalog.price_for(product.id)
       end
       sub_discounts = calculate_total_sub_discounts(pricing_catalog, time_promotions_discount)
 
-      product_ids = product_quantity_hash.keys
+      products = product_quantity_hash.keys
       quantities = product_quantity_hash.values
-      product_ids.zip(quantities, sub_amounts_total, sub_discounts) do |product_id, quantity, sub_amount, sub_discount|
+      products.zip(quantities, sub_amounts_total, sub_discounts) do |product, quantity, sub_amount, sub_discount|
         apply(
           PriceItemValueCalculated.new(
             data: {
               order_id: @id,
-              product_id: product_id,
+              product_id: product.id,
               quantity: quantity,
               amount: sub_amount,
               discounted_amount: sub_amount - sub_discount
@@ -96,11 +96,11 @@ module Pricing
     private
 
     on PriceItemAdded do |event|
-      @product_ids << event.data.fetch(:product_id)
+      @products << Product.new(event.data.fetch(:product_id))
     end
 
     on PriceItemRemoved do |event|
-      @product_ids.delete(event.data.fetch(:product_id))
+      @products.delete_if { |product| product.id.eql?(event.data.fetch(:product_id)) }
     end
 
     on PriceItemValueCalculated do |event|
@@ -122,14 +122,45 @@ module Pricing
     end
 
     def product_quantity_hash
-      @product_quantity_hash ||= @product_ids.tally
+      @product_quantity_hash ||= @products.tally
     end
 
     def calculate_total_sub_discounts(pricing_catalog, time_promotions_discount)
-      product_quantity_hash.map do |product_id, quantity|
-        catalog_price_for_single = pricing_catalog.price_for(product_id)
+      product_quantity_hash.map do |product, quantity|
+        catalog_price_for_single = pricing_catalog.price_for(product.id)
         with_total_discount_single = @discount.add(time_promotions_discount).apply(catalog_price_for_single)
         quantity * (catalog_price_for_single - with_total_discount_single)
+      end
+    end
+
+    class Product
+      attr_reader :id, :free
+
+      def initialize(id)
+        @id = id
+        @free = false
+      end
+
+      def make_free
+        @free = true
+      end
+
+      def remove_free
+        @free = false
+      end
+
+      def free?
+        free
+      end
+
+      def eql?(other)
+        other.instance_of?(Product) && id.eql?(other.id)
+      end
+
+      alias == eql?
+
+      def hash
+        Product.hash ^ id.hash
       end
     end
   end
