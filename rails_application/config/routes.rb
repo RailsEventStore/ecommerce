@@ -19,6 +19,8 @@ Rails.application.routes.draw do
     resource :invoice, only: [:create]
   end
 
+  resources :shipments, only: [:index]
+
   resources :invoices, only: [:show]
 
   resources :products, only: [:new, :show, :create, :index] do
