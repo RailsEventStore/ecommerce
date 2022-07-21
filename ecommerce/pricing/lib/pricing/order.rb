@@ -134,23 +134,10 @@ module Pricing
     end
 
     class Product
-      attr_reader :id, :free
+      attr_reader :id
 
       def initialize(id)
         @id = id
-        @free = false
-      end
-
-      def make_free
-        @free = true
-      end
-
-      def remove_free
-        @free = false
-      end
-
-      def free?
-        free
       end
 
       def eql?(other)
@@ -161,6 +148,24 @@ module Pricing
 
       def hash
         Product.hash ^ id.hash
+      end
+    end
+
+    class FreeProduct
+      attr_reader :id
+
+      def initialize(id)
+        @id = id
+      end
+
+      def eql?(other)
+        other.instance_of?(FreeProduct) && id.eql?(other.id)
+      end
+
+      alias == eql?
+
+      def hash
+        FreeProduct.hash ^ id.hash
       end
     end
   end
