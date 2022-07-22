@@ -3,62 +3,16 @@
 <% end %>
 
 <% content_for(:actions) do %>
-  <%= secondary_action_button do %>
-    <%= order_history_link(@order.uid) %>
-  <% end %>
-
-  <%= secondary_action_button do %>
-    <%= link_to "Invoice", invoice_path(@order.uid) %>
-  <% end if @invoice.issued? %>
 
   <%= secondary_action_button do %>
     <%= link_to 'Back', orders_path %>
   <% end %>
 
-  <%= primary_action_button do %>
-    <%= link_to 'Edit', edit_order_path(@order.uid) %>
-  <% end if @order.state == "Draft" %>
-
-  <%= primary_action_button do %>
-    <%= link_to("Pay", pay_order_path(@order.uid), method: :post) %>
-  <% end if @order.state == "Submitted" %>
 <% end %>
 
 <dl class="mb-8">
   <dt class="font-bold">State</dt>
   <dd class="mb-2"><%= @order.state %></dd>
-  <dt class="font-bold">Shipping Details</dt>
-  <dd class="mb-2">
-    <% unless @shipment %>
-      Shipping address is missing.
-      <%= link_to "Add",
-        edit_order_shipping_address_path(@order.uid),
-        class: 'px-2 py-1 border rounded-md shadow-sm text-xs font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 border-transparent text-white bg-blue-600 hover:bg-blue-700'
-      %>
-    <% else %>
-      Your shipment has been queued for processing.
-    <% end %>
-  </dd>
-  <% if @order.state != "Draft" %>
-    <dt class="font-bold">Billing Details</dt>
-    <dd class="mb-2">
-      <% if @invoice.issued? %>
-        <%= link_to @invoice.number, invoice_path(@order.uid) %>
-      <% elsif !@invoice.address_present? %>
-        Billing address is missing.
-        <%= link_to "Add",
-          edit_order_billing_address_path(@order.uid),
-          class: 'px-2 py-1 border rounded-md shadow-sm text-xs font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 border-transparent text-white bg-blue-600 hover:bg-blue-700'
-        %>
-      <% else %>
-        Invoice not issued
-        <%= link_to "Issue now",
-          order_invoice_path(@order.uid), method: :post,
-          class: 'px-2 py-1 border rounded-md shadow-sm text-xs font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 border-transparent text-white bg-blue-600 hover:bg-blue-700'
-        %>
-      <% end %>
-    </dd>
-  <% end %>
 </dl>
 
 <table class="w-full">
