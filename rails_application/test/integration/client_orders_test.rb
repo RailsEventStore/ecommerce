@@ -13,14 +13,13 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
   end
 
   def test_happy_path
-    register_customer('Shopify')
     arkency_id = register_customer('Arkency')
     async_remote_id = register_product("Async Remote", 39, 10)
 
     get "/clients"
 
     assert_select("button", "Login")
-    assert_select("select", "Shopify\nArkency")
+    assert_select("select", "Arkency")
 
     login(arkency_id)
     assert_select("p", "No orders to display.")
