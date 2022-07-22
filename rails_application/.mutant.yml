@@ -11,6 +11,12 @@ requires:
 matcher:
   subjects:
     - Orders*
+    - ClientOrders*
   ignore:
     - Orders::Configuration#call
     - Orders::Configuration#change_product_price
+    - ClientOrders::Configuration#call
+    - ClientOrders::Configuration#mark_as_submitted
+    - ClientOrders::Configuration#subscribe_and_link_to_stream
+    - ClientOrders::Configuration#link_to_stream
+    - ClientOrders::Configuration#with_order

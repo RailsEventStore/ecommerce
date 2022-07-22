@@ -87,14 +87,10 @@ module ClientOrders
     end
 
     def with_order(event)
-      order = Order
-                .find_by(order_uid: event.data.fetch(:order_id))
+      order = Order.find_by(order_uid: event.data.fetch(:order_id))
       unless order.nil?
-        order
-          .tap do |order|
-          yield(order)
-          order.save!
-        end
+        yield(order)
+        order.save!
       end
     end
 
