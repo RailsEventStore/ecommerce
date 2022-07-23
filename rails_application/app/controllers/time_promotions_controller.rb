@@ -23,7 +23,7 @@ class TimePromotionsController < ApplicationController
   private
 
   def create_time_promotion(id)
-    command_bus.(Pricing::CreateTimePromotion.new(time_promotion_id: id, label: params[:label], code: params[:code]))
+    command_bus.(Pricing::CreateTimePromotion.new(time_promotion_id: id, label: params[:label]))
   end
 
   def set_discount(id)

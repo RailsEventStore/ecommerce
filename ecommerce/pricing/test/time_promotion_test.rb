@@ -10,8 +10,7 @@ module Pricing
       uid = SecureRandom.uuid
       data = {
         time_promotion_id: uid,
-        label: "Last Minute",
-        code: uid.slice(0..5)
+        label: "Last Minute"
       }
 
       run_command = -> { create_time_promotion(**data) }
@@ -28,8 +27,7 @@ module Pricing
       uid = SecureRandom.uuid
       initial_data = {
         time_promotion_id: uid,
-        label: "Last Minute",
-        code: uid.slice(0..5)
+        label: "Last Minute"
       }
       create_time_promotion(**initial_data)
       data = { time_promotion_id: uid, discount: 25 }
@@ -48,8 +46,7 @@ module Pricing
       uid = SecureRandom.uuid
       initial_data = {
         time_promotion_id: uid,
-        label: "Last Minute",
-        code: uid.slice(0..5)
+        label: "Last Minute"
       }
       create_time_promotion(**initial_data)
       data = {

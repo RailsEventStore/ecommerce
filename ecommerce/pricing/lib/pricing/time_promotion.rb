@@ -6,12 +6,11 @@ module Pricing
       @id = id
     end
 
-    def create(label:, code:)
+    def create(label:)
       apply TimePromotionCreated.new(
         data: {
           time_promotion_id: @id,
-          label: label,
-          code: code
+          label: label
         }
       )
     end

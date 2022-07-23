@@ -12,7 +12,6 @@
   <thead>
   <tr>
     <th class="text-left py-2">Label</th>
-    <th class="text-left py-2">Code</th>
     <th class="text-left py-2">Discount %</th>
     <th class="text-left py-2">Start Time</th>
     <th class="text-left py-2">End Time</th>
@@ -23,7 +22,6 @@
   <% @time_promotions.each do |time_promotion| %>
     <tr class="border-t">
       <td class="py-2"><%= time_promotion.label %></td>
-      <td class="py-2"><%= time_promotion.code %></td>
       <td class="py-2"><%= time_promotion.discount %></td>
       <td class="py-2"><%= time_promotion.start_time %></td>
       <td class="py-2"><%= time_promotion.end_time %></td>

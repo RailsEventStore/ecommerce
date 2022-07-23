@@ -14,7 +14,6 @@ module Pricing
   class TimePromotionCreated < Infra::Event
     attribute :time_promotion_id, Infra::Types::UUID
     attribute :label, Infra::Types::String
-    attribute :code, Infra::Types::String
   end
 
   class TimePromotionDiscountSet < Infra::Event

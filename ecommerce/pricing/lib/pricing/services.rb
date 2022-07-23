@@ -65,7 +65,7 @@ module Pricing
 
     def call(cmd)
       @repository.with_aggregate(TimePromotion, cmd.time_promotion_id) do |time_promotion|
-        time_promotion.create(label: cmd.label, code: cmd.code)
+        time_promotion.create(label: cmd.label)
       end
     end
   end
