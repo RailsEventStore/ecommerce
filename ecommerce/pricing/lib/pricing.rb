@@ -65,6 +65,11 @@ module Pricing
         TimePromotionCreated
       )
       cqrs.register_command(
+        LabelTimePromotion,
+        LabelTimePromotionHandler.new(cqrs.event_store),
+        TimePromotionLabeled
+      )
+      cqrs.register_command(
         SetTimePromotionDiscount,
         SetTimePromotionDiscountHandler.new(cqrs.event_store),
         TimePromotionDiscountSet

@@ -10,6 +10,7 @@ class TimePromotionsController < ApplicationController
 
     TimePromotions::TimePromotion.transaction do
       create_time_promotion(id)
+      label(id)
       set_discount(id)
       set_range(id)
     end
@@ -23,7 +24,11 @@ class TimePromotionsController < ApplicationController
   private
 
   def create_time_promotion(id)
-    command_bus.(Pricing::CreateTimePromotion.new(time_promotion_id: id, label: params[:label]))
+    command_bus.(Pricing::CreateTimePromotion.new(time_promotion_id: id))
+  end
+
+  def label(id)
+    command_bus.(Pricing::LabelTimePromotion.new(time_promotion_id: id, label: params[:label]))
   end
 
   def set_discount(id)

@@ -13,6 +13,10 @@ module Pricing
 
   class TimePromotionCreated < Infra::Event
     attribute :time_promotion_id, Infra::Types::UUID
+  end
+
+  class TimePromotionLabeled < Infra::Event
+    attribute :time_promotion_id, Infra::Types::UUID
     attribute :label, Infra::Types::String
   end
 

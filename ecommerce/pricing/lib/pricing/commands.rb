@@ -49,6 +49,10 @@ module Pricing
 
   class CreateTimePromotion < Infra::Command
     attribute :time_promotion_id, Infra::Types::UUID.meta(omittable: true)
+  end
+
+  class LabelTimePromotion < Infra::Command
+    attribute :time_promotion_id, Infra::Types::UUID
     attribute :label, Infra::Types::String
   end
 

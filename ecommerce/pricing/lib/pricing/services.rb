@@ -64,8 +64,18 @@ module Pricing
     end
 
     def call(cmd)
+      @repository.with_aggregate(TimePromotion, cmd.time_promotion_id, &:create)
+    end
+  end
+
+  class LabelTimePromotionHandler
+    def initialize(event_store)
+      @repository = Infra::AggregateRootRepository.new(event_store)
+    end
+
+    def call(cmd)
       @repository.with_aggregate(TimePromotion, cmd.time_promotion_id) do |time_promotion|
-        time_promotion.create(label: cmd.label)
+        time_promotion.label(label: cmd.label)
       end
     end
   end

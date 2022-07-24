@@ -9,8 +9,7 @@ module Pricing
     def test_creates_time_promotion
       uid = SecureRandom.uuid
       data = {
-        time_promotion_id: uid,
-        label: "Last Minute"
+        time_promotion_id: uid
       }
 
       run_command = -> { create_time_promotion(**data) }
@@ -23,11 +22,31 @@ module Pricing
       end
     end
 
+    def test_labels_time_promotion
+      uid = SecureRandom.uuid
+      initial_data = {
+        time_promotion_id: uid
+      }
+      create_time_promotion(**initial_data)
+      data = {
+        time_promotion_id: uid,
+        label: "Last Minute"
+      }
+
+      run_command = -> { run_command(LabelTimePromotion.new(**data)) }
+
+      stream = "Pricing::TimePromotion$#{uid}"
+      event = TimePromotionLabeled.new(data: data)
+
+      assert_events(stream, event) do
+        run_command.call
+      end
+    end
+
     def test_sets_discount_for_time_promotion
       uid = SecureRandom.uuid
       initial_data = {
-        time_promotion_id: uid,
-        label: "Last Minute"
+        time_promotion_id: uid
       }
       create_time_promotion(**initial_data)
       data = { time_promotion_id: uid, discount: 25 }
@@ -45,8 +64,7 @@ module Pricing
     def test_sets_range_for_time_promotion
       uid = SecureRandom.uuid
       initial_data = {
-        time_promotion_id: uid,
-        label: "Last Minute"
+        time_promotion_id: uid
       }
       create_time_promotion(**initial_data)
       data = {

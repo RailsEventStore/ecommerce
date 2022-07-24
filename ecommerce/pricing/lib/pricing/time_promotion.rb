@@ -6,8 +6,16 @@ module Pricing
       @id = id
     end
 
-    def create(label:)
+    def create
       apply TimePromotionCreated.new(
+        data: {
+          time_promotion_id: @id
+        }
+      )
+    end
+
+    def label(label:)
+      apply TimePromotionLabeled.new(
         data: {
           time_promotion_id: @id,
           label: label
@@ -37,6 +45,9 @@ module Pricing
     private
 
     on TimePromotionCreated do |_|
+    end
+
+    on TimePromotionLabeled do |_|
     end
 
     on TimePromotionDiscountSet do |_|

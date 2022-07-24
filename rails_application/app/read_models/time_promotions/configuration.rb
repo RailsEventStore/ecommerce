@@ -12,6 +12,10 @@ module TimePromotions
         [Pricing::TimePromotionCreated]
       )
       cqrs.subscribe(
+        ->(event) { label(event) },
+        [Pricing::TimePromotionLabeled]
+      )
+      cqrs.subscribe(
         ->(event) { set_discount(event) },
         [Pricing::TimePromotionDiscountSet]
       )
@@ -26,7 +30,13 @@ module TimePromotions
     def create_time_promotion(event)
       id = event.data[:time_promotion_id]
 
-      TimePromotion.create!(event.data.slice(:label, :code).merge(id: id))
+      TimePromotion.create!(event.data.slice(:code).merge(id: id))
+    end
+
+    def label(event)
+      id = event.data[:time_promotion_id]
+
+      TimePromotion.find_by(id: id).update!(label: event.data[:label])
     end
 
     def set_discount(event)
