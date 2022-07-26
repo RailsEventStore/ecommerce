@@ -1,4 +1,24 @@
 module ClientOrders
+
+  class HTMLRenderer
+    def initialize(view_file)
+      @view_file = view_file
+    end
+
+    def render(renderer, client_id)
+      client = Client.find_by(uid: client_id)
+      client_orders = Order.where(client_uid: client_id)
+      renderer.render(
+        @view_file,
+        locals:
+          {
+            client: client,
+            client_orders: client_orders
+          }
+      )
+    end
+  end
+
   class Client < ApplicationRecord
     self.table_name = "clients"
 

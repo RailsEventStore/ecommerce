@@ -1,8 +1,7 @@
 module Client
   class OrdersController < ApplicationController
     def index
-      @client = ClientOrders::Client.find_by(uid: params[:client_id])
-      @client_orders = ClientOrders::Order.includes(:order).where(client_uid: params[:client_id])
+      ClientOrders::HTMLRenderer.new(:list).render(self, params[:client_id])
     end
 
     def show

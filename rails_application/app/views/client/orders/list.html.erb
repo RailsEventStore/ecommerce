@@ -1,5 +1,5 @@
 <% content_for(:header) do %>
-  <%= @client.name %>
+  <%= client.name %>
 <% end %>
 
 <% content_for(:actions) do %>
@@ -10,7 +10,7 @@
 
 
 <div>
-  <% if @client_orders.count > 0 %>
+  <% if client_orders.count > 0 %>
     <table class="w-full">
       <thead>
       <tr>
@@ -21,9 +21,9 @@
       </thead>
 
       <tbody>
-      <% @client_orders.each do |client_order| %>
+      <% client_orders.each do |client_order| %>
         <tr class="border-t">
-          <td class="py-2"><%= link_to client_order.number || 'Not submitted', client_order_path(id: @client.id, order_uid: client_order.order_uid), class: "text-blue-500 hover:underline" %></td>
+          <td class="py-2"><%= link_to client_order.number || 'Not submitted', client_order_path(id: client.id, order_uid: client_order.order_uid), class: "text-blue-500 hover:underline" %></td>
           <td class="py-2 text-left"><%= client_order.state %></td>
           <td class="py-2 text-right"><%= number_to_currency(client_order.order.discounted_value) %></td>
         </tr>
