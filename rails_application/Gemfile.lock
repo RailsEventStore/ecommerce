@@ -91,6 +91,9 @@ GEM
       tzinfo (~> 2.0)
     aggregate_root (2.5.1)
       ruby_event_store (= 2.5.1)
+    arbre (1.5.0)
+      activesupport (>= 3.0.0, < 7.1)
+      ruby2_keywords (>= 0.0.2, < 1.0)
     arkency-command_bus (0.4.1)
       concurrent-ruby
     ast (2.4.2)
@@ -246,6 +249,7 @@ GEM
     rb-inotify (0.10.1)
       ffi (~> 1.0)
     regexp_parser (2.1.1)
+    ruby2_keywords (0.0.5)
     ruby_event_store (2.5.1)
       concurrent-ruby (~> 1.0, >= 1.1.6)
     ruby_event_store-browser (2.5.1)
@@ -286,6 +290,7 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
+  arbre
   bootsnap (>= 1.4.4)
   byebug
   dotenv-rails

@@ -1,5 +1,59 @@
 module ClientOrders
 
+  class OrdersList < Arbre::Component
+    builder_method :orders_list
+
+    def build(client, client_orders, attributes = {})
+      super(attributes)
+      content_for(:header) do
+        client.name
+      end
+      content_for(:actions) do
+        secondary_action_button do
+          link_to 'Log out', clients_path
+        end
+      end
+      div do
+        if client_orders.count > 0
+          table class: "w-full" do
+            thead do
+              tr class: "border-t" do
+                th class: "text-left py-2" do
+                  "Number"
+                end
+                th class: "text-left py-2" do
+                  "State"
+                end
+                th class: "text-right py-2" do
+                  "Price"
+                end
+              end
+            end
+            tbody do
+              client_orders.each do |client_order|
+                tr class: "border-t" do
+                  td class: "py-2" do
+                    link_to client_order.number || 'Not submitted', client_order_path(id: client.id, order_uid: client_order.order_uid), class: "text-blue-500 hover:underline"
+                  end
+                  td class: "py-2 text-left" do
+                    client_order.state
+                  end
+                  td class: "py-2 text-right" do
+                    number_to_currency(client_order.order.discounted_value)
+                  end
+                end
+              end
+            end
+          end
+        else
+          para do
+            "No orders to display."
+          end
+        end
+      end
+    end
+  end
+
   class HTMLRenderer
     def initialize(view_file)
       @view_file = view_file
