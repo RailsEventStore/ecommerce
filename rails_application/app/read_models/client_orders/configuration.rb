@@ -1,14 +1,20 @@
 module ClientOrders
 
   class OrdersList < Arbre::Component
-    builder_method :orders_list
 
-    def build(client, client_orders, attributes = {})
+    def self.build(view_context, client_id)
+      new(Arbre::Context.new(nil, view_context)).build(view_context,
+          Client.find_by(uid: client_id),
+          Order.where(client_uid: client_id)
+        )
+    end
+
+    def build(view_context, client, client_orders, attributes = {})
       super(attributes)
-      content_for(:header) do
+      view_context.content_for(:header) do
         client.name
       end
-      content_for(:actions) do
+      view_context.content_for(:actions) do
         secondary_action_button do
           link_to 'Log out', clients_path
         end
@@ -51,25 +57,6 @@ module ClientOrders
           end
         end
       end
-    end
-  end
-
-  class HTMLRenderer
-    def initialize(view_file)
-      @view_file = view_file
-    end
-
-    def render(renderer, client_id)
-      client = Client.find_by(uid: client_id)
-      client_orders = Order.where(client_uid: client_id)
-      renderer.render(
-        @view_file,
-        locals:
-          {
-            client: client,
-            client_orders: client_orders
-          }
-      )
     end
   end
 

@@ -1,8 +1,10 @@
 module Client
   class OrdersController < ApplicationController
+
     def index
-      ClientOrders::HTMLRenderer.new(:list).render(self, params[:client_id])
+      render html: ClientOrders::OrdersList.build(view_context, params[:client_id]), layout: true
     end
+
 
     def show
       @order = ClientOrders::Order.find_by(order_uid: params[:order_uid], client_uid: params[:client_id]).order
