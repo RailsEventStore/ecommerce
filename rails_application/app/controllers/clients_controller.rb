@@ -1,4 +1,6 @@
 class ClientsController < ApplicationController
+  layout "client_panel"
+
   def index
     @clients = ClientOrders::Client.all
   end

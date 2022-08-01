@@ -22,6 +22,7 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
     assert_select("select", "Arkency")
 
     login(arkency_id)
+    assert_select("h1", "Arkency")
     assert_select("p", "No orders to display.")
 
     order_id = SecureRandom.uuid

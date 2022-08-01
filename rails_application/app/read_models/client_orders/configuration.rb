@@ -3,23 +3,18 @@ module ClientOrders
   class OrdersList < Arbre::Component
 
     def self.build(view_context, client_id)
-      new(Arbre::Context.new(nil, view_context)).build(view_context,
+      new(Arbre::Context.new(nil, view_context)).build(
           Client.find_by(uid: client_id),
           Order.where(client_uid: client_id)
         )
     end
 
-    def build(view_context, client, client_orders, attributes = {})
+    def build(client, client_orders, attributes = {})
       super(attributes)
-      view_context.content_for(:header) do
-        client.name
-      end
-      view_context.content_for(:actions) do
-        secondary_action_button do
-          link_to 'Log out', clients_path
-        end
-      end
       div do
+        h1 class: "text-3xl font-bold text-gray-900" do
+          client.name
+        end
         if client_orders.count > 0
           table class: "w-full" do
             thead do
