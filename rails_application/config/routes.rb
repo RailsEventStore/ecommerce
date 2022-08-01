@@ -30,9 +30,9 @@ Rails.application.routes.draw do
 
   resources :customers, only: [:new, :create, :index, :update]
 
-  resources :clients, only: :index do
-    resources :orders, only: [:index, :show], controller: 'client/orders'
-  end
+  resources :clients, only: :index
+  resources :client_orders, only: [:index, :show], controller: 'client/orders'
+
   post :login, to: "clients#login"
 
 

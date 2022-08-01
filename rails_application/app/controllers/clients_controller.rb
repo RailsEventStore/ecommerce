@@ -6,6 +6,7 @@ class ClientsController < ApplicationController
   end
 
   def login
-    redirect_to client_orders_path(params[:client_id])
+    cookies[:client_id] = params[:client_id]
+    redirect_to client_orders_path
   end
 end

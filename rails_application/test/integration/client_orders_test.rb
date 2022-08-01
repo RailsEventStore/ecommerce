@@ -28,24 +28,18 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
     order_id = SecureRandom.uuid
     add_item_to_basket_for_order(async_remote_id, order_id)
     submit_order_for_customer(arkency_id, order_id)
-
-    login(arkency_id)
-
+    get "/client_orders"
     order_price = number_to_currency(Orders::Order.find_by(uid: order_id).discounted_value)
 
     assert_select("td", "Submitted")
     assert_select("td", order_price)
 
     pay_order(order_id)
-
-    login(arkency_id)
-
+    get "/client_orders"
     assert_select("td", "Paid")
 
     cancel_submitted_order_for_customer(arkency_id)
-
-    login(arkency_id)
-
+    get "/client_orders"
     assert_select("td", "Cancelled")
   end
 
