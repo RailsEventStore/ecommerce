@@ -14,20 +14,22 @@
   </head>
   <body class="bg-gray-100">
     <%= render 'client_top_navigation' %>
-    <main class="bg-white">
-      <div class="max-w-6xl mx-auto py-6 sm:px-6 lg:px-8">
-        <% if notice %>
-          <p class="bg-green-200 rounded text-green-600 py-2 px-4 mb-8 font-medium text-md" id="notice">
-            <%= notice %>
-          </p>
-        <% end %>
-        <% if alert %>
-          <p class="bg-red-200 rounded text-red-600 py-2 px-4 mb-8 font-medium text-md" id="alert">
-            <%= alert %>
-          </p>
-        <% end %>
-        <%= yield %>
+    <header class="bg-white shadow">
+      <div class="max-w-6xl mx-auto py-6 px-4 sm:px-6 lg:px-8 lg:flex lg:items-center lg:justify-between">
+        <div class="flex-1 min-w-0">
+          <h1 class="text-3xl font-bold text-gray-900">
+            <% if cookies[:client_id] %>
+              <%= secondary_action_button do %>
+                <% link_to('Log out', logout_path) %>
+              <% end %>
+            <% end %>
+          </h1>
+        </div>
       </div>
+    </header>
+    <main class="bg-white">
+
+      <%= yield %>
     </main>
   </body>
   <%= render 'footer' %>

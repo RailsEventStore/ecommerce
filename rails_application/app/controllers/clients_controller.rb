@@ -9,4 +9,9 @@ class ClientsController < ApplicationController
     cookies[:client_id] = params[:client_id]
     redirect_to client_orders_path
   end
+
+  def logout
+    cookies.delete(:client_id)
+    redirect_to clients_path
+  end
 end

@@ -11,45 +11,57 @@ module ClientOrders
 
     def build(client, client_orders, attributes = {})
       super(attributes)
-      div do
-        h1 class: "text-3xl font-bold text-gray-900" do
-          client.name
-        end
-        if client_orders.count > 0
-          table class: "w-full" do
-            thead do
+
+      div class: "max-w-6xl mx-auto py-6 sm:px-6 lg:px-8" do
+        client_name_header(client)
+        orders_table(client, client_orders)
+      end
+
+    end
+
+    private
+
+    def client_name_header(client)
+      h1 class: "text-3xl font-bold text-gray-900" do
+        client.name
+      end
+    end
+
+    def orders_table(client, client_orders)
+      if client_orders.count > 0
+        table class: "w-full" do
+          thead do
+            tr class: "border-t" do
+              th class: "text-left py-2" do
+                "Number"
+              end
+              th class: "text-left py-2" do
+                "State"
+              end
+              th class: "text-right py-2" do
+                "Price"
+              end
+            end
+          end
+          tbody do
+            client_orders.each do |client_order|
               tr class: "border-t" do
-                th class: "text-left py-2" do
-                  "Number"
+                td class: "py-2" do
+                  link_to client_order.number || 'Not submitted', client_order_path(id: client.id, order_uid: client_order.order_uid), class: "text-blue-500 hover:underline"
                 end
-                th class: "text-left py-2" do
-                  "State"
+                td class: "py-2 text-left" do
+                  client_order.state
                 end
-                th class: "text-right py-2" do
-                  "Price"
-                end
-              end
-            end
-            tbody do
-              client_orders.each do |client_order|
-                tr class: "border-t" do
-                  td class: "py-2" do
-                    link_to client_order.number || 'Not submitted', client_order_path(id: client.id, order_uid: client_order.order_uid), class: "text-blue-500 hover:underline"
-                  end
-                  td class: "py-2 text-left" do
-                    client_order.state
-                  end
-                  td class: "py-2 text-right" do
-                    number_to_currency(client_order.order.discounted_value)
-                  end
+                td class: "py-2 text-right" do
+                  number_to_currency(client_order.order.discounted_value)
                 end
               end
             end
           end
-        else
-          para do
-            "No orders to display."
-          end
+        end
+      else
+        para do
+          "No orders to display."
         end
       end
     end

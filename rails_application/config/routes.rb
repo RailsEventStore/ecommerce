@@ -34,6 +34,7 @@ Rails.application.routes.draw do
   resources :client_orders, only: [:index, :show], controller: 'client/orders'
 
   post :login, to: "clients#login"
+  get :logout, to: "clients#logout"
 
 
   match("architecture", to: "architecture#index", via: :get)

@@ -20,4 +20,4 @@ matcher:
     - ClientOrders::Configuration#subscribe_and_link_to_stream
     - ClientOrders::Configuration#link_to_stream
     - ClientOrders::Configuration#with_order
-    - ClientOrders::OrdersList#build
+    - ClientOrders::OrdersList*

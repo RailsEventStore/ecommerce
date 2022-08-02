@@ -17,7 +17,7 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
     async_remote_id = register_product("Async Remote", 39, 10)
 
     get "/clients"
-
+    assert_select("button", {count: 0, text: "Log out"})
     assert_select("button", "Login")
     assert_select("select", "Arkency")
 
@@ -41,6 +41,12 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
     cancel_submitted_order_for_customer(arkency_id)
     get "/client_orders"
     assert_select("td", "Cancelled")
+
+    assert_select("button", "Log out")
+    get "/logout"
+    follow_redirect!
+    assert_select("button", "Login")
+    assert_select("select", "Arkency")
   end
 
   private
