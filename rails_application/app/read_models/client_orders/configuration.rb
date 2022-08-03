@@ -47,7 +47,7 @@ module ClientOrders
             client_orders.each do |client_order|
               tr class: "border-t" do
                 td class: "py-2" do
-                  link_to client_order.number || 'Not submitted', client_order_path(id: client.id, order_uid: client_order.order_uid), class: "text-blue-500 hover:underline"
+                  para (client_order.number || 'Not submitted')
                 end
                 td class: "py-2 text-left" do
                   client_order.state

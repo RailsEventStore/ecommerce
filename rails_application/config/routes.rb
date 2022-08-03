@@ -30,11 +30,10 @@ Rails.application.routes.draw do
 
   resources :customers, only: [:new, :create, :index, :update]
 
-  resources :clients, only: :index
   resources :client_orders, only: [:index, :show], controller: 'client/orders'
-
-  post :login, to: "clients#login"
-  get :logout, to: "clients#logout"
+  post :login, to: "client/clients#login"
+  get :logout, to: "client/clients#logout"
+  get "clients", to: "client/clients#index"
 
 
   match("architecture", to: "architecture#index", via: :get)
