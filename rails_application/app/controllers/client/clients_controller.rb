@@ -3,8 +3,7 @@ module Client
     layout "client_panel"
 
     def index
-      @clients = ClientOrders::Client.all
-      render "clients/index"
+      render html: Login.build(view_context), layout: true
     end
 
     def login
