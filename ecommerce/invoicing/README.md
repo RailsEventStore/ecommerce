@@ -8,3 +8,8 @@
 ```
 make install test mutate
 ```
+
+
+### Domain knowledge
+
+[Steps for successful invoicing](https://www.xero.com/guides/invoicing/)
