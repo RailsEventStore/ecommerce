@@ -33,7 +33,7 @@ class Configuration
   end
 
   def enable_products_read_model(cqrs)
-    Products::Configuration.new.call(cqrs)
+    Products::Configuration.new(cqrs).call
   end
 
   def enable_customers_read_model(cqrs)

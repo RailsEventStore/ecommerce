@@ -4,39 +4,42 @@ module Products
   end
 
   class Configuration
-    def call(cqrs)
-      cqrs.subscribe(
-        -> (event) { register_product(event) },
-        [ProductCatalog::ProductRegistered]
-      )
-      cqrs.subscribe(
-        ->(event) { change_stock_level(event) },
-        [Inventory::StockLevelChanged]
-      )
-      cqrs.subscribe(
-        -> (event) { set_price(event) },
-        [Pricing::PriceSet])
-      cqrs.subscribe(
-        -> (event) { set_vat_rate(event) },
-        [Taxes::VatRateSet])
+    def initialize(cqrs)
+      @cqrs = cqrs
+    end
+
+    def call
+      @cqrs.subscribe(-> (event) { register_product(event) }, [ProductCatalog::ProductRegistered])
+      copy(Inventory::StockLevelChanged, :stock_level)
+      copy(Pricing::PriceSet, :price)
+      copy_nested_to_column(Taxes::VatRateSet, :vat_rate, :code, :vat_rate_code)
     end
 
     private
+
+    def copy(event, attribute)
+      @cqrs.subscribe(-> (event) { copy_event_attribute_to_column(event, attribute, attribute) }, [event])
+    end
+
+    def copy_nested_to_column(event, top_event_attribute, nested_attribute, column)
+      @cqrs.subscribe(
+        -> (event) { copy_nested_event_attribute_to_column(event, top_event_attribute, nested_attribute, column) }, [event])
+    end
 
     def register_product(event)
       Product.create(id: event.data.fetch(:product_id), name: event.data.fetch(:name))
     end
 
-    def set_price(event)
-      find(event.data.fetch(:product_id)).update_attribute(:price, event.data.fetch(:price))
+    def copy_event_attribute_to_column(event, event_attribute, column)
+      product(event).update_attribute(column, event.data.fetch(event_attribute))
     end
 
-    def set_vat_rate(event)
-      find(event.data.fetch(:product_id)).update_attribute(:vat_rate_code, event.data.fetch(:vat_rate).fetch(:code))
+    def copy_nested_event_attribute_to_column(event, top_event_attribute, nested_attribute, column)
+      product(event).update_attribute(column, event.data.fetch(top_event_attribute).fetch(nested_attribute))
     end
 
-    def change_stock_level(event)
-      find(event.data.fetch(:product_id)).update_attribute(:stock_level, event.data.fetch(:stock_level))
+    def product(event)
+      find(event.data.fetch(:product_id))
     end
 
     def find(product_id)
