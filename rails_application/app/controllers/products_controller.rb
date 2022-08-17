@@ -35,6 +35,7 @@ class ProductsController < ApplicationController
 
   def create_product(product_id, name)
     command_bus.(create_product_cmd(product_id, name))
+    command_bus.(name_product_cmd(product_id, name))
   end
 
   def set_product_price(product_id, price)
@@ -48,6 +49,10 @@ class ProductsController < ApplicationController
 
   def create_product_cmd(product_id, name)
     ProductCatalog::RegisterProduct.new(product_id: product_id, name: name)
+  end
+
+  def name_product_cmd(product_id, name)
+    ProductCatalog::NameProduct.new(product_id: product_id, name: name)
   end
 
   def set_product_price_cmd(product_id, price)

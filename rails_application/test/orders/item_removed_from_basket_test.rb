@@ -17,6 +17,11 @@ module Orders
       product_id = SecureRandom.uuid
       run_command(
         ProductCatalog::RegisterProduct.new(
+          product_id: product_id
+        )
+      )
+      run_command(
+        ProductCatalog::NameProduct.new(
           product_id: product_id,
           name: "something"
         )
@@ -67,8 +72,7 @@ module Orders
       product_id = SecureRandom.uuid
       run_command(
         ProductCatalog::RegisterProduct.new(
-          product_id: product_id,
-          name: "test"
+          product_id: product_id
         )
       )
       run_command(Pricing::SetPrice.new(product_id: product_id, price: 20))
@@ -104,6 +108,11 @@ module Orders
       product_id = SecureRandom.uuid
       run_command(
         ProductCatalog::RegisterProduct.new(
+          product_id: product_id
+        )
+      )
+      run_command(
+        ProductCatalog::NameProduct.new(
           product_id: product_id,
           name: "test"
         )
@@ -113,8 +122,13 @@ module Orders
       another_product_id = SecureRandom.uuid
       run_command(
         ProductCatalog::RegisterProduct.new(
+          product_id: another_product_id
+        )
+      )
+      run_command(
+        ProductCatalog::NameProduct.new(
           product_id: another_product_id,
-          name: "test"
+          name: "test2"
         )
       )
       run_command(

@@ -115,7 +115,7 @@ module Processes
               )
             )
           end,
-          [ProductCatalog::ProductRegistered]
+          [ProductCatalog::ProductNamed]
         )
     end
 

@@ -38,6 +38,11 @@ end
   product_id = SecureRandom.uuid
   command_bus.call(
     ProductCatalog::RegisterProduct.new(
+      product_id: product_id
+    )
+  )
+  command_bus.call(
+    ProductCatalog::NameProduct.new(
       product_id: product_id,
       name: name_price_tuple[0]
     )

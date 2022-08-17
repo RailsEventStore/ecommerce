@@ -19,7 +19,6 @@ module ProductCatalog
       ProductRegistered.new(
         data: {
           product_id: cmd.product_id,
-          name: cmd.name
         }
       )
     end

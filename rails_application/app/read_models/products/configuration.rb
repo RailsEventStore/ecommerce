@@ -10,6 +10,7 @@ module Products
 
     def call
       @cqrs.subscribe(-> (event) { register_product(event) }, [ProductCatalog::ProductRegistered])
+      copy(ProductCatalog::ProductNamed, :name)
       copy(Inventory::StockLevelChanged, :stock_level)
       copy(Pricing::PriceSet, :price)
       copy_nested_to_column(Taxes::VatRateSet, :vat_rate, :code, :vat_rate_code)
@@ -27,7 +28,7 @@ module Products
     end
 
     def register_product(event)
-      Product.create(id: event.data.fetch(:product_id), name: event.data.fetch(:name))
+      Product.create(id: event.data.fetch(:product_id))
     end
 
     def copy_event_attribute_to_column(event, event_attribute, column)

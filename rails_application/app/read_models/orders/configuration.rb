@@ -73,6 +73,11 @@ module Orders
       )
 
       subscribe_and_link_to_stream(
+        -> (event) { name_product(event) },
+        [ProductCatalog::ProductNamed]
+      )
+
+      subscribe_and_link_to_stream(
         -> (event) { change_product_price(event) },
         [Pricing::PriceSet]
       )
@@ -188,8 +193,11 @@ module Orders
     end
 
     def create_product(event)
-      Product.create(
-        uid: event.data.fetch(:product_id),
+      Product.create(uid: event.data.fetch(:product_id))
+    end
+
+    def name_product(event)
+      Product.find_by_uid(event.data.fetch(:product_id)).update(
         name: event.data.fetch(:name)
       )
     end

@@ -18,7 +18,7 @@ module ProductCatalog
 
     def test_should_publish_event
       uid = SecureRandom.uuid
-      product_registered = ProductCatalog::ProductRegistered.new(data: {product_id: uid, name: fake_name})
+      product_registered = ProductCatalog::ProductRegistered.new(data: {product_id: uid})
       assert_events("Catalog::Product$#{uid}", product_registered) do
         register_product(uid, fake_name)
       end
@@ -27,7 +27,7 @@ module ProductCatalog
     private
 
     def register_product(uid, name)
-      run_command(RegisterProduct.new(product_id: uid, name: name))
+      run_command(RegisterProduct.new(product_id: uid))
     end
 
     def fake_name
