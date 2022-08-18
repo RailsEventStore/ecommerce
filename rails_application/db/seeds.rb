@@ -8,9 +8,33 @@
 
 command_bus = Rails.configuration.command_bus
 
-["BigCorp Ltd", "MegaTron Gmbh", "Arkency"].each do |name|
+[
+  ["BigCorp Ltd", "bigcorp", "12345"],
+  ["MegaTron Gmbh", "megatron", "qwerty"],
+  ["Arkency", 'arkency', 'qwe123']
+].each do |name, login, password|
+  account_id = SecureRandom.uuid
+  customer_id = SecureRandom.uuid
+  password_hash = Digest::SHA256.hexdigest(password)
+
   command_bus.call(
-    Crm::RegisterCustomer.new(customer_id: SecureRandom.uuid, name: name)
+    Crm::RegisterCustomer.new(customer_id: customer_id, name: name)
+  )
+
+  command_bus.call(
+    Authentication::RegisterAccount.new(account_id: account_id)
+  )
+
+  command_bus.call(
+    Authentication::SetLogin.new(account_id: account_id, login: login)
+  )
+
+  command_bus.call(
+    Authentication::SetPasswordHash.new(account_id: account_id, password_hash: password_hash)
+  )
+
+  command_bus.call(
+    Authentication::ConnectAccountToClient.new(account_id: account_id, client_id: customer_id)
   )
 end
 
