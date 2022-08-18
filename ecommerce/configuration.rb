@@ -1,3 +1,4 @@
+require_relative "authentication/lib/authentication"
 require_relative "ordering/lib/ordering"
 require_relative "pricing/lib/pricing"
 require_relative "product_catalog/lib/product_catalog"
@@ -27,6 +28,7 @@ module Ecommerce
         "Neither number_generator nor payment_gateway can be null"
       ) if @number_generator.nil? || @payment_gateway.nil?
       [
+        Authentication::Configuration.new,
         Shipments::Configuration.new,
         Ordering::Configuration.new(@number_generator),
         Pricing::Configuration.new,
