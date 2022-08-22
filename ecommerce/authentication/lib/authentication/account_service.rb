@@ -1,5 +1,5 @@
 module Authentication
-  class OnRegistration
+  class RegisterAccountHandler
     def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)
     end
@@ -11,7 +11,7 @@ module Authentication
     end
   end
 
-  class OnLoginSet
+  class SetLoginHandler
     def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)
     end
@@ -23,7 +23,7 @@ module Authentication
     end
   end
 
-  class OnPasswordHashSet
+  class SetPasswordHashHandler
     def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)
     end
@@ -35,7 +35,7 @@ module Authentication
     end
   end
 
-  class OnAccountConnectedToClient
+  class ConnectAccountToClientHandler
     def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)
     end
