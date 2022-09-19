@@ -46,6 +46,23 @@ module Infra
       event_store.read.stream(name).to_a
     end
 
+    def process(event_name, event_data_keys, command, command_data_keys)
+      subscribe(
+        ->(event) do
+          run(
+            command.new(
+              Hash[
+                command_data_keys.zip(
+                  event_data_keys.map { |key| event.data.fetch(key) }
+                )
+              ]
+            )
+          )
+        end,
+        [event_name]
+      )
+    end
+
     def to_hash
       @commands_to_events
     end

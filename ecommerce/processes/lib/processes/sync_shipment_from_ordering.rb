@@ -1,27 +1,13 @@
 module Processes
   class SyncShipmentFromOrdering
     def initialize(cqrs)
-      cqrs.subscribe(
-        ->(event) do
-          cqrs.run(
-            Shipping::AddItemToShipmentPickingList.new(
-              order_id: event.data.fetch(:order_id),
-              product_id: event.data.fetch(:product_id)
-            )
-          )
-        end,
-        [Ordering::ItemAddedToBasket]
+      cqrs.process(
+        Ordering::ItemAddedToBasket,            [:order_id, :product_id],
+        Shipping::AddItemToShipmentPickingList, [:order_id, :product_id]
       )
-      cqrs.subscribe(
-        ->(event) do
-          cqrs.run(
-            Shipping::RemoveItemFromShipmentPickingList.new(
-              order_id: event.data.fetch(:order_id),
-              product_id: event.data.fetch(:product_id)
-            )
-          )
-        end,
-        [Ordering::ItemRemovedFromBasket]
+      cqrs.process(
+        Ordering::ItemRemovedFromBasket,             [:order_id, :product_id],
+        Shipping::RemoveItemFromShipmentPickingList, [:order_id, :product_id]
       )
     end
   end

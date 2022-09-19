@@ -106,18 +106,11 @@ module Processes
     end
 
     def enable_product_name_sync(cqrs)
-        cqrs.subscribe(
-          ->(event) do
-            cqrs.run(
-              Invoicing::SetProductNameDisplayedOnInvoice.new(
-                product_id: event.data.fetch(:product_id),
-                name_displayed: event.data.fetch(:name)
-              )
-            )
-          end,
-          [ProductCatalog::ProductNamed]
-        )
+      cqrs.process(
+           ProductCatalog::ProductNamed,                [:product_id, :name],
+           Invoicing::SetProductNameDisplayedOnInvoice, [:product_id, :name_displayed])
     end
+
 
     def set_invoice_payment_date_when_order_confirmed(cqrs)
       cqrs.subscribe(
