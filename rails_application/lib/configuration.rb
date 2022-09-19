@@ -6,6 +6,7 @@ class Configuration
 
     enable_orders_read_model(cqrs)
     enable_products_read_model(cqrs)
+    enable_public_offer_products_read_model(cqrs)
     enable_customers_read_model(cqrs)
     enable_invoices_read_model(cqrs)
     enable_client_orders_read_model(cqrs)
@@ -34,6 +35,10 @@ class Configuration
 
   def enable_products_read_model(cqrs)
     Products::Configuration.new(cqrs).call
+  end
+
+  def enable_public_offer_products_read_model(cqrs)
+    PublicOffer::Configuration.new(cqrs).call
   end
 
   def enable_customers_read_model(cqrs)

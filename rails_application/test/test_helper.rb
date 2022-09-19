@@ -74,6 +74,11 @@ class InMemoryRESIntegrationTestCase < ActionDispatch::IntegrationTest
     product_id
   end
 
+  def login(client_id)
+    post "/login", params: { client_id: client_id }
+    follow_redirect!
+  end
+
   def run_command(command)
     puts "Command: #{command.class} used in integrations test."
     Rails.configuration.command_bus.call(command)

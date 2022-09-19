@@ -34,6 +34,7 @@ Rails.application.routes.draw do
   post :login, to: "client/clients#login"
   get :logout, to: "client/clients#logout"
   get "clients", to: "client/clients#index"
+  get "client/products", to: "client/products#index"
 
 
   match("architecture", to: "architecture#index", via: :get)
