@@ -1,38 +1,21 @@
 module Processes
   class SyncInventoryFromOrdering
     def initialize(cqrs)
-      cqrs.subscribe(
-        ->(event) do
-          cqrs.run(
-            Inventory::SubmitReservation.new(
-              order_id: event.data.fetch(:order_id),
-              reservation_items: event.data.fetch(:order_lines)
-            )
-          )
-        end,
-        [Ordering::OrderSubmitted]
+      cqrs.process(
+        Ordering::OrderSubmitted,     [:order_id, :order_lines],
+        Inventory::SubmitReservation, [:order_id, :reservation_items]
       )
-
-      cqrs.subscribe(
-        ->(event) do
-          cqrs.run(
-            Inventory::CompleteReservation.new(
-              order_id: event.data.fetch(:order_id)
-            )
-          )
-        end,
-        [Ordering::OrderConfirmed]
+      cqrs.process(
+        Ordering::OrderConfirmed,       [:order_id],
+        Inventory::CompleteReservation, [:order_id]
       )
-
-      cqrs.subscribe(
-        ->(event) do
-          cqrs.run(
-            Inventory::CancelReservation.new(
-              order_id: event.data.fetch(:order_id)
-            )
-          )
-        end,
-        [Ordering::OrderCancelled, Ordering::OrderExpired]
+      cqrs.process(
+        Ordering::OrderExpired,       [:order_id],
+        Inventory::CancelReservation, [:order_id]
+      )
+      cqrs.process(
+        Ordering::OrderCancelled,       [:order_id],
+        Inventory::CancelReservation,   [:order_id]
       )
     end
   end
