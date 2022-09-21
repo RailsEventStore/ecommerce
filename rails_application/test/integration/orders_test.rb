@@ -73,6 +73,25 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     follow_redirect!
     assert_select("td", text: "Paid")
     assert_payment_gateway_value(123.30)
+
+    get "/orders/#{order_id}"
+    assert_select("dd", "Shipping address is missing.")
+    assert_select("a", "Add shipment address")
+    get "/orders/#{order_id}/shipping_address/edit"
+    assert_select("label", "Addressee's full name (Person or Company)")
+    put "/orders/#{order_id}/shipping_address", params: {
+      "shipments_shipment" => {
+        address_line_1: "123 Main Street",
+        address_line_2: "Apt 1",
+        address_line_3: "San Francisco",
+        address_line_4: "US",
+      }
+    }
+    follow_redirect!
+    assert_select("dd", "Your shipment has been queued for processing.")
+    get "/shipments"
+    assert_select("td", "123 Main Street Apt 1 San Francisco US")
+
     assert_res_browser_order_history
   end
 

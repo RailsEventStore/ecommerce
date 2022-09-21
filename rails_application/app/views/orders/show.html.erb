@@ -37,7 +37,11 @@
   <dd class="mb-2">
     <% unless @shipment %>
       Shipping address is missing.
-      <%= link_to "Add",
+    <% end %>
+  </dd>
+  <dd class="mb-2">
+    <% unless @shipment %>
+      <%= link_to "Add shipment address",
                   edit_order_shipping_address_path(@order.uid),
                   class: 'px-2 py-1 border rounded-md shadow-sm text-xs font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 border-transparent text-white bg-blue-600 hover:bg-blue-700'
       %>
@@ -52,7 +56,7 @@
         <%= link_to @invoice.number, invoice_path(@order.uid) %>
       <% elsif !@invoice.address_present? %>
         Billing address is missing.
-        <%= link_to "Add",
+        <%= link_to "Add billing address",
                     edit_order_billing_address_path(@order.uid),
                     class: 'px-2 py-1 border rounded-md shadow-sm text-xs font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 border-transparent text-white bg-blue-600 hover:bg-blue-700'
         %>
