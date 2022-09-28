@@ -214,6 +214,7 @@ module Orders
     end
 
     def assign_customer(event, customer_id)
+      create_draft_order(event.data.fetch(:order_id))
       with_order(event) { |order| order.customer = Customer.find_by_uid(customer_id).name }
     end
   end

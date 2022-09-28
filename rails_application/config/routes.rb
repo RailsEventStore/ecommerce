@@ -32,7 +32,12 @@ Rails.application.routes.draw do
 
   resources :customers, only: [:new, :create, :index, :update]
 
-  resources :client_orders, only: [:index, :show], controller: 'client/orders'
+  resources :client_orders, only: [:index, :show, :new, :edit, :update, :create], controller: 'client/orders' do
+    member do
+      post :add_item
+      post :remove_item
+    end
+  end
   post :login, to: "client/clients#login"
   get :logout, to: "client/clients#logout"
   get "clients", to: "client/clients#index"

@@ -49,6 +49,22 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
     assert_select("select", "Arkency")
   end
 
+  def test_creating_order_as_client
+    arkency_id = register_customer('Arkency')
+    async_remote_id = register_product("Async Remote", 39, 10)
+
+    get "/clients"
+    login(arkency_id)
+    order_id = SecureRandom.uuid
+    get "/client_orders/new"
+    as_client_add_item_to_basket_for_order(async_remote_id, order_id)
+    as_client_submit_order_for_customer(order_id)
+    get "/client_orders"
+    order_price = number_to_currency(Orders::Order.find_by(uid: order_id).discounted_value)
+    assert_select("td", "Submitted")
+    assert_select("td", order_price)
+  end
+
   private
 
   def submit_order_for_customer(customer_id, order_id)
@@ -58,6 +74,16 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
 
   def add_item_to_basket_for_order(async_remote_id, order_id)
     post "/orders/#{order_id}/add_item?product_id=#{async_remote_id}"
+    follow_redirect!
+  end
+
+  def as_client_submit_order_for_customer(order_id)
+    post "/client_orders", params: { order_id: order_id}
+    follow_redirect!
+  end
+
+  def as_client_add_item_to_basket_for_order(async_remote_id, order_id)
+    post "/client_orders/#{order_id}/add_item?product_id=#{async_remote_id}"
     follow_redirect!
   end
 
