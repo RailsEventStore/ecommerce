@@ -72,7 +72,7 @@ module ClientOrders
         link_to(
           "New order",
           new_client_order_path,
-          class: "btn btn-primary border-transparent text-white bg-blue-600 hover:bg-blue-700"))
+          class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"))
     end
   end
 
