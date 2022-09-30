@@ -29,3 +29,5 @@ yarn-debug.log*
 
 .idea
 .ruby-version
+/app/assets/builds/*
+!/app/assets/builds/.keep
