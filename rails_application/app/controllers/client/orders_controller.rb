@@ -10,6 +10,7 @@ module Client
     def new
       @order_id = SecureRandom.uuid
       @products = Products::Product.all
+      render 'edit'
     end
 
     def create
