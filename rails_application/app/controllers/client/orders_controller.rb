@@ -31,10 +31,8 @@ module Client
 
     def edit
       @order_id = params[:id]
-      @order = Orders::Order.find_by_uid(params[:id])
       @order_lines = Orders::OrderLine.where(order_uid: params[:id])
       @products = Products::Product.all
-      @time_promotions = TimePromotions::TimePromotion.current
     end
 
     def add_item
