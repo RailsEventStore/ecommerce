@@ -5,7 +5,7 @@ module PublicOffer
 
   class ProductsList < Arbre::Component
 
-    def self.build(view_context, client_id)
+    def self.build(view_context)
       new(Arbre::Context.new(nil, view_context)).build(Product.all)
     end
 

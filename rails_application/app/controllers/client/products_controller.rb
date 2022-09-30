@@ -3,7 +3,7 @@ module Client
     layout 'client_panel'
 
     def index
-      render html: PublicOffer::ProductsList.build(view_context, cookies[:client_id]), layout: true
+      render html: PublicOffer::ProductsList.build(view_context), layout: true
     end
 
   end
