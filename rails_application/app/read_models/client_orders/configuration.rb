@@ -15,7 +15,7 @@ module ClientOrders
       div class: "max-w-6xl mx-auto py-6 sm:px-6 lg:px-8" do
         client_name_header(client)
         orders_table(client, client_orders)
-        new_order_button(client)
+        new_order_button
       end
 
     end
@@ -67,11 +67,11 @@ module ClientOrders
       end
     end
 
-    def new_order_button(client)
+    def new_order_button
       para(
         link_to(
           "New order",
-          new_client_order_path(client.uid),
+          new_client_order_path,
           class: "btn btn-primary border-transparent text-white bg-blue-600 hover:bg-blue-700"))
     end
   end
