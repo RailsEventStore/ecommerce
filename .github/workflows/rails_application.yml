@@ -70,8 +70,8 @@ jobs:
           bundler-cache: true
           working-directory: ${{ env.WORKING_DIRECTORY }}
       - name: Assets Precompile
-          working-directory: ${{ env.WORKING_DIRECTORY }}
-          run: bundle exec rails tailwindcss:build
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+        run: bundle exec rails tailwindcss:build
       - run: make mutate
         working-directory: ${{ env.WORKING_DIRECTORY }}
       - uses: 8398a7/action-slack@v3
