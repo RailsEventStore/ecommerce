@@ -10,6 +10,12 @@ module Pricing
 
   class OverlappingHappyHours < StandardError; end
 
+  class FreeProductAlreadyMade < StandardError
+  end
+
+  class FreeProductNotExists < StandardError
+  end
+
   class SetPercentageDiscountHandler
     def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)
@@ -169,6 +175,30 @@ module Pricing
     def call(command)
       @repository.with_aggregate(Coupon, command.aggregate_id) do |coupon|
         coupon.register(command.name, command.code, command.discount)
+      end
+    end
+  end
+
+  class MakeProductFreeForOrderHandler
+    def initialize(event_store)
+      @repository = Infra::AggregateRootRepository.new(event_store)
+    end
+
+    def call(command)
+      @repository.with_aggregate(Order, command.aggregate_id) do |product|
+        product.make_product_free(command.order_id, command.product_id)
+      end
+    end
+  end
+
+  class RemoveFreeProductFromOrderHandler
+    def initialize(event_store)
+      @repository = Infra::AggregateRootRepository.new(event_store)
+    end
+
+    def call(command)
+      @repository.with_aggregate(Order, command.aggregate_id) do |product|
+        product.remove_free_product(command.order_id, command.product_id)
       end
     end
   end

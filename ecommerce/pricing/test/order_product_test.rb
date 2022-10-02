@@ -11,6 +11,7 @@ module Pricing
       end
 
       def test_values_equality
+        refute(Product.new(@id).eql?(FreeProduct.new(@id)))
         refute(Product.new(@id).eql?(Product.new(SecureRandom.uuid)))
         refute(Product.new(@id).eql?(@id))
       end
@@ -31,7 +32,7 @@ module Pricing
       end
 
       def test_values_equality
-        assert(FreeProduct.new(@id).eql?(FreeProduct.new(@id)))
+        refute(FreeProduct.new(@id).eql?(Product.new(@id)))
         refute(FreeProduct.new(@id).eql?(FreeProduct.new(SecureRandom.uuid)))
         refute(FreeProduct.new(@id).eql?(@id))
       end

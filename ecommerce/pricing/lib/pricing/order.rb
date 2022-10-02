@@ -4,7 +4,7 @@ module Pricing
 
     def initialize(id)
       @id = id
-      @products = []
+      @product_quantity_hash = Hash.new(0)
       @discount = Discounts::NoPercentageDiscount.new
     end
 
@@ -55,8 +55,28 @@ module Pricing
       )
     end
 
+    def make_product_free(order_id, product_id)
+      raise FreeProductAlreadyMade if @product_quantity_hash.any? {|key, value| key.instance_of?(FreeProduct) && value.eql?(1)}
+      apply ProductMadeFreeForOrder.new(
+        data: {
+          order_id: order_id,
+          product_id: product_id
+        }
+      )
+    end
+
+    def remove_free_product(order_id, product_id)
+      raise FreeProductNotExists if @product_quantity_hash.none? {|key, value| key.instance_of?(FreeProduct) && value.eql?(1)}
+      apply FreeProductRemovedFromOrder.new(
+        data: {
+          order_id: order_id,
+          product_id: product_id
+        }
+      )
+    end
+
     def calculate_total_value(pricing_catalog, time_promotion_discount)
-      total_value = @products.sum { |product| pricing_catalog.price_for(product.id) }
+      total_value = @product_quantity_hash.sum { |product, qty| pricing_catalog.price_for(product) * qty }
 
       discounted_value = @discount.add(time_promotion_discount).apply(total_value)
       apply(
@@ -71,13 +91,13 @@ module Pricing
     end
 
     def calculate_sub_amounts(pricing_catalog, time_promotions_discount)
-      sub_amounts_total = product_quantity_hash.map do |product, quantity|
-        quantity * pricing_catalog.price_for(product.id)
+      sub_amounts_total = @product_quantity_hash.map do |product, quantity|
+        quantity * pricing_catalog.price_for(product)
       end
       sub_discounts = calculate_total_sub_discounts(pricing_catalog, time_promotions_discount)
 
-      products = product_quantity_hash.keys
-      quantities = product_quantity_hash.values
+      products = @product_quantity_hash.keys
+      quantities = @product_quantity_hash.values
       products.zip(quantities, sub_amounts_total, sub_discounts) do |product, quantity, sub_amount, sub_discount|
         apply(
           PriceItemValueCalculated.new(
@@ -96,11 +116,15 @@ module Pricing
     private
 
     on PriceItemAdded do |event|
-      @products << Product.new(event.data.fetch(:product_id))
+      @product_quantity_hash[Product.new(event.data.fetch(:product_id))] += 1
     end
 
     on PriceItemRemoved do |event|
-      @products.delete_if { |product| product.id.eql?(event.data.fetch(:product_id)) }
+      if @product_quantity_hash[Product.new(event.data.fetch(:product_id))]
+        @product_quantity_hash[Product.new(event.data.fetch(:product_id))] -= 1
+      else
+        @product_quantity_hash[FreeProduct.new(event.data.fetch(:product_id))] -= 1
+      end
     end
 
     on PriceItemValueCalculated do |event|
@@ -121,16 +145,25 @@ module Pricing
       @discount = Discounts::NoPercentageDiscount.new
     end
 
-    def product_quantity_hash
-      @product_quantity_hash ||= @products.tally
+    on ProductMadeFreeForOrder do |event|
+      replace(Product, FreeProduct, event.data.fetch(:product_id))
+    end
+
+    on FreeProductRemovedFromOrder do |event|
+      replace(FreeProduct, Product, event.data.fetch(:product_id))
     end
 
     def calculate_total_sub_discounts(pricing_catalog, time_promotions_discount)
-      product_quantity_hash.map do |product, quantity|
-        catalog_price_for_single = pricing_catalog.price_for(product.id)
+      @product_quantity_hash.map do |product, quantity|
+        catalog_price_for_single = pricing_catalog.price_for(product)
         with_total_discount_single = @discount.add(time_promotions_discount).apply(catalog_price_for_single)
         quantity * (catalog_price_for_single - with_total_discount_single)
       end
+    end
+
+    def replace(from, to, product_id)
+      @product_quantity_hash[from.new(product_id)] -= 1
+      @product_quantity_hash[to.new(product_id)] += 1
     end
 
     class Product

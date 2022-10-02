@@ -4,7 +4,16 @@ module Pricing
       @event_store = event_store
     end
 
-    def price_for(product_id)
+    def price_for(product)
+      case product
+      when Order::FreeProduct
+        0
+      else
+        price_by_product_id(product.id)
+      end
+    end
+
+    def price_by_product_id(product_id)
       @event_store
         .read
         .of_type(PriceSet)

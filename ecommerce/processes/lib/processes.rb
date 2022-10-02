@@ -125,5 +125,9 @@ module Processes
         [Ordering::OrderConfirmed]
       )
     end
+
+    def enable_three_plus_one_free_process(cqrs)
+      ThreePlusOneFree.new(cqrs)
+    end
   end
 end

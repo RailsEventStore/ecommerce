@@ -79,6 +79,16 @@ module Pricing
         SetTimePromotionRangeHandler.new(cqrs.event_store),
         TimePromotionRangeSet
       )
+      cqrs.register_command(
+        MakeProductFreeForOrder,
+        MakeProductFreeForOrderHandler.new(cqrs.event_store),
+        ProductMadeFreeForOrder
+      )
+      cqrs.register_command(
+        RemoveFreeProductFromOrder,
+        RemoveFreeProductFromOrderHandler.new(cqrs.event_store),
+        FreeProductRemovedFromOrder
+      )
       cqrs.subscribe(
         ->(event) do
           cqrs.run(
@@ -92,7 +102,9 @@ module Pricing
           PriceItemRemoved,
           PercentageDiscountSet,
           PercentageDiscountReset,
-          PercentageDiscountChanged
+          PercentageDiscountChanged,
+          ProductMadeFreeForOrder,
+          FreeProductRemovedFromOrder
         ]
       )
     end

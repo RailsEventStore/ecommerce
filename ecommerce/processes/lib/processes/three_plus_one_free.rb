@@ -3,6 +3,15 @@ module Processes
 
     def initialize(cqrs)
       @cqrs = cqrs
+      @cqrs.subscribe(
+        self,
+        [
+          Pricing::PriceItemAdded,
+          Pricing::PriceItemRemoved,
+          Pricing::ProductMadeFreeForOrder,
+          Pricing::FreeProductRemovedFromOrder
+        ]
+      )
     end
 
     def call(event)
@@ -98,7 +107,7 @@ module Processes
       attr_reader :state, :pricing_catalog
 
       def cheapest_product
-        state.order_lines.keys.sort_by { |product_id| pricing_catalog.price_for(product_id) }.first
+        state.order_lines.keys.sort_by { |product_id| pricing_catalog.price_by_product_id(product_id) }.first
       end
 
       def eligible_for_free_product?
