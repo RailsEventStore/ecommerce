@@ -15,6 +15,7 @@ gem "turbo-rails"
 gem "importmap-rails", "~> 1.1"
 gem "rails_event_store", "~> 2.5.1"
 gem 'arbre'
+gem 'redis'
 
 group :development do
   gem "listen", "~> 3.3"
