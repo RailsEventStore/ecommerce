@@ -11,7 +11,8 @@ gem "skylight"
 gem "tailwindcss-rails"
 gem "kaminari"
 gem "sprockets-rails"
-
+gem "turbo-rails"
+gem "importmap-rails", "~> 1.1"
 gem "rails_event_store", "~> 2.5.1"
 gem 'arbre'
 

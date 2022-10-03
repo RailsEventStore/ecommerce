@@ -9,8 +9,8 @@
     <%= stylesheet_link_tag "inter-font", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag "application", media: "all", "data-turbo-track": "reload" %>
-    <%= javascript_include_tag "application", "data-turbo-track": "reload" %>
     <%= render 'tracking' %>
+    <%= javascript_importmap_tags %>
   </head>
   <body class="bg-gray-100">
     <%= render 'client_top_navigation' %>
