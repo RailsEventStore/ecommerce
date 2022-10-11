@@ -17,8 +17,8 @@ module Taxes
 
     def call(cqrs)
       @@available_vat_rates = @available_vat_rates
-      cqrs.register_command(SetVatRate, SetVatRateHandler.new(cqrs.event_store), VatRateSet)
-      cqrs.register_command(DetermineVatRate, DetermineVatRateHandler.new(cqrs.event_store), VatRateDetermined)
+      cqrs.register_command(SetVatRate, SetVatRateHandler.new(cqrs.event_store))
+      cqrs.register_command(DetermineVatRate, DetermineVatRateHandler.new(cqrs.event_store))
     end
   end
 end

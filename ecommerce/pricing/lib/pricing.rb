@@ -16,78 +16,63 @@ module Pricing
     def call(cqrs)
       cqrs.register_command(
         AddPriceItem,
-        OnAddItemToBasket.new(cqrs.event_store),
-        PriceItemAdded
+        OnAddItemToBasket.new(cqrs.event_store)
       )
       cqrs.register_command(
         RemovePriceItem,
-        OnRemoveItemFromBasket.new(cqrs.event_store),
-        PriceItemRemoved
+        OnRemoveItemFromBasket.new(cqrs.event_store)
       )
       cqrs.register_command(
         SetPrice,
-        SetPriceHandler.new(cqrs.event_store),
-        PriceSet
+        SetPriceHandler.new(cqrs.event_store)
       )
       cqrs.register_command(
         CalculateTotalValue,
-        OnCalculateTotalValue.new(cqrs.event_store),
-        OrderTotalValueCalculated
+        OnCalculateTotalValue.new(cqrs.event_store)
       )
       cqrs.register_command(
         CalculateSubAmounts,
-        OnCalculateTotalValue.new(cqrs.event_store).public_method(:calculate_sub_amounts),
-        PriceItemValueCalculated
+        OnCalculateTotalValue.new(cqrs.event_store).public_method(:calculate_sub_amounts)
       )
       cqrs.register_command(
         SetPercentageDiscount,
-        SetPercentageDiscountHandler.new(cqrs.event_store),
-        PercentageDiscountSet
+        SetPercentageDiscountHandler.new(cqrs.event_store)
       )
       cqrs.register_command(
         ResetPercentageDiscount,
-        ResetPercentageDiscountHandler.new(cqrs.event_store),
-        PercentageDiscountReset
+        ResetPercentageDiscountHandler.new(cqrs.event_store)
       )
       cqrs.register_command(
         ChangePercentageDiscount,
-        ChangePercentageDiscountHandler.new(cqrs.event_store),
-        PercentageDiscountChanged
+        ChangePercentageDiscountHandler.new(cqrs.event_store)
       )
       cqrs.register_command(
         RegisterCoupon,
-        OnCouponRegister.new(cqrs.event_store),
-        CouponRegistered
+        OnCouponRegister.new(cqrs.event_store)
       )
       cqrs.register_command(
         CreateTimePromotion,
-        CreateTimePromotionHandler.new(cqrs.event_store),
-        TimePromotionCreated
+        CreateTimePromotionHandler.new(cqrs.event_store)
       )
       cqrs.register_command(
         LabelTimePromotion,
-        LabelTimePromotionHandler.new(cqrs.event_store),
-        TimePromotionLabeled
+        LabelTimePromotionHandler.new(cqrs.event_store)
       )
       cqrs.register_command(
         SetTimePromotionDiscount,
-        SetTimePromotionDiscountHandler.new(cqrs.event_store),
-        TimePromotionDiscountSet
+        SetTimePromotionDiscountHandler.new(cqrs.event_store)
       )
       cqrs.register_command(
         SetTimePromotionRange,
-        SetTimePromotionRangeHandler.new(cqrs.event_store),
-        TimePromotionRangeSet
+        SetTimePromotionRangeHandler.new(cqrs.event_store)
       )
       cqrs.register_command(
         MakeProductFreeForOrder,
-        MakeProductFreeForOrderHandler.new(cqrs.event_store),
-        ProductMadeFreeForOrder
+        MakeProductFreeForOrderHandler.new(cqrs.event_store)
       )
       cqrs.register_command(
         RemoveFreeProductFromOrder,
-        RemoveFreeProductFromOrderHandler.new(cqrs.event_store),
-        FreeProductRemovedFromOrder
+        RemoveFreeProductFromOrderHandler.new(cqrs.event_store)
       )
       cqrs.subscribe(
         ->(event) do

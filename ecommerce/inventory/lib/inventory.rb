@@ -23,28 +23,23 @@ module Inventory
 
       cqrs.register_command(
         SubmitReservation,
-        reservation.public_method(:submit_reservation),
-        ReservationSubmitted
+        reservation.public_method(:submit_reservation)
       )
       cqrs.register_command(
         CancelReservation,
-        reservation.public_method(:cancel_reservation),
-        ReservationCanceled
+        reservation.public_method(:cancel_reservation)
       )
       cqrs.register_command(
         CompleteReservation,
-        reservation.public_method(:complete_reservation),
-        ReservationCompleted
+        reservation.public_method(:complete_reservation)
       )
       cqrs.register_command(
         Supply,
-        inventory.public_method(:supply),
-        StockLevelChanged
+        inventory.public_method(:supply)
       )
       cqrs.register_command(
         CheckAvailability,
-        inventory.public_method(:check_availability),
-        nil
+        inventory.public_method(:check_availability)
       )
     end
   end

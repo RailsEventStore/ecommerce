@@ -12,28 +12,23 @@ module Invoicing
     def call(cqrs)
       cqrs.register_command(
         SetProductNameDisplayedOnInvoice,
-        SetProductNameDisplayedOnInvoiceHandler.new(cqrs.event_store),
-        ProductNameDisplayedSet
+        SetProductNameDisplayedOnInvoiceHandler.new(cqrs.event_store)
       )
       cqrs.register_command(
         AddInvoiceItem,
-        InvoiceService.new(cqrs.event_store).public_method(:add_item),
-        InvoiceItemAdded
+        InvoiceService.new(cqrs.event_store).public_method(:add_item)
       )
       cqrs.register_command(
         SetPaymentDate,
-        InvoiceService.new(cqrs.event_store).public_method(:set_payment_date),
-        InvoicePaymentDateSet
+        InvoiceService.new(cqrs.event_store).public_method(:set_payment_date)
       )
       cqrs.register_command(
         IssueInvoice,
-        InvoiceService.new(cqrs.event_store).public_method(:issue),
-        InvoiceIssued
+        InvoiceService.new(cqrs.event_store).public_method(:issue)
       )
       cqrs.register_command(
         SetBillingAddress,
-        InvoiceService.new(cqrs.event_store).public_method(:set_billing_address),
-        BillingAddressSet
+        InvoiceService.new(cqrs.event_store).public_method(:set_billing_address)
       )
       cqrs.subscribe(
         ->(event) do

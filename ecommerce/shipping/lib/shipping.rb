@@ -28,28 +28,23 @@ module Shipping
     def call(cqrs)
       cqrs.register_command(
         AddItemToShipmentPickingList,
-        OnAddItemToShipmentPickingList.new(cqrs.event_store),
-        ItemAddedToShipmentPickingList
+        OnAddItemToShipmentPickingList.new(cqrs.event_store)
       )
       cqrs.register_command(
         RemoveItemFromShipmentPickingList,
-        OnRemoveItemFromShipmentPickingList.new(cqrs.event_store),
-        ItemRemovedFromShipmentPickingList
+        OnRemoveItemFromShipmentPickingList.new(cqrs.event_store)
       )
       cqrs.register_command(
         AddShippingAddressToShipment,
-        OnAddShippingAddressToShipment.new(cqrs.event_store),
-        ShippingAddressAddedToShipment
+        OnAddShippingAddressToShipment.new(cqrs.event_store)
       )
       cqrs.register_command(
         SubmitShipment,
-        OnSubmitShipment.new(cqrs.event_store),
-        ShipmentSubmitted
+        OnSubmitShipment.new(cqrs.event_store)
       )
       cqrs.register_command(
         AuthorizeShipment,
-        OnAuthorizeShipment.new(cqrs.event_store),
-        ShipmentAuthorized
+        OnAuthorizeShipment.new(cqrs.event_store)
       )
     end
   end

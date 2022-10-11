@@ -8,8 +8,8 @@ module ProductCatalog
 
   class Configuration
     def call(cqrs)
-      cqrs.register(RegisterProduct, Registration.new(cqrs))
-      cqrs.register(NameProduct, Naming.new(cqrs))
+      cqrs.register_command(RegisterProduct, Registration.new(cqrs))
+      cqrs.register_command(NameProduct, Naming.new(cqrs))
     end
   end
 end

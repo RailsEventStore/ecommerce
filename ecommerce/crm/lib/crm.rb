@@ -14,9 +14,9 @@ module Crm
   class Configuration
 
     def call(cqrs)
-      cqrs.register_command(RegisterCustomer, OnRegistration.new(cqrs.event_store), CustomerRegistered)
-      cqrs.register_command(PromoteCustomerToVip, OnPromoteCustomerToVip.new(cqrs.event_store), CustomerPromotedToVip)
-      cqrs.register_command(AssignCustomerToOrder, OnSetCustomer.new(cqrs.event_store), CustomerAssignedToOrder)
+      cqrs.register_command(RegisterCustomer, OnRegistration.new(cqrs.event_store))
+      cqrs.register_command(PromoteCustomerToVip, OnPromoteCustomerToVip.new(cqrs.event_store))
+      cqrs.register_command(AssignCustomerToOrder, OnSetCustomer.new(cqrs.event_store))
     end
   end
 end
