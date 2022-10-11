@@ -185,8 +185,8 @@ module Pricing
     end
 
     def call(command)
-      @repository.with_aggregate(Order, command.aggregate_id) do |product|
-        product.make_product_free(command.order_id, command.product_id)
+      @repository.with_aggregate(Order, command.aggregate_id) do |order|
+        order.make_product_free(command.order_id, command.product_id)
       end
     end
   end
@@ -197,8 +197,8 @@ module Pricing
     end
 
     def call(command)
-      @repository.with_aggregate(Order, command.aggregate_id) do |product|
-        product.remove_free_product(command.order_id, command.product_id)
+      @repository.with_aggregate(Order, command.aggregate_id) do |order|
+        order.remove_free_product(command.order_id, command.product_id)
       end
     end
   end
