@@ -8,7 +8,7 @@
 
 #### Docker
 
-If you would like to use Docker image with PostgreSQL provided by us, run `docker-compose up -d`. Your done for this
+If you would like to use Docker image with PostgreSQL and Redis provided by us, run `docker-compose up -d`. Your done for this
 step.
 
 #### PostgreSQL installed in the system
