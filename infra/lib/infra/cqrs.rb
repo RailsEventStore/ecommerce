@@ -5,7 +5,6 @@ module Infra
     def initialize(event_store, command_bus)
       @event_store = event_store
       @command_bus = command_bus
-      @commands_to_events = {}
     end
 
     def subscribe(subscriber, events)
@@ -17,12 +16,10 @@ module Infra
     end
 
     def register_command(command, command_handler, event)
-      @commands_to_events[command] = event
       @command_bus.register(command, command_handler)
     end
 
     def register(command, command_handler)
-      @commands_to_events[command] = NoEvent.new
       @command_bus.register(command, command_handler)
     end
 
@@ -61,16 +58,6 @@ module Infra
         end,
         [event_name]
       )
-    end
-
-    def to_hash
-      @commands_to_events
-    end
-  end
-
-  class NoEvent
-    def to_s
-      ""
     end
   end
 end
