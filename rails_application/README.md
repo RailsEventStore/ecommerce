@@ -34,7 +34,7 @@ accordingly.
 ### Kickstart
 
 - run `make dev` to install dependencies, create db, setup schema and seed data
-- run `bin/rails s` to start the web server
+- run `bin/dev` to start the web server with Tailwind in "watch" mode
 
 ## Testing
 
