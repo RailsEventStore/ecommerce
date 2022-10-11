@@ -8,6 +8,7 @@ mutate: ## Run mutation tests
 	@env RAILS_ENV=test bundle exec mutant run
 
 test: ## Run unit tests
+	@bin/rails tailwindcss:build
 	@echo "Running unit tests"
 	@bin/rails test
 

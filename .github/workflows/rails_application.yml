@@ -29,7 +29,6 @@ jobs:
           working-directory: ${{ env.WORKING_DIRECTORY }}
       - name: Assets Precompile
         working-directory: ${{ env.WORKING_DIRECTORY }}
-        run: bundle exec rails tailwindcss:build
       - run: make test
         working-directory: ${{ env.WORKING_DIRECTORY }}
       - uses: 8398a7/action-slack@v3
