@@ -10,3 +10,10 @@ services:
       - POSTGRES_PASSWORD=secret
     ports:
       - "5432:5432"
+  redis:
+    image: 'bitnami/redis:latest'
+    restart: always
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - "6379:6379"
