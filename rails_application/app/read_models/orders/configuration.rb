@@ -91,6 +91,23 @@ module Orders
         -> (event) { assign_customer(event, event.data.fetch(:customer_id)) },
         [Crm::CustomerAssignedToOrder]
       )
+
+      subscribe(
+        ->(event) { broadcast_order_state_change(event.data.fetch(:order_id), 'Submitted') },
+        [Ordering::OrderSubmitted]
+      )
+      subscribe(
+        ->(event) { broadcast_order_state_change(event.data.fetch(:order_id), "Expired") },
+        [Ordering::OrderExpired]
+      )
+      subscribe(
+        ->(event) { broadcast_order_state_change(event.data.fetch(:order_id), "Paid") },
+        [Ordering::OrderConfirmed]
+      )
+      subscribe(
+        ->(event) { broadcast_order_state_change(event.data.fetch(:order_id), "Cancelled") },
+        [Ordering::OrderCancelled]
+      )
     end
 
     private
@@ -216,6 +233,13 @@ module Orders
     def assign_customer(event, customer_id)
       create_draft_order(event.data.fetch(:order_id))
       with_order(event) { |order| order.customer = Customer.find_by_uid(customer_id).name }
+    end
+
+    def broadcast_order_state_change(order_id, new_state)
+      Turbo::StreamsChannel.broadcast_update_later_to(
+        "orders_order_#{order_id}",
+        target: "orders_order_#{order_id}_state",
+        html: new_state)
     end
   end
 end

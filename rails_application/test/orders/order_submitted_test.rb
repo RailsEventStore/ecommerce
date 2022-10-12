@@ -2,6 +2,7 @@ require "test_helper"
 
 module Orders
   class OrderSubmittedTest < InMemoryTestCase
+    include ActiveJob::TestHelper
     cover "Orders"
 
     def setup
@@ -47,6 +48,10 @@ module Orders
       order = Order.find_by(uid: order_id)
       assert_equal(order.state, "Submitted")
       assert_equal(order.number, order_number)
+      assert_enqueued_with(
+        job: Turbo::Streams::ActionBroadcastJob,
+        args: action_broadcast_args(order_id, 'Submitted')
+      )
     end
 
     def test_skip_when_duplicated
@@ -103,6 +108,20 @@ module Orders
       order = Order.find_by(uid: order_id)
       assert_equal(order.state, "Submitted")
       assert_equal(order.number, order_number)
+    end
+
+    private
+
+    def action_broadcast_args(order_uid, state)
+      [
+        "orders_order_#{order_uid}",
+        {
+          action: :update,
+          target: "orders_order_#{order_uid}_state",
+          targets: nil,
+          html: state
+        }
+      ]
     end
   end
 end

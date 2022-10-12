@@ -23,10 +23,11 @@
 
   <tbody>
   <% @orders.each do |order| %>
+    <%= turbo_stream_from "orders_order_#{order.uid}" %>
     <tr class="border-t">
       <td class="py-2"><%= link_to order.number || 'Not submitted', order_path(order.uid), class: "text-blue-500 hover:underline" %></td>
       <td class="py-2"><%= order.customer %></td>
-      <td class="py-2 text-right"><%= order.state %></td>
+      <td class="py-2 text-right" id="<%= "orders_order_#{order.uid}_state" %>"><%= order.state %></td>
     </tr>
   <% end %>
   </tbody>
