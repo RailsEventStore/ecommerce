@@ -8,10 +8,7 @@ class InMemoryTestCase < ActiveSupport::TestCase
     result = super
     @previous_event_store = Rails.configuration.event_store
     @previous_command_bus = Rails.configuration.command_bus
-    Rails.configuration.event_store =
-      RailsEventStore::Client.new(
-        repository: RubyEventStore::InMemoryRepository.new
-      )
+    Rails.configuration.event_store = Infra::EventStore.in_memory
     Rails.configuration.command_bus = Arkency::CommandBus.new
 
     Configuration.new.call(
@@ -43,10 +40,7 @@ class InMemoryRESIntegrationTestCase < ActionDispatch::IntegrationTest
     result = super
     @previous_event_store = Rails.configuration.event_store
     @previous_command_bus = Rails.configuration.command_bus
-    Rails.configuration.event_store =
-      RailsEventStore::Client.new(
-        repository: RubyEventStore::InMemoryRepository.new
-      )
+    Rails.configuration.event_store = Infra::EventStore.in_memory_rails
     Rails.configuration.command_bus = Arkency::CommandBus.new
 
     Configuration.new.call(

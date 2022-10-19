@@ -25,6 +25,14 @@ module Infra
       )
     end
 
+    def self.in_memory_rails
+      new(
+        RailsEventStore::Client.new(
+          repository: RubyEventStore::InMemoryRepository.new
+        )
+      )
+    end
+
     def link_event_to_stream(event, stream, expected_version: :any)
       __getobj__.link(
         event.event_id,
