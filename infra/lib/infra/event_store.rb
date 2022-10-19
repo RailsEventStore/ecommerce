@@ -1,5 +1,22 @@
 module Infra
+  class Mapper < RubyEventStore::Mappers::PipelineMapper
+    def initialize
+      super(
+        RubyEventStore::Mappers::Pipeline.new(
+          RubyEventStore::Mappers::Transformation::SymbolizeMetadataKeys.new,
+          RubyEventStore::Transformations::WithIndifferentAccess.new
+        )
+      )
+    end
+  end
+
   class EventStore < SimpleDelegator
+
+    def self.main
+      repository = RailsEventStoreActiveRecord::EventRepository.new(serializer: RubyEventStore::NULL)
+      RailsEventStore::Client.new(repository: repository, mapper: Mapper.new)
+    end
+
     def self.in_memory
       new(
         RubyEventStore::Client.new(
