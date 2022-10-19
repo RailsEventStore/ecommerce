@@ -19,3 +19,4 @@ matcher:
     - Infra::NoEvent*
     - Infra::EventStore*
     - Infra::Cqrs*
+    - Infra::Mapper*
