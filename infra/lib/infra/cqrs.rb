@@ -40,20 +40,7 @@ module Infra
     end
 
     def process(event_name, event_data_keys, command, command_data_keys)
-      subscribe(
-        ->(event) do
-          run(
-            command.new(
-              Hash[
-                command_data_keys.zip(
-                  event_data_keys.map { |key| event.data.fetch(key) }
-                )
-              ]
-            )
-          )
-        end,
-        [event_name]
-      )
+      Process.new(@event_store, @command_bus).call(event_name, event_data_keys, command, command_data_keys)
     end
   end
 end
