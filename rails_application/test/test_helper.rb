@@ -3,6 +3,8 @@ require_relative "../config/environment"
 require "rails/test_help"
 require "mutant/minitest/coverage"
 
+ActiveJob::Base.logger = Logger.new(nil)
+
 class InMemoryTestCase < ActiveSupport::TestCase
   def before_setup
     result = super
