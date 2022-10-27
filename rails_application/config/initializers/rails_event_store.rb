@@ -11,5 +11,5 @@ Rails.configuration.to_prepare do
   cqrs = Infra::Cqrs.new(Rails.configuration.event_store, Rails.configuration.command_bus)
 
   Rails.configuration.cqrs = cqrs
-  Configuration.new.call(cqrs)
+  Configuration.new.call(cqrs, Rails.configuration.event_store)
 end

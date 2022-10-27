@@ -33,6 +33,10 @@ module Infra
       )
     end
 
+    def subscribe(subscriber, to:)
+      __getobj__.subscribe(subscriber, to: to)
+    end
+
     def link_event_to_stream(event, stream, expected_version: :any)
       __getobj__.link(
         event.event_id,

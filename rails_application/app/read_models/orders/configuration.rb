@@ -27,8 +27,8 @@ module Orders
 
   class Configuration
 
-    def call(cqrs)
-      @cqrs = cqrs
+    def call(event_store)
+      @event_store = event_store
 
       subscribe_and_link_to_stream(
         ->(event) { mark_as_submitted(event) },
@@ -121,7 +121,7 @@ module Orders
     end
 
     def subscribe(handler, events)
-      @cqrs.subscribe(handler, events)
+      @event_store.subscribe(handler, to: events)
     end
 
     def mark_as_submitted(event)
@@ -132,7 +132,7 @@ module Orders
     end
 
     def link_to_stream(event)
-      @cqrs.link_event_to_stream(event, "Orders$all")
+      @event_store.link_event_to_stream(event, "Orders$all")
     end
 
     def add_item_to_order(event)

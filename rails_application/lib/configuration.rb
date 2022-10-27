@@ -1,10 +1,10 @@
 require_relative "../../ecommerce/configuration"
 
 class Configuration
-  def call(cqrs)
+  def call(cqrs, event_store)
     enable_res_infra_event_linking(cqrs)
 
-    enable_orders_read_model(cqrs)
+    enable_orders_read_model(event_store)
     enable_products_read_model(cqrs)
     enable_public_offer_products_read_model(cqrs)
     enable_customers_read_model(cqrs)
@@ -45,8 +45,8 @@ class Configuration
     Customers::Configuration.new.call(cqrs)
   end
 
-  def enable_orders_read_model(cqrs)
-    Orders::Configuration.new.call(cqrs)
+  def enable_orders_read_model(event_store)
+    Orders::Configuration.new.call(event_store)
   end
 
   def enable_invoices_read_model(cqrs)

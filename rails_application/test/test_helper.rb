@@ -12,7 +12,8 @@ class InMemoryTestCase < ActiveSupport::TestCase
     Rails.configuration.command_bus = Arkency::CommandBus.new
 
     Configuration.new.call(
-      Infra::Cqrs.new(Rails.configuration.event_store, Rails.configuration.command_bus)
+      Infra::Cqrs.new(Rails.configuration.event_store, Rails.configuration.command_bus),
+      Rails.configuration.event_store
     )
     result
   end
@@ -44,7 +45,8 @@ class InMemoryRESIntegrationTestCase < ActionDispatch::IntegrationTest
     Rails.configuration.command_bus = Arkency::CommandBus.new
 
     Configuration.new.call(
-      Infra::Cqrs.new(Rails.configuration.event_store, Rails.configuration.command_bus)
+      Infra::Cqrs.new(Rails.configuration.event_store, Rails.configuration.command_bus),
+      Rails.configuration.event_store
     )
     result
   end
