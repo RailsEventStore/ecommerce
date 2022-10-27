@@ -6,22 +6,22 @@ module TimePromotions
   end
 
   class Configuration
-    def call(cqrs)
-      cqrs.subscribe(
+    def call(event_store)
+      event_store.subscribe(
         ->(event) { create_time_promotion(event) },
-        [Pricing::TimePromotionCreated]
+        to: [Pricing::TimePromotionCreated]
       )
-      cqrs.subscribe(
+      event_store.subscribe(
         ->(event) { label(event) },
-        [Pricing::TimePromotionLabeled]
+        to: [Pricing::TimePromotionLabeled]
       )
-      cqrs.subscribe(
+      event_store.subscribe(
         ->(event) { set_discount(event) },
-        [Pricing::TimePromotionDiscountSet]
+        to: [Pricing::TimePromotionDiscountSet]
       )
-      cqrs.subscribe(
+      event_store.subscribe(
         ->(event) { set_range(event) },
-        [Pricing::TimePromotionRangeSet]
+        to: [Pricing::TimePromotionRangeSet]
       )
     end
 

@@ -4,10 +4,10 @@ module Coupons
   end
 
   class Configuration
-    def call(cqrs)
-      cqrs.subscribe(
+    def call(event_store)
+      event_store.subscribe(
         -> (event) { register_coupon(event) },
-        [Pricing::CouponRegistered]
+        to: [Pricing::CouponRegistered]
       )
     end
 

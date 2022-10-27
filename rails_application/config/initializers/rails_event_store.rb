@@ -8,8 +8,5 @@ Rails.configuration.to_prepare do
   Rails.configuration.event_store = Infra::EventStore.main
   Rails.configuration.command_bus = Arkency::CommandBus.new
 
-  cqrs = Infra::Cqrs.new(Rails.configuration.event_store, Rails.configuration.command_bus)
-
-  Rails.configuration.cqrs = cqrs
-  Configuration.new.call(cqrs, Rails.configuration.event_store)
+  Configuration.new.call(Rails.configuration.event_store, Rails.configuration.command_bus)
 end

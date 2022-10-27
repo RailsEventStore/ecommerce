@@ -14,26 +14,26 @@ module Invoices
   end
 
   class Configuration
-    def call(cqrs)
-      cqrs.subscribe(
+    def call(event_store)
+      event_store.subscribe(
         ->(event) { create_invoice_item(event) },
-        [Invoicing::InvoiceItemAdded]
+        to: [Invoicing::InvoiceItemAdded]
       )
-      cqrs.subscribe(
+      event_store.subscribe(
         ->(event) { set_billing_address(event) },
-        [Invoicing::BillingAddressSet]
+        to: [Invoicing::BillingAddressSet]
       )
-      cqrs.subscribe(
+      event_store.subscribe(
         ->(event) { set_payment_date(event) },
-        [Invoicing::InvoicePaymentDateSet]
+        to: [Invoicing::InvoicePaymentDateSet]
       )
-      cqrs.subscribe(
+      event_store.subscribe(
         ->(event) { mark_as_issued(event) },
-        [Invoicing::InvoiceIssued]
+        to: [Invoicing::InvoiceIssued]
       )
-      cqrs.subscribe(
+      event_store.subscribe(
         ->(event) { mark_order_submitted(event) },
-        [Ordering::OrderSubmitted]
+        to: [Ordering::OrderSubmitted]
       )
     end
 

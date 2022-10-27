@@ -1,17 +1,17 @@
 require_relative "../../ecommerce/configuration"
 
 class Configuration
-  def call(cqrs, event_store)
-    enable_res_infra_event_linking(cqrs)
+  def call(event_store, command_bus)
+    enable_res_infra_event_linking(event_store)
 
     enable_orders_read_model(event_store)
     enable_products_read_model(event_store)
     enable_public_offer_products_read_model(event_store)
-    enable_customers_read_model(cqrs)
-    enable_invoices_read_model(cqrs)
-    enable_client_orders_read_model(cqrs)
-    enable_coupons_read_model(cqrs)
-    enable_time_promotions_read_model(cqrs)
+    enable_customers_read_model(event_store)
+    enable_invoices_read_model(event_store)
+    enable_client_orders_read_model(event_store)
+    enable_coupons_read_model(event_store)
+    enable_time_promotions_read_model(event_store)
 
     Ecommerce::Configuration.new(
       number_generator: Rails.configuration.number_generator,
@@ -20,17 +20,17 @@ class Configuration
         Infra::Types::VatRate.new(code: "10", rate: 10),
         Infra::Types::VatRate.new(code: "20", rate: 20)
     ]
-    ).call(cqrs)
+    ).call(event_store, command_bus)
   end
 
   private
 
-  def enable_res_infra_event_linking(cqrs)
+  def enable_res_infra_event_linking(event_store)
     [
       RailsEventStore::LinkByEventType.new,
       RailsEventStore::LinkByCorrelationId.new,
       RailsEventStore::LinkByCausationId.new
-    ].each { |h| cqrs.subscribe_to_all_events(h) }
+    ].each { |h| event_store.subscribe_to_all_events(h) }
   end
 
   def enable_products_read_model(event_store)
@@ -41,27 +41,27 @@ class Configuration
     PublicOffer::Configuration.new(event_store).call
   end
 
-  def enable_customers_read_model(cqrs)
-    Customers::Configuration.new.call(cqrs)
+  def enable_customers_read_model(event_store)
+    Customers::Configuration.new.call(event_store)
   end
 
   def enable_orders_read_model(event_store)
     Orders::Configuration.new.call(event_store)
   end
 
-  def enable_invoices_read_model(cqrs)
-    Invoices::Configuration.new.call(cqrs)
+  def enable_invoices_read_model(event_store)
+    Invoices::Configuration.new.call(event_store)
   end
 
-  def enable_client_orders_read_model(cqrs)
-    ClientOrders::Configuration.new.call(cqrs)
+  def enable_client_orders_read_model(event_store)
+    ClientOrders::Configuration.new.call(event_store)
   end
 
-  def enable_coupons_read_model(cqrs)
-    Coupons::Configuration.new.call(cqrs)
+  def enable_coupons_read_model(event_store)
+    Coupons::Configuration.new.call(event_store)
   end
 
-  def enable_time_promotions_read_model(cqrs)
-    TimePromotions::Configuration.new.call(cqrs)
+  def enable_time_promotions_read_model(event_store)
+    TimePromotions::Configuration.new.call(event_store)
   end
 end

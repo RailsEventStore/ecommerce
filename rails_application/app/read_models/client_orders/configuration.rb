@@ -93,8 +93,8 @@ module ClientOrders
   end
 
   class Configuration
-    def call(cqrs)
-      @cqrs = cqrs
+    def call(event_store)
+      @event_store = event_store
 
       subscribe_and_link_to_stream(
         ->(event) { create_client(event) },
@@ -138,11 +138,11 @@ module ClientOrders
     end
 
     def subscribe(handler, events)
-      @cqrs.subscribe(handler, events)
+      @event_store.subscribe(handler, to: events)
     end
 
     def link_to_stream(event)
-      @cqrs.link_event_to_stream(event, "ClientOrders$all")
+      @event_store.link_event_to_stream(event, "ClientOrders$all")
     end
 
     def create_client(event)

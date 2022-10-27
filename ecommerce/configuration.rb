@@ -18,7 +18,8 @@ module Ecommerce
       @available_vat_rates = available_vat_rates
     end
 
-    def call(cqrs)
+    def call(event_store, command_bus)
+      cqrs = Infra::Cqrs.new(event_store, command_bus)
       configure_bounded_contexts(cqrs)
       configure_processes(cqrs)
     end

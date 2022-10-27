@@ -5,15 +5,15 @@ module Customers
 
   class Configuration
 
-    def call(cqrs)
-      cqrs.subscribe(
+    def call(event_store)
+      event_store.subscribe(
         -> (event) { register_customer(event) },
-        [Crm::CustomerRegistered]
+        to: [Crm::CustomerRegistered]
       )
 
-      cqrs.subscribe(
+      event_store.subscribe(
           -> (event) { promote_to_vip(event) },
-          [Crm::CustomerPromotedToVip]
+          to: [Crm::CustomerPromotedToVip]
       )
     end
 
