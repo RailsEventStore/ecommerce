@@ -5,8 +5,8 @@ class Configuration
     enable_res_infra_event_linking(cqrs)
 
     enable_orders_read_model(event_store)
-    enable_products_read_model(cqrs)
-    enable_public_offer_products_read_model(cqrs)
+    enable_products_read_model(event_store)
+    enable_public_offer_products_read_model(event_store)
     enable_customers_read_model(cqrs)
     enable_invoices_read_model(cqrs)
     enable_client_orders_read_model(cqrs)
@@ -33,12 +33,12 @@ class Configuration
     ].each { |h| cqrs.subscribe_to_all_events(h) }
   end
 
-  def enable_products_read_model(cqrs)
-    Products::Configuration.new(cqrs).call
+  def enable_products_read_model(event_store)
+    Products::Configuration.new(event_store).call
   end
 
-  def enable_public_offer_products_read_model(cqrs)
-    PublicOffer::Configuration.new(cqrs).call
+  def enable_public_offer_products_read_model(event_store)
+    PublicOffer::Configuration.new(event_store).call
   end
 
   def enable_customers_read_model(cqrs)

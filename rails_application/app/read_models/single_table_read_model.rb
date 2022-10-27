@@ -1,22 +1,22 @@
 class SingleTableReadModel
 
-  def initialize(cqrs, active_record_name, id_column)
-    @cqrs = cqrs
+  def initialize(event_store, active_record_name, id_column)
+    @event_store = event_store
     @active_record_name = active_record_name
     @id_column = id_column
   end
 
   def subscribe_create(creation_event)
-    @cqrs.subscribe(-> (event) { create_record(event, @id_column) }, [creation_event])
+    @event_store.subscribe(-> (event) { create_record(event, @id_column) }, to: [creation_event])
   end
 
   def copy(event, attribute)
-    @cqrs.subscribe(-> (event) { copy_event_attribute_to_column(event, attribute, attribute) }, [event])
+    @event_store.subscribe(-> (event) { copy_event_attribute_to_column(event, attribute, attribute) }, to: [event])
   end
 
   def copy_nested_to_column(event, top_event_attribute, nested_attribute, column)
-    @cqrs.subscribe(
-      -> (event) { copy_nested_event_attribute_to_column(event, top_event_attribute, nested_attribute, column) }, [event])
+    @event_store.subscribe(
+      -> (event) { copy_nested_event_attribute_to_column(event, top_event_attribute, nested_attribute, column) }, to: [event])
   end
 
   def create_record(event, id_column)

@@ -57,8 +57,8 @@ module PublicOffer
   end
 
   class Configuration
-    def initialize(cqrs)
-      @read_model = SingleTableReadModel.new(cqrs, Product, :product_id)
+    def initialize(event_store)
+      @read_model = SingleTableReadModel.new(event_store, Product, :product_id)
     end
 
     def call
