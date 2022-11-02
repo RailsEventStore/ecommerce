@@ -454,7 +454,6 @@ module Pricing
       add_item(order_id, product_1_id)
       add_item(order_id, product_1_id)
       add_item(order_id, product_1_id)
-      stream = "Pricing::Order$#{order_id}"
 
       run_command(
         Pricing::MakeProductFreeForOrder.new(order_id: order_id, product_id: product_1_id)
