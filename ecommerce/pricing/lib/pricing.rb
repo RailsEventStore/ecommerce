@@ -27,6 +27,10 @@ module Pricing
         SetPriceHandler.new(cqrs.event_store)
       )
       cqrs.register_command(
+        SetFuturePrice,
+        SetFuturePriceHandler.new(cqrs.event_store)
+      )
+      cqrs.register_command(
         CalculateTotalValue,
         OnCalculateTotalValue.new(cqrs.event_store)
       )

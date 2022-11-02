@@ -19,9 +19,16 @@ module Pricing
         .of_type(PriceSet)
         .to_a
         .filter { |e| e.data.fetch(:product_id).eql?(product_id) }
+        .reject(&method(:reject_future_prices))
         .last
         .data
         .fetch(:price)
+    end
+
+    private
+
+    def reject_future_prices(e)
+      e.metadata.fetch(:valid_at) > Time.now
     end
   end
 end

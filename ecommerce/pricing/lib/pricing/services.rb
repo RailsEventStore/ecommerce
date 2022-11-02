@@ -64,6 +64,21 @@ module Pricing
     end
   end
 
+  class SetFuturePriceHandler
+    def initialize(event_store)
+      @repository = Infra::AggregateRootRepository.new(event_store)
+      @event_store = event_store
+    end
+
+    def call(cmd)
+      @event_store.with_metadata({ valid_at: cmd.valid_since }) do
+        @repository.with_aggregate(Product, cmd.product_id) do |product|
+          product.set_price(cmd.price)
+        end
+      end
+    end
+  end
+
   class CreateTimePromotionHandler
     def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)

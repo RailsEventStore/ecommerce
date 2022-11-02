@@ -28,6 +28,12 @@ module Pricing
     attribute :price, Infra::Types::Price
   end
 
+  class SetFuturePrice < Infra::Command
+    attribute :product_id, Infra::Types::UUID
+    attribute :price, Infra::Types::Price
+    attribute :valid_since, Infra::Types::Params::DateTime
+  end
+
   class SetPercentageDiscount < Infra::Command
     attribute :order_id, Infra::Types::UUID
     attribute :amount, Infra::Types::PercentageDiscount
