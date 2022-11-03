@@ -13,7 +13,7 @@ module Processes
 
     def before_setup
       super
-      Configuration.new.call(cqrs)
+      Configuration.new.call(cqrs, event_store, command_bus)
     end
 
     def assert_command(command)

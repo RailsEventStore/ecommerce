@@ -24,7 +24,7 @@ require 'math'
 module Processes
   class Configuration
     def call(cqrs, event_store, command_bus)
-      enable_pricing_sync_from_ordering(cqrs)
+      enable_pricing_sync_from_ordering(event_store, command_bus)
       notify_payments_about_order_total_value(cqrs)
       enable_inventory_sync_from_ordering(cqrs)
       enable_shipment_sync(cqrs)
@@ -57,8 +57,8 @@ module Processes
       SyncInventoryFromOrdering.new(cqrs)
     end
 
-    def enable_pricing_sync_from_ordering(cqrs)
-      SyncPricingFromOrdering.new(cqrs)
+    def enable_pricing_sync_from_ordering(event_store, command_bus)
+      SyncPricingFromOrdering.new(event_store, command_bus)
     end
 
     def enable_order_confirmation_process(cqrs)
