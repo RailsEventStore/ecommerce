@@ -7,7 +7,7 @@ module Crm
   class Test < Infra::InMemoryTest
     def before_setup
       super()
-      Configuration.new.call(cqrs)
+      Configuration.new.call(event_store, command_bus)
     end
 
     private

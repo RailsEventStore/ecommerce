@@ -13,10 +13,10 @@ require_relative "crm/order"
 module Crm
   class Configuration
 
-    def call(cqrs)
-      cqrs.register_command(RegisterCustomer, OnRegistration.new(cqrs.event_store))
-      cqrs.register_command(PromoteCustomerToVip, OnPromoteCustomerToVip.new(cqrs.event_store))
-      cqrs.register_command(AssignCustomerToOrder, OnSetCustomer.new(cqrs.event_store))
+    def call(event_store, command_bus)
+      command_bus.register(RegisterCustomer, OnRegistration.new(event_store))
+      command_bus.register(PromoteCustomerToVip, OnPromoteCustomerToVip.new(event_store))
+      command_bus.register(AssignCustomerToOrder, OnSetCustomer.new(event_store))
     end
   end
 end

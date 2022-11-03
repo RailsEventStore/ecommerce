@@ -36,7 +36,6 @@ module Ecommerce
         Pricing::Configuration.new,
         Payments::Configuration.new(@payment_gateway),
         ProductCatalog::Configuration.new,
-        Crm::Configuration.new,
         Inventory::Configuration.new,
         Shipping::Configuration.new,
         Invoicing::Configuration.new,
@@ -46,6 +45,7 @@ module Ecommerce
       [
         Authentication::Configuration.new,
         Ordering::Configuration.new(@number_generator),
+        Crm::Configuration.new,
       ].each { |c| c.call(event_store, command_bus) }
     end
 
