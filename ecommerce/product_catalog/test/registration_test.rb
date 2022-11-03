@@ -18,9 +18,24 @@ module ProductCatalog
 
     def test_should_publish_event
       uid = SecureRandom.uuid
-      product_registered = ProductCatalog::ProductRegistered.new(data: {product_id: uid})
+      product_registered = ProductCatalog::ProductRegistered.new(data: { product_id: uid })
       assert_events("Catalog::Product$#{uid}", product_registered) do
         register_product(uid, fake_name)
+      end
+    end
+
+    def test_each_product_has_its_own_lifecycle
+      product_1_id = SecureRandom.uuid
+      product_1_registered = ProductCatalog::ProductRegistered.new(data: { product_id: product_1_id })
+      product_2_id = SecureRandom.uuid
+      product_2_registered = ProductCatalog::ProductRegistered.new(data: { product_id: product_2_id })
+
+      assert_events("Catalog::Product$#{product_1_id}", product_1_registered) do
+        register_product(product_1_id, fake_name)
+      end
+
+      assert_events("Catalog::Product$#{product_2_id}", product_2_registered) do
+        register_product(product_2_id, fake_name)
       end
     end
 
