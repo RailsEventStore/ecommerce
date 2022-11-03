@@ -32,7 +32,6 @@ module Ecommerce
         "Neither number_generator nor payment_gateway can be null"
       ) if @number_generator.nil? || @payment_gateway.nil?
       [
-        Shipments::Configuration.new,
         Pricing::Configuration.new,
         ProductCatalog::Configuration.new,
         Taxes::Configuration.new(@available_vat_rates)
@@ -46,6 +45,7 @@ module Ecommerce
         Invoicing::Configuration.new,
         Payments::Configuration.new(@payment_gateway),
         Shipping::Configuration.new,
+        Shipments::Configuration.new,
       ].each { |c| c.call(event_store, command_bus) }
     end
 

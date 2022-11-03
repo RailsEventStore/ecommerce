@@ -17,14 +17,14 @@ module Shipments
   end
 
   class Configuration
-    def call(cqrs)
-      cqrs.subscribe(
+    def call(event_store, command_bus)
+      event_store.subscribe(
         ->(event) { set_shipping_address(event) },
-        [Shipping::ShippingAddressAddedToShipment]
+        to: [Shipping::ShippingAddressAddedToShipment]
       )
-      cqrs.subscribe(
+      event_store.subscribe(
         ->(event) { mark_order_submitted(event) },
-        [Ordering::OrderSubmitted]
+        to: [Ordering::OrderSubmitted]
       )
     end
 
