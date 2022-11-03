@@ -9,7 +9,7 @@ module Taxes
 
     def before_setup
       super
-      Configuration.new([dummy_vat_rate]).call(cqrs)
+      Configuration.new([dummy_vat_rate]).call(event_store, command_bus)
     end
 
     private
