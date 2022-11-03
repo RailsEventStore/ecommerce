@@ -61,7 +61,7 @@ module ClientOrders
           end
         end
       else
-        para do
+        para class: "py-6" do
           "No orders to display."
         end
       end
