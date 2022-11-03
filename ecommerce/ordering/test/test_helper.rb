@@ -8,7 +8,7 @@ module Ordering
     def before_setup
       super
       number_generator = FakeNumberGenerator.new
-      Configuration.new(-> { number_generator }).call(cqrs)
+      Configuration.new(-> { number_generator }).call(event_store, command_bus)
     end
   end
 end

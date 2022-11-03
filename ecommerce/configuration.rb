@@ -33,7 +33,6 @@ module Ecommerce
       ) if @number_generator.nil? || @payment_gateway.nil?
       [
         Shipments::Configuration.new,
-        Ordering::Configuration.new(@number_generator),
         Pricing::Configuration.new,
         Payments::Configuration.new(@payment_gateway),
         ProductCatalog::Configuration.new,
@@ -44,7 +43,10 @@ module Ecommerce
         Taxes::Configuration.new(@available_vat_rates)
       ].each { |c| c.call(cqrs) }
 
-      [Authentication::Configuration.new].each { |c| c.call(event_store, command_bus) }
+      [
+        Authentication::Configuration.new,
+        Ordering::Configuration.new(@number_generator),
+      ].each { |c| c.call(event_store, command_bus) }
     end
 
     def configure_processes(cqrs)

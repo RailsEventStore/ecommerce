@@ -22,16 +22,16 @@ module Ordering
       @number_generator = number_generator
     end
 
-    def call(cqrs)
-      cqrs.register_command(
+    def call(event_store, command_bus)
+      command_bus.register(
         SubmitOrder,
-        OnSubmitOrder.new(cqrs.event_store, @number_generator.call)
+        OnSubmitOrder.new(event_store, @number_generator.call)
       )
-      cqrs.register_command(AddItemToBasket, OnAddItemToBasket.new(cqrs.event_store))
-      cqrs.register_command(RemoveItemFromBasket, OnRemoveItemFromBasket.new(cqrs.event_store))
-      cqrs.register_command(SetOrderAsExpired, OnSetOrderAsExpired.new(cqrs.event_store))
-      cqrs.register_command(ConfirmOrder, OnConfirmOrder.new(cqrs.event_store))
-      cqrs.register_command(CancelOrder, OnCancelOrder.new(cqrs.event_store))
+      command_bus.register(AddItemToBasket, OnAddItemToBasket.new(event_store))
+      command_bus.register(RemoveItemFromBasket, OnRemoveItemFromBasket.new(event_store))
+      command_bus.register(SetOrderAsExpired, OnSetOrderAsExpired.new(event_store))
+      command_bus.register(ConfirmOrder, OnConfirmOrder.new(event_store))
+      command_bus.register(CancelOrder, OnCancelOrder.new(event_store))
     end
   end
 end
