@@ -9,32 +9,32 @@ require_relative 'invoicing/invoice_number_generator'
 
 module Invoicing
   class Configuration
-    def call(cqrs)
-      cqrs.register_command(
+    def call(event_store, command_bus)
+      command_bus.register(
         SetProductNameDisplayedOnInvoice,
-        SetProductNameDisplayedOnInvoiceHandler.new(cqrs.event_store)
+        SetProductNameDisplayedOnInvoiceHandler.new(event_store)
       )
-      cqrs.register_command(
+      command_bus.register(
         AddInvoiceItem,
-        InvoiceService.new(cqrs.event_store).public_method(:add_item)
+        InvoiceService.new(event_store).public_method(:add_item)
       )
-      cqrs.register_command(
+      command_bus.register(
         SetPaymentDate,
-        InvoiceService.new(cqrs.event_store).public_method(:set_payment_date)
+        InvoiceService.new(event_store).public_method(:set_payment_date)
       )
-      cqrs.register_command(
+      command_bus.register(
         IssueInvoice,
-        InvoiceService.new(cqrs.event_store).public_method(:issue)
+        InvoiceService.new(event_store).public_method(:issue)
       )
-      cqrs.register_command(
+      command_bus.register(
         SetBillingAddress,
-        InvoiceService.new(cqrs.event_store).public_method(:set_billing_address)
+        InvoiceService.new(event_store).public_method(:set_billing_address)
       )
-      cqrs.subscribe(
+      event_store.subscribe(
         ->(event) do
           stream_name = "InvoiceIssued$#{event.data.fetch(:issue_date).strftime("%Y-%m")}"
           ordinal_number = event.data.fetch(:invoice_number).split('/').first.to_i
-          cqrs.event_store.link(
+          event_store.link(
             event.event_id,
             stream_name: stream_name,
             expected_version: ordinal_number - 2
@@ -42,7 +42,7 @@ module Invoicing
         rescue RubyEventStore::WrongExpectedEventVersion
           raise Invoice::InvoiceNumberInUse
         end,
-        [Invoicing::InvoiceIssued]
+        to: [Invoicing::InvoiceIssued]
       )
     end
   end
