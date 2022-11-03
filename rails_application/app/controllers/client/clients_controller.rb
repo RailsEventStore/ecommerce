@@ -3,7 +3,11 @@ module Client
     layout "client_panel"
 
     def index
-      render html: Login.build(view_context), layout: true
+      if cookies[:client_id]
+        redirect_to client_orders_path
+      else
+        render html: Login.build(view_context), layout: true
+      end
     end
 
     def login
