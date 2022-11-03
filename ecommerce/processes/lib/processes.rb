@@ -31,7 +31,7 @@ module Processes
       check_product_availability_on_adding_item_to_basket(event_store, command_bus)
       determine_vat_rates_on_order_submitted(event_store, command_bus)
       set_invoice_payment_date_when_order_confirmed(event_store, command_bus)
-      enable_product_name_sync(cqrs)
+      enable_product_name_sync(event_store, command_bus)
 
       enable_release_payment_process(cqrs)
       enable_order_confirmation_process(cqrs)
@@ -105,12 +105,11 @@ module Processes
       )
     end
 
-    def enable_product_name_sync(cqrs)
-      cqrs.process(
-           ProductCatalog::ProductNamed,                [:product_id, :name],
-           Invoicing::SetProductNameDisplayedOnInvoice, [:product_id, :name_displayed])
+    def enable_product_name_sync(event_store, command_bus)
+      Infra::Process.new(event_store, command_bus)
+                    .call(ProductCatalog::ProductNamed, [:product_id, :name],
+                          Invoicing::SetProductNameDisplayedOnInvoice, [:product_id, :name_displayed])
     end
-
 
     def set_invoice_payment_date_when_order_confirmed(event_store, command_bus)
       event_store.subscribe(
