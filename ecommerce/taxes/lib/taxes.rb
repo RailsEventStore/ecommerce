@@ -15,10 +15,10 @@ module Taxes
       @available_vat_rates = available_vat_rates
     end
 
-    def call(cqrs)
+    def call(event_store, command_bus)
       @@available_vat_rates = @available_vat_rates
-      cqrs.register_command(SetVatRate, SetVatRateHandler.new(cqrs.event_store))
-      cqrs.register_command(DetermineVatRate, DetermineVatRateHandler.new(cqrs.event_store))
+      command_bus.register(SetVatRate, SetVatRateHandler.new(event_store))
+      command_bus.register(DetermineVatRate, DetermineVatRateHandler.new(event_store))
     end
   end
 end

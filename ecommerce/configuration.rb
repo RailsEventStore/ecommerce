@@ -33,7 +33,6 @@ module Ecommerce
       ) if @number_generator.nil? || @payment_gateway.nil?
       [
         ProductCatalog::Configuration.new,
-        Taxes::Configuration.new(@available_vat_rates)
       ].each { |c| c.call(cqrs) }
 
       [
@@ -46,6 +45,7 @@ module Ecommerce
         Shipping::Configuration.new,
         Shipments::Configuration.new,
         Pricing::Configuration.new,
+        Taxes::Configuration.new(@available_vat_rates)
       ].each { |c| c.call(event_store, command_bus) }
     end
 
