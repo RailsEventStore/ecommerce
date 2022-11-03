@@ -8,7 +8,7 @@ module Pricing
 
     def before_setup
       super
-      Configuration.new.call(cqrs)
+      Configuration.new.call(event_store, command_bus)
     end
 
     private

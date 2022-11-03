@@ -13,80 +13,80 @@ require_relative "pricing/promotions_calendar"
 
 module Pricing
   class Configuration
-    def call(cqrs)
-      cqrs.register_command(
+    def call(event_store, command_bus)
+      command_bus.register(
         AddPriceItem,
-        OnAddItemToBasket.new(cqrs.event_store)
+        OnAddItemToBasket.new(event_store)
       )
-      cqrs.register_command(
+      command_bus.register(
         RemovePriceItem,
-        OnRemoveItemFromBasket.new(cqrs.event_store)
+        OnRemoveItemFromBasket.new(event_store)
       )
-      cqrs.register_command(
+      command_bus.register(
         SetPrice,
-        SetPriceHandler.new(cqrs.event_store)
+        SetPriceHandler.new(event_store)
       )
-      cqrs.register_command(
+      command_bus.register(
         SetFuturePrice,
-        SetFuturePriceHandler.new(cqrs.event_store)
+        SetFuturePriceHandler.new(event_store)
       )
-      cqrs.register_command(
+      command_bus.register(
         CalculateTotalValue,
-        OnCalculateTotalValue.new(cqrs.event_store)
+        OnCalculateTotalValue.new(event_store)
       )
-      cqrs.register_command(
+      command_bus.register(
         CalculateSubAmounts,
-        OnCalculateTotalValue.new(cqrs.event_store).public_method(:calculate_sub_amounts)
+        OnCalculateTotalValue.new(event_store).public_method(:calculate_sub_amounts)
       )
-      cqrs.register_command(
+      command_bus.register(
         SetPercentageDiscount,
-        SetPercentageDiscountHandler.new(cqrs.event_store)
+        SetPercentageDiscountHandler.new(event_store)
       )
-      cqrs.register_command(
+      command_bus.register(
         ResetPercentageDiscount,
-        ResetPercentageDiscountHandler.new(cqrs.event_store)
+        ResetPercentageDiscountHandler.new(event_store)
       )
-      cqrs.register_command(
+      command_bus.register(
         ChangePercentageDiscount,
-        ChangePercentageDiscountHandler.new(cqrs.event_store)
+        ChangePercentageDiscountHandler.new(event_store)
       )
-      cqrs.register_command(
+      command_bus.register(
         RegisterCoupon,
-        OnCouponRegister.new(cqrs.event_store)
+        OnCouponRegister.new(event_store)
       )
-      cqrs.register_command(
+      command_bus.register(
         CreateTimePromotion,
-        CreateTimePromotionHandler.new(cqrs.event_store)
+        CreateTimePromotionHandler.new(event_store)
       )
-      cqrs.register_command(
+      command_bus.register(
         LabelTimePromotion,
-        LabelTimePromotionHandler.new(cqrs.event_store)
+        LabelTimePromotionHandler.new(event_store)
       )
-      cqrs.register_command(
+      command_bus.register(
         SetTimePromotionDiscount,
-        SetTimePromotionDiscountHandler.new(cqrs.event_store)
+        SetTimePromotionDiscountHandler.new(event_store)
       )
-      cqrs.register_command(
+      command_bus.register(
         SetTimePromotionRange,
-        SetTimePromotionRangeHandler.new(cqrs.event_store)
+        SetTimePromotionRangeHandler.new(event_store)
       )
-      cqrs.register_command(
+      command_bus.register(
         MakeProductFreeForOrder,
-        MakeProductFreeForOrderHandler.new(cqrs.event_store)
+        MakeProductFreeForOrderHandler.new(event_store)
       )
-      cqrs.register_command(
+      command_bus.register(
         RemoveFreeProductFromOrder,
-        RemoveFreeProductFromOrderHandler.new(cqrs.event_store)
+        RemoveFreeProductFromOrderHandler.new(event_store)
       )
-      cqrs.subscribe(
+      event_store.subscribe(
         ->(event) do
-          cqrs.run(
+          command_bus.call(
             Pricing::CalculateTotalValue.new(
               order_id: event.data.fetch(:order_id)
             )
           )
         end,
-        [
+        to: [
           PriceItemAdded,
           PriceItemRemoved,
           PercentageDiscountSet,
