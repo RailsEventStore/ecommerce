@@ -17,8 +17,7 @@ module Orders
       product_id = SecureRandom.uuid
       run_command(
         ProductCatalog::RegisterProduct.new(
-          product_id: product_id,
-          name: "test"
+          product_id: product_id
         )
       )
       run_command(Pricing::SetPrice.new(product_id: product_id, price: 20))
@@ -57,16 +56,10 @@ module Orders
     def test_skip_when_duplicated
       event_store = Rails.configuration.event_store
 
-      # customer_id = SecureRandom.uuid
-      # run_command(
-      #   Crm::RegisterCustomer.new(customer_id: customer_id, name: "dummy")
-      # )
-
       product_id = SecureRandom.uuid
       run_command(
         ProductCatalog::RegisterProduct.new(
-          product_id: product_id,
-          name: "test"
+          product_id: product_id
         )
       )
       run_command(Pricing::SetPrice.new(product_id: product_id, price: 20))

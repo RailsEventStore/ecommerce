@@ -19,8 +19,7 @@ module Orders
       product_id = SecureRandom.uuid
       run_command(
         ProductCatalog::RegisterProduct.new(
-          product_id: product_id,
-          name: "Async Remote"
+          product_id: product_id
         )
       )
       run_command(Pricing::SetPrice.new(product_id: product_id, price: 39))

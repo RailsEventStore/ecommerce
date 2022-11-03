@@ -48,7 +48,7 @@ class ProductsController < ApplicationController
   end
 
   def create_product_cmd(product_id, name)
-    ProductCatalog::RegisterProduct.new(product_id: product_id, name: name)
+    ProductCatalog::RegisterProduct.new(product_id: product_id)
   end
 
   def name_product_cmd(product_id, name)

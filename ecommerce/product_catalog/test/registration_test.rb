@@ -5,14 +5,14 @@ module ProductCatalog
 
     def test_product_should_get_registered
       uid = SecureRandom.uuid
-      assert register_product(uid, fake_name)
+      assert register_product(uid)
     end
 
     def test_should_not_allow_for_double_registration
       uid = SecureRandom.uuid
       assert_raises(AlreadyRegistered) do
-        register_product(uid, fake_name)
-        register_product(uid, fake_name)
+        register_product(uid)
+        register_product(uid)
       end
     end
 
@@ -20,7 +20,7 @@ module ProductCatalog
       uid = SecureRandom.uuid
       product_registered = ProductCatalog::ProductRegistered.new(data: { product_id: uid })
       assert_events("Catalog::Product$#{uid}", product_registered) do
-        register_product(uid, fake_name)
+        register_product(uid)
       end
     end
 
@@ -31,17 +31,17 @@ module ProductCatalog
       product_2_registered = ProductCatalog::ProductRegistered.new(data: { product_id: product_2_id })
 
       assert_events("Catalog::Product$#{product_1_id}", product_1_registered) do
-        register_product(product_1_id, fake_name)
+        register_product(product_1_id)
       end
 
       assert_events("Catalog::Product$#{product_2_id}", product_2_registered) do
-        register_product(product_2_id, fake_name)
+        register_product(product_2_id)
       end
     end
 
     private
 
-    def register_product(uid, name)
+    def register_product(uid)
       run_command(RegisterProduct.new(product_id: uid))
     end
 
