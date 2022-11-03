@@ -7,9 +7,9 @@ require_relative "product_catalog/naming"
 module ProductCatalog
 
   class Configuration
-    def call(cqrs)
-      cqrs.register_command(RegisterProduct, Registration.new(cqrs))
-      cqrs.register_command(NameProduct, Naming.new(cqrs))
+    def call(event_store, command_bus)
+      command_bus.register(RegisterProduct, Registration.new(event_store))
+      command_bus.register(NameProduct, Naming.new(event_store))
     end
   end
 end

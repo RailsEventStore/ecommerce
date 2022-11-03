@@ -1,12 +1,12 @@
 module ProductCatalog
 
   class Naming
-    def initialize(cqrs)
-      @cqrs = cqrs
+    def initialize(event_store)
+      @event_store = event_store
     end
 
     def call(cmd)
-      @cqrs.publish(product_named_event(cmd), stream_name(cmd))
+      @event_store.publish(product_named_event(cmd), stream_name: stream_name(cmd))
     end
 
     private
