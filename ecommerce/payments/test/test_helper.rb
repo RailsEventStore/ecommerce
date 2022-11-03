@@ -10,7 +10,7 @@ module Payments
     def before_setup
       super
       @payment_gateway = FakeGateway.new
-      Configuration.new(-> { @payment_gateway }).call(cqrs)
+      Configuration.new(-> { @payment_gateway }).call(event_store, command_bus)
     end
   end
 end

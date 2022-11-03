@@ -14,14 +14,14 @@ module Payments
       @gateway = gateway
     end
 
-    def call(cqrs)
-      cqrs.register_command(
+    def call(event_store, command_bus)
+      command_bus.register(
         AuthorizePayment,
-        OnAuthorizePayment.new(cqrs.event_store, @gateway)
+        OnAuthorizePayment.new(event_store, @gateway)
       )
-      cqrs.register_command(CapturePayment, OnCapturePayment.new(cqrs.event_store))
-      cqrs.register_command(ReleasePayment, OnReleasePayment.new(cqrs.event_store))
-      cqrs.register_command(SetPaymentAmount, OnSetPaymentAmount.new(cqrs.event_store))
+      command_bus.register(CapturePayment, OnCapturePayment.new(event_store))
+      command_bus.register(ReleasePayment, OnReleasePayment.new(event_store))
+      command_bus.register(SetPaymentAmount, OnSetPaymentAmount.new(event_store))
     end
   end
 end
