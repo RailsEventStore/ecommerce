@@ -7,7 +7,7 @@ module Processes
     def test_inventory_available_error_is_raised
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
-      process = CheckAvailabilityOnOrderItemAddedToBasket.new(cqrs)
+      process = CheckAvailabilityOnOrderItemAddedToBasket.new(command_bus)
       given([item_added(order_id, product_id, 0)]).each do |event|
         process.call(event)
       end

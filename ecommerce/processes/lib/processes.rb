@@ -28,7 +28,7 @@ module Processes
       notify_payments_about_order_total_value(event_store, command_bus)
       enable_inventory_sync_from_ordering(event_store, command_bus)
       enable_shipment_sync(event_store, command_bus)
-      check_product_availability_on_adding_item_to_basket(cqrs)
+      check_product_availability_on_adding_item_to_basket(event_store, command_bus)
       determine_vat_rates_on_order_submitted(cqrs)
       set_invoice_payment_date_when_order_confirmed(cqrs)
       enable_product_name_sync(cqrs)
@@ -91,10 +91,10 @@ module Processes
       )
     end
 
-    def check_product_availability_on_adding_item_to_basket(cqrs)
-      cqrs.subscribe(
-        CheckAvailabilityOnOrderItemAddedToBasket.new(cqrs),
-        [Ordering::ItemAddedToBasket]
+    def check_product_availability_on_adding_item_to_basket(event_store, command_bus)
+      event_store.subscribe(
+        CheckAvailabilityOnOrderItemAddedToBasket.new(command_bus),
+        to: [Ordering::ItemAddedToBasket]
       )
     end
 
