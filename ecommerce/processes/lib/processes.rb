@@ -30,7 +30,7 @@ module Processes
       enable_shipment_sync(event_store, command_bus)
       check_product_availability_on_adding_item_to_basket(event_store, command_bus)
       determine_vat_rates_on_order_submitted(event_store, command_bus)
-      set_invoice_payment_date_when_order_confirmed(cqrs)
+      set_invoice_payment_date_when_order_confirmed(event_store, command_bus)
       enable_product_name_sync(cqrs)
 
       enable_release_payment_process(cqrs)
@@ -112,17 +112,17 @@ module Processes
     end
 
 
-    def set_invoice_payment_date_when_order_confirmed(cqrs)
-      cqrs.subscribe(
+    def set_invoice_payment_date_when_order_confirmed(event_store, command_bus)
+      event_store.subscribe(
         ->(event) do
-          cqrs.run(
+          command_bus.call(
             Invoicing::SetPaymentDate.new(
               invoice_id: event.data.fetch(:order_id),
               payment_date: Time.zone.at(event.metadata.fetch(:timestamp)).to_date
             )
           )
         end,
-        [Ordering::OrderConfirmed]
+        to: [Ordering::OrderConfirmed]
       )
     end
 
