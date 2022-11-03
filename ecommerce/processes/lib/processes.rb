@@ -23,7 +23,7 @@ require 'math'
 
 module Processes
   class Configuration
-    def call(cqrs)
+    def call(cqrs, event_store, command_bus)
       enable_pricing_sync_from_ordering(cqrs)
       notify_payments_about_order_total_value(cqrs)
       enable_inventory_sync_from_ordering(cqrs)

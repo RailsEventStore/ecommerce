@@ -21,6 +21,7 @@ module Ecommerce
     def call(event_store, command_bus)
       cqrs = Infra::Cqrs.new(event_store, command_bus)
       configure_bounded_contexts
+      configure_processes(cqrs, event_store, command_bus)
     end
 
     def configure_bounded_contexts
@@ -45,8 +46,8 @@ module Ecommerce
       ].each { |c| c.call(event_store, command_bus) }
     end
 
-    def configure_processes(cqrs)
-      Processes::Configuration.new.call(cqrs)
+    def configure_processes(cqrs, event_store, command_bus)
+      Processes::Configuration.new.call(cqrs, event_store, command_bus)
     end
   end
 end
