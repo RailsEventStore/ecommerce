@@ -9,7 +9,7 @@ module Inventory
 
     def before_setup
       super
-      Configuration.new.call(cqrs)
+      Configuration.new.call(event_store, command_bus)
     end
 
     def inventory_entry_stream(product_id)

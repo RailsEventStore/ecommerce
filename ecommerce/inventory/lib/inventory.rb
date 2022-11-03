@@ -17,27 +17,27 @@ require_relative "inventory/reservation"
 
 module Inventory
   class Configuration
-    def call(cqrs)
-      reservation = ReservationService.new(cqrs.event_store)
-      inventory = InventoryEntryService.new(cqrs.event_store)
+    def call(event_store, command_bus)
+      reservation = ReservationService.new(event_store)
+      inventory = InventoryEntryService.new(event_store)
 
-      cqrs.register_command(
+      command_bus.register(
         SubmitReservation,
         reservation.public_method(:submit_reservation)
       )
-      cqrs.register_command(
+      command_bus.register(
         CancelReservation,
         reservation.public_method(:cancel_reservation)
       )
-      cqrs.register_command(
+      command_bus.register(
         CompleteReservation,
         reservation.public_method(:complete_reservation)
       )
-      cqrs.register_command(
+      command_bus.register(
         Supply,
         inventory.public_method(:supply)
       )
-      cqrs.register_command(
+      command_bus.register(
         CheckAvailability,
         inventory.public_method(:check_availability)
       )
