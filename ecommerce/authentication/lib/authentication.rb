@@ -12,13 +12,13 @@ require_relative "authentication/account"
 
 module Authentication
   class Configuration
-    def call(cqrs)
-      cqrs.register_command(RegisterAccount, RegisterAccountHandler.new(cqrs.event_store))
-      cqrs.register_command(SetLogin, SetLoginHandler.new(cqrs.event_store))
-      cqrs.register_command(SetPasswordHash, SetPasswordHashHandler.new(cqrs.event_store))
-      cqrs.register_command(
+    def call(event_store, command_bus)
+      command_bus.register(RegisterAccount, RegisterAccountHandler.new(event_store))
+      command_bus.register(SetLogin, SetLoginHandler.new(event_store))
+      command_bus.register(SetPasswordHash, SetPasswordHashHandler.new(event_store))
+      command_bus.register(
         ConnectAccountToClient,
-        ConnectAccountToClientHandler.new(cqrs.event_store)
+        ConnectAccountToClientHandler.new(event_store)
       )
     end
   end

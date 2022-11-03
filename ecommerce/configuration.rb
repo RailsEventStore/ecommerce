@@ -25,11 +25,13 @@ module Ecommerce
     end
 
     def configure_bounded_contexts(cqrs)
+      event_store = Rails.configuration.event_store
+      command_bus = Rails.configuration.command_bus
+
       raise ArgumentError.new(
         "Neither number_generator nor payment_gateway can be null"
       ) if @number_generator.nil? || @payment_gateway.nil?
       [
-        Authentication::Configuration.new,
         Shipments::Configuration.new,
         Ordering::Configuration.new(@number_generator),
         Pricing::Configuration.new,
@@ -41,6 +43,8 @@ module Ecommerce
         Invoicing::Configuration.new,
         Taxes::Configuration.new(@available_vat_rates)
       ].each { |c| c.call(cqrs) }
+
+      [Authentication::Configuration.new].each { |c| c.call(event_store, command_bus) }
     end
 
     def configure_processes(cqrs)
