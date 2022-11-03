@@ -8,7 +8,7 @@ module Shipping
 
     def before_setup
       super
-      Shipping::Configuration.new.call(cqrs)
+      Shipping::Configuration.new.call(event_store, command_bus)
     end
 
     private

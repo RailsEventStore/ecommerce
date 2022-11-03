@@ -25,26 +25,26 @@ require_relative "shipping/picking_list_item"
 
 module Shipping
   class Configuration
-    def call(cqrs)
-      cqrs.register_command(
+    def call(event_store, command_bus)
+      command_bus.register(
         AddItemToShipmentPickingList,
-        OnAddItemToShipmentPickingList.new(cqrs.event_store)
+        OnAddItemToShipmentPickingList.new(event_store)
       )
-      cqrs.register_command(
+      command_bus.register(
         RemoveItemFromShipmentPickingList,
-        OnRemoveItemFromShipmentPickingList.new(cqrs.event_store)
+        OnRemoveItemFromShipmentPickingList.new(event_store)
       )
-      cqrs.register_command(
+      command_bus.register(
         AddShippingAddressToShipment,
-        OnAddShippingAddressToShipment.new(cqrs.event_store)
+        OnAddShippingAddressToShipment.new(event_store)
       )
-      cqrs.register_command(
+      command_bus.register(
         SubmitShipment,
-        OnSubmitShipment.new(cqrs.event_store)
+        OnSubmitShipment.new(event_store)
       )
-      cqrs.register_command(
+      command_bus.register(
         AuthorizeShipment,
-        OnAuthorizeShipment.new(cqrs.event_store)
+        OnAuthorizeShipment.new(event_store)
       )
     end
   end

@@ -35,7 +35,6 @@ module Ecommerce
         Shipments::Configuration.new,
         Pricing::Configuration.new,
         ProductCatalog::Configuration.new,
-        Shipping::Configuration.new,
         Taxes::Configuration.new(@available_vat_rates)
       ].each { |c| c.call(cqrs) }
 
@@ -46,6 +45,7 @@ module Ecommerce
         Inventory::Configuration.new,
         Invoicing::Configuration.new,
         Payments::Configuration.new(@payment_gateway),
+        Shipping::Configuration.new,
       ].each { |c| c.call(event_store, command_bus) }
     end
 
