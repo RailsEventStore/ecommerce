@@ -7,7 +7,7 @@ module Processes
     def test_inventory_available_error_is_raised
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
-      process = DetermineVatRatesOnOrderSubmitted.new(cqrs)
+      process = DetermineVatRatesOnOrderSubmitted.new(command_bus)
       given([order_submitted(order_id, product_id)]).each do |event|
         process.call(event)
       end
