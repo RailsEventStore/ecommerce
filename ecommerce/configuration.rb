@@ -20,11 +20,10 @@ module Ecommerce
 
     def call(event_store, command_bus)
       cqrs = Infra::Cqrs.new(event_store, command_bus)
-      configure_bounded_contexts(cqrs)
-      configure_processes(cqrs)
+      configure_bounded_contexts
     end
 
-    def configure_bounded_contexts(cqrs)
+    def configure_bounded_contexts
       event_store = Rails.configuration.event_store
       command_bus = Rails.configuration.command_bus
 
