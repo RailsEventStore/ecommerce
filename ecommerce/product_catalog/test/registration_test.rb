@@ -5,7 +5,7 @@ module ProductCatalog
 
     def test_product_should_get_registered
       uid = SecureRandom.uuid
-      register_product(uid, fake_name)
+      assert register_product(uid, fake_name)
     end
 
     def test_should_not_allow_for_double_registration
