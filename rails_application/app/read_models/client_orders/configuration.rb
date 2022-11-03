@@ -14,7 +14,7 @@ module ClientOrders
 
       div class: "max-w-6xl mx-auto py-6 sm:px-6 lg:px-8" do
         client_name_header(client)
-        orders_table(client, client_orders)
+        orders_table(client_orders)
         new_order_button
       end
 
@@ -28,7 +28,7 @@ module ClientOrders
       end
     end
 
-    def orders_table(client, client_orders)
+    def orders_table(client_orders)
       if client_orders.count > 0
         table class: "w-full" do
           thead do
