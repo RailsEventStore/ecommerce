@@ -26,7 +26,7 @@ module Processes
     def call(cqrs, event_store, command_bus)
       enable_pricing_sync_from_ordering(event_store, command_bus)
       notify_payments_about_order_total_value(event_store, command_bus)
-      enable_inventory_sync_from_ordering(cqrs)
+      enable_inventory_sync_from_ordering(event_store, command_bus)
       enable_shipment_sync(cqrs)
       check_product_availability_on_adding_item_to_basket(cqrs)
       determine_vat_rates_on_order_submitted(cqrs)
@@ -53,8 +53,8 @@ module Processes
       NotifyPaymentsAboutOrderValue.new(event_store, command_bus)
     end
 
-    def enable_inventory_sync_from_ordering(cqrs)
-      SyncInventoryFromOrdering.new(cqrs)
+    def enable_inventory_sync_from_ordering(event_store, command_bus)
+      SyncInventoryFromOrdering.new(event_store, command_bus)
     end
 
     def enable_pricing_sync_from_ordering(event_store, command_bus)
