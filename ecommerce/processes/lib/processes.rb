@@ -33,7 +33,7 @@ module Processes
       set_invoice_payment_date_when_order_confirmed(event_store, command_bus)
       enable_product_name_sync(event_store, command_bus)
 
-      enable_release_payment_process(cqrs)
+      enable_release_payment_process(event_store, command_bus)
       enable_order_confirmation_process(cqrs)
       enable_shipment_process(cqrs)
       enable_order_item_invoicing_process(cqrs)
@@ -68,9 +68,9 @@ module Processes
       )
     end
 
-    def enable_release_payment_process(cqrs)
-      cqrs.subscribe(
-        ReleasePaymentProcess.new(cqrs),
+    def enable_release_payment_process(event_store, command_bus)
+      event_store.subscribe(
+        ReleasePaymentProcess.new(command_bus),
         [
           Ordering::OrderSubmitted,
           Ordering::OrderExpired,

@@ -1,7 +1,7 @@
 module Processes
   class ReleasePaymentProcess
-    def initialize(cqrs)
-      @cqrs = cqrs
+    def initialize(command_bus)
+      @command_bus = command_bus
     end
 
     def call(event)
@@ -12,16 +12,16 @@ module Processes
     private
 
     def release_payment(state)
-      cqrs.run(Payments::ReleasePayment.new(order_id: state.order_id))
+      command_bus.run(Payments::ReleasePayment.new(order_id: state.order_id))
     end
 
-    attr_reader :cqrs
+    attr_reader :command_bus
 
     def build_state(event)
       stream_name = "PaymentProcess$#{event.data.fetch(:order_id)}"
-      past_events = cqrs.all_events_from_stream(stream_name)
+      past_events = command_bus.all_events_from_stream(stream_name)
       last_stored = past_events.size - 1
-      cqrs.link_event_to_stream(event, stream_name, last_stored)
+      command_bus.link_event_to_stream(event, stream_name, last_stored)
       ProcessState.new.tap do |state|
         past_events.each { |ev| state.call(ev) }
         state.call(event)
