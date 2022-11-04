@@ -59,11 +59,11 @@ module Orders
         )
       )
 
-      assert_equal(OrderLine.count, 1)
+      assert_equal(1, OrderLine.count)
       order_line = OrderLine.find_by(order_uid: order_id)
       assert_equal(order_line.product_id, product_id)
-      assert_equal(order_line.product_name, "something")
-      assert_equal(order_line.quantity, 1)
+      assert_equal("something", order_line.product_name)
+      assert_equal(1, order_line.quantity)
     end
 
     def test_remove_item_when_quantity_eq_1
@@ -99,7 +99,7 @@ module Orders
         )
       )
 
-      assert_equal(OrderLine.count, 0)
+      assert_equal(0, OrderLine.count)
     end
 
     def test_remove_item_when_there_is_another_item
@@ -175,11 +175,11 @@ module Orders
         )
       )
 
-      assert_equal(OrderLine.count, 1)
+      assert_equal(1, OrderLine.count,)
       order_lines = OrderLine.where(order_uid: order_id)
-      assert_equal(order_lines[0].product_id, product_id)
-      assert_equal(order_lines[0].product_name, "test")
-      assert_equal(order_lines[0].quantity, 2)
+      assert_equal(product_id, order_lines[0].product_id)
+      assert_equal("test", order_lines[0].product_name)
+      assert_equal(2, order_lines[0].quantity)
     end
   end
 end
