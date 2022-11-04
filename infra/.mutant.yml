@@ -18,6 +18,5 @@ matcher:
     - Infra::TestPlumbing*
     - Infra::NoEvent*
     - Infra::EventStore*
-    - Infra::Cqrs*
     - Infra::Mapper*
     - Infra::Process*
