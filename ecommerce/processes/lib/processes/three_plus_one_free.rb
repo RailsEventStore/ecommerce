@@ -1,11 +1,12 @@
 module Processes
   class ThreePlusOneFree
 
-    def initialize(cqrs)
-      @cqrs = cqrs
-      @cqrs.subscribe(
+    def initialize(event_store, command_bus)
+      @event_store = event_store
+      @command_bus = command_bus
+      @event_store.subscribe(
         self,
-        [
+        to: [
           Pricing::PriceItemAdded,
           Pricing::PriceItemRemoved,
           Pricing::ProductMadeFreeForOrder,
@@ -25,9 +26,9 @@ module Processes
 
     def build_state(event)
       stream_name = "ThreePlusOneFreeProcess$#{event.data.fetch(:order_id)}"
-      past_events = @cqrs.all_events_from_stream(stream_name)
+      past_events = @event_store.read.stream(stream_name).to_a
       last_stored = past_events.size - 1
-      @cqrs.link_event_to_stream(event, stream_name, last_stored)
+      @event_store.link(event.event_id, stream_name: stream_name, expected_version: last_stored)
       ProcessState.new(event.data.fetch(:order_id)).tap do |state|
         past_events.each { |ev| state.call(ev) }
         state.call(event)
@@ -37,7 +38,7 @@ module Processes
     end
 
     def make_or_remove_free_product(state)
-      pricing_catalog = Pricing::PricingCatalog.new(@cqrs.event_store)
+      pricing_catalog = Pricing::PricingCatalog.new(@event_store)
       free_product_id = FreeProductResolver.new(state, pricing_catalog).call
 
       return if current_free_product_not_changed?(free_product_id, state)
@@ -55,11 +56,11 @@ module Processes
     end
 
     def remove_old_free_product(state)
-      @cqrs.run(Pricing::RemoveFreeProductFromOrder.new(order_id: state.order_id, product_id: state.current_free_product_id)) if state.current_free_product_id
+      @command_bus.call(Pricing::RemoveFreeProductFromOrder.new(order_id: state.order_id, product_id: state.current_free_product_id)) if state.current_free_product_id
     end
 
     def make_new_product_for_free(state, free_product_id)
-      @cqrs.run(Pricing::MakeProductFreeForOrder.new(order_id: state.order_id, product_id: free_product_id)) if free_product_id
+      @command_bus.call(Pricing::MakeProductFreeForOrder.new(order_id: state.order_id, product_id: free_product_id)) if free_product_id
     end
 
     class ProcessState

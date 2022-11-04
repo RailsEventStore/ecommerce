@@ -7,7 +7,7 @@ module Processes
     def test_one_order_line_is_not_eligible_for_free_product
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
-      process = ThreePlusOneFree.new(cqrs)
+      process = ThreePlusOneFree.new(event_store, command_bus)
       given(item_added_event(order_id, product_id, 1)).each do |event|
         process.call(event)
       end
@@ -17,7 +17,7 @@ module Processes
     def test_four_order_lines_are_eligible_for_free_product
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
-      process = ThreePlusOneFree.new(cqrs)
+      process = ThreePlusOneFree.new(event_store, command_bus)
       given([set_price(product_id, 20)])
       given(item_added_event(order_id, product_id, 4)).each do |event|
         process.call(event)
@@ -28,7 +28,7 @@ module Processes
     def test_remove_free_product_when_order_lines_qtn_is_less_than_four
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
-      process = ThreePlusOneFree.new(cqrs)
+      process = ThreePlusOneFree.new(event_store, command_bus)
       given([set_price(product_id, 20)])
       given(item_added_event(order_id, product_id, 4) +
               product_made_for_free(order_id, product_id) +
@@ -45,7 +45,7 @@ module Processes
       product_id = SecureRandom.uuid
       cheapest_product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
-      process = ThreePlusOneFree.new(cqrs)
+      process = ThreePlusOneFree.new(event_store, command_bus)
       given([set_price(product_id, 20)])
       given([set_price(cheapest_product_id, 1)])
 
@@ -67,7 +67,7 @@ module Processes
       product_id = SecureRandom.uuid
       more_expensive_product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
-      process = ThreePlusOneFree.new(cqrs)
+      process = ThreePlusOneFree.new(event_store, command_bus)
       given([set_price(product_id, 20)])
       given([set_price(more_expensive_product_id, 50)])
 
@@ -84,7 +84,7 @@ module Processes
       product_id = SecureRandom.uuid
       cheapest_product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
-      process = ThreePlusOneFree.new(cqrs)
+      process = ThreePlusOneFree.new(event_store, command_bus)
       given([set_price(product_id, 20)])
       given([set_price(cheapest_product_id, 1)])
 

@@ -125,8 +125,8 @@ module Processes
       )
     end
 
-    def enable_three_plus_one_free_process(cqrs)
-      ThreePlusOneFree.new(cqrs)
+    def enable_three_plus_one_free_process(event_store, command_bus)
+      ThreePlusOneFree.new(event_store, command_bus)
     end
   end
 end
