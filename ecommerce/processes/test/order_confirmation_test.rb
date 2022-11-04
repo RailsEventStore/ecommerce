@@ -5,7 +5,7 @@ module Processes
     cover "Processes::OrderConfirmation"
 
     def test_authorized_is_not_enough_to_confirm
-      process = OrderConfirmation.new(cqrs)
+      process = OrderConfirmation.new(event_store, command_bus)
       given([order_submitted, payment_authorized]).each do |event|
         process.call(event)
       end
@@ -13,7 +13,7 @@ module Processes
     end
 
     def test_payment_confirms_order
-      process = OrderConfirmation.new(cqrs)
+      process = OrderConfirmation.new(event_store, command_bus)
       given([order_submitted, payment_authorized, payment_captured]).each do |event|
         process.call(event)
       end

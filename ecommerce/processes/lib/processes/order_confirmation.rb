@@ -1,8 +1,9 @@
 module Processes
 
   class ProcessManager
-    def initialize(cqrs)
-      @cqrs = cqrs
+    def initialize(event_store, command_bus)
+      @event_store = event_store
+      @command_bus = command_bus
     end
 
     def run(stream_name, new_event, object)
@@ -14,16 +15,18 @@ module Processes
 
     private
 
+    attr_reader :event_store, :command_bus
+
     def build_object_from_existing_events(object, stream_name, new_event)
-      past_events = @cqrs.all_events_from_stream(stream_name)
-      @cqrs.link_event_to_stream(new_event, stream_name, past_events.size - 1)
+      past_events = event_store.read.stream(stream_name).to_a
+      event_store.link(new_event.event_id, stream_name: stream_name, expected_version: past_events.size - 1)
       object.apply(past_events)
     end
   end
 
   class OrderConfirmation < ProcessManager
     def call(event)
-      process = ProcessState.new(@cqrs)
+      process = ProcessState.new(command_bus)
       run(stream_name(event), event, process)
     end
 
@@ -34,12 +37,12 @@ module Processes
     end
 
     class ProcessState
-      def initialize(cqrs)
-        @cqrs = cqrs
+      def initialize(command_bus)
+        @command_bus = command_bus
       end
 
       def process(event)
-        @cqrs.run(Ordering::ConfirmOrder.new(order_id: @order_id)) if event.class.equal?(Payments::PaymentCaptured)
+        @command_bus.call(Ordering::ConfirmOrder.new(order_id: @order_id)) if event.class.equal?(Payments::PaymentCaptured)
       end
 
       def apply(events)

@@ -34,7 +34,7 @@ module Processes
       enable_product_name_sync(event_store, command_bus)
 
       enable_release_payment_process(event_store, command_bus)
-      enable_order_confirmation_process(cqrs)
+      enable_order_confirmation_process(event_store, command_bus)
       enable_shipment_process(event_store, command_bus)
       enable_order_item_invoicing_process(event_store, command_bus)
     end
@@ -61,10 +61,10 @@ module Processes
       SyncPricingFromOrdering.new(event_store, command_bus)
     end
 
-    def enable_order_confirmation_process(cqrs)
-      cqrs.subscribe(
-        OrderConfirmation.new(cqrs),
-        [Payments::PaymentAuthorized, Payments::PaymentCaptured]
+    def enable_order_confirmation_process(event_store, command_bus)
+      event_store.subscribe(
+        OrderConfirmation.new(event_store, command_bus),
+        to: [Payments::PaymentAuthorized, Payments::PaymentCaptured]
       )
     end
 
