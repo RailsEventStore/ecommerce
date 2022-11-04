@@ -5,7 +5,7 @@ module Processes
     cover "Processes::ReleasePaymentProcess*"
 
     def test_happy_path
-      process = ReleasePaymentProcess.new(cqrs)
+      process = ReleasePaymentProcess.new(event_store, command_bus)
       given([order_submitted, payment_authorized, order_confirmed]).each do |event|
         process.call(event)
       end
@@ -13,13 +13,13 @@ module Processes
     end
 
     def test_order_expired_without_payment
-      process = ReleasePaymentProcess.new(cqrs)
+      process = ReleasePaymentProcess.new(event_store, command_bus)
       given([order_submitted, order_expired]).each { |event| process.call(event) }
       assert_no_command
     end
 
     def test_order_expired_after_payment_authorization
-      process = ReleasePaymentProcess.new(cqrs)
+      process = ReleasePaymentProcess.new(event_store, command_bus)
       given([order_submitted, payment_authorized, order_expired]).each do |event|
         process.call(event)
       end
@@ -27,7 +27,7 @@ module Processes
     end
 
     def test_order_expired_after_payment_released
-      process = ReleasePaymentProcess.new(cqrs)
+      process = ReleasePaymentProcess.new(event_store, command_bus)
       given([order_submitted, payment_authorized, payment_released, order_expired]).each do |event|
         process.call(event)
       end

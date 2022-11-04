@@ -1,6 +1,7 @@
 module Processes
   class ReleasePaymentProcess
-    def initialize(command_bus)
+    def initialize(event_store, command_bus)
+      @event_store = event_store
       @command_bus = command_bus
     end
 
@@ -12,16 +13,16 @@ module Processes
     private
 
     def release_payment(state)
-      command_bus.run(Payments::ReleasePayment.new(order_id: state.order_id))
+      command_bus.call(Payments::ReleasePayment.new(order_id: state.order_id))
     end
 
-    attr_reader :command_bus
+    attr_reader :command_bus, :event_store
 
     def build_state(event)
       stream_name = "PaymentProcess$#{event.data.fetch(:order_id)}"
-      past_events = command_bus.all_events_from_stream(stream_name)
+      past_events = event_store.read.stream(stream_name).to_a
       last_stored = past_events.size - 1
-      command_bus.link_event_to_stream(event, stream_name, last_stored)
+      event_store.link(event.event_id, stream_name: stream_name, expected_version: last_stored)
       ProcessState.new.tap do |state|
         past_events.each { |ev| state.call(ev) }
         state.call(event)

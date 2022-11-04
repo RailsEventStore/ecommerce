@@ -70,8 +70,8 @@ module Processes
 
     def enable_release_payment_process(event_store, command_bus)
       event_store.subscribe(
-        ReleasePaymentProcess.new(command_bus),
-        [
+        ReleasePaymentProcess.new(event_store, command_bus),
+        to: [
           Ordering::OrderSubmitted,
           Ordering::OrderExpired,
           Ordering::OrderConfirmed,
