@@ -51,7 +51,7 @@ module Processes
       @customer_id ||= SecureRandom.uuid
     end
 
-    def given(events, store: cqrs.event_store)
+    def given(events, store: event_store)
       events.each { |ev| store.append(ev) }
       events
     end

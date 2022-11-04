@@ -6,7 +6,7 @@ module Invoicing
 
     def test_fetching_next_number
       issue_date = Date.new(2022, 1, 5)
-      number_generator = InvoiceNumberGenerator.new(cqrs.event_store)
+      number_generator = InvoiceNumberGenerator.new(event_store)
       assert_equal("1/01/2022", number_generator.call(issue_date))
       issue_random_invoice(issue_date)
       assert_equal("2/01/2022", number_generator.call(issue_date))

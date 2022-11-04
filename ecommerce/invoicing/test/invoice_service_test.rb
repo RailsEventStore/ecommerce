@@ -108,7 +108,7 @@ module Invoicing
       set_billing_address(another_invoice_id)
 
       mocked_service = InvoiceService.new(
-        cqrs.event_store,
+        event_store,
         FakeConcurrentInvoiceNumberGenerator.new
       ).public_method(:issue)
 
