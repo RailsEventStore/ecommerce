@@ -35,14 +35,14 @@ module Processes
 
       enable_release_payment_process(event_store, command_bus)
       enable_order_confirmation_process(cqrs)
-      enable_shipment_process(cqrs)
+      enable_shipment_process(event_store, command_bus)
       enable_order_item_invoicing_process(cqrs)
     end
 
     private
 
-    def enable_shipment_process(cqrs)
-      ShipmentProcess.new(cqrs)
+    def enable_shipment_process(event_store, command_bus)
+      ShipmentProcess.new(event_store, command_bus)
     end
 
     def enable_shipment_sync(event_store, command_bus)
