@@ -36,7 +36,7 @@ module Processes
       enable_release_payment_process(event_store, command_bus)
       enable_order_confirmation_process(cqrs)
       enable_shipment_process(event_store, command_bus)
-      enable_order_item_invoicing_process(cqrs)
+      enable_order_item_invoicing_process(event_store, command_bus)
     end
 
     private
@@ -81,10 +81,10 @@ module Processes
       )
     end
 
-    def enable_order_item_invoicing_process(cqrs)
-      cqrs.subscribe(
-        OrderItemInvoicingProcess.new(cqrs),
-        [
+    def enable_order_item_invoicing_process(event_store, command_bus)
+      event_store.subscribe(
+        OrderItemInvoicingProcess.new(event_store, command_bus),
+        to: [
           Pricing::PriceItemValueCalculated,
           Taxes::VatRateDetermined
         ]

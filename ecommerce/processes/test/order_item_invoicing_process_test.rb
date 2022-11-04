@@ -27,7 +27,7 @@ module Processes
           vat_rate: vat_rate
         }
       )
-      process = OrderItemInvoicingProcess.new(cqrs)
+      process = OrderItemInvoicingProcess.new(event_store, command_bus)
       given([item_value_calculated, vat_rate_determined]).each do |event|
         process.call(event)
       end

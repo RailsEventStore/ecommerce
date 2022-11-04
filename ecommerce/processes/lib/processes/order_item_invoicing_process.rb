@@ -1,7 +1,8 @@
 module Processes
   class OrderItemInvoicingProcess
-    def initialize(cqrs)
-      @cqrs = cqrs
+    def initialize(event_store, command_bus)
+      @event_store = event_store
+      @command_bus = command_bus
     end
 
     def call(event)
@@ -10,7 +11,7 @@ module Processes
 
       unit_prices = Math::MoneySplitter.new(state.discounted_amount, Array.new(state.quantity, 1)).call
       unit_prices.tally.each do |unit_price, quantity|
-        cqrs.run(Invoicing::AddInvoiceItem.new(
+        command_bus.call(Invoicing::AddInvoiceItem.new(
           invoice_id: state.order_id,
           product_id: state.product_id,
           vat_rate: state.vat_rate,
@@ -22,13 +23,13 @@ module Processes
 
     private
 
-    attr_reader :cqrs
+    attr_reader :event_store, :command_bus
 
     def build_state(event)
       stream_name = "OrderInvoicingProcess$#{event.data.fetch(:order_id)}$#{event.data.fetch(:product_id)}"
-      past = cqrs.all_events_from_stream(stream_name)
+      past = event_store.read.stream(stream_name).to_a
       last_stored = past.size - 1
-      cqrs.link_event_to_stream(event, stream_name, last_stored)
+      event_store.link(event.event_id, stream_name: stream_name, expected_version: last_stored)
       ProcessState.new.tap do |state|
         past.each { |ev| state.call(ev) }
         state.call(event)
