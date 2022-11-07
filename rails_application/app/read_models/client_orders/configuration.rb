@@ -99,6 +99,10 @@ module ClientOrders
 
   class OrderLine < ApplicationRecord
     self.table_name = "client_order_lines"
+
+    def value
+      product_price * product_quantity
+    end
   end
 
   class Product < ApplicationRecord
