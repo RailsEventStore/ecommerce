@@ -47,7 +47,7 @@ module ApplicationHelper
   end
 
   def stream_browser_link(link_name, stream_name, options = {})
-    link_to link_name, stream_browser_path(CGI::escape(stream_name)),
+    link_to link_name, stream_browser_path(CGI.escape(stream_name)),
       options.merge(data: { turbolinks: false })
   end
 
