@@ -90,6 +90,19 @@ module ClientOrders
     self.table_name = "client_orders"
 
     belongs_to :order, class_name: "Orders::Order", foreign_key: :order_uid, primary_key: :uid
+    has_many :order_lines,
+             -> { order(id: :asc) },
+             class_name: "ClientOrders::OrderLine",
+             foreign_key: :order_uid,
+             primary_key: :order_uid
+  end
+
+  class OrderLine < ApplicationRecord
+    self.table_name = "client_order_lines"
+  end
+
+  class Product < ApplicationRecord
+    self.table_name = "client_order_products"
   end
 
   class Configuration
@@ -173,6 +186,62 @@ module ClientOrders
 
     def assign_customer(event, customer_id)
       with_order(event) { |order| order.client_uid = customer_id }
+    end
+
+    def add_item_to_order(event)
+      order_id = event.data.fetch(:order_id)
+      create_draft_order(order_id)
+      item =
+        find(order_id, event.data.fetch(:product_id)) ||
+          create(order_id, event.data.fetch(:product_id))
+      item.product_quantity += 1
+      item.save!
+    end
+
+    def create_draft_order(uid)
+      return if Order.where(order_uid: uid).exists?
+      Order.create!(order_uid: uid, state: "Draft")
+    end
+
+    def find(order_uid, product_id)
+      Order
+        .find_by(order_uid: order_uid)
+        .order_lines
+        .where(product_id: product_id)
+        .first
+    end
+
+    def create(order_uid, product_id)
+      product = Product.find_by_uid(product_id)
+      Order
+        .find_by(order_uid: order_uid)
+        .order_lines
+        .create(
+          product_id: product_id,
+          product_name: product.name,
+          product_price: product.price,
+          product_quantity: 0
+        )
+    end
+
+    def remove_item_from_order(event)
+      item = find(event.data.fetch(:order_id), event.data.fetch(:product_id))
+      item.product_quantity -= 1
+      item.product_quantity > 0 ? item.save! : item.destroy!
+    end
+
+    def create_product(event)
+      Product.create(uid: event.data.fetch(:product_id))
+    end
+
+    def name_product(event)
+      Product.find_by_uid(event.data.fetch(:product_id)).update(
+        name: event.data.fetch(:name)
+      )
+    end
+
+    def change_product_price(event)
+      Product.find_by_uid(event.data.fetch(:product_id)).update(price: event.data.fetch(:price))
     end
   end
 end
