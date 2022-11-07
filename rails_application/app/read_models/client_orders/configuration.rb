@@ -4,9 +4,9 @@ module ClientOrders
 
     def self.build(view_context, client_id)
       new(Arbre::Context.new(nil, view_context)).build(
-          Client.find_by(uid: client_id),
-          Order.where(client_uid: client_id)
-        )
+        Client.find_by(uid: client_id),
+        Order.where(client_uid: client_id)
+      )
     end
 
     def build(client, client_orders, attributes = {})
