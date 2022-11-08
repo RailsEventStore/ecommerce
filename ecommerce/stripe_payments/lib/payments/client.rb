@@ -19,7 +19,7 @@ module Payments
     end
 
     def update_intent_payment_method(intent_id, payment_method_id)
-      call { Stripe::PaymentIntent.update(intent_id, payment_method: payment_method_id, confirm: true) }
+      call { Stripe::PaymentIntent.update(intent_id, payment_method: payment_method_id) }
     end
 
     def confirm_intent(intent_id)
@@ -75,7 +75,7 @@ module Payments
         currency: 'usd',
         description: "Order #{order_id}",
         capture_method: "manual",
-        confirmation_method: "manual",
+        confirmation_method: "automatic",
         metadata: {
           payment_id: order_id,
         }
