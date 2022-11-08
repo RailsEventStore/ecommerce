@@ -1,0 +1,10 @@
+source "https://rubygems.org"
+
+eval_gemfile "../../infra/Gemfile.test"
+gem "infra", path: "../../infra"
+gem "stripe"
+
+group :test do
+  gem "webmock"
+  gem "dotenv"
+end
