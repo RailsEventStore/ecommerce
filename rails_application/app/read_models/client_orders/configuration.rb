@@ -175,6 +175,21 @@ module ClientOrders
         -> (event) { change_product_price(event) },
         [Pricing::PriceSet]
       )
+
+      subscribe_and_link_to_stream(
+        ->(event) { update_discount(event) },
+        [Pricing::PercentageDiscountSet, Pricing::PercentageDiscountChanged]
+      )
+
+      subscribe_and_link_to_stream(
+        ->(event) { reset_discount(event) },
+        [Pricing::PercentageDiscountReset]
+      )
+
+      subscribe_and_link_to_stream(
+        ->(event) { update_totals(event) },
+        [Pricing::OrderTotalValueCalculated]
+      )
     end
 
     private
@@ -279,6 +294,25 @@ module ClientOrders
 
     def change_product_price(event)
       Product.find_by_uid(event.data.fetch(:product_id)).update(price: event.data.fetch(:price))
+    end
+
+    def update_discount(event)
+      with_order(event) do |order|
+        order.percentage_discount = event.data.fetch(:amount)
+      end
+    end
+
+    def reset_discount(event)
+      with_order(event) do |order|
+        order.percentage_discount = nil
+      end
+    end
+
+    def update_totals(event)
+      with_order(event) do |order|
+        order.discounted_value = event.data.fetch(:discounted_amount)
+        order.total_value = event.data.fetch(:total_amount)
+      end
     end
   end
 end
