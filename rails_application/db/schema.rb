@@ -10,17 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_11_07_085656) do
+ActiveRecord::Schema[7.0].define(version: 2022_11_09_141019) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
 
   create_table "client_order_lines", force: :cascade do |t|
     t.string "order_uid"
-    t.integer "product_id"
     t.string "product_name"
     t.integer "product_quantity"
     t.decimal "product_price", precision: 8, scale: 2
+    t.uuid "product_id"
   end
 
   create_table "client_order_products", force: :cascade do |t|
