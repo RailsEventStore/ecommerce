@@ -25,13 +25,13 @@ module Client
     end
 
     def show
-      @order = Orders::Order.find_by_uid(params[:id])
-      @order_lines = Orders::OrderLine.where(order_uid: params[:id])
+      @order = ClientOrders::Order.find_by_order_uid(params[:id])
+      @order_lines = ClientOrders::OrderLine.where(order_uid: params[:id])
     end
 
     def edit
       @order_id = params[:id]
-      @order_lines = Orders::OrderLine.where(order_uid: params[:id])
+      @order_lines = ClientOrders::OrderLine.where(order_uid: params[:id])
       @products = Products::Product.all
     end
 

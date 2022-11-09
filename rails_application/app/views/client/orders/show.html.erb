@@ -11,8 +11,6 @@
 <% end %>
 
 <dl class="mb-8">
-  <dt class="font-bold">Customer</dt>
-  <dd class="mb-2"><%= @order.customer || "None" %></dd>
   <dt class="font-bold">State</dt>
   <dd class="mb-2"><%= @order.state %></dd>
 </dl>
@@ -31,8 +29,8 @@
   <% @order_lines.each do |item| %>
     <tr class="border-t">
       <td class="py-2"><%= item.product_name %></td>
-      <td class="py-2"><%= item.quantity %></td>
-      <td class="py-2"><%= number_to_currency(item.price) %></td>
+      <td class="py-2"><%= item.product_quantity %></td>
+      <td class="py-2"><%= number_to_currency(item.product_price) %></td>
       <td class="py-2 text-right"><%= number_to_currency(item.value) %></td>
     </tr>
   <% end %>
