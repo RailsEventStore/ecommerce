@@ -95,6 +95,9 @@ module ClientOrders
              class_name: "ClientOrders::OrderLine",
              foreign_key: :order_uid,
              primary_key: :order_uid
+    # has_many :payment_intents, class_name: "ClientOrders::PaymentIntent",
+    #          foreign_key: :order_uid,
+    #          primary_key: :order_uid
   end
 
   class OrderLine < ApplicationRecord
@@ -108,6 +111,11 @@ module ClientOrders
   class Product < ApplicationRecord
     self.table_name = "client_order_products"
   end
+
+  # class PaymentIntent < ApplicationRecord
+  #   self.table_name = "client_payment_intents"
+  #   belongs_to :order, class_name: "Orders::Order", foreign_key: :order_uid, primary_key: :uid
+  # end
 
   class Configuration
     def call(event_store)
@@ -141,6 +149,31 @@ module ClientOrders
       subscribe_and_link_to_stream(
         -> (event) { assign_customer(event, event.data.fetch(:customer_id)) },
         [Crm::CustomerAssignedToOrder]
+      )
+
+      subscribe_and_link_to_stream(
+        ->(event) { add_item_to_order(event) },
+        [Ordering::ItemAddedToBasket]
+      )
+
+      subscribe_and_link_to_stream(
+        ->(event) { remove_item_from_order(event) },
+        [Ordering::ItemRemovedFromBasket]
+      )
+
+      subscribe_and_link_to_stream(
+        -> (event) { create_product(event) },
+        [ProductCatalog::ProductRegistered]
+      )
+
+      subscribe_and_link_to_stream(
+        -> (event) { name_product(event) },
+        [ProductCatalog::ProductNamed]
+      )
+
+      subscribe_and_link_to_stream(
+        -> (event) { change_product_price(event) },
+        [Pricing::PriceSet]
       )
     end
 
