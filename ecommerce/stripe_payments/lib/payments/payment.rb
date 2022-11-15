@@ -23,21 +23,20 @@ module Payments
       raise AlreadyAuthorized if authorized?
 
       intent = if payment_method_id
-                 gateway.update_intent_payment_method(@intent_id, payment_method_id)
+                 gateway.confirm_intent(@intent_id, payment_method_id)
                elsif payment_method_chosen?
                  payment_method_id = @payment_method_id
-                 gateway.confirm(@intent_id)
+                 gateway.confirm_intent(@intent_id)
                else
                  raise ArgumentError.new "Payment method required"
                end
       case intent.status
-      when 'requires_confirmation'
-        apply(PaymentIntentConfirmationRequired.new(data: { order_id: @order_id, intent_id: @intent_id, payment_method_id: payment_method_id }))
-        apply(PaymentAuthorized.new(data: { order_id: @order_id }))
       when 'requires_action'
-        apply(PaymentIntentActionRequired.new(data: { order_id: @order_id, intent_id: @intent_id, payment_method_id: payment_method_id }))
+        apply(PaymentIntentActionRequired.new(data: { order_id: @order_id, intent_id: @intent_id, payment_method_id: payment_method_id, client_secret: intent.client_secret }))
       when 'requires_payment_method'
         apply(PaymentIntentFailed.new(data: { order_id: @order_id, intent_id: @intent_id, payment_method_id: payment_method_id }))
+      when 'requires_capture'
+        apply(PaymentAuthorized.new(data: { order_id: @order_id }))
       end
     end
 

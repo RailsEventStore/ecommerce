@@ -12,7 +12,7 @@ module Payments
       stream = "Payments::Payment$#{order_id}"
       stub_creating_payment_intent(payment_intent_json(intent_id, amount, 'requires_payment_method'))
       stub_creating_payment_method(payment_method_json(payment_method_id))
-      stub_authorize = stub_updating_payment_intent(intent_id, payment_intent_json(intent_id, amount, 'requires_confirmation'))
+      stub_authorize = stub_confirming_payment_intent(intent_id, payment_intent_json(intent_id, amount, 'requires_capture'))
       Client.new.create_test_payment_method
 
       arrange(
@@ -21,10 +21,46 @@ module Payments
 
       assert_events(
         stream,
-        PaymentIntentConfirmationRequired.new(data: { :order_id => order_id, :intent_id => intent_id, :payment_method_id => payment_method_id }),
         PaymentAuthorized.new(data: { order_id: order_id })
       ) { act(AuthorizePayment.new(order_id: order_id, payment_method_id: payment_method_id)) }
       assert_requested(stub_authorize)
+    end
+
+    def test_two_step_authorize_payment
+      order_id = SecureRandom.uuid
+      amount = 20
+      intent_id = "pi_1F5QxUC9bKSp3hWJgGrHksGL"
+      payment_method_id = "pm_1EUt3RJX9HHJ5bycb1MyDZqY"
+      stream = "Payments::Payment$#{order_id}"
+      stub_creating_payment_intent(payment_intent_json(intent_id, amount, 'requires_payment_method'))
+      stub_creating_payment_method(payment_method_json(payment_method_id))
+      stub_authorize = stub_confirming_payment_intent(intent_id, payment_intent_json(intent_id, amount, 'requires_action'))
+      Client.new.create_test_payment_method
+
+      arrange(
+        SetPaymentAmount.new(order_id: order_id, amount: 20),
+      )
+
+      assert_events(
+        stream,
+        PaymentIntentActionRequired.new(
+          data: {
+            order_id: order_id,
+            intent_id: intent_id,
+            payment_method_id: payment_method_id,
+            client_secret: "#{intent_id}_secret_mMwz7FuwEvCg4nBxPseGCYjSk"
+          }
+        )
+      ) { act(AuthorizePayment.new(order_id: order_id, payment_method_id: payment_method_id)) }
+      assert_requested(stub_authorize)
+
+      stub_authorize = stub_confirming_payment_intent(intent_id, payment_intent_json(intent_id, amount, 'requires_capture'))
+
+      assert_events(
+        stream,
+        PaymentAuthorized.new(data: { order_id: order_id })
+      ) { act(AuthorizePayment.new(order_id: order_id, payment_method_id: nil)) }
+      assert_requested(stub_authorize, times: 2)
     end
 
     private
@@ -44,8 +80,8 @@ module Payments
         to_return(status: 200, :body => json)
     end
 
-    def stub_updating_payment_intent(id, json)
-      stub_request(:post, "https://api.stripe.com/v1/payment_intents/#{id}").
+    def stub_confirming_payment_intent(id, json)
+      stub_request(:post, "https://api.stripe.com/v1/payment_intents/#{id}/confirm").
         to_return(status: 200, :body => json)
     end
 

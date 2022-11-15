@@ -12,7 +12,7 @@ module Payments
       stream = "Payments::Payment$#{order_id}"
       stub_creating_payment_intent(payment_intent_json(intent_id, amount, 'requires_payment_method'))
       stub_creating_payment_method(payment_method_json(payment_method_id))
-      stub_updating_payment_intent(intent_id, payment_intent_json(intent_id, amount, 'requires_confirmation'))
+      stub_confirming_payment_intent(intent_id, payment_intent_json(intent_id, amount, 'requires_capture'))
       stub_capture = stub_capturing_payment_intent(intent_id, payment_intent_json(intent_id, amount, 'succeeded'))
       Client.new.create_test_payment_method
 
@@ -45,8 +45,8 @@ module Payments
         to_return(status: 200, :body => json)
     end
 
-    def stub_updating_payment_intent(id, json)
-      stub_request(:post, "https://api.stripe.com/v1/payment_intents/#{id}").
+    def stub_confirming_payment_intent(id, json)
+      stub_request(:post, "https://api.stripe.com/v1/payment_intents/#{id}/confirm").
         to_return(status: 200, :body => json)
     end
 

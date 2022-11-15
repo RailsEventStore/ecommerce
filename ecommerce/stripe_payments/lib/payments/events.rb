@@ -25,6 +25,7 @@ module Payments
     attribute :order_id, Infra::Types::UUID
     attribute :intent_id, Infra::Types::String
     attribute :payment_method_id, Infra::Types::String
+    attribute :client_secret, Infra::Types::String
   end
 
   class PaymentIntentFailed < Infra::Event
