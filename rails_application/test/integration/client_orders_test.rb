@@ -17,7 +17,7 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
     async_remote_id = register_product("Async Remote", 39, 10)
 
     get "/clients"
-    assert_select("button", {count: 0, text: "Log out"})
+    assert_select("button", { count: 0, text: "Log out" })
     assert_select("button", "Login")
     assert_select("select", "Arkency")
 
@@ -78,7 +78,7 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
   end
 
   def as_client_submit_order_for_customer(order_id)
-    post "/client_orders", params: { order_id: order_id}
+    post "/client_orders", params: { order_id: order_id }
     follow_redirect!
   end
 
