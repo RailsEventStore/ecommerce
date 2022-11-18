@@ -21,5 +21,3 @@ matcher:
     - ClientOrders::Configuration#link_to_stream
     - ClientOrders::Configuration#with_order
     - ClientOrders::OrdersList*
-    - ClientOrders::OrderLine*
-    - ClientOrders::Configuration*
