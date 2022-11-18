@@ -2,7 +2,7 @@ require "test_helper"
 
 module ClientOrders
   class CustomerRegisteredTest < InMemoryTestCase
-    cover "Clients"
+    cover "ClientOrders*"
 
     def setup
       super
