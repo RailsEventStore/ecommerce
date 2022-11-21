@@ -13,6 +13,8 @@
 <% end %>
 
 <%= form_tag({controller: "products", action: "update"}, method: "patch", id: "form") do %>
+  <%= hidden_field_tag(:product_id, @product.id) %>
+
   <div>
     <p class="font-bold">Name</p>
     <%= @product.name %>

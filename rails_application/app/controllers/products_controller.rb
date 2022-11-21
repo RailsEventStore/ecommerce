@@ -35,6 +35,11 @@ class ProductsController < ApplicationController
     end
   end
 
+  def update
+    set_product_price(params[:product_id], params[:price])
+    redirect_to products_path, notice: "Price was successfully updated"
+  end
+
   private
 
   def create_product(product_id, name)
