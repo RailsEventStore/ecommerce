@@ -20,3 +20,4 @@ matcher:
     - Infra::EventStore*
     - Infra::Mapper*
     - Infra::Process*
+    - Infra::EventHandler*
