@@ -9,6 +9,7 @@ class PublicOfferTest < InMemoryRESIntegrationTestCase
 
   def test_happy_path
     arkency_id = register_customer('Arkency')
+    perform_enqueued_jobs
     register_product("Async Remote", 39, 10)
     get "/clients"
     login(arkency_id)
