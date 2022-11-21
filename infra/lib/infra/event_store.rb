@@ -14,7 +14,15 @@ module Infra
 
     def self.main
       repository = RailsEventStoreActiveRecord::EventRepository.new(serializer: RubyEventStore::NULL)
-      new(RailsEventStore::Client.new(repository: repository, mapper: Mapper.new))
+      new(RailsEventStore::Client.new(
+        repository: repository, mapper: Mapper.new,
+        dispatcher:
+          RubyEventStore::ComposedDispatcher.new(
+            RailsEventStore::AfterCommitAsyncDispatcher.new(scheduler: RailsEventStore::ActiveJobScheduler.new(serializer: RubyEventStore::NULL)),
+            RubyEventStore::Dispatcher.new
+          )
+
+      ))
     end
 
     def self.in_memory
