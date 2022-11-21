@@ -11,6 +11,10 @@ class ProductsController < ApplicationController
     @product_id = SecureRandom.uuid
   end
 
+  def edit
+    @product = Products::Product.find(params[:id])
+  end
+
   def create
     ActiveRecord::Base.transaction do
       create_product(params[:product_id], params[:name])
