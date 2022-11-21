@@ -49,9 +49,9 @@ module ClientOrders
       reset_percentage_discount(order_id)
 
       order = Order.find_by(order_uid: order_id)
-      assert_equal 50, order.total_value
-      assert_equal 50, order.discounted_value
-      assert_equal nil, order.percentage_discount
+      assert_equal(50, order.total_value)
+      assert_equal(50, order.discounted_value)
+      assert_nil(order.percentage_discount)
     end
 
     private
