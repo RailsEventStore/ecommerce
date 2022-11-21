@@ -1,4 +1,5 @@
 require_relative "../../ecommerce/configuration"
+require_relative "../../infra/lib/infra"
 
 class Configuration
   def call(event_store, command_bus)
