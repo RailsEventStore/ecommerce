@@ -1,6 +1,7 @@
 require "test_helper"
 
 class OrdersTest < InMemoryRESIntegrationTestCase
+  include ActiveJob::TestHelper
   cover "Orders*"
 
   def setup
@@ -33,6 +34,8 @@ class OrdersTest < InMemoryRESIntegrationTestCase
 
     async_remote_id = register_product("Async Remote", 39, 10)
     fearless_id     = register_product("Fearless Refactoring", 49, 10)
+
+    perform_enqueued_jobs
 
     post "/orders",
          params: {
@@ -99,6 +102,8 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     order_id = SecureRandom.uuid
     async_remote_id = register_product("Async Remote", 39, 10)
 
+    perform_enqueued_jobs
+
     post "/orders/#{order_id}/add_item?product_id=#{async_remote_id}"
     follow_redirect!
     assert_select("td", "$39.00")
@@ -114,6 +119,8 @@ class OrdersTest < InMemoryRESIntegrationTestCase
 
     order_id = SecureRandom.uuid
     async_remote_id = register_product("Async Remote", 39, 10)
+
+    perform_enqueued_jobs
 
     get "/"
     get "/orders/new"

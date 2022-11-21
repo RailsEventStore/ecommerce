@@ -14,6 +14,7 @@ class DiscountTest < InMemoryRESIntegrationTestCase
     order_id = SecureRandom.uuid
 
     async_remote_id = register_product("Async Remote", 137, 10)
+    perform_enqueued_jobs
 
     get "/"
     get "/orders/new"
