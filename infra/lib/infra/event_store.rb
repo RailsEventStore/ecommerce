@@ -18,7 +18,7 @@ module Infra
         repository: repository, mapper: Mapper.new,
         dispatcher:
           RubyEventStore::ComposedDispatcher.new(
-            RailsEventStore::AfterCommitAsyncDispatcher.new(scheduler: RailsEventStore::ActiveJobScheduler.new(serializer: RubyEventStore::NULL)),
+            RailsEventStore::AfterCommitAsyncDispatcher.new(scheduler: Scheduler.new),
             RubyEventStore::Dispatcher.new
           )
 
