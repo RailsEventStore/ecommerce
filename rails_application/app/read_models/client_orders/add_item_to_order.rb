@@ -11,7 +11,7 @@ module ClientOrders
       item.save!
 
       broadcast_update(order_id, product_id, "product_quantity", item.product_quantity)
-      broadcast_update(order_id, product_id, "value", item.value)
+      broadcast_update(order_id, product_id, "value", ActiveSupport::NumberHelper.number_to_currency(item.value))
     end
 
     private
