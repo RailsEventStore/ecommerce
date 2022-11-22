@@ -10,18 +10,18 @@ module ClientOrders
       item.product_quantity += 1
       item.save!
 
-      Turbo::StreamsChannel.broadcast_update_to(
-        "client_orders_#{order_id}",
-        target: "client_orders_#{product_id}_product_quantity",
-        html: item.product_quantity)
-
-      Turbo::StreamsChannel.broadcast_update_to(
-        "client_orders_#{order_id}",
-        target: "client_orders_#{product_id}_value",
-        html: ActiveSupport::NumberHelper.number_to_currency(item.value))
+      broadcast_update(order_id, product_id, "product_quantity", item.product_quantity)
+      broadcast_update(order_id, product_id, "value", item.value)
     end
 
     private
+
+    def broadcast_update(order_id, product_id, target, content)
+      Turbo::StreamsChannel.broadcast_update_to(
+        "client_orders_#{order_id}",
+        target: "client_orders_#{product_id}_#{target}",
+        html: content)
+    end
 
     def create_draft_order(uid)
       return if Order.where(order_uid: uid).exists?
