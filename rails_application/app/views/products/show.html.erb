@@ -16,7 +16,12 @@
   <dt class="font-bold">Name</dt>
   <dd class="mb-2"><%= @product.name %></dd>
   <dt class="font-bold">Price</dt>
-  <dd class="mb-2"><%= number_to_currency @product.price %></dd>
+  <dd class="mb-2"><%= number_to_currency @product.price %>
+    <%= link_to "Edit product price",
+                edit_product_path(@product.id),
+                class: 'px-2 py-1 border rounded-md shadow-sm text-xs font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 border-transparent text-white bg-blue-600 hover:bg-blue-700'
+    %>
+  </dd>
   <dt class="font-bold">VAT rate</dt>
   <dd class="mb-2"><%= @product.vat_rate_code %></dd>
   <dt class="font-bold">Stock Level</dt>
