@@ -118,8 +118,6 @@ module ClientOrders
 
   class Configuration
     def call(event_store)
-      @event_store = event_store
-
       event_store.subscribe(ExpireOrder, to: [Ordering::OrderExpired])
       event_store.subscribe(CancelOrder, to: [Ordering::OrderCancelled])
       event_store.subscribe(SubmitOrder, to: [Ordering::OrderSubmitted])
@@ -136,24 +134,6 @@ module ClientOrders
       event_store.subscribe(UpdateDiscount, to: [Pricing::PercentageDiscountSet, Pricing::PercentageDiscountChanged])
       event_store.subscribe(ResetDiscount, to: [Pricing::PercentageDiscountReset])
       event_store.subscribe(UpdateOrderTotalValue, to: [Pricing::OrderTotalValueCalculated])
-    end
-
-    private
-
-    def subscribe_and_link_to_stream(handler, events)
-      link_and_handle = ->(event) do
-        link_to_stream(event)
-        handler.call(event)
-      end
-      subscribe(link_and_handle, events)
-    end
-
-    def subscribe(handler, events)
-      @event_store.subscribe(handler, to: events)
-    end
-
-    def link_to_stream(event)
-      @event_store.link_event_to_stream(event, "ClientOrders$all")
     end
   end
 end
