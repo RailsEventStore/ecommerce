@@ -56,7 +56,6 @@ module Client
           product_id: params[:product_id]
         )
       )
-      redirect_to edit_client_order_path(params[:id])
     rescue Ordering::Order::CannotRemoveZeroQuantityItem
       redirect_to edit_client_order_path(params[:id]),
                   alert: "Cannot remove the product with 0 quantity"
