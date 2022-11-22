@@ -93,7 +93,6 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
 
   def as_client_add_item_to_basket_for_order(async_remote_id, order_id)
     post "/client_orders/#{order_id}/add_item?product_id=#{async_remote_id}"
-    follow_redirect!
   end
 
   def pay_order(order_id)
