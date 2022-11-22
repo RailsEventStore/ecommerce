@@ -9,16 +9,17 @@
   </thead>
 
   <tbody>
+  <%= turbo_stream_from "client_orders_#{@order_id}" %>
   <% @products.each do |product| %>
     <tr class="border-b">
-      <% order_line = @order_lines&.find{|order_line| order_line.product_id == product.id} %>
+      <% order_line = @order_lines&.find{|order_line| order_line.product_id == product.uid} %>
       <td class="py-2"><%= product.name %></td>
       <td class="py-2"><%= order_line.try(&:product_quantity) || 0 %></td>
       <td class="py-2"><%= number_to_currency(product.price) %></td>
       <td class="py-2"><%= number_to_currency(order_line.try(&:value)) %></td>
-      <td class="py-2 text-right"><%= link_to "Add", add_item_client_order_path(id: @order_id, product_id: product.id),
+      <td class="py-2 text-right"><%= link_to "Add", add_item_client_order_path(id: @order_id, product_id: product.uid),
         {method: :post, class: "hover:underline text-blue-500"  } %></td>
-      <td class="py-2 text-right"><%= link_to "Remove", remove_item_client_order_path(id: @order_id, product_id: product.id),
+      <td class="py-2 text-right"><%= link_to "Remove", remove_item_client_order_path(id: @order_id, product_id: product.uid),
         {method: :post, class: "hover:underline text-blue-500"} %></td>
     </tr>
   <% end %>
