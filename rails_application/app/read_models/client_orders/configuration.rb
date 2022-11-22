@@ -94,9 +94,6 @@ module ClientOrders
              class_name: "ClientOrders::OrderLine",
              foreign_key: :order_uid,
              primary_key: :order_uid
-    # has_many :payment_intents, class_name: "ClientOrders::PaymentIntent",
-    #          foreign_key: :order_uid,
-    #          primary_key: :order_uid
   end
 
   class OrderLine < ApplicationRecord
@@ -110,11 +107,6 @@ module ClientOrders
   class Product < ApplicationRecord
     self.table_name = "client_order_products"
   end
-
-  # class PaymentIntent < ApplicationRecord
-  #   self.table_name = "client_payment_intents"
-  #   belongs_to :order, class_name: "Orders::Order", foreign_key: :order_uid, primary_key: :uid
-  # end
 
   class Configuration
     def call(event_store)
