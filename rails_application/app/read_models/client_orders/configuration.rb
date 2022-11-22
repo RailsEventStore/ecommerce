@@ -54,7 +54,7 @@ module ClientOrders
                   client_order.state
                 end
                 td class: "py-2 text-right" do
-                  number_to_currency(client_order.order.discounted_value)
+                  number_to_currency(client_order.discounted_value)
                 end
               end
             end
@@ -89,7 +89,6 @@ module ClientOrders
   class Order < ApplicationRecord
     self.table_name = "client_orders"
 
-    belongs_to :order, class_name: "Orders::Order", foreign_key: :order_uid, primary_key: :uid
     has_many :order_lines,
              -> { order(id: :asc) },
              class_name: "ClientOrders::OrderLine",
