@@ -44,7 +44,6 @@ module Client
           )
         )
       end
-      redirect_to edit_client_order_path(params[:id])
     rescue Inventory::InventoryEntry::InventoryNotAvailable
       redirect_to edit_client_order_path(params[:id]),
                   alert: "Product not available in requested quantity!"
