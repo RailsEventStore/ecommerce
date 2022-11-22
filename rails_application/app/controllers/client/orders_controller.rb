@@ -9,7 +9,7 @@ module Client
 
     def new
       @order_id = SecureRandom.uuid
-      @products = Products::Product.all
+      @products = ClientOrders::Product.all
       render 'edit'
     end
 
@@ -32,7 +32,7 @@ module Client
     def edit
       @order_id = params[:id]
       @order_lines = ClientOrders::OrderLine.where(order_uid: params[:id])
-      @products = Products::Product.all
+      @products = ClientOrders::Product.all
     end
 
     def add_item
