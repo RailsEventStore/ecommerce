@@ -11,6 +11,7 @@ class CustomersTest < InMemoryRESIntegrationTestCase
     perform_enqueued_jobs(only: Customers::RegisterCustomer)
 
     patch "/customers/#{customer_id}"
+    perform_enqueued_jobs(only: Customers::PromoteToVip)
     follow_redirect!
     assert_select("td", "Already a VIP")
   end
