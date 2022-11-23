@@ -33,7 +33,7 @@
   </div>
   <div id="future_prices" class="mt-2">
     <%= primary_action_button do %>
-      <%= link_to("Add future price", add_future_price_products_path, method: :post) %>
+      <%= link_to("Add future price", add_future_price_product_path(@product), method: :post) %>
     <% end %>
   </div>
 <% end %>
