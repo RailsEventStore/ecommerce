@@ -22,9 +22,5 @@ module Coupons
         discount: event_data.fetch(:discount)
       )
     end
-
-    def find(coupon_id)
-      Coupon.find_by(uid: coupon_id)
-    end
   end
 end
