@@ -77,6 +77,8 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     assert_select("td", text: "Paid")
     assert_payment_gateway_value(123.30)
 
+    perform_enqueued_jobs(only: Shipments::MarkOrderSubmitted)
+
     get "/orders/#{order_id}"
     assert_select("dd", "Shipping address is missing.")
     assert_select("a", "Add shipment address")
@@ -90,6 +92,7 @@ class OrdersTest < InMemoryRESIntegrationTestCase
         address_line_4: "US",
       }
     }
+    perform_enqueued_jobs(only: Shipments::SetShippingAddress)
     follow_redirect!
     assert_select("dd", "Your shipment has been queued for processing.")
     get "/shipments"
