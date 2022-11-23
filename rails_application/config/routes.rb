@@ -27,7 +27,11 @@ Rails.application.routes.draw do
 
   resources :products, only: [:new, :show, :create, :index, :edit, :update] do
     resources :supplies, only: [:new, :create]
+    collection do
+      post :add_future_price, to: "product/future_price#add_future_price"
+    end
   end
+
 
   resources :coupons, only: [:new, :show, :create, :index]
   resources :time_promotions, only: [:new, :show, :create, :index]
