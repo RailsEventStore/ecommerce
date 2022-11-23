@@ -15,79 +15,11 @@ module Invoices
 
   class Configuration
     def call(event_store)
-      event_store.subscribe(
-        ->(event) { create_invoice_item(event) },
-        to: [Invoicing::InvoiceItemAdded]
-      )
-      event_store.subscribe(
-        ->(event) { set_billing_address(event) },
-        to: [Invoicing::BillingAddressSet]
-      )
-      event_store.subscribe(
-        ->(event) { set_payment_date(event) },
-        to: [Invoicing::InvoicePaymentDateSet]
-      )
-      event_store.subscribe(
-        ->(event) { mark_as_issued(event) },
-        to: [Invoicing::InvoiceIssued]
-      )
-      event_store.subscribe(
-        ->(event) { mark_order_submitted(event) },
-        to: [Ordering::OrderSubmitted]
-      )
-    end
-
-    private
-
-    def set_billing_address(event)
-      with_invoice(event.data.fetch(:invoice_id)) do |invoice|
-        invoice.address_present = true
-        invoice.tax_id_number = event.data.fetch(:tax_id_number)
-        postal_address = event.data.fetch(:postal_address)
-        invoice.address_line_1 = postal_address.fetch(:line_1)
-        invoice.address_line_2 = postal_address.fetch(:line_2)
-        invoice.address_line_3 = postal_address.fetch(:line_3)
-        invoice.address_line_4 = postal_address.fetch(:line_4)
-      end
-    end
-
-    def create_invoice_item(event)
-      with_invoice(event.data.fetch(:invoice_id)) do |invoice|
-        item = InvoiceItem.create(
-          invoice: invoice,
-          name: event.data.fetch(:title),
-          vat_rate: event.data.fetch(:vat_rate).fetch(:rate),
-          unit_price: event.data.fetch(:unit_price),
-          quantity: event.data.fetch(:quantity),
-          value: event.data.fetch(:unit_price) * event.data.fetch(:quantity)
-        )
-        invoice.total_value = invoice.total_value || 0 + item.value
-      end
-    end
-
-    def set_payment_date(event)
-      with_invoice(event.data.fetch(:invoice_id)) do |invoice|
-        invoice.payment_date = event.data.fetch(:payment_date)
-      end
-    end
-
-    def mark_as_issued(event)
-      with_invoice(event.data.fetch(:invoice_id)) do |invoice|
-        invoice.issued = true
-        invoice.issue_date = event.data.fetch(:issue_date)
-        invoice.disposal_date = event.data.fetch(:disposal_date)
-        invoice.number = event.data.fetch(:invoice_number)
-      end
-    end
-
-    def mark_order_submitted(event)
-      Order.find_or_initialize_by(uid: event.data.fetch(:order_id)).update!(submitted: true)
-    end
-
-    def with_invoice(uid)
-      invoice = Invoice.find_or_initialize_by(order_uid: uid)
-      yield(invoice)
-      invoice.save!
+      event_store.subscribe(CreateInvoiceItem, to: [Invoicing::InvoiceItemAdded])
+      event_store.subscribe(SetBillingAddress, to: [Invoicing::BillingAddressSet])
+      event_store.subscribe(SetPaymentDate, to: [Invoicing::InvoicePaymentDateSet])
+      event_store.subscribe(MarkAsIssued, to: [Invoicing::InvoiceIssued])
+      event_store.subscribe(MarkOrderSubmitted, to: [Ordering::OrderSubmitted])
     end
   end
 end
