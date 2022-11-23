@@ -5,22 +5,7 @@ module Coupons
 
   class Configuration
     def call(event_store)
-      event_store.subscribe(
-        -> (event) { register_coupon(event) },
-        to: [Pricing::CouponRegistered]
-      )
-    end
-
-    private
-
-    def register_coupon(event)
-      event_data = event.data
-      Coupon.create(
-        uid: event_data.fetch(:coupon_id),
-        name: event_data.fetch(:name),
-        code: event_data.fetch(:code),
-        discount: event_data.fetch(:discount)
-      )
+      event_store.subscribe(RegisterCoupon, to: [Pricing::CouponRegistered])
     end
   end
 end
