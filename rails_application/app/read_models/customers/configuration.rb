@@ -6,10 +6,7 @@ module Customers
   class Configuration
 
     def call(event_store)
-      event_store.subscribe(
-        -> (event) { register_customer(event) },
-        to: [Crm::CustomerRegistered]
-      )
+      event_store.subscribe(RegisterCustomer, to: [Crm::CustomerRegistered])
 
       event_store.subscribe(
           -> (event) { promote_to_vip(event) },
