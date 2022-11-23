@@ -36,7 +36,19 @@ class ProductsController < ApplicationController
   end
 
   def update
-    set_product_price(params[:product_id], params[:price])
+    debugger
+    if params[:price].present?
+      set_product_price(params[:product_id], params[:price])
+    end
+    if params[:future_prices].present?
+      params[:future_prices].each do |future_price|
+          set_future_product_price(
+            params[:product_id],
+            future_price["price"],
+            future_price["start_time"]
+          )
+      end
+    end
     redirect_to products_path, notice: "Price was successfully updated"
   end
 
@@ -49,6 +61,10 @@ class ProductsController < ApplicationController
 
   def set_product_price(product_id, price)
     command_bus.(set_product_price_cmd(product_id, price))
+  end
+
+  def set_future_product_price(product_id, price, valid_since)
+    command_bus.(set_product_future_price_cmd(product_id, price, valid_since))
   end
 
   def set_product_vat_rate(product_id, vat_rate_code)
@@ -70,5 +86,13 @@ class ProductsController < ApplicationController
 
   def set_product_vat_rate_cmd(product_id, vat_rate)
     Taxes::SetVatRate.new(product_id: product_id, vat_rate: vat_rate)
+  end
+
+  def set_product_future_price_cmd(product_id, price, valid_since)
+    Pricing::SetFuturePrice.new(
+      product_id: product_id,
+      price: price,
+      valid_since: valid_since
+    )
   end
 end
