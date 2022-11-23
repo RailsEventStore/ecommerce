@@ -15,5 +15,4 @@ class CustomersTest < InMemoryRESIntegrationTestCase
     follow_redirect!
     assert_select("td", "Already a VIP")
   end
-
 end
