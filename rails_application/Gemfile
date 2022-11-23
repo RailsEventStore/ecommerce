@@ -18,6 +18,7 @@ gem 'arbre'
 gem 'redis'
 gem 'activejob-uniqueness'
 gem "sidekiq", "~> 7.0"
+gem "ruby_event_store-sidekiq_scheduler", "~> 0.1.1"
 
 group :development do
   gem "listen", "~> 3.3"
