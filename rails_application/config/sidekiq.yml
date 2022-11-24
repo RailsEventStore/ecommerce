@@ -1,6 +1,6 @@
 ---
 :verbose: false
-:concurrency: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+:concurrency: 5
 :timeout: 30
 :queues:
   - default
