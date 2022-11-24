@@ -9,7 +9,7 @@ require_relative "../../taxes/lib/taxes"
 require_relative "../../invoicing/lib/invoicing"
 require_relative 'processes/process_manager'
 require_relative 'processes/check_availability_on_order_item_added_to_basket'
-require_relative 'processes/order_confirmation'
+require_relative 'processes/confirm_order_on_payment_captured'
 require_relative 'processes/release_payment_process'
 require_relative 'processes/shipment_process'
 require_relative 'processes/determine_vat_rates_on_order_submitted'
@@ -33,9 +33,9 @@ module Processes
       determine_vat_rates_on_order_submitted(event_store, command_bus)
       set_invoice_payment_date_when_order_confirmed(event_store, command_bus)
       enable_product_name_sync(event_store, command_bus)
+      confirm_order_on_payment_captured(event_store, command_bus)
 
       enable_release_payment_process(event_store, command_bus)
-      enable_order_confirmation_process(event_store, command_bus)
       enable_shipment_process(event_store, command_bus)
       enable_order_item_invoicing_process(event_store, command_bus)
     end
@@ -62,10 +62,10 @@ module Processes
       SyncPricingFromOrdering.new(event_store, command_bus)
     end
 
-    def enable_order_confirmation_process(event_store, command_bus)
+    def confirm_order_on_payment_captured(event_store, command_bus)
       event_store.subscribe(
-        OrderConfirmation.new(event_store, command_bus),
-        to: [Payments::PaymentAuthorized, Payments::PaymentCaptured]
+        ConfirmOrderOnPaymentCaptured.new(command_bus),
+        to: [Payments::PaymentCaptured]
       )
     end
 
