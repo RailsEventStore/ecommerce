@@ -1,3 +1,3 @@
 release: bundle exec rake db:migrate
 web: bin/puma -C rails_application/config/puma.rb --dir rails_application
-worker: RAILS_MAX_THREADS=10 bin/sidekiq -r rails
+worker: bundle exec sidekiq -C config/sidekiq.yml
