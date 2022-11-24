@@ -1,3 +1,3 @@
 release: bundle exec rake db:migrate
 web: bin/puma -C rails_application/config/puma.rb --dir rails_application
-worker: bundle exec sidekiq -q default -c 5 -e production -v false -t 30
+worker: bundle exec sidekiq -q default -c 5 -e production -v false -t 30 -r rails_application
