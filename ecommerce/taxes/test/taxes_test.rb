@@ -34,11 +34,11 @@ module Taxes
 
     private
 
-    def set_vat_rate product_id, vat_rate
+    def set_vat_rate(product_id, vat_rate)
       run_command(SetVatRate.new(product_id: product_id, vat_rate: vat_rate))
     end
 
-    def determine_vat_rate order_id, product_id, vat_rate
+    def determine_vat_rate(order_id, product_id, vat_rate)
       run_command(DetermineVatRate.new(order_id: order_id, product_id: product_id, vat_rate: vat_rate))
     end
 
