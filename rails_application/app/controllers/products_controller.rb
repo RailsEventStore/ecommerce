@@ -36,7 +36,6 @@ class ProductsController < ApplicationController
   end
 
   def update
-    debugger
     if params[:price].present?
       set_product_price(params[:product_id], params[:price])
     end
