@@ -13,6 +13,7 @@ class Configuration
     enable_client_orders_read_model(event_store)
     enable_coupons_read_model(event_store)
     enable_time_promotions_read_model(event_store)
+    enable_shipments_read_model(event_store)
 
     Ecommerce::Configuration.new(
       number_generator: Rails.configuration.number_generator,
@@ -64,5 +65,9 @@ class Configuration
 
   def enable_time_promotions_read_model(event_store)
     TimePromotions::Configuration.new.call(event_store)
+  end
+
+  def enable_shipments_read_model(event_store)
+    Shipments::Configuration.new.call(event_store)
   end
 end

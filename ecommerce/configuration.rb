@@ -38,7 +38,6 @@ module Ecommerce
         Invoicing::Configuration.new,
         Payments::Configuration.new(@payment_gateway),
         Shipping::Configuration.new,
-        Shipments::Configuration.new,
         Pricing::Configuration.new,
         Taxes::Configuration.new(@available_vat_rates),
         ProductCatalog::Configuration.new,

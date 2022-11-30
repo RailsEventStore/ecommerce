@@ -17,7 +17,7 @@ module Shipments
   end
 
   class Configuration
-    def call(event_store, command_bus)
+    def call(event_store)
       event_store.subscribe(SetShippingAddress, to: [Shipping::ShippingAddressAddedToShipment])
       event_store.subscribe(MarkOrderSubmitted, to: [Ordering::OrderSubmitted])
     end
