@@ -2,7 +2,7 @@ source "https://rubygems.org"
 
 ruby ENV["HEROKU_RUBY_VERSION"] if ENV["HEROKU_RUBY_VERSION"]
 
-gem "rails", "7.0.3"
+gem "rails", "7.0.4"
 gem "pg", "~> 1.4"
 gem "puma", "~> 5.6"
 gem "bootsnap", ">= 1.4.4", require: false
