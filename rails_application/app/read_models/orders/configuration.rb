@@ -30,67 +30,21 @@ module Orders
     def call(event_store)
       @event_store = event_store
 
-      subscribe_and_link_to_stream(
-        ->(event) { mark_as_submitted(event) },
-        [Ordering::OrderSubmitted]
-      )
-      subscribe_and_link_to_stream(
-        ->(event) { change_order_state(event, "Expired") },
-        [Ordering::OrderExpired]
-      )
-      subscribe_and_link_to_stream(
-        ->(event) { change_order_state(event, "Paid") },
-        [Ordering::OrderConfirmed]
-      )
-      subscribe_and_link_to_stream(
-        ->(event) { change_order_state(event, "Cancelled") },
-        [Ordering::OrderCancelled]
-      )
-      subscribe_and_link_to_stream(
-        ->(event) { add_item_to_order(event) },
-        [Ordering::ItemAddedToBasket]
-      )
-      subscribe_and_link_to_stream(
-        ->(event) { remove_item_from_order(event) },
-        [Ordering::ItemRemovedFromBasket]
-      )
-      subscribe_and_link_to_stream(
-        ->(event) { update_discount(event) },
-        [Pricing::PercentageDiscountSet, Pricing::PercentageDiscountChanged]
-      )
-      subscribe_and_link_to_stream(
-        ->(event) { reset_discount(event) },
-        [Pricing::PercentageDiscountReset]
-      )
-      subscribe_and_link_to_stream(
-        ->(event) { update_totals(event) },
-        [Pricing::OrderTotalValueCalculated]
-      )
+      event_store.subscribe(AddItemToOrder, to: [Ordering::ItemAddedToBasket])
+      event_store.subscribe(RemoveItemFromOrder, to: [Ordering::ItemRemovedFromBasket])
+      event_store.subscribe(UpdateDiscount, to: [Pricing::PercentageDiscountSet, Pricing::PercentageDiscountChanged])
+      event_store.subscribe(ResetDiscount, to: [Pricing::PercentageDiscountReset])
+      event_store.subscribe(UpdateOrderTotalValue, to: [Pricing::OrderTotalValueCalculated])
+      event_store.subscribe(RegisterProduct, to: [ProductCatalog::ProductRegistered])
+      event_store.subscribe(ChangeProductName, to: [ProductCatalog::ProductNamed])
+      event_store.subscribe(ChangeProductPrice, to: [Pricing::PriceSet])
+      event_store.subscribe(CreateCustomer, to: [Crm::CustomerRegistered])
+      event_store.subscribe(AssignCustomerToOrder, to: [Crm::CustomerAssignedToOrder])
+      event_store.subscribe(SubmitOrder, to: [Ordering::OrderSubmitted])
+      event_store.subscribe(ExpireOrder, to: [Ordering::OrderExpired])
+      event_store.subscribe(ConfirmOrder, to: [Ordering::OrderConfirmed])
+      event_store.subscribe(CancelOrder, to: [Ordering::OrderCancelled])
 
-      subscribe_and_link_to_stream(
-        -> (event) { create_product(event) },
-        [ProductCatalog::ProductRegistered]
-      )
-
-      subscribe_and_link_to_stream(
-        -> (event) { name_product(event) },
-        [ProductCatalog::ProductNamed]
-      )
-
-      subscribe_and_link_to_stream(
-        -> (event) { change_product_price(event) },
-        [Pricing::PriceSet]
-      )
-
-      subscribe_and_link_to_stream(
-        -> (event) { create_customer(event) },
-        [Crm::CustomerRegistered]
-      )
-
-      subscribe_and_link_to_stream(
-        -> (event) { assign_customer(event, event.data.fetch(:customer_id)) },
-        [Crm::CustomerAssignedToOrder]
-      )
 
       subscribe(
         ->(event) { broadcast_order_state_change(event.data.fetch(:order_id), 'Submitted') },

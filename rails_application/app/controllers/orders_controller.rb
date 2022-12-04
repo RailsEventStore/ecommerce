@@ -15,9 +15,7 @@ class OrdersController < ApplicationController
   end
 
   def new
-    @order_id = SecureRandom.uuid
-    @products = Products::Product.all
-    @customers = Customers::Customer.all
+    redirect_to edit_order_path(SecureRandom.uuid)
   end
 
   def edit
@@ -74,7 +72,7 @@ class OrdersController < ApplicationController
         )
       )
     end
-    redirect_to edit_order_path(params[:id])
+    head :ok
   rescue Inventory::InventoryEntry::InventoryNotAvailable
     redirect_to edit_order_path(params[:id]),
                 alert: "Product not available in requested quantity!"
@@ -87,7 +85,7 @@ class OrdersController < ApplicationController
         product_id: params[:product_id]
       )
     )
-    redirect_to edit_order_path(params[:id])
+    head :ok
   rescue Ordering::Order::CannotRemoveZeroQuantityItem
     redirect_to edit_order_path(params[:id]),
                 alert: "Cannot remove the product with 0 quantity"
