@@ -6,7 +6,7 @@ module Orders
       order.state = "Submitted"
       order.save!
 
-      Rails.configuration.read_model.link_event_to_stream(event)
+      event_store.link_event_to_stream(event, "Orders$all")
     end
   end
 end

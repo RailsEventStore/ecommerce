@@ -11,7 +11,7 @@ module Orders
       order.customer = Customer.find_by_uid(event.data.fetch(:customer_id)).name
       order.save!
 
-      Rails.configuration.read_model.link_event_to_stream(event)
+      event_store.link_event_to_stream(event, "Orders$all")
     end
   end
 end
