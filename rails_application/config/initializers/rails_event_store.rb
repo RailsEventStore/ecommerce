@@ -6,7 +6,6 @@ require_relative "../../lib/configuration"
 Rails.configuration.to_prepare do
   Rails.configuration.event_store = Infra::EventStore.main
   Rails.configuration.command_bus = Arkency::CommandBus.new
-  Rails.configuration.read_model = Orders::ReadModel.new
 
   Configuration.new.call(Rails.configuration.event_store, Rails.configuration.command_bus)
 end
