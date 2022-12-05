@@ -23,4 +23,4 @@ matcher:
     - ClientOrders::OrdersList*
     - ClientOrders::RemoveItemFromOrder*
     - ClientOrders::AddItemToOrder*
-    - Orders::ReadModel*
+    - Orders::Broadcaster*
