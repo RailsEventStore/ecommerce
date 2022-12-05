@@ -51,17 +51,16 @@
   <% end %>
   </tbody>
   <tfoot class="border-t-4">
-  <% if @order != nil %>
-    <% if @order.discounted_value != @order.total_value %>
+    <% if discounted_value != total_value %>
       <tr class="border-t">
         <td class="py-2" colspan="3">Before discounts</td>
-        <td class="py-2" id="before-discounts-value"><%= number_to_currency(@order.total_value) %></td>
+        <td class="py-2" id="before-discounts-value"><%= number_to_currency(total_value) %></td>
       </tr>
     <% end %>
-    <% if @order.percentage_discount %>
+    <% if percentage_discount %>
       <tr class="border-t">
         <td class="py-2" colspan="3">General discount</td>
-        <td class="py-2"><%= @order.percentage_discount %>%</td>
+        <td class="py-2"><%= percentage_discount %>%</td>
         <td class="py-2 text-right" colspan="2"><%= link_to "Reset", reset_discount_order_path(id: @order_id), {method: :post, class: "hover:underline text-blue-500"} %></td>
       </tr>
     <% end %>
@@ -77,7 +76,6 @@
       <td class="py-2" colspan="3">Total</td>
       <td class="py-2 font-bold" id="after-discounts-value"><%= number_to_currency(@order.discounted_value) %></td>
     </tr>
-  <% end %>
   </tfoot>
 </table>
 

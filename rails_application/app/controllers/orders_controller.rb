@@ -25,6 +25,12 @@ class OrdersController < ApplicationController
     @products = Products::Product.all
     @customers = Customers::Customer.all
     @time_promotions = TimePromotions::TimePromotion.current
+
+    render :edit, locals: {
+      discounted_value: @order.discounted_value,
+      total_value: @order.total_value,
+      percentage_discount: @order.percentage_discount
+    }
   end
 
   def edit_discount
