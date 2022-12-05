@@ -23,8 +23,6 @@ module Orders
       def broadcast_update(order_id, product_id, target, content)
         result << { order_id: order_id, product_id: product_id, target: target, content: content }
       end
-
-      def link_event_to_stream(event) end
     end
 
     def test_broadcast_add_item_to_basket
