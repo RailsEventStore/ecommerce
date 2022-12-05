@@ -24,9 +24,9 @@ class OrdersController < ApplicationController
 
     render :edit,
            locals: {
-             discounted_value: @order.discounted_value,
-             total_value: @order.total_value,
-             percentage_discount: @order.percentage_discount
+             discounted_value: @order&.discounted_value || 0,
+             total_value: @order&.total_value || 0,
+             percentage_discount: @order&.percentage_discount || 0
            }
   end
 
