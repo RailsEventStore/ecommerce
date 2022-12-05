@@ -1,5 +1,5 @@
 module Orders
-  class AddItemToOrder < ReadModel
+  class AddItemToOrder < Infra::EventHandler
     def call(event)
       order_id = event.data.fetch(:order_id)
       create_draft_order(order_id)
@@ -10,13 +10,17 @@ module Orders
       item.quantity += 1
       item.save!
 
-      broadcast_update(order_id, product_id, "quantity", item.quantity)
-      broadcast_update(order_id, product_id, "value", ActiveSupport::NumberHelper.number_to_currency(item.value))
+      read_model.broadcast_update(order_id, product_id, "quantity", item.quantity)
+      read_model.broadcast_update(order_id, product_id, "value", ActiveSupport::NumberHelper.number_to_currency(item.value))
 
-      link_event_to_stream(event)
+      read_model.link_event_to_stream(event)
     end
 
     private
+
+    def read_model
+      Rails.configuration.read_model
+    end
 
     def create_draft_order(uid)
       return if Order.where(uid: uid).exists?
