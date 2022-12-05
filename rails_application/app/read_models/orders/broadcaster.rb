@@ -1,5 +1,5 @@
 module Orders
-  class ReadModel < Infra::EventHandler
+  class Broadcaster < Infra::EventHandler
     def broadcast_update(order_id, product_id, target, content)
       Turbo::StreamsChannel.broadcast_update_to(
         "orders_order_#{order_id}",

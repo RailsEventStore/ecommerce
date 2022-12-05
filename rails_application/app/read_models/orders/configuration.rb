@@ -30,7 +30,7 @@ module Orders
     def call(event_store)
       @event_store = event_store
 
-      Rails.configuration.read_model = Orders::ReadModel.new
+      Rails.configuration.broadcaster = Orders::Broadcaster.new
 
       event_store.subscribe(AddItemToOrder, to: [Ordering::ItemAddedToBasket])
       event_store.subscribe(RemoveItemFromOrder, to: [Ordering::ItemRemovedFromBasket])

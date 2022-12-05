@@ -7,8 +7,8 @@ module Orders
       item.quantity -= 1
       item.quantity > 0 ? item.save! : item.destroy!
 
-      read_model.broadcast_update(order_id, product_id, "quantity", item.quantity)
-      read_model.broadcast_update(order_id, product_id, "value", ActiveSupport::NumberHelper.number_to_currency(item.value))
+      broadcaster.broadcast_update(order_id, product_id, "quantity", item.quantity)
+      broadcaster.broadcast_update(order_id, product_id, "value", ActiveSupport::NumberHelper.number_to_currency(item.value))
 
       link_event_to_stream(event)
     end
@@ -22,8 +22,8 @@ module Orders
         .first
     end
 
-    def read_model
-      Rails.configuration.read_model
+    def broadcaster
+      Rails.configuration.broadcaster
     end
   end
 end

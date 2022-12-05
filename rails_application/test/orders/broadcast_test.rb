@@ -5,12 +5,12 @@ module Orders
     cover "Orders*"
 
     def setup
-      @prev = Rails.configuration.read_model
-      Rails.configuration.read_model = InMemoryBroadcaster.new
+      @prev = Rails.configuration.broadcaster
+      Rails.configuration.broadcaster = InMemoryBroadcaster.new
     end
 
     def teardown
-      Rails.configuration.read_model = @prev
+      Rails.configuration.broadcaster = @prev
     end
 
     class InMemoryBroadcaster
@@ -100,7 +100,7 @@ module Orders
     private
 
     def in_memory_broadcast
-      Rails.configuration.read_model
+      Rails.configuration.broadcaster
     end
   end
 end
