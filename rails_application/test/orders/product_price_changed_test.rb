@@ -12,6 +12,14 @@ module Orders
 
       assert_equal 100, Product.find_by_uid(product_id).price
       assert_equal 50, Product.find_by_uid(unchanged_product_id).price
+      price_events = event_store.read.of_type([Pricing::PriceSet]).to_a.first
+      assert event_store.event_in_stream?(price_events.event_id, "Orders$all")
+    end
+
+    private
+
+    def event_store
+      Rails.configuration.event_store
     end
 
     def prepare_product
