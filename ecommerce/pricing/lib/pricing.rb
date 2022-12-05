@@ -1,5 +1,4 @@
 require "infra"
-require "math"
 require_relative "pricing/discounts"
 require_relative "pricing/coupon"
 require_relative "pricing/commands"

@@ -34,6 +34,5 @@ group :test do
 end
 
 gem "infra", path: "../infra"
-gem "math", path: "../math"
 
 gem "tzinfo-data", platforms: %i[mingw mswin x64_mingw jruby]

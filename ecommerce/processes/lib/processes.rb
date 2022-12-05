@@ -1,3 +1,4 @@
+require_relative "../../math/lib/math"
 require_relative "../../ordering/lib/ordering"
 require_relative "../../pricing/lib/pricing"
 require_relative "../../product_catalog/lib/product_catalog"
@@ -19,8 +20,6 @@ require_relative 'processes/notify_payments_about_order_value'
 require_relative 'processes/sync_shipment_from_ordering'
 require_relative 'processes/sync_inventory_from_ordering'
 require_relative 'processes/three_plus_one_free'
-
-require 'math'
 
 module Processes
   class Configuration

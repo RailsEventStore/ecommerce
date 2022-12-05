@@ -1,3 +1,4 @@
+require_relative "math/lib/math"
 require_relative "authentication/lib/authentication"
 require_relative "ordering/lib/ordering"
 require_relative "pricing/lib/pricing"
