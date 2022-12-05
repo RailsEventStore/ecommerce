@@ -6,9 +6,5 @@ module Orders
         target: "orders_order_#{product_id}_#{target}",
         html: content)
     end
-
-    def link_event_to_stream(event)
-      event_store.link_event_to_stream(event, "Orders$all")
-    end
   end
 end

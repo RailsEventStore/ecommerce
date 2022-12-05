@@ -10,7 +10,7 @@ module Orders
       read_model.broadcast_update(order_id, product_id, "quantity", item.quantity)
       read_model.broadcast_update(order_id, product_id, "value", ActiveSupport::NumberHelper.number_to_currency(item.value))
 
-      read_model.link_event_to_stream(event)
+      link_event_to_stream(event)
     end
 
     private
