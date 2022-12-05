@@ -1,10 +1,6 @@
 class OrdersController < ApplicationController
   def index
-    @orders =
-      Orders::Order
-        .order("id DESC")
-        .page(params[:page])
-        .per(10)
+    @orders = Orders::Order.order("id DESC").page(params[:page]).per(10)
   end
 
   def show
@@ -26,11 +22,12 @@ class OrdersController < ApplicationController
     @customers = Customers::Customer.all
     @time_promotions = TimePromotions::TimePromotion.current
 
-    render :edit, locals: {
-      discounted_value: @order.discounted_value,
-      total_value: @order.total_value,
-      percentage_discount: @order.percentage_discount
-    }
+    render :edit,
+           locals: {
+             discounted_value: @order.discounted_value,
+             total_value: @order.total_value,
+             percentage_discount: @order.percentage_discount
+           }
   end
 
   def edit_discount
@@ -40,19 +37,9 @@ class OrdersController < ApplicationController
   def update_discount
     @order_id = params[:id]
     if Orders::Order.find_by_uid(params[:id]).percentage_discount
-      command_bus.(
-        Pricing::ChangePercentageDiscount.new(
-          order_id: @order_id,
-          amount: params[:amount]
-        )
-      )
+      command_bus.(Pricing::ChangePercentageDiscount.new(order_id: @order_id, amount: params[:amount]))
     else
-      command_bus.(
-        Pricing::SetPercentageDiscount.new(
-          order_id: @order_id,
-          amount: params[:amount]
-        )
-      )
+      command_bus.(Pricing::SetPercentageDiscount.new(order_id: @order_id, amount: params[:amount]))
     end
 
     redirect_to edit_order_path(@order_id)
@@ -60,65 +47,40 @@ class OrdersController < ApplicationController
 
   def reset_discount
     @order_id = params[:id]
-    command_bus.(
-      Pricing::ResetPercentageDiscount.new(
-        order_id: @order_id
-      )
-    )
+    command_bus.(Pricing::ResetPercentageDiscount.new(order_id: @order_id))
 
     redirect_to edit_order_path(@order_id)
   end
 
   def add_item
     ActiveRecord::Base.transaction do
-      command_bus.(
-        Ordering::AddItemToBasket.new(
-          order_id: params[:id],
-          product_id: params[:product_id]
-        )
-      )
+      command_bus.(Ordering::AddItemToBasket.new(order_id: params[:id], product_id: params[:product_id]))
     end
     head :ok
   rescue Inventory::InventoryEntry::InventoryNotAvailable
-    redirect_to edit_order_path(params[:id]),
-                alert: "Product not available in requested quantity!"
+    redirect_to edit_order_path(params[:id]), alert: "Product not available in requested quantity!"
   end
 
   def remove_item
-    command_bus.(
-      Ordering::RemoveItemFromBasket.new(
-        order_id: params[:id],
-        product_id: params[:product_id]
-      )
-    )
+    command_bus.(Ordering::RemoveItemFromBasket.new(order_id: params[:id], product_id: params[:product_id]))
     head :ok
   rescue Ordering::Order::CannotRemoveZeroQuantityItem
-    redirect_to edit_order_path(params[:id]),
-                alert: "Cannot remove the product with 0 quantity"
+    redirect_to edit_order_path(params[:id]), alert: "Cannot remove the product with 0 quantity"
   end
 
   def create
-    ApplicationRecord.transaction do
-      submit_order(params[:order_id], params[:customer_id])
-    end
-    redirect_to order_path(params[:order_id]),
-                notice: "Order was successfully submitted"
+    ApplicationRecord.transaction { submit_order(params[:order_id], params[:customer_id]) }
+    redirect_to order_path(params[:order_id]), notice: "Order was successfully submitted"
   rescue Crm::Customer::NotExists
-    redirect_to order_path(params[:order_id]),
-                alert:
-                  "Order can not be submitted! Customer does not exist."
+    redirect_to order_path(params[:order_id]), alert: "Order can not be submitted! Customer does not exist."
   rescue Inventory::InventoryEntry::InventoryNotAvailable
-    redirect_to order_path(params[:order_id]),
-                alert:
-                  "Order can not be submitted! Some products are not available"
+    redirect_to order_path(params[:order_id]), alert: "Order can not be submitted! Some products are not available"
   end
 
   def expire
     Orders::Order
       .where(state: "Draft")
-      .find_each do |order|
-      command_bus.(Ordering::SetOrderAsExpired.new(order_id: order.uid))
-    end
+      .find_each { |order| command_bus.(Ordering::SetOrderAsExpired.new(order_id: order.uid)) }
     redirect_to root_path
   end
 
@@ -147,13 +109,8 @@ class OrdersController < ApplicationController
   private
 
   def submit_order(order_id, customer_id)
-    command_bus.(Ordering::SubmitOrder.new(
-      order_id: order_id
-    ))
-    command_bus.(Crm::AssignCustomerToOrder.new(
-      order_id: order_id,
-      customer_id: customer_id
-    ))
+    command_bus.(Ordering::SubmitOrder.new(order_id: order_id))
+    command_bus.(Crm::AssignCustomerToOrder.new(order_id: order_id, customer_id: customer_id))
   end
 
   def authorize_payment(order_id)
