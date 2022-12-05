@@ -1,3 +1,5 @@
+<%= turbo_stream_from "orders_order_#{@order_id}" %>
+
 <% content_for(:header) do %>
   Order
 <% end %>
@@ -35,7 +37,6 @@
   </thead>
 
   <tbody>
-  <%= turbo_stream_from "orders_order_#{@order_id}" %>
   <% @products.each do |product| %>
     <tr class="border-b">
       <% order_line = @order_lines.find{|order_line| order_line.product_id == product.id} %>
@@ -54,7 +55,7 @@
     <% if discounted_value != total_value %>
       <tr class="border-t">
         <td class="py-2" colspan="3">Before discounts</td>
-        <td class="py-2" id="before-discounts-value"><%= number_to_currency(total_value) %></td>
+        <td class="py-2" id="<%= "orders_order_#{@order_id}_total_value" %>"><%= number_to_currency(total_value) %></td>
       </tr>
     <% end %>
     <% if percentage_discount %>
@@ -74,7 +75,7 @@
     <% end %>
     <tr class="border-t">
       <td class="py-2" colspan="3">Total</td>
-      <td class="py-2 font-bold" id="after-discounts-value"><%= number_to_currency(@order.discounted_value) %></td>
+      <td class="py-2 font-bold" id="<%= "orders_order_#{@order_id}_discounted_value" %>"><%= number_to_currency(discounted_value) %></td>
     </tr>
   </tfoot>
 </table>
