@@ -2,7 +2,7 @@ require "test_helper"
 
 module Orders
   class OrderExpiredTest < InMemoryTestCase
-    cover "Orders"
+    cover "Orders*"
 
     def setup
       super
@@ -46,13 +46,13 @@ module Orders
         )
       )
 
-      event_store.publish(
-        Ordering::OrderExpired.new(data: { order_id: order_id })
-      )
+      order_expired = Ordering::OrderExpired.new(data: { order_id: order_id })
+      event_store.publish(order_expired)
 
       assert_equal(Order.count, 1)
       order = Order.find_by(uid: order_id)
       assert_equal(order.state, "Expired")
+      assert event_store.event_in_stream?(order_expired.event_id, "Orders$all")
     end
   end
 end

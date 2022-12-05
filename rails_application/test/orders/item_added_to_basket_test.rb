@@ -2,7 +2,7 @@ require "test_helper"
 
 module Orders
   class ItemAddedToBasketTest < InMemoryTestCase
-    cover "Orders"
+    cover "Orders*"
 
     def setup
       super
@@ -29,15 +29,14 @@ module Orders
 
       order_id = SecureRandom.uuid
 
-      event_store.publish(
-        Ordering::ItemAddedToBasket.new(
-          data: {
-            order_id: order_id,
-            product_id: product_id,
-            quantity_before: 0
-          }
-        )
+      item_added_to_basket = Ordering::ItemAddedToBasket.new(
+        data: {
+          order_id: order_id,
+          product_id: product_id,
+          quantity_before: 0
+        }
       )
+      event_store.publish(item_added_to_basket)
 
       assert_equal(OrderLine.count, 1)
       order_line = OrderLine.find_by(order_uid: order_id)
@@ -46,6 +45,7 @@ module Orders
       assert_equal(order_line.quantity, 1)
       assert_equal(order_line.price, 49)
       assert_equal(order_line.value, 49)
+      assert event_store.event_in_stream?(item_added_to_basket.event_id, "Orders$all")
 
       assert_equal(Order.count, 1)
       order = Order.find_by(uid: order_id)

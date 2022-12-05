@@ -33,15 +33,14 @@ module Orders
           }
         )
       )
-      event_store.publish(
-        Ordering::OrderSubmitted.new(
-          data: {
-            order_id: order_id,
-            order_number: order_number,
-            order_lines: { product_id => 1 }
-          }
-        )
+      order_submitted = Ordering::OrderSubmitted.new(
+        data: {
+          order_id: order_id,
+          order_number: order_number,
+          order_lines: { product_id => 1 }
+        }
       )
+      event_store.publish(order_submitted)
 
       assert_equal(Order.count, 1)
       order = Order.find_by(uid: order_id)
@@ -51,6 +50,7 @@ module Orders
         job: Turbo::Streams::ActionBroadcastJob,
         args: action_broadcast_args(order_id, 'Submitted')
       )
+      assert event_store.event_in_stream?(order_submitted.event_id, "Orders$all")
     end
 
     def test_skip_when_duplicated

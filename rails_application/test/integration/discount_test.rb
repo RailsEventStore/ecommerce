@@ -19,14 +19,17 @@ class DiscountTest < InMemoryRESIntegrationTestCase
     get "/"
     get "/orders/new"
     post "/orders/#{order_id}/add_item?product_id=#{async_remote_id}"
-    follow_redirect!
+    perform_enqueued_jobs
+    get "/orders/#{order_id}/edit"
     assert_select("td", "$137.00")
     assert_select("a", count: 0, text: "Reset")
 
     apply_discount_10_percent(order_id)
+    perform_enqueued_jobs
 
     assert_select("a", "Reset")
     post "/orders/#{order_id}/reset_discount"
+    perform_enqueued_jobs
     follow_redirect!
     assert_select("td", "$137.00")
     assert_select("a", count: 0, text: "Reset")
@@ -40,6 +43,7 @@ class DiscountTest < InMemoryRESIntegrationTestCase
     assert_select("label", "Percentage")
 
     post "/orders/#{order_id}/update_discount?amount=10"
+    perform_enqueued_jobs
     follow_redirect!
     assert_select("td", "$123.30")
   end

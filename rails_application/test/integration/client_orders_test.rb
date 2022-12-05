@@ -78,12 +78,12 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
 
   def submit_order_for_customer(customer_id, order_id)
     post "/orders", params: { order_id: order_id, customer_id: customer_id }
+    perform_enqueued_jobs
     follow_redirect!
   end
 
   def add_item_to_basket_for_order(async_remote_id, order_id)
     post "/orders/#{order_id}/add_item?product_id=#{async_remote_id}"
-    follow_redirect!
   end
 
   def as_client_submit_order_for_customer(order_id)

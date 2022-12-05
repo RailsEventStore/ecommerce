@@ -2,7 +2,7 @@ require_relative "test_helper"
 
 module Ordering
   class CancelOrderTest < Test
-    cover "Ordering::OnCancelOrder*"
+    cover "Ordering::CancelOrder*"
 
     def test_draft_order_cant_be_cancelled
       aggregate_id = SecureRandom.uuid

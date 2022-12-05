@@ -16,7 +16,8 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     get "/"
     assert_select "h1", "Orders"
     get "/orders/new"
-    assert_select "h1", "New Order"
+    follow_redirect!
+    assert_select "h1", "Order"
     post "/orders",
          params: {
            "authenticity_token" => "[FILTERED]",
@@ -48,16 +49,12 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     get "/"
     get "/orders/new"
     post "/orders/#{order_id}/add_item?product_id=#{async_remote_id}"
-    follow_redirect!
-    assert_select("td", "$39.00")
     post "/orders/#{order_id}/add_item?product_id=#{fearless_id}"
-    follow_redirect!
-    assert_select("td", "$88.00")
     post "/orders/#{order_id}/add_item?product_id=#{fearless_id}"
-    follow_redirect!
-    assert_select("td", "$137.00")
+    perform_enqueued_jobs
 
     apply_discount_10_percent(order_id)
+    perform_enqueued_jobs
 
     post "/orders",
          params: {
@@ -66,6 +63,7 @@ class OrdersTest < InMemoryRESIntegrationTestCase
            "customer_id" => shopify_id,
            "commit" => "Submit order"
          }
+    perform_enqueued_jobs
     follow_redirect!
     assert_select("td", "$123.30")
     assert_select("dd", "Submitted")
@@ -73,6 +71,7 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     assert_select("td", "10.0%")
     get "/orders"
     post "/orders/#{order_id}/pay"
+    perform_enqueued_jobs
     follow_redirect!
     assert_select("td", text: "Paid")
     assert_payment_gateway_value(123.30)
@@ -108,11 +107,11 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     perform_enqueued_jobs
 
     post "/orders/#{order_id}/add_item?product_id=#{async_remote_id}"
-    follow_redirect!
-    assert_select("td", "$39.00")
+    perform_enqueued_jobs
     get "/orders"
     assert_select("td", "Draft")
     post "/orders/expire"
+    perform_enqueued_jobs
     follow_redirect!
     assert_select("td", "Expired")
   end
@@ -128,8 +127,6 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     get "/"
     get "/orders/new"
     post "/orders/#{order_id}/add_item?product_id=#{async_remote_id}"
-    follow_redirect!
-    assert_select("td", "$39.00")
     post "/orders",
          params: {
            "authenticity_token" => "[FILTERED]",
@@ -139,7 +136,7 @@ class OrdersTest < InMemoryRESIntegrationTestCase
          }
 
     post "/orders/#{order_id}/cancel"
-    follow_redirect!
+    perform_enqueued_jobs
     get "/orders/#{order_id}"
     assert_select("dd", "Cancelled")
   end
@@ -168,15 +165,8 @@ class OrdersTest < InMemoryRESIntegrationTestCase
   end
 
   def apply_discount_10_percent(order_id)
-    assert_select("a", "Edit discount")
     get "/orders/#{order_id}/edit_discount"
-    assert_select("label", "Percentage")
 
     post "/orders/#{order_id}/update_discount?amount=10"
-    follow_redirect!
-    assert_select("td", "Before discounts")
-    assert_select("td#before-discounts-value", "$137.00")
-    assert_select("td", "Total")
-    assert_select("td#after-discounts-value", "$123.30")
   end
 end

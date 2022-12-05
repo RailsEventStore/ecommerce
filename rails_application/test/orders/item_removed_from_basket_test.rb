@@ -2,7 +2,7 @@ require "test_helper"
 
 module Orders
   class ItemRemovedFromBasketTest < InMemoryTestCase
-    cover "Orders"
+    cover "Orders*"
 
     def setup
       super
@@ -50,20 +50,20 @@ module Orders
           }
         )
       )
-      event_store.publish(
-        Ordering::ItemRemovedFromBasket.new(
-          data: {
-            order_id: order_id,
-            product_id: product_id
-          }
-        )
+      item_removed_from_basket = Ordering::ItemRemovedFromBasket.new(
+        data: {
+          order_id: order_id,
+          product_id: product_id
+        }
       )
+      event_store.publish(item_removed_from_basket)
 
       assert_equal(1, OrderLine.count)
       order_line = OrderLine.find_by(order_uid: order_id)
       assert_equal(order_line.product_id, product_id)
       assert_equal("something", order_line.product_name)
       assert_equal(1, order_line.quantity)
+      assert event_store.event_in_stream?(item_removed_from_basket.event_id, "Orders$all")
     end
 
     def test_remove_item_when_quantity_eq_1
