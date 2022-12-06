@@ -7,8 +7,8 @@ module Orders
       order.save!
 
       event_store.link_event_to_stream(event, "Orders$all")
-      broadcaster.broadcast_update(order.uid, order.uid, "total_value", number_to_currency(order.total_value))
-      broadcaster.broadcast_update(order.uid, order.uid, "discounted_value", number_to_currency(order.discounted_value))
+      broadcaster.call(order.uid, order.uid, "total_value", number_to_currency(order.total_value))
+      broadcaster.call(order.uid, order.uid, "discounted_value", number_to_currency(order.discounted_value))
     end
 
     private

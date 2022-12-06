@@ -7,8 +7,8 @@ module Orders
       item.quantity -= 1
       item.quantity > 0 ? item.save! : item.destroy!
 
-      broadcaster.broadcast_update(order_id, product_id, "quantity", item.quantity)
-      broadcaster.broadcast_update(order_id, product_id, "value", ActiveSupport::NumberHelper.number_to_currency(item.value))
+      broadcaster.call(order_id, product_id, "quantity", item.quantity)
+      broadcaster.call(order_id, product_id, "value", ActiveSupport::NumberHelper.number_to_currency(item.value))
 
       event_store.link_event_to_stream(event, "Orders$all")
     end

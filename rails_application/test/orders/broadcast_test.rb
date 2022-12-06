@@ -20,7 +20,7 @@ module Orders
 
       attr_accessor :result
 
-      def broadcast_update(order_id, product_id, target, content)
+      def call(order_id, product_id, target, content)
         result << { order_id: order_id, product_id: product_id, target: target, content: content }
       end
     end
