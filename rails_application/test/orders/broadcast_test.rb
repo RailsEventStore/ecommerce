@@ -20,8 +20,8 @@ module Orders
 
       attr_accessor :result
 
-      def call(order_id, product_id, target, content)
-        result << { order_id: order_id, product_id: product_id, target: target, content: content }
+      def call(stream_id, target_id, target, content)
+        result << { stream_id: stream_id, target_id: target_id, target: target, content: content }
       end
     end
 
@@ -50,8 +50,8 @@ module Orders
       )
 
       [
-        { order_id: order_id, product_id: product_id, target: "quantity", content: 1 },
-        { order_id: order_id, product_id: product_id, target: "value", content: "$20.00" }
+        { stream_id: order_id, target_id: product_id, target: "quantity", content: 1 },
+        { stream_id: order_id, target_id: product_id, target: "value", content: "$20.00" }
       ].each { |expected_broadcast| assert_includes in_memory_broadcast.result, expected_broadcast }
     end
 
@@ -88,8 +88,8 @@ module Orders
       )
 
       [
-        { order_id: order_id, product_id: product_id, target: "quantity", content: 0 },
-        { order_id: order_id, product_id: product_id, target: "value", content: "$0.00" }
+        { stream_id: order_id, target_id: product_id, target: "quantity", content: 0 },
+        { stream_id: order_id, target_id: product_id, target: "value", content: "$0.00" }
       ].each do |expected_broadcast|
         assert_includes in_memory_broadcast.result, expected_broadcast
       end
@@ -150,8 +150,8 @@ module Orders
 
       assert_equal 2, in_memory_broadcast.result.size
       [
-        { :order_id => order_id, :product_id => order_id, :target => "total_value", :content => "$30.00" },
-        { :order_id => order_id, :product_id => order_id, :target => "discounted_value", :content => "$30.00" }
+        { :stream_id => order_id, :target_id => order_id, :target => "total_value", :content => "$30.00" },
+        { :stream_id => order_id, :target_id => order_id, :target => "discounted_value", :content => "$30.00" }
       ].each do |expected_broadcast|
         assert_includes in_memory_broadcast.result, expected_broadcast
       end
