@@ -25,5 +25,24 @@
   <dt class="font-bold">VAT rate</dt>
   <dd class="mb-2"><%= @product.vat_rate_code %></dd>
   <dt class="font-bold">Stock Level</dt>
-  <dd class="mb-2"><%= @product.stock_level %></dd>
+  <dd class="mb-2 mt-2"><%= @product.stock_level %></dd>
+  <dd class="mb-2 mt-2 font-bold">Future prices</dd>
+  <dt>
+    <table>
+      <thead>
+        <tr>
+          <th class="text-left py-2">Price</th>
+          <th class="text-left py-2">Valid since</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @product.future_prices_calendar.each do |item| %>
+          <tr class="border-t">
+            <td class="py-2"><%= item[:price] %></td>
+            <td class="py-2"><%= item[:valid_since] %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </dt>
 </dl>
