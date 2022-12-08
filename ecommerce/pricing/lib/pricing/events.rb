@@ -11,6 +11,12 @@ module Pricing
     attribute :price, Infra::Types::Price
   end
 
+  class FuturePriceSet < Infra::Event
+    attribute :product_id, Infra::Types::UUID
+    attribute :price, Infra::Types::Price
+    attribute :valid_since, Infra::Types::Params::DateTime
+  end
+
   class TimePromotionCreated < Infra::Event
     attribute :time_promotion_id, Infra::Types::UUID
     attribute? :discount, Infra::Types::PercentageDiscount
