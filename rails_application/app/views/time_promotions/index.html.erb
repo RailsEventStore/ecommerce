@@ -1,3 +1,4 @@
+<%= turbo_stream_from "time_promotions" %>
 <% content_for(:header) do %>
   Time Promotions
 <% end %>
@@ -8,7 +9,7 @@
   <% end %>
 <% end %>
 
-<table class="w-full">
+<table id="time_promotions_table" class="w-full">
   <thead>
   <tr>
     <th class="text-left py-2">Label</th>
