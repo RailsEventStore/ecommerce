@@ -13,27 +13,9 @@ module Pricing
 
   class TimePromotionCreated < Infra::Event
     attribute :time_promotion_id, Infra::Types::UUID
-  end
-
-  class TimePromotionLabeled < Infra::Event
-    attribute :time_promotion_id, Infra::Types::UUID
-    attribute :label, Infra::Types::String
-  end
-
-  class TimePromotionDiscountSet < Infra::Event
-    attribute :time_promotion_id, Infra::Types::UUID
     attribute :discount, Infra::Types::PercentageDiscount
-  end
-
-  class TimePromotionRangeSet < Infra::Event
-    attribute :time_promotion_id, Infra::Types::UUID
     attribute :start_time, Infra::Types::Params::DateTime
     attribute :end_time, Infra::Types::Params::DateTime
-  end
-
-  class TimePromotionActivated < Infra::Event
-    attribute :time_promotion_id, Infra::Types::UUID
-    attribute :active, Infra::Types::Bool
   end
 
   class OrderTotalValueCalculated < Infra::Event

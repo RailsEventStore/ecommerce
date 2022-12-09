@@ -8,75 +8,22 @@ module Pricing
 
     def test_creates_time_promotion
       uid = SecureRandom.uuid
+      start_time = DateTime.new(2022, 7, 1, 12, 15, 0)
+      end_time = DateTime.new(2022, 7, 4, 14, 30, 30)
+      discount = 25
+      label = "Summer Sale"
       data = {
-        time_promotion_id: uid
+        time_promotion_id: uid,
+        discount: discount,
+        start_time: start_time,
+        end_time: end_time,
+        label: label
       }
 
       run_command = -> { create_time_promotion(**data) }
 
       stream = "Pricing::TimePromotion$#{uid}"
       event = TimePromotionCreated.new(data: data)
-
-      assert_events(stream, event) do
-        run_command.call
-      end
-    end
-
-    def test_labels_time_promotion
-      uid = SecureRandom.uuid
-      initial_data = {
-        time_promotion_id: uid
-      }
-      create_time_promotion(**initial_data)
-      data = {
-        time_promotion_id: uid,
-        label: "Last Minute"
-      }
-
-      run_command = -> { run_command(LabelTimePromotion.new(**data)) }
-
-      stream = "Pricing::TimePromotion$#{uid}"
-      event = TimePromotionLabeled.new(data: data)
-
-      assert_events(stream, event) do
-        run_command.call
-      end
-    end
-
-    def test_sets_discount_for_time_promotion
-      uid = SecureRandom.uuid
-      initial_data = {
-        time_promotion_id: uid
-      }
-      create_time_promotion(**initial_data)
-      data = { time_promotion_id: uid, discount: 25 }
-
-      run_command = -> { run_command(SetTimePromotionDiscount.new(**data)) }
-
-      stream = "Pricing::TimePromotion$#{uid}"
-      event = TimePromotionDiscountSet.new(data: data)
-
-      assert_events(stream, event) do
-        run_command.call
-      end
-    end
-
-    def test_sets_range_for_time_promotion
-      uid = SecureRandom.uuid
-      initial_data = {
-        time_promotion_id: uid
-      }
-      create_time_promotion(**initial_data)
-      data = {
-        time_promotion_id: uid,
-        start_time: DateTime.new(2022, 7, 1, 12, 15, 0),
-        end_time: DateTime.new(2022, 7, 4, 14, 30, 30)
-      }
-
-      run_command = -> { run_command(SetTimePromotionRange.new(**data)) }
-
-      stream = "Pricing::TimePromotion$#{uid}"
-      event = TimePromotionRangeSet.new(data: data)
 
       assert_events(stream, event) do
         run_command.call
@@ -118,33 +65,28 @@ module Pricing
         first_time_promotion_id = SecureRandom.uuid
         start_time = timestamp - 1
         end_time = timestamp + 1
-        set_time_promotion_range(first_time_promotion_id, start_time, end_time)
-        set_time_promotion_discount(first_time_promotion_id, 49)
+        set_time_promotion_range(first_time_promotion_id, start_time, end_time, 49)
 
         time_promotion_id = SecureRandom.uuid
         start_time = timestamp
         end_time = timestamp + 1
-        set_time_promotion_range(time_promotion_id, start_time, end_time)
-        set_time_promotion_discount(time_promotion_id, 1)
+        set_time_promotion_range(time_promotion_id, start_time, end_time, 1)
 
         # Not applicable promotions
         time_promotion_id = SecureRandom.uuid
         start_time = timestamp - 2
         end_time = timestamp - 1
-        set_time_promotion_range(time_promotion_id, start_time, end_time)
-        set_time_promotion_discount(time_promotion_id, 10)
+        set_time_promotion_range(time_promotion_id, start_time, end_time, 10)
 
         time_promotion_id = SecureRandom.uuid
         start_time = timestamp + 1
         end_time = timestamp + 2
-        set_time_promotion_range(time_promotion_id, start_time, end_time)
-        set_time_promotion_discount(time_promotion_id, 15)
+        set_time_promotion_range(time_promotion_id, start_time, end_time, 15)
 
         time_promotion_id = SecureRandom.uuid
         start_time = timestamp - 1
         end_time = timestamp
-        set_time_promotion_range(time_promotion_id, start_time, end_time)
-        set_time_promotion_discount(time_promotion_id, 15)
+        set_time_promotion_range(time_promotion_id, start_time, end_time, 15)
 
         assert_events(
           stream,
@@ -203,8 +145,7 @@ module Pricing
         first_time_promotion_id = SecureRandom.uuid
         start_time = timestamp - 1
         end_time = timestamp + 1
-        set_time_promotion_range(first_time_promotion_id, start_time, end_time)
-        set_time_promotion_discount(first_time_promotion_id, 50)
+        set_time_promotion_range(first_time_promotion_id, start_time, end_time, 50)
 
         assert_events(
           stream,
@@ -235,14 +176,12 @@ module Pricing
       time_promotion_id = SecureRandom.uuid
       start_time = timestamp - 5
       end_time = timestamp - 2
-      set_time_promotion_range(time_promotion_id, start_time, end_time)
-      set_time_promotion_discount(time_promotion_id, 30)
+      set_time_promotion_range(time_promotion_id, start_time, end_time, 30)
 
       start_time = timestamp - 1
       end_time = timestamp + 1
-      set_time_promotion_range(time_promotion_id, start_time, end_time)
-      set_time_promotion_discount(time_promotion_id, 20)
-      set_time_promotion_discount(time_promotion_id, 40)
+      set_time_promotion_range(time_promotion_id, start_time, end_time, 50)
+      set_time_promotion_range(time_promotion_id, start_time, end_time, 40)
 
       Timecop.freeze(timestamp) do
         product_1_id = SecureRandom.uuid
@@ -266,15 +205,9 @@ module Pricing
 
     private
 
-    def set_time_promotion_range(time_promotion_id, start_time, end_time)
+    def set_time_promotion_range(time_promotion_id, start_time, end_time, discount)
       run_command(
-        SetTimePromotionRange.new(time_promotion_id: time_promotion_id, start_time: start_time, end_time: end_time)
-      )
-    end
-
-    def set_time_promotion_discount(time_promotion_id, discount)
-      run_command(
-        SetTimePromotionDiscount.new(time_promotion_id: time_promotion_id, discount: discount)
+        CreateTimePromotion.new(time_promotion_id: time_promotion_id, start_time: start_time, end_time: end_time, discount: discount, label: "test")
       )
     end
 

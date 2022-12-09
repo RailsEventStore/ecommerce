@@ -10,9 +10,6 @@ class TimePromotionsController < ApplicationController
 
     TimePromotions::TimePromotion.transaction do
       create_time_promotion(id)
-      label(id)
-      set_discount(id)
-      set_range(id)
     end
   rescue ActiveRecord::RecordNotUnique => error
     flash.now[:alert] = error
@@ -24,20 +21,6 @@ class TimePromotionsController < ApplicationController
   private
 
   def create_time_promotion(id)
-    command_bus.(Pricing::CreateTimePromotion.new(time_promotion_id: id))
-  end
-
-  def label(id)
-    command_bus.(Pricing::LabelTimePromotion.new(time_promotion_id: id, label: params[:label]))
-  end
-
-  def set_discount(id)
-    command_bus.(Pricing::SetTimePromotionDiscount.new(time_promotion_id: id, discount: params[:discount]))
-  end
-
-  def set_range(id)
-    command_bus.(
-      Pricing::SetTimePromotionRange.new(time_promotion_id: id, start_time: params[:start_time], end_time: params[:end_time])
-    )
+    command_bus.(Pricing::CreateTimePromotion.new(time_promotion_id: id, discount: params[:discount], start_time: params[:start_time], end_time: params[:end_time], label: params[:label]))
   end
 end

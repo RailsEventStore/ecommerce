@@ -58,18 +58,6 @@ module Pricing
         CreateTimePromotionHandler.new(event_store)
       )
       command_bus.register(
-        LabelTimePromotion,
-        LabelTimePromotionHandler.new(event_store)
-      )
-      command_bus.register(
-        SetTimePromotionDiscount,
-        SetTimePromotionDiscountHandler.new(event_store)
-      )
-      command_bus.register(
-        SetTimePromotionRange,
-        SetTimePromotionRangeHandler.new(event_store)
-      )
-      command_bus.register(
         MakeProductFreeForOrder,
         MakeProductFreeForOrderHandler.new(event_store)
       )

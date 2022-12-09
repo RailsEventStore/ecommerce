@@ -27,9 +27,6 @@ class TimePromotionsTest < InMemoryRESIntegrationTestCase
 
     perform_enqueued_jobs(only: [
       TimePromotions::CreateTimePromotion,
-      TimePromotions::LabelTimePromotion,
-      TimePromotions::SetDiscount,
-      TimePromotions::SetRange
     ])
 
     get "/time_promotions"

@@ -5,7 +5,7 @@ module Pricing
     end
 
     def current_time_promotions_discount
-      get_events(TimePromotionDiscountSet)
+      get_events(TimePromotionCreated)
         .filter { |e| current_promotions.include?(e.data.fetch(:time_promotion_id)) }
         .map { |e| e.data.fetch(:discount) }.sum
     end
@@ -13,7 +13,7 @@ module Pricing
     private
 
     def current_promotions
-      get_events(TimePromotionRangeSet)
+      get_events(TimePromotionCreated)
         .filter { |e| is_promotion_running?(e) }
         .map { |e| e.data.fetch(:time_promotion_id) }
     end
