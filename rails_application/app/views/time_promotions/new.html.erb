@@ -6,7 +6,7 @@
     Create Time Promotion
   <% end %>
 
-  <%= form_tag({ controller: "time_promotions", action: "create" }, method: "post", id: "form") do %>
+  <%= form_tag({ controller: "time_promotions", action: "create" }, method: "post", id: "form", data: { action: "turbo:submit-end->turbo-modal#submitEnd" }) do %>
     <label for="label" class="block font-bold">
       Label
     </label>
