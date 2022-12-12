@@ -28,23 +28,23 @@
                          class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"
     %>
 
-    <label for="start_time" class="block font-bold">
-      Start time
-    </label>
-    <%= datetime_field_tag :start_time, nil,
-                           id: "start_time",
-                           class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-sm sm:text-sm border-gray-300 rounded-md",
-                           required: true
-    %>
+      <label for="start_time" class="block font-bold">
+        Start time
+      </label>
+      <%= datetime_field_tag :start_time, nil,
+                             id: "start_time",
+                             class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-sm sm:text-sm border-gray-300 rounded-md",
+                             required: true
+      %>
 
-    <label for="end_time" class="block font-bold">
-      End time
-    </label>
-    <%= datetime_field_tag :end_time, nil,
-                           id: "end_time",
-                           class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-sm sm:text-sm border-gray-300 rounded-md",
-                           required: true
-    %>
+      <label for="end_time" class="block font-bold">
+        End time
+      </label>
+      <%= datetime_field_tag :end_time, nil,
+                             id: "end_time",
+                             class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-sm sm:text-sm border-gray-300 rounded-md",
+                             required: true
+      %>
+    <% end %>
   <% end %>
-<% end %>
 <% end %>
