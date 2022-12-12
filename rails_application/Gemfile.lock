@@ -274,6 +274,8 @@ GEM
       actionpack (>= 5.2)
       activesupport (>= 5.2)
       sprockets (>= 3.0.0)
+    stimulus-rails (1.2.1)
+      railties (>= 6.0.0)
     tailwindcss-rails (2.0.14)
       railties (>= 6.0.0)
     tailwindcss-rails (2.0.14-arm64-darwin)
@@ -328,6 +330,7 @@ DEPENDENCIES
   sidekiq (~> 7.0)
   skylight
   sprockets-rails
+  stimulus-rails
   tailwindcss-rails
   turbo-rails
   tzinfo-data

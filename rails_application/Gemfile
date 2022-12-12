@@ -12,6 +12,7 @@ gem "tailwindcss-rails"
 gem "kaminari"
 gem "sprockets-rails"
 gem "turbo-rails"
+gem "stimulus-rails"
 gem "importmap-rails", "~> 1.1"
 gem "rails_event_store",  "2.6.0"
 gem 'arbre'
