@@ -15,7 +15,10 @@ class TimePromotionsController < ApplicationController
     flash.now[:alert] = error
     render "new"
   else
-    redirect_to time_promotions_path, notice: "Time promotion was successfully created"
+    respond_to do |format|
+      format.html { redirect_to time_promotions_path, notice: "Time promotion was successfully created" }
+      format.turbo_stream { head :ok }
+    end
   end
 
   private

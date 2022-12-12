@@ -5,7 +5,7 @@
 
 <% content_for(:actions) do %>
   <%= primary_action_button do %>
-    <%= link_to 'New Time Promotion', new_time_promotion_path %>
+    <%= link_to 'New Time Promotion', new_time_promotion_path, data: { turbo_frame: 'modal' } %>
   <% end %>
 <% end %>
 
