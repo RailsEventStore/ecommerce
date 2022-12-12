@@ -20,11 +20,11 @@
   <% end if @order.state == "Draft" %>
 
   <%= primary_action_button do %>
-    <%= link_to("Pay", pay_order_path(@order.uid), method: :post) %>
+    <%= link_to("Pay", pay_order_path(@order.uid, turbo_stream: true), method: :post) %>
   <% end if @order.state == "Submitted" %>
 
   <%= primary_action_button do %>
-    <%= link_to("Cancel Order", cancel_order_path(@order.uid), method: :post) %>
+    <%= link_to("Cancel Order", cancel_order_path(@order.uid, turbo_stream: true), method: :post) %>
   <% end unless @order.state == "Cancelled" %>
 <% end %>
 
@@ -63,7 +63,7 @@
       <% else %>
         Invoice not issued
         <%= link_to "Issue now",
-                    order_invoice_path(@order.uid), method: :post,
+                    order_invoice_path(@order.uid, turbo_stream: true), method: :post,
                     class: 'px-2 py-1 border rounded-md shadow-sm text-xs font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 border-transparent text-white bg-blue-600 hover:bg-blue-700'
         %>
       <% end %>

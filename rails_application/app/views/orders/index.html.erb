@@ -4,7 +4,7 @@
 
 <% content_for(:actions) do %>
   <%= secondary_action_button do %>
-    <%= link_to 'Expire orders', expire_orders_path, method: :post %>
+    <%= link_to 'Expire orders', expire_orders_path(turbo_stream: true), method: :post %>
   <% end %>
 
   <%= primary_action_button do %>

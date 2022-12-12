@@ -17,9 +17,9 @@
       <td class="py-2" id="<%= "client_orders_#{product.uid}_product_quantity" %>"><%= order_line.try(&:product_quantity) || 0 %></td>
       <td class="py-2"><%= number_to_currency(product.price) %></td>
       <td class="py-2"  id="<%= "client_orders_#{product.uid}_value" %>"><%= number_to_currency(order_line.try(&:value)) %></td>
-      <td class="py-2 text-right"><%= link_to "Add", add_item_client_order_path(id: @order_id, product_id: product.uid),
+      <td class="py-2 text-right"><%= link_to "Add", add_item_client_order_path(id: @order_id, product_id: product.uid, turbo_stream: true),
         {method: :post, class: "hover:underline text-blue-500"  } %></td>
-      <td class="py-2 text-right"><%= link_to "Remove", remove_item_client_order_path(id: @order_id, product_id: product.uid),
+      <td class="py-2 text-right"><%= link_to "Remove", remove_item_client_order_path(id: @order_id, product_id: product.uid, turbo_stream: true),
         {method: :post, class: "hover:underline text-blue-500"} %></td>
     </tr>
   <% end %>
