@@ -7,6 +7,10 @@
     <%= link_to 'Back', products_path %>
   <% end %>
 
+  <%= primary_button_to(add_future_price_product_path(@product)) do %>
+    Add future price
+  <% end %>
+
   <%= primary_form_action_button do %>
     Update Product
   <% end %>
