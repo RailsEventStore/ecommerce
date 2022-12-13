@@ -28,9 +28,11 @@ module ApplicationHelper
       &block
     )
   end
-  def primary_action_button(&block)
+
+  def primary_action_button(type: "button", &block)
     action_button(
       "border-transparent text-white bg-blue-600 hover:bg-blue-700",
+      type: type,
       &block
     )
   end
@@ -40,6 +42,13 @@ module ApplicationHelper
       "border-gray-300 text-gray-700 bg-white hover:bg-gray-50",
       &block
     )
+  end
+
+  def primary_button_to(action, &block)
+    content_tag("form", action: action, method: :post) do
+      concat primary_action_button(type: "submit", &block)
+      concat tag.input type: "hidden", authenticity_token: form_authenticity_token
+    end
   end
 
   def stream_browser_path(stream_name)
