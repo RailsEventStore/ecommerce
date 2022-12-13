@@ -7,7 +7,7 @@ module Pricing
     def test_future_price_is_not_included_when_calculating_total_value
       product_1_id = SecureRandom.uuid
       set_price(product_1_id, 20)
-      future_date_timestamp = Time.now.utc + plus_five_days
+      future_date_timestamp = Time.now.utc + days_number(5)
       set_future_price(product_1_id, 30, future_date_timestamp.to_s)
       order_id = SecureRandom.uuid
       add_item(order_id, product_1_id)
@@ -28,7 +28,7 @@ module Pricing
     def test_check_future_price
       product_1_id = SecureRandom.uuid
       set_price(product_1_id, 20)
-      future_date_timestamp = Time.now.utc + plus_five_days
+      future_date_timestamp = Time.now.utc + days_number(5)
       set_future_price(product_1_id, 30, future_date_timestamp.to_s)
 
       Timecop.travel(future_date_timestamp + 2137) do
@@ -49,10 +49,47 @@ module Pricing
       end
     end
 
+    def test_future_prices_catalog_by_product_id
+      product_id = SecureRandom.uuid
+      set_price(product_id, 20)
+      future_date_timestamp_1 = DateTime.current + days_number(2)
+      future_date_timestamp_2 = DateTime.current + days_number(3)
+      future_date_timestamp_3 = DateTime.current + days_number(4)
+
+      set_future_price(product_id, 30, future_date_timestamp_3)
+      set_future_price(product_id, 40, future_date_timestamp_1)
+      set_future_price(product_id, 50, future_date_timestamp_2)
+
+      pricing_catalog = PricingCatalog.new(event_store)
+
+      assert_equal [
+        BigDecimal(40),
+        BigDecimal(50),
+        BigDecimal(30)
+      ], pricing_catalog.future_prices_catalog_by_product_id(product_id).map { |entry| entry[:price] }
+
+      Timecop.travel(future_date_timestamp_1 + 1) do
+        assert_equal [
+          BigDecimal(50),
+          BigDecimal(30)
+        ], pricing_catalog.future_prices_catalog_by_product_id(product_id).map { |entry| entry[:price] }
+      end
+
+      Timecop.travel(future_date_timestamp_2 + 1) do
+        assert_equal [
+          BigDecimal(30)
+        ], pricing_catalog.future_prices_catalog_by_product_id(product_id).map { |entry| entry[:price] }
+      end
+
+      Timecop.travel(future_date_timestamp_3 + 1) do
+        assert_equal [], pricing_catalog.future_prices_catalog_by_product_id(product_id).map { |entry| entry[:price] }
+      end
+    end
+
     private
 
-    def plus_five_days
-      3600 * 24 * 5
+    def days_number(n)
+      3600 * 24 * n
     end
 
   end
