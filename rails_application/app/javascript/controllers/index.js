@@ -1,5 +1,5 @@
 import { application } from "./application";
 
-import TurboModalController from "./turbo_modal_controller"
+import { eagerLoadControllersFrom } from "@hotwired/stimulus-loading"
 
-application.register("turbo-modal", TurboModalController);
+eagerLoadControllersFrom("controllers", application)
