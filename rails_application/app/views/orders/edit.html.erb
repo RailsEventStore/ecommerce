@@ -44,9 +44,9 @@
       <td class="py-2" id="<%= "orders_order_#{product.id}_quantity" %>"><%= order_line.try(&:quantity) || 0 %></td>
       <td class="py-2"><%= number_to_currency(product.price) %></td>
       <td class="py-2" id="<%= "orders_order_#{product.id}_value" %>"><%= number_to_currency(order_line.try(&:value)) %></td>
-      <td class="py-2 text-right"><%= link_to "Add", add_item_order_path(id: @order_id, product_id: product.id, turbo_stream: true),
+      <td class="py-2 text-right"><%= link_to "Add", add_item_order_path(id: @order_id, product_id: product.id),
         {method: :post, class: "hover:underline text-blue-500"  } %></td>
-      <td class="py-2 text-right"><%= link_to "Remove", remove_item_order_path(id: @order_id, product_id: product.id, turbo_stream: true),
+      <td class="py-2 text-right"><%= link_to "Remove", remove_item_order_path(id: @order_id, product_id: product.id),
         {method: :post, class: "hover:underline text-blue-500"} %></td>
     </tr>
   <% end %>
@@ -62,7 +62,7 @@
       <tr class="border-t">
         <td class="py-2" colspan="3">General discount</td>
         <td class="py-2"><%= percentage_discount %>%</td>
-        <td class="py-2 text-right" colspan="2"><%= link_to "Reset", reset_discount_order_path(id: @order_id, turbo_stream: true), {method: :post, class: "hover:underline text-blue-500"} %></td>
+        <td class="py-2 text-right" colspan="2"><%= link_to "Reset", reset_discount_order_path(id: @order_id), {method: :post, class: "hover:underline text-blue-500"} %></td>
       </tr>
     <% end %>
     <% if @time_promotions.present? %>
