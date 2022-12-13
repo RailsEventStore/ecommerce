@@ -51,8 +51,8 @@ module ApplicationHelper
       options.merge(data: { turbolinks: false })
   end
 
-  def order_history_link(id, options = {})
-    stream_browser_link("History", "Ordering::Order$#{id}", options)
+  def order_history_link(id)
+    stream_browser_link("History", "Ordering::Order$#{id}")
   end
 
   def current_link_to(label, path, **kwargs)
