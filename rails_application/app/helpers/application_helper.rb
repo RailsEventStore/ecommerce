@@ -48,7 +48,7 @@ module ApplicationHelper
 
   def stream_browser_link(link_name, stream_name, options = {})
     link_to link_name, stream_browser_path(CGI.escape(stream_name)),
-      options.merge(data: { turbolinks: false })
+            options.merge(data: { turbo: false })
   end
 
   def order_history_link(id)
