@@ -25,7 +25,7 @@ module Pricing
       read_prices_set(product_id)
         .select(&method(:future_prices))
         .map(&method(:map_to_calendar_entries))
-        .sort_by { |entry| entry[:valid_at] }
+        .sort_by { |entry| entry.fetch(:valid_at) }
     end
 
     private
