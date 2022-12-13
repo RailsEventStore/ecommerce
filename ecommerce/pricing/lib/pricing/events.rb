@@ -13,9 +13,9 @@ module Pricing
 
   class TimePromotionCreated < Infra::Event
     attribute :time_promotion_id, Infra::Types::UUID
-    attribute :discount, Infra::Types::PercentageDiscount
-    attribute :start_time, Infra::Types::Params::DateTime
-    attribute :end_time, Infra::Types::Params::DateTime
+    attribute? :discount, Infra::Types::PercentageDiscount
+    attribute? :start_time, Infra::Types::Params::DateTime
+    attribute? :end_time, Infra::Types::Params::DateTime
   end
 
   class OrderTotalValueCalculated < Infra::Event
