@@ -15,16 +15,17 @@ module Pricing
 
     def price_by_product_id(product_id)
       read_prices_set(product_id)
-        .reject(&method(:reject_future_prices))
+        .reject(&method(:future_prices))
         .last
         .data
         .fetch(:price)
     end
 
-    def future_prices_catalog_by_product_id(product)
+    def future_prices_catalog_by_product_id(product_id)
       read_prices_set(product_id)
-        .select(&method(:only_future_prices))
-        .slice(:price, :valid_at)
+        .select(&method(:future_prices))
+        .map(&method(:map_to_calendar_entries))
+        .sort_by { |entry| entry[:valid_at] }
     end
 
     private
@@ -37,12 +38,15 @@ module Pricing
         .filter { |e| e.data.fetch(:product_id).eql?(product_id) }
     end
 
-    def only_future_prices(e)
-      !reject_future_prices(e)
+    def future_prices(e)
+      e.metadata.fetch(:valid_at) > Time.now
     end
 
-    def reject_future_prices(e)
-      e.metadata.fetch(:valid_at) > Time.now
+    def map_to_calendar_entries(e)
+      {
+        price: e.data.fetch(:price),
+        valid_at: e.metadata.fetch(:valid_at)
+      }
     end
   end
 end
