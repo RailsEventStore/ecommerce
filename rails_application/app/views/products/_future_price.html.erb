@@ -5,7 +5,7 @@
     <label for="start_time" class="inline font-bold p-2">
       Start time:
       <%= datetime_field_tag :start_time, nil,
-        value: valid_since.to_datetime.strftime('%Y-%m-%dT%H:%M'),
+        value: valid_since&.to_datetime&.strftime('%Y-%m-%dT%H:%M'),
         disabled: true,
         id: "start_time",
         name: "[future_prices][][start_time]",

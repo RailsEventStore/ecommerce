@@ -9,7 +9,7 @@ module Product
               partial: "/products/future_price",
               locals: {
                 disabled: false,
-                valid_at: nil,
+                valid_since: nil,
                 price: nil
               }
           )
