@@ -2,7 +2,6 @@ PATH
   remote: ../../infra
   specs:
     infra (1.0.0)
-      activejob
       aggregate_root (~> 2.6.0)
       arkency-command_bus
       dry-struct
@@ -10,6 +9,7 @@ PATH
       rake
       ruby_event_store (~> 2.6.0)
       ruby_event_store-transformations
+      sidekiq
 
 GEM
   remote: https://oss:7AXfeZdAfCqL1PvHm2nvDJO6Zd9UW8IK@gem.mutant.dev/
@@ -19,9 +19,6 @@ GEM
 GEM
   remote: https://rubygems.org/
   specs:
-    activejob (7.0.3.1)
-      activesupport (= 7.0.3.1)
-      globalid (>= 0.3.6)
     activesupport (7.0.3.1)
       concurrent-ruby (~> 1.0, >= 1.0.2)
       i18n (>= 1.6, < 2)
@@ -33,6 +30,7 @@ GEM
       concurrent-ruby
     ast (2.4.2)
     concurrent-ruby (1.1.10)
+    connection_pool (2.3.0)
     diff-lcs (1.4.4)
     dry-configurable (0.15.0)
       concurrent-ruby (~> 1.0)
@@ -56,8 +54,6 @@ GEM
       dry-core (~> 0.5, >= 0.5)
       dry-inflector (~> 0.1, >= 0.1.2)
       dry-logic (~> 1.0, >= 1.0.2)
-    globalid (1.0.0)
-      activesupport (>= 5.0)
     i18n (1.11.0)
       concurrent-ruby (~> 1.0)
     ice_nine (0.11.2)
@@ -72,13 +68,21 @@ GEM
       mutant (= 0.10.34)
     parser (3.0.2.0)
       ast (~> 2.4.1)
+    rack (3.0.2)
     rake (13.0.6)
+    redis-client (0.11.2)
+      connection_pool
     regexp_parser (2.1.1)
     ruby_event_store (2.6.0)
       concurrent-ruby (~> 1.0, >= 1.1.6)
     ruby_event_store-transformations (0.1.0)
       activesupport (>= 5.0)
       ruby_event_store (>= 2.0.0, < 3.0.0)
+    sidekiq (7.0.2)
+      concurrent-ruby (< 2)
+      connection_pool (>= 2.3.0)
+      rack (>= 2.2.4)
+      redis-client (>= 0.11.0)
     tzinfo (2.0.4)
       concurrent-ruby (~> 1.0)
     unparser (0.6.0)

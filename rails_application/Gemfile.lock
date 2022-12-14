@@ -2,7 +2,6 @@ PATH
   remote: ../infra
   specs:
     infra (1.0.0)
-      activejob
       aggregate_root (~> 2.6.0)
       arkency-command_bus
       dry-struct
@@ -10,6 +9,7 @@ PATH
       rake
       ruby_event_store (~> 2.6.0)
       ruby_event_store-transformations
+      sidekiq
 
 GEM
   remote: https://oss:7AXfeZdAfCqL1PvHm2nvDJO6Zd9UW8IK@gem.mutant.dev/
