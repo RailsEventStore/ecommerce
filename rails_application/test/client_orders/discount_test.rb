@@ -2,7 +2,6 @@ require "test_helper"
 
 module ClientOrders
   class DiscountTest < InMemoryTestCase
-    include ActiveJob::TestHelper
     cover "ClientOrders*"
 
     def test_discount_set
@@ -59,17 +58,17 @@ module ClientOrders
 
     def reset_percentage_discount(order_id)
       run_command(Pricing::ResetPercentageDiscount.new(order_id: order_id))
-      perform_enqueued_jobs
+      Sidekiq::Job.drain_all
     end
 
     def set_percentage_discount(order_id)
       run_command(Pricing::SetPercentageDiscount.new(order_id: order_id, amount: 10))
-      perform_enqueued_jobs
+      Sidekiq::Job.drain_all
     end
 
     def change_percentage_discount(order_id)
       run_command(Pricing::ChangePercentageDiscount.new(order_id: order_id, amount: 1))
-      perform_enqueued_jobs
+      Sidekiq::Job.drain_all
     end
 
     def item_added_to_basket(order_id, product_id)
@@ -89,7 +88,7 @@ module ClientOrders
         )
       )
       run_command(Pricing::SetPrice.new(product_id: product_id, price: 50))
-      perform_enqueued_jobs
+      Sidekiq::Job.drain_all
     end
 
     def customer_registered(customer_id)

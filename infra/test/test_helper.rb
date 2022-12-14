@@ -1,6 +1,6 @@
 require "minitest/autorun"
 require "mutant/minitest/coverage"
-require "active_job"
+require "sidekiq/testing"
 
 require_relative "../lib/infra"
 

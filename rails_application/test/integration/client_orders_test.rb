@@ -2,7 +2,6 @@ require "test_helper"
 
 class ClientOrdersTests < InMemoryRESIntegrationTestCase
   include ActionView::Helpers::NumberHelper
-  include ActiveJob::TestHelper
   cover "ClientOrders*"
 
   def setup
@@ -16,7 +15,7 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
   def test_happy_path
     arkency_id = register_customer('Arkency')
     async_remote_id = register_product("Async Remote", 39, 10)
-    perform_enqueued_jobs
+    Sidekiq::Job.drain_all
 
     get "/clients"
     assert_select("button", { count: 0, text: "Log out" })
@@ -29,9 +28,9 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
 
     order_id = SecureRandom.uuid
     add_item_to_basket_for_order(async_remote_id, order_id)
-    perform_enqueued_jobs
+    Sidekiq::Job.drain_all
     submit_order_for_customer(arkency_id, order_id)
-    perform_enqueued_jobs
+    Sidekiq::Job.drain_all
     get "/client_orders"
     order_price = number_to_currency(Orders::Order.find_by(uid: order_id).discounted_value)
 
@@ -39,12 +38,12 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
     assert_select("td", order_price)
 
     pay_order(order_id)
-    perform_enqueued_jobs
+    Sidekiq::Job.drain_all
     get "/client_orders"
     assert_select("td", "Paid")
 
     cancel_submitted_order_for_customer(arkency_id)
-    perform_enqueued_jobs
+    Sidekiq::Job.drain_all
     get "/client_orders"
     assert_select("td", "Cancelled")
 
@@ -58,16 +57,16 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
   def test_creating_order_as_client
     arkency_id = register_customer('Arkency')
     async_remote_id = register_product("Async Remote", 39, 10)
-    perform_enqueued_jobs
+    Sidekiq::Job.drain_all
 
     get "/clients"
     login(arkency_id)
     order_id = SecureRandom.uuid
     get "/client_orders/new"
     as_client_add_item_to_basket_for_order(async_remote_id, order_id)
-    perform_enqueued_jobs
+    Sidekiq::Job.drain_all
     as_client_submit_order_for_customer(order_id)
-    perform_enqueued_jobs
+    Sidekiq::Job.drain_all
     get "/client_orders"
     order_price = number_to_currency(Orders::Order.find_by(uid: order_id).discounted_value)
     assert_select("td", "Submitted")
@@ -78,7 +77,7 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
 
   def submit_order_for_customer(customer_id, order_id)
     post "/orders", params: { order_id: order_id, customer_id: customer_id }
-    perform_enqueued_jobs
+    Sidekiq::Job.drain_all
     follow_redirect!
   end
 
@@ -106,7 +105,7 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
   def cancel_submitted_order_for_customer(customer_id)
     order_id = SecureRandom.uuid
     anti_if = register_product('Anti If', 99, 10)
-    perform_enqueued_jobs
+    Sidekiq::Job.drain_all
 
     add_item_to_basket_for_order(anti_if, order_id)
     add_item_to_basket_for_order(anti_if, order_id)

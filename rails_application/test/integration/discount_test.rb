@@ -14,22 +14,22 @@ class DiscountTest < InMemoryRESIntegrationTestCase
     order_id = SecureRandom.uuid
 
     async_remote_id = register_product("Async Remote", 137, 10)
-    perform_enqueued_jobs
+    Sidekiq::Job.drain_all
 
     get "/"
     get "/orders/new"
     post "/orders/#{order_id}/add_item?product_id=#{async_remote_id}"
-    perform_enqueued_jobs
+    Sidekiq::Job.drain_all
     get "/orders/#{order_id}/edit"
     assert_select("td", "$137.00")
     assert_select("a", count: 0, text: "Reset")
 
     apply_discount_10_percent(order_id)
-    perform_enqueued_jobs
+    Sidekiq::Job.drain_all
 
     assert_select("a", "Reset")
     post "/orders/#{order_id}/reset_discount"
-    perform_enqueued_jobs
+    Sidekiq::Job.drain_all
     follow_redirect!
     assert_select("td", "$137.00")
     assert_select("a", count: 0, text: "Reset")
@@ -43,9 +43,9 @@ class DiscountTest < InMemoryRESIntegrationTestCase
     assert_select("label", "Percentage")
 
     post "/orders/#{order_id}/update_discount?amount=10"
-    perform_enqueued_jobs(only: Orders::UpdateDiscount)
-    perform_enqueued_jobs(only: Pricing::CalculateOrderTotalValue)
-    perform_enqueued_jobs(only: Orders::UpdateOrderTotalValue)
+    Orders::UpdateDiscount.drain
+    Pricing::CalculateOrderTotalValue.drain
+    Orders::UpdateOrderTotalValue.drain
     follow_redirect!
     assert_select("td", "$123.30")
   end

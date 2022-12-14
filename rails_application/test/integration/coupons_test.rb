@@ -2,8 +2,6 @@
 require "test_helper"
 
 class CouponsTest < InMemoryRESIntegrationTestCase
-  include ActiveJob::TestHelper
-
   def test_list_coupons
     register_coupon("Coupon Number Uno", "enterme", "0.01")
 
@@ -32,7 +30,7 @@ class CouponsTest < InMemoryRESIntegrationTestCase
       code: code,
       discount: discount
     }
-    perform_enqueued_jobs(only: Coupons::RegisterCoupon)
+    Coupons::RegisterCoupon.drain
 
     follow_redirect!
   end

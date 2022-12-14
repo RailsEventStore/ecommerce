@@ -46,6 +46,7 @@ module Orders
       order = Order.find_by(uid: order_id)
       assert_equal(order.state, "Submitted")
       assert_equal(order.number, order_number)
+
       assert_enqueued_with(
         job: Turbo::Streams::ActionBroadcastJob,
         args: action_broadcast_args(order_id, 'Submitted')

@@ -25,9 +25,7 @@ class TimePromotionsTest < InMemoryRESIntegrationTestCase
 
     assert_select("p", "Time promotion was successfully created")
 
-    perform_enqueued_jobs(only: [
-      TimePromotions::CreateTimePromotion,
-    ])
+    TimePromotions::CreateTimePromotion.drain
 
     get "/time_promotions"
     assert_select("td", "Last Minute June 2022")

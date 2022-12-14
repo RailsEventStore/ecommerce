@@ -2,6 +2,7 @@ ENV["RAILS_ENV"] ||= "test"
 require_relative "../config/environment"
 require "rails/test_help"
 require "mutant/minitest/coverage"
+require "sidekiq/testing"
 
 ActiveJob::Base.logger = Logger.new(nil)
 
@@ -38,8 +39,6 @@ class RealRESIntegrationTestCase < ActionDispatch::IntegrationTest
 end
 
 class InMemoryRESIntegrationTestCase < ActionDispatch::IntegrationTest
-  include ActiveJob::TestHelper
-
   def before_setup
     result = super
     @previous_event_store = Rails.configuration.event_store
