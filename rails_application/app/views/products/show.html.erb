@@ -28,24 +28,26 @@
   <dd class="mb-2 mt-2"><%= @product.stock_level %></dd>
 </dl>
 
-<dl class="pt-8 mt-6">
-  <dd class="mb-6 mt-6 font-bold leading-9">Future prices</dd>
-  <dt>
-    <table class="w-full">
-      <thead>
-        <tr>
-          <th class="text-left py-2">Price</th>
-          <th class="text-left py-2">Valid since</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @product.future_prices_calendar.each do |item| %>
-          <tr class="border-t">
-            <td class="py-2"><%= number_to_currency item[:price] %></td>
-            <td class="py-2"><%= item[:valid_since] %></td>
+<% if @product.future_prices_calendar.any? %>
+  <dl class="pt-8">
+    <dd class="mb-6 font-bold leading-9">Future prices</dd>
+    <dt>
+      <table class="w-full">
+        <thead>
+          <tr>
+            <th class="text-left py-2">Price</th>
+            <th class="text-left py-2">Valid since</th>
           </tr>
-        <% end %>
-      </tbody>
-    </table>
-  </dt>
-</dl>
+        </thead>
+        <tbody>
+          <% @product.future_prices_calendar.each do |item| %>
+            <tr class="border-t">
+              <td class="py-2"><%= number_to_currency item[:price] %></td>
+              <td class="py-2"><%= item[:valid_since] %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </dt>
+  </dl>
+<% end %>
