@@ -43,7 +43,9 @@ class DiscountTest < InMemoryRESIntegrationTestCase
     assert_select("label", "Percentage")
 
     post "/orders/#{order_id}/update_discount?amount=10"
-    perform_enqueued_jobs
+    perform_enqueued_jobs(only: Orders::UpdateDiscount)
+    perform_enqueued_jobs(only: Pricing::CalculateOrderTotalValue)
+    perform_enqueued_jobs(only: Orders::UpdateOrderTotalValue)
     follow_redirect!
     assert_select("td", "$123.30")
   end

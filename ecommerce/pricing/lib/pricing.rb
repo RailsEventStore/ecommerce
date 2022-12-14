@@ -9,6 +9,11 @@ require_relative "pricing/product"
 require_relative "pricing/pricing_catalog"
 require_relative "pricing/time_promotion"
 require_relative "pricing/promotions_calendar"
+require_relative "pricing/calculate_order_total_value"
+
+require_relative "../../ordering/lib/ordering/events/item_added_to_basket"
+require_relative "../../ordering/lib/ordering/events/item_removed_from_basket"
+require_relative "../../ordering/lib/ordering/events/order_submitted"
 
 module Pricing
   class Configuration
@@ -65,24 +70,16 @@ module Pricing
         RemoveFreeProductFromOrder,
         RemoveFreeProductFromOrderHandler.new(event_store)
       )
-      event_store.subscribe(
-        ->(event) do
-          command_bus.call(
-            Pricing::CalculateTotalValue.new(
-              order_id: event.data.fetch(:order_id)
-            )
-          )
-        end,
-        to: [
-          PriceItemAdded,
-          PriceItemRemoved,
-          PercentageDiscountSet,
-          PercentageDiscountReset,
-          PercentageDiscountChanged,
-          ProductMadeFreeForOrder,
-          FreeProductRemovedFromOrder
-        ]
-      )
+
+      event_store.subscribe(CalculateOrderTotalValue, to: [
+        PriceItemAdded,
+        PriceItemRemoved,
+        PercentageDiscountSet,
+        PercentageDiscountReset,
+        PercentageDiscountChanged,
+        ProductMadeFreeForOrder,
+        FreeProductRemovedFromOrder
+      ])
     end
   end
 end
