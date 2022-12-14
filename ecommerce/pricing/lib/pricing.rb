@@ -9,6 +9,9 @@ require_relative "pricing/product"
 require_relative "pricing/pricing_catalog"
 require_relative "pricing/time_promotion"
 require_relative "pricing/promotions_calendar"
+require_relative "pricing/increase_order_price"
+require_relative "pricing/reduce_order_total_value"
+require_relative "pricing/calculate_order_sub_amounts_value"
 require_relative "pricing/calculate_order_total_value"
 
 require_relative "../../ordering/lib/ordering/events/item_added_to_basket"
@@ -70,8 +73,12 @@ module Pricing
         RemoveFreeProductFromOrder,
         RemoveFreeProductFromOrderHandler.new(event_store)
       )
+      event_store.subscribe(IncreaseOrderPrice, to: [Ordering::ItemAddedToBasket])
+
+      event_store.subscribe(ReduceOrderTotalValue, to: [Ordering::ItemRemovedFromBasket])
 
       event_store.subscribe(CalculateOrderTotalValue, to: [
+        Ordering::OrderSubmitted,
         PriceItemAdded,
         PriceItemRemoved,
         PercentageDiscountSet,
@@ -80,6 +87,8 @@ module Pricing
         ProductMadeFreeForOrder,
         FreeProductRemovedFromOrder
       ])
+
+      event_store.subscribe(CalculateOrderTotalSubAmountsValue, to: [Ordering::OrderSubmitted])
     end
   end
 end

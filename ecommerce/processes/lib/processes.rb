@@ -15,7 +15,6 @@ require_relative 'processes/release_payment_process'
 require_relative 'processes/shipment_process'
 require_relative 'processes/determine_vat_rates_on_order_submitted'
 require_relative 'processes/order_item_invoicing_process'
-require_relative 'processes/sync_pricing_from_ordering'
 require_relative 'processes/notify_payments_about_order_value'
 require_relative 'processes/sync_shipment_from_ordering'
 require_relative 'processes/sync_inventory_from_ordering'
@@ -24,7 +23,6 @@ require_relative 'processes/three_plus_one_free'
 module Processes
   class Configuration
     def call(event_store, command_bus)
-      enable_pricing_sync_from_ordering(event_store, command_bus)
       notify_payments_about_order_total_value(event_store, command_bus)
       enable_inventory_sync_from_ordering(event_store, command_bus)
       enable_shipment_sync(event_store, command_bus)
@@ -55,10 +53,6 @@ module Processes
 
     def enable_inventory_sync_from_ordering(event_store, command_bus)
       SyncInventoryFromOrdering.new(event_store, command_bus)
-    end
-
-    def enable_pricing_sync_from_ordering(event_store, command_bus)
-      SyncPricingFromOrdering.new(event_store, command_bus)
     end
 
     def confirm_order_on_payment_captured(event_store, command_bus)
