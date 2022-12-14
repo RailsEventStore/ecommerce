@@ -16,5 +16,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency "arkency-command_bus"
   spec.add_dependency "ruby_event_store", "~> 2.6.0"
   spec.add_dependency "ruby_event_store-transformations"
-  spec.add_dependency "activejob"
+  spec.add_dependency "sidekiq"
 end

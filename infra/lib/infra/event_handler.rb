@@ -1,3 +1,5 @@
+require "sidekiq/job"
+
 module Infra
   class EventHandler
     include Sidekiq::Job
