@@ -35,6 +35,26 @@
     </label>
     <%= number_field_tag :price, @product.price, min: 0, step: 0.01, required: true, class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-sm sm:text-sm border-gray-300 rounded-md" %>
   </div>
+
+  <label for="future_prices" class="mt-6 block font-bold">
+    Future prices
+  </label>
+  <table class="w-full">
+    <thead>
+      <tr>
+        <th class="text-left py-2">Price</th>
+        <th class="text-left py-2">Valid since</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @product.future_prices_calendar.each do |item| %>
+        <tr class="border-t">
+          <td class="py-2"><%= number_to_currency item[:price] %></td>
+          <td class="py-2"><%= item[:valid_since] %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
   <div id="future_prices" class="mt-2">
   </div>
 <% end %>
