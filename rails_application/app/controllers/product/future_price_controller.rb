@@ -6,7 +6,13 @@ module Product
           render turbo_stream:
             turbo_stream.append(
               "future_prices",
-              partial: "/products/future_price")
+              partial: "/products/future_price",
+              locals: {
+                disabled: false,
+                valid_at: nil,
+                price: nil
+              }
+          )
         end
       end
     end
