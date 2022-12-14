@@ -40,23 +40,13 @@
     <label for="future_prices" class="mt-6 block font-bold">
       Future prices
     </label>
-    <table class="w-full">
-      <thead>
-        <tr>
-          <th class="text-left py-2">Price</th>
-          <th class="text-left py-2">Valid since</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @product.future_prices_calendar.each do |entry| %>
-          <%= render partial: "products/future_price", locals: {
-            disabled: true,
-            price: entry[:price],
-            valid_since: entry[:valid_since] }
-          %>
-        <% end %>
-      </tbody>
-    </table>
+    <% @product.future_prices_calendar.each do |entry| %>
+      <%= render partial: "products/future_price", locals: {
+        disabled: true,
+        price: entry[:price],
+        valid_since: entry[:valid_since] }
+      %>
+    <% end %>
   <% end %>
   <div id="future_prices" class="mt-2">
   </div>
