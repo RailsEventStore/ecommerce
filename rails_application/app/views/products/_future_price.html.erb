@@ -1,23 +1,28 @@
+<% border_input_style = "#{disabled ? "border-none outline-none focus:outline-none focus:outline-none border-transparent focus:border-transparent focus:ring-0 focus:shadow-none shadow-none" : "border-gray-300 shadow-sm"}" %>
+
 <div class="mt-2">
   <div class="inline">
     <label for="start_time" class="inline font-bold p-2">
-      Start time
+      Start time:
       <%= datetime_field_tag :start_time, nil,
+        value: valid_since.to_datetime.strftime('%Y-%m-%dT%H:%M'),
+        disabled: true,
         id: "start_time",
         name: "[future_prices][][start_time]",
-        class: "mt-1 focus:ring-blue-500 focus:border-blue-500 inline-block shadow-sm sm:text-sm border-gray-300 rounded-md"
+        class: "#{border_input_style} mt-1 focus:ring-blue-500 focus:border-blue-500 inline-block sm:text-sm rounded-md"
       %>
     </label>
   </div>
   <div class="inline">
     <label for="price" class="font-bold p-2">
-      Price
-      <%= number_field_tag :price, nil,
+      Price:
+      <%= number_field_tag :price, price,
+        disabled: true,
         name: "[future_prices][][price]",
         min: 0,
         step: 0.01,
         required: true,
-        class: "mt-1 focus:ring-blue-500 focus:border-blue-500 inline-block shadow-sm sm:text-sm border-gray-300 rounded-md"
+        class: "#{border_input_style} mt-1 focus:ring-blue-500 focus:border-blue-500 inline-block sm:text-sm rounded-md"
       %>
     </label>
   </div>

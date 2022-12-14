@@ -48,11 +48,12 @@
         </tr>
       </thead>
       <tbody>
-        <% @product.future_prices_calendar.each do |item| %>
-          <tr class="border-t">
-            <td class="py-2"><%= number_to_currency item[:price] %></td>
-            <td class="py-2"><%= item[:valid_since] %></td>
-          </tr>
+        <% @product.future_prices_calendar.each do |entry| %>
+          <%= render partial: "products/future_price", locals: {
+            disabled: true,
+            price: entry[:price],
+            valid_since: entry[:valid_since] }
+          %>
         <% end %>
       </tbody>
     </table>
