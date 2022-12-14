@@ -1,6 +1,6 @@
 module Infra
-  class EventHandler < ActiveJob::Base
-    queue_as :default
+  class EventHandler
+    include Sidekiq::Job
 
     def perform(payload)
       event = event_store.read.event(payload.symbolize_keys.fetch(:event_id))

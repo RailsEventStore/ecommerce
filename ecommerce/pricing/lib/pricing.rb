@@ -73,11 +73,11 @@ module Pricing
         RemoveFreeProductFromOrder,
         RemoveFreeProductFromOrderHandler.new(event_store)
       )
-      event_store.subscribe(IncreaseOrderPrice, to: [Ordering::ItemAddedToBasket])
+      event_store.subscribe(IncreaseOrderPrice.new(command_bus), to: [Ordering::ItemAddedToBasket])
 
-      event_store.subscribe(ReduceOrderTotalValue, to: [Ordering::ItemRemovedFromBasket])
+      event_store.subscribe(ReduceOrderTotalValue.new(command_bus), to: [Ordering::ItemRemovedFromBasket])
 
-      event_store.subscribe(CalculateOrderTotalValue, to: [
+      event_store.subscribe(CalculateOrderTotalValue.new(command_bus), to: [
         Ordering::OrderSubmitted,
         PriceItemAdded,
         PriceItemRemoved,
@@ -88,7 +88,7 @@ module Pricing
         FreeProductRemovedFromOrder
       ])
 
-      event_store.subscribe(CalculateOrderTotalSubAmountsValue, to: [Ordering::OrderSubmitted])
+      event_store.subscribe(CalculateOrderTotalSubAmountsValue.new(command_bus), to: [Ordering::OrderSubmitted])
     end
   end
 end
