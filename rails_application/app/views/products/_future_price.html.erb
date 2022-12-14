@@ -6,7 +6,7 @@
       Start time:
       <%= datetime_field_tag :start_time, nil,
         value: valid_since&.to_datetime&.strftime('%Y-%m-%dT%H:%M'),
-        disabled: true,
+        disabled: disabled,
         id: "start_time",
         name: "[future_prices][][start_time]",
         class: "#{border_input_style} mt-1 focus:ring-blue-500 focus:border-blue-500 inline-block sm:text-sm rounded-md"
@@ -17,7 +17,7 @@
     <label for="price" class="font-bold p-2">
       Price:
       <%= number_field_tag :price, price,
-        disabled: true,
+        disabled: disabled,
         name: "[future_prices][][price]",
         min: 0,
         step: 0.01,
