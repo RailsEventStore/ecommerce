@@ -14,6 +14,8 @@ module Orders
       broadcaster.call(order_id, product_id, "value", ActiveSupport::NumberHelper.number_to_currency(item.value))
 
       event_store.link_event_to_stream(event, "Orders$all")
+    rescue ActiveRecord::RecordNotUnique
+      retry
     end
 
     private

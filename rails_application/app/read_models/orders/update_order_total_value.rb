@@ -9,6 +9,8 @@ module Orders
       event_store.link_event_to_stream(event, "Orders$all")
       broadcaster.call(order.uid, order.uid, "total_value", number_to_currency(order.total_value))
       broadcaster.call(order.uid, order.uid, "discounted_value", number_to_currency(order.discounted_value))
+    rescue ActiveRecord::RecordNotUnique
+      retry
     end
 
     private

@@ -7,6 +7,8 @@ module Orders
       order.save!
 
       event_store.link_event_to_stream(event, "Orders$all")
+    rescue ActiveRecord::RecordNotUnique
+      retry
     end
   end
 end
