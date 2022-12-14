@@ -16,6 +16,7 @@ module Pricing
     def price_by_product_id(product_id)
       read_prices_set(product_id)
         .reject(&method(:future_prices))
+        .sort_by { |e| e.metadata.fetch(:valid_at) }
         .last
         .data
         .fetch(:price)
