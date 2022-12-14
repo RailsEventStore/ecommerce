@@ -52,13 +52,13 @@ module Pricing
     def test_future_prices_catalog_by_product_id
       product_id = SecureRandom.uuid
       set_price(product_id, 20)
-      future_date_timestamp_1 = DateTime.current + days_number(2)
-      future_date_timestamp_2 = DateTime.current + days_number(3)
-      future_date_timestamp_3 = DateTime.current + days_number(4)
+      future_date_timestamp_1 = Time.now + days_number(2)
+      future_date_timestamp_2 = Time.now + days_number(3)
+      future_date_timestamp_3 = Time.now + days_number(356*10)
 
-      set_future_price(product_id, 30, future_date_timestamp_3)
-      set_future_price(product_id, 40, future_date_timestamp_1)
-      set_future_price(product_id, 50, future_date_timestamp_2)
+      set_future_price(product_id, 30, future_date_timestamp_3.to_s)
+      set_future_price(product_id, 40, future_date_timestamp_1.to_s)
+      set_future_price(product_id, 50, future_date_timestamp_2.to_s)
 
       pricing_catalog = PricingCatalog.new(event_store)
 
@@ -76,7 +76,7 @@ module Pricing
           BigDecimal(30)
         ], pricing_catalog.future_prices_catalog_by_product_id(product_id).map { |entry| entry[:price] }
 
-        assert_equal 40, pricing_catalog.price_by_product_id(product_id)
+        assert_equal BigDecimal(40), pricing_catalog.price_by_product_id(product_id)
       end
 
       Timecop.travel(future_date_timestamp_2 + 1) do
@@ -84,12 +84,12 @@ module Pricing
           BigDecimal(30)
         ], pricing_catalog.future_prices_catalog_by_product_id(product_id).map { |entry| entry[:price] }
 
-        assert_equal 50, pricing_catalog.price_by_product_id(product_id)
+        assert_equal BigDecimal(50), pricing_catalog.price_by_product_id(product_id)
       end
 
       Timecop.travel(future_date_timestamp_3 + 1) do
         assert_equal [], pricing_catalog.future_prices_catalog_by_product_id(product_id).map { |entry| entry[:price] }
-        assert_equal 30, pricing_catalog.price_by_product_id(product_id)
+        assert_equal BigDecimal(30), pricing_catalog.price_by_product_id(product_id)
       end
     end
 
