@@ -20,7 +20,8 @@ module Products
       @read_model.copy(Inventory::StockLevelChanged,       :stock_level)
       @read_model.copy(Pricing::PriceSet,                  :price)
       @read_model.copy_nested_to_column(Taxes::VatRateSet, :vat_rate, :code, :vat_rate_code)
-      @event_store.subscribe(UpdateFuturePricesCalendar, to: [Pricing::FuturePriceSet])
+      @event_store.subscribe(RefreshFuturePricesCalendar, to: [Pricing::FuturePriceSet])
+      @event_store.subscribe(RefreshFuturePricesCalendar, to: [Pricing::PriceSet])
     end
   end
 end
