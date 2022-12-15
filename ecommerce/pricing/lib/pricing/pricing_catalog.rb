@@ -14,22 +14,29 @@ module Pricing
     end
 
     def price_by_product_id(product_id)
-      read_prices_set(product_id)
-        .reject(&method(:future_prices))
-        .sort_by { |e| e.metadata.fetch(:valid_at) }
-        .last
+      current_price(product_id)
         .data
         .fetch(:price)
+    end
+
+    def current_prices_catalog_by_product_id(product_id)
+      [to_calendar_entry(current_price(product_id))] + future_prices_catalog_by_product_id(product_id)
     end
 
     def future_prices_catalog_by_product_id(product_id)
       read_prices_set(product_id)
         .select(&method(:future_prices))
-        .map(&method(:map_to_calendar_entries))
+        .map(&method(:to_calendar_entry))
         .sort_by { |entry| entry.fetch(:valid_since) }
     end
 
     private
+
+    def current_price(product_id)
+      read_prices_set(product_id)
+        .reject(&method(:future_prices))
+        .last
+    end
 
     def read_prices_set(product_id)
       @event_store
@@ -43,7 +50,7 @@ module Pricing
       e.metadata.fetch(:valid_at) > Time.now
     end
 
-    def map_to_calendar_entries(e)
+    def to_calendar_entry(e)
       {
         price: e.data.fetch(:price),
         valid_since: e.metadata.fetch(:valid_at)

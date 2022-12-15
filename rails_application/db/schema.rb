@@ -159,7 +159,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_16_115301) do
     t.integer "stock_level"
     t.datetime "registered_at", precision: nil
     t.string "vat_rate_code"
-    t.text "future_prices_calendar"
+    t.text "current_prices_calendar"
   end
 
   create_table "public_offer_products", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
