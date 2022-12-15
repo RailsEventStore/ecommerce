@@ -28,3 +28,4 @@ matcher:
     - Orders::RemoveItemFromOrder*
     - Orders::UpdateOrderTotalValue*
     - Orders::SubmitOrder*
+    - Orders::AssignCustomerToOrder*

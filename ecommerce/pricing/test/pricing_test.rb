@@ -4,6 +4,14 @@ module Pricing
   class PricingTest < Test
     cover "Pricing*"
 
+    def test_configuration
+      Pricing.event_store = Infra::EventStore.in_memory
+      Pricing.event_store = Infra::CommandBus
+
+      assert Pricing.event_store, Infra::EventStore.in_memory
+      assert Pricing.command_bus, Infra::CommandBus
+    end
+
     def test_calculates_total_value
       product_1_id = SecureRandom.uuid
       product_2_id = SecureRandom.uuid
