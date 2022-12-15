@@ -1,5 +1,6 @@
 require "minitest/autorun"
 require "mutant/minitest/coverage"
+require "active_support/all"
 
 require_relative "../lib/pricing"
 
