@@ -8,8 +8,10 @@ module Products
       product_id = SecureRandom.uuid
       product_registered = ProductCatalog::ProductRegistered.new(data: { product_id: product_id })
       product_named = ProductCatalog::ProductNamed.new(data: { product_id: product_id, name: "Async Remote" })
+      set_price = Pricing::PriceSet.new(data: { product_id: product_id, price: 1 })
       event_store.publish(product_registered)
       event_store.publish(product_named)
+      event_store.publish(set_price)
 
       date_1 = DateTime.current + 1.day
       date_2 = DateTime.current + 1.month
