@@ -8,6 +8,6 @@ module Pricing
       command_bus.(RemovePriceItem.new(order_id: event.data.fetch(:order_id), product_id: event.data.fetch(:product_id)))
     end
 
-    private attr_reader :command_bus
+    attr_reader :command_bus
   end
 end

@@ -8,7 +8,7 @@ module Pricing
       command_bus.(CalculateSubAmounts.new(order_id: event.data.fetch(:order_id)))
     end
 
-    private attr_reader :command_bus
+    attr_reader :command_bus
   end
 end
 
