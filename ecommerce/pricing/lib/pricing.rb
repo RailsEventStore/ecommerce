@@ -19,8 +19,27 @@ require_relative "../../ordering/lib/ordering/events/item_removed_from_basket"
 require_relative "../../ordering/lib/ordering/events/order_submitted"
 
 module Pricing
+  def self.command_bus=(value)
+    @command_bus = value
+  end
+
+  def self.command_bus
+    @command_bus
+  end
+
+  def self.event_store=(value)
+    @event_store = value
+  end
+
+  def self.event_store
+    @event_store
+  end
+
   class Configuration
     def call(event_store, command_bus)
+      Pricing.event_store = event_store
+      Pricing.command_bus = command_bus
+
       command_bus.register(
         AddPriceItem,
         OnAddItemToBasket.new(event_store)
@@ -73,11 +92,11 @@ module Pricing
         RemoveFreeProductFromOrder,
         RemoveFreeProductFromOrderHandler.new(event_store)
       )
-      event_store.subscribe(IncreaseOrderPrice.new(command_bus), to: [Ordering::ItemAddedToBasket])
+      event_store.subscribe(IncreaseOrderPrice, to: [Ordering::ItemAddedToBasket])
 
-      event_store.subscribe(ReduceOrderTotalValue.new(command_bus), to: [Ordering::ItemRemovedFromBasket])
+      event_store.subscribe(ReduceOrderTotalValue, to: [Ordering::ItemRemovedFromBasket])
 
-      event_store.subscribe(CalculateOrderTotalValue.new(command_bus), to: [
+      event_store.subscribe(CalculateOrderTotalValue, to: [
         Ordering::OrderSubmitted,
         PriceItemAdded,
         PriceItemRemoved,
@@ -88,7 +107,7 @@ module Pricing
         FreeProductRemovedFromOrder
       ])
 
-      event_store.subscribe(CalculateOrderTotalSubAmountsValue.new(command_bus), to: [Ordering::OrderSubmitted])
+      event_store.subscribe(CalculateOrderTotalSubAmountsValue, to: [Ordering::OrderSubmitted])
     end
   end
 end
