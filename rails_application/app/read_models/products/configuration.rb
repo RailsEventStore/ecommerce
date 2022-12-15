@@ -1,10 +1,38 @@
 module Products
   class Product < ApplicationRecord
     self.table_name = "products"
-    serialize :future_prices_calendar, Array
+    serialize :current_prices_calendar, Array
+
+    def current_prices_calendar
+      return [] unless super
+      super.map { |entry| entry.merge(valid_since: time_of(entry).to_time) }
+    end
 
     def future_prices_calendar
-      super || []
+      current_prices_calendar.select { |entry| time_of(entry) > Time.now }
+    end
+
+    def price(time = Time.now)
+      BigDecimal(price_entry_on(time)[:price])
+    end
+
+    private
+
+    def price_entry_on(time)
+      current_prices_calendar.each_with_index do |entry, index|
+        next_entry = current_prices_calendar[index + 1]
+        if time_of(entry) < time && (!next_entry || time_of(next_entry) > time)
+          break entry
+        end
+      end
+    end
+
+    def parese_date(entry)
+      entry.merge(valid_since: time_of(entry).to_datetime)
+    end
+
+    def time_of(entry)
+      entry[:valid_since]
     end
   end
 
