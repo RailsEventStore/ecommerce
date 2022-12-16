@@ -5,7 +5,7 @@ module Products
 
     def current_prices_calendar
       return [] unless super
-      super.map { |entry| entry.merge(valid_since: time_of(entry).to_time) }
+      super.map(&method(:parese_date))
     end
 
     def future_prices_calendar
