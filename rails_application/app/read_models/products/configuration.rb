@@ -5,7 +5,7 @@ module Products
 
     def current_prices_calendar
       return [] unless super
-      super.map(&method(:parese_date))
+      super.map(&method(:parese_calendar_entry))
     end
 
     def future_prices_calendar
@@ -13,7 +13,7 @@ module Products
     end
 
     def price(time = Time.now)
-      BigDecimal(price_entry_on(time)[:price])
+      price_entry_on(time)[:price]
     end
 
     private
@@ -27,8 +27,11 @@ module Products
       end
     end
 
-    def parese_date(entry)
-      entry.merge(valid_since: time_of(entry).to_datetime)
+    def parese_calendar_entry(entry)
+      {
+        valid_since: time_of(entry).to_datetime,
+        price: BigDecimal(entry[:price])
+      }
     end
 
     def time_of(entry)
