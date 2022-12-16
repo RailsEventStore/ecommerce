@@ -5,6 +5,8 @@ module Orders
       if is_newest_value?(event, order)
         order.percentage_discount = event.data.fetch(:amount)
         order.save!
+
+        broadcaster.call(order.uid, order.uid, "percentage_discount", order.percentage_discount)
       end
 
       event_store.link_event_to_stream(event, "Orders$all")
@@ -14,6 +16,10 @@ module Orders
 
     def is_newest_value?(event, order)
       order.discount_updated_at.nil? || order.discount_updated_at < event.metadata.fetch(:timestamp)
+    end
+
+    def broadcaster
+      Rails.configuration.broadcaster
     end
   end
 end

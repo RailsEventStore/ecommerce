@@ -59,7 +59,7 @@
     <% if percentage_discount %>
       <tr class="border-t">
         <td class="py-2" colspan="3">General discount</td>
-        <td class="py-2"><%= percentage_discount %>%</td>
+        <td class="py-2" id="<%= "orders_order_#{@order_id}_percentage_discount" %>"><%= percentage_discount %>%</td>
         <td class="py-2 text-right" colspan="2"><%= link_to "Reset", reset_discount_order_path(id: @order_id), {method: :post, class: "hover:underline text-blue-500"} %></td>
       </tr>
     <% end %>
