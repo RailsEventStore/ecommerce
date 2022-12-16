@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_12_16_113438) do
+ActiveRecord::Schema[7.0].define(version: 2022_12_16_115301) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -138,6 +138,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_12_16_113438) do
     t.decimal "discounted_value", precision: 8, scale: 2
     t.decimal "happy_hour_value", precision: 8, scale: 2
     t.datetime "total_value_updated_at"
+    t.datetime "discount_updated_at"
     t.index ["uid"], name: "index_orders_on_uid", unique: true
   end
 
