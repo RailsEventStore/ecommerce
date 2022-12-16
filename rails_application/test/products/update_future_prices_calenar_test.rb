@@ -8,31 +8,31 @@ module Products
       product_id = SecureRandom.uuid
       product_registered = ProductCatalog::ProductRegistered.new(data: { product_id: product_id })
       product_named = ProductCatalog::ProductNamed.new(data: { product_id: product_id, name: "Async Remote" })
-      set_price = Pricing::PriceSet.new(data: { product_id: product_id, price: 1 })
+      set_price = Pricing::PriceSet.new(data: { product_id: product_id, price: 10 })
       event_store.publish(product_registered)
       event_store.publish(product_named)
       event_store.publish(set_price)
 
-      date_1 = DateTime.current + 1.day
-      date_2 = DateTime.current + 1.month
-      date_3 = DateTime.current + 1.year
+      date_1 = Time.now + 3600
+      date_2 = Time.current + 7200
+      date_3 = Time.current + 10800
 
 
       product = Product.find_by_id(product_id)
       assert_equal [], product.future_prices_calendar
 
-      run_command(Pricing::SetFuturePrice.new(product_id: product_id, price: BigDecimal("12.01"), valid_since: date_3 ))
-      run_command(Pricing::SetFuturePrice.new(product_id: product_id, price: BigDecimal(1), valid_since: date_1 ))
-      run_command(Pricing::SetFuturePrice.new(product_id: product_id, price: BigDecimal(2), valid_since: date_2 ))
+      run_command(Pricing::SetFuturePrice.new(product_id: product_id, price: BigDecimal("12.01"), valid_since: date_3.to_s ))
+      run_command(Pricing::SetFuturePrice.new(product_id: product_id, price: BigDecimal("1.0"), valid_since: date_1.to_s ))
+      run_command(Pricing::SetFuturePrice.new(product_id: product_id, price: BigDecimal("2.0"), valid_since: date_2.to_s ))
 
       product.reload
-      assert_equal 3, product.future_prices_calendar.length
-      assert_equal BigDecimal("1.0"), product.future_prices_calendar[0][:price]
-      assert_equal date_1.to_s, product.future_prices_calendar[0][:valid_since].to_datetime.to_s
-      assert_equal BigDecimal("2.0"), product.future_prices_calendar[1][:price]
-      assert_equal date_2.to_s, product.future_prices_calendar[1][:valid_since].to_datetime.to_s
-      assert_equal BigDecimal("12.01"), product.future_prices_calendar[2][:price]
-      assert_equal date_3.to_s, product.future_prices_calendar[2][:valid_since].to_datetime.to_s
+      assert_equal 4, product.current_prices_calendar.length
+      assert_equal [
+        BigDecimal("10.0"),
+        BigDecimal("1.0"),
+        BigDecimal("2.0"),
+        BigDecimal("12.01")
+      ], product.current_prices_calendar.map { |e| e[:price] }
     end
 
     private

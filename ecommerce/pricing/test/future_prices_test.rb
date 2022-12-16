@@ -54,7 +54,7 @@ module Pricing
       set_price(product_id, 20)
       future_date_timestamp_1 = Time.now + days_number(2)
       future_date_timestamp_2 = Time.now + days_number(3)
-      future_date_timestamp_3 = Time.now + days_number(356*10)
+      future_date_timestamp_3 = Time.now + days_number(4)
 
       set_future_price(product_id, 30, future_date_timestamp_3.to_s)
       set_future_price(product_id, 40, future_date_timestamp_1.to_s)
@@ -65,30 +65,35 @@ module Pricing
       assert_equal 20, pricing_catalog.price_by_product_id(product_id)
 
       assert_equal [
+        BigDecimal(20),
         BigDecimal(40),
         BigDecimal(50),
         BigDecimal(30)
-      ], pricing_catalog.future_prices_catalog_by_product_id(product_id).map { |entry| entry[:price] }
+      ], pricing_catalog.current_prices_catalog_by_product_id(product_id).map { |entry| entry[:price] }
 
       Timecop.travel(future_date_timestamp_1 + 1) do
         assert_equal [
+          BigDecimal(40),
           BigDecimal(50),
           BigDecimal(30)
-        ], pricing_catalog.future_prices_catalog_by_product_id(product_id).map { |entry| entry[:price] }
+        ], pricing_catalog.current_prices_catalog_by_product_id(product_id).map { |entry| entry[:price] }
 
         assert_equal BigDecimal(40), pricing_catalog.price_by_product_id(product_id)
       end
 
       Timecop.travel(future_date_timestamp_2 + 1) do
         assert_equal [
+          BigDecimal(50),
           BigDecimal(30)
-        ], pricing_catalog.future_prices_catalog_by_product_id(product_id).map { |entry| entry[:price] }
+        ], pricing_catalog.current_prices_catalog_by_product_id(product_id).map { |entry| entry[:price] }
 
         assert_equal BigDecimal(50), pricing_catalog.price_by_product_id(product_id)
       end
 
+
+      pricing_catalog = PricingCatalog.new(event_store)
       Timecop.travel(future_date_timestamp_3 + 1) do
-        assert_equal [], pricing_catalog.future_prices_catalog_by_product_id(product_id).map { |entry| entry[:price] }
+        assert_equal [BigDecimal(30)], pricing_catalog.current_prices_catalog_by_product_id(product_id).map { |entry| entry[:price] }
         assert_equal BigDecimal(30), pricing_catalog.price_by_product_id(product_id)
       end
     end
