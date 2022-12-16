@@ -42,6 +42,7 @@ module Pricing
       @event_store
         .read
         .of_type(PriceSet)
+        .as_of
         .to_a
         .filter { |e| e.data.fetch(:product_id).eql?(product_id) }
     end

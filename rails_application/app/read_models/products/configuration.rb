@@ -13,16 +13,16 @@ module Products
     end
 
     def price(time = Time.now)
-      price_entry_on(time)[:price]
+      price_on(time)
     end
 
     private
 
-    def price_entry_on(time)
+    def price_on(time)
       current_prices_calendar.each_with_index do |entry, index|
         next_entry = current_prices_calendar[index + 1]
         if time_of(entry) < time && (!next_entry || time_of(next_entry) > time)
-          break entry
+          break entry[:price]
         end
       end
     end
