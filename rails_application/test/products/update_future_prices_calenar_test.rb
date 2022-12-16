@@ -27,11 +27,11 @@ module Products
 
       product.reload
       assert_equal 3, product.future_prices_calendar.length
-      assert_equal "1.0", product.future_prices_calendar[0][:price]
+      assert_equal BigDecimal("1.0"), product.future_prices_calendar[0][:price]
       assert_equal date_1.to_s, product.future_prices_calendar[0][:valid_since].to_datetime.to_s
-      assert_equal "2.0", product.future_prices_calendar[1][:price]
+      assert_equal BigDecimal("2.0"), product.future_prices_calendar[1][:price]
       assert_equal date_2.to_s, product.future_prices_calendar[1][:valid_since].to_datetime.to_s
-      assert_equal "12.01", product.future_prices_calendar[2][:price]
+      assert_equal BigDecimal("12.01"), product.future_prices_calendar[2][:price]
       assert_equal date_3.to_s, product.future_prices_calendar[2][:valid_since].to_datetime.to_s
     end
 
