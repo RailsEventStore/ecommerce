@@ -74,7 +74,6 @@ module Pricing
       @event_store.with_metadata({ valid_at: cmd.valid_since }) do
         @repository.with_aggregate(Product, cmd.product_id) do |product|
           product.set_price(cmd.price)
-          product.set_future_price(cmd.price, cmd.valid_since)
         end
       end
     end
