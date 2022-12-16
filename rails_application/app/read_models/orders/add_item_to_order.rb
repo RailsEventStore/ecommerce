@@ -3,7 +3,7 @@ module Orders
     def call(event)
       order_id = event.data.fetch(:order_id)
       ApplicationRecord.with_advisory_lock(order_id) do
-        create_draft_order(order_id)
+        Order.find_or_create_by!(uid: order_id) { |order| order.state = "Draft" }
         product_id = event.data.fetch(:product_id)
         item =
           find(order_id, product_id) ||
@@ -22,11 +22,6 @@ module Orders
 
     def broadcaster
       Rails.configuration.broadcaster
-    end
-
-    def create_draft_order(uid)
-      return if Order.where(uid: uid).exists?
-      Order.create!(uid: uid, state: "Draft")
     end
 
     def find(order_uid, product_id)

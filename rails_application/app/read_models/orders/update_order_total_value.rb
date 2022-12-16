@@ -3,7 +3,7 @@ module Orders
     def call(event)
       order_id = event.data.fetch(:order_id)
       ApplicationRecord.with_advisory_lock(order_id) do
-        order = Order.find_or_create_by(uid: order_id)
+        order = Order.find_or_create_by!(uid: order_id) { |order| order.state = "Draft" }
         order.discounted_value = event.data.fetch(:discounted_amount)
         order.total_value = event.data.fetch(:total_amount)
         order.save!
