@@ -57,6 +57,20 @@ module Orders
       assert event_store.event_in_stream?(event_store.read.of_type([Pricing::PercentageDiscountReset]).last.event_id, "Orders$all")
     end
 
+    def test_newest_event_is_always_applied
+      customer_id = SecureRandom.uuid
+      product_id = SecureRandom.uuid
+      order_id = SecureRandom.uuid
+      customer_registered(customer_id)
+      prepare_product(product_id)
+      item_added_to_basket(order_id, product_id)
+
+      event_store.publish(Pricing::PercentageDiscountSet.new(data: { order_id: order_id, amount: 30 }, metadata: { timestamp: Time.now }))
+      event_store.publish(Pricing::PercentageDiscountSet.new(data: { order_id: order_id, amount: 20 }, metadata: { timestamp: Time.now - 1.minute }))
+
+      assert_equal 30, Orders::Order.find_by(uid: order_id).percentage_discount
+    end
+
     private
 
     def reset_percentage_discount(order_id)
