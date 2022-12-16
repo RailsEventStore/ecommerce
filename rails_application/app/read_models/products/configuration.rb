@@ -29,7 +29,7 @@ module Products
 
     def parese_calendar_entry(entry)
       {
-        valid_since: time_of(entry).to_datetime,
+        valid_since:  Time.zone.parse(time_of(entry)),
         price: BigDecimal(entry[:price])
       }
     end

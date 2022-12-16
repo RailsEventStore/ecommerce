@@ -41,11 +41,11 @@ class ProductsController < ApplicationController
     end
     if params[:future_prices].present?
       params[:future_prices].each do |future_price|
-          set_future_product_price(
-            params[:product_id],
-            future_price["price"],
-            future_price["start_time"]
-          )
+        set_future_product_price(
+          params[:product_id],
+          future_price["price"],
+          Time.parse(future_price["start_time"]).in_time_zone("UTC").to_s
+        )
       end
     end
     redirect_to products_path, notice: "Price was successfully updated"
