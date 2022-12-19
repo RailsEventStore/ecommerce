@@ -20,7 +20,7 @@ module Pricing
     end
 
     def current_prices_catalog_by_product_id(product_id)
-      [to_calendar_entry(current_price(product_id))] + future_prices_catalog_by_product_id(product_id)
+      ([current_price(product_id)] + future_prices_catalog_by_product_id(product_id)).map(&method(:to_calendar_entry))
     end
 
     private
@@ -28,8 +28,6 @@ module Pricing
     def future_prices_catalog_by_product_id(product_id)
       read_prices_set(product_id)
         .select(&method(:future_prices))
-        .map(&method(:to_calendar_entry))
-        .sort_by { |entry| entry.fetch(:valid_since) }
     end
 
     def current_price(product_id)
