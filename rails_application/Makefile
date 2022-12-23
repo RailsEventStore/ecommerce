@@ -2,7 +2,8 @@ install: ## Installs dependencies, runs migrations, creates db & seeds if necess
 	@bin/setup
 	@env RAILS_ENV=test bin/rails db:setup
 
-dev: install
+dev:
+	@$(MAKE) -j 10 web css worker
 
 mutate: ## Run mutation tests
 	@env RAILS_ENV=test bundle exec mutant run
@@ -18,3 +19,11 @@ help:
 .PHONY: help test db
 .DEFAULT_GOAL := help
 
+worker:
+	bundle exec sidekiq -C config/sidekiq.yml
+
+css:
+	bin/rails tailwindcss:watch
+
+web:
+	bin/rails server -p 3000

@@ -27,6 +27,8 @@ test-infra:
 mutate-infra:
 	@make -C infra mutate
 
+dev:
+	@make -C rails_application dev
 
 install: install-infra install-rails $(addprefix install-, $(CONTEXTS)) ## Install all dependencies
 
