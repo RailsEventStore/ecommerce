@@ -142,6 +142,7 @@ It's fine to create vague tickets at the beginning and let them be more specific
 As for the local dev setup:
 
 - we use Makefile, so `make install` should simplify a lot
+- to start the web application and all the workers type `make dev`
 - there's docker-compose in the rails_application, if you're into Docker
 
 **Bundler note**
