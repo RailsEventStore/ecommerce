@@ -15,7 +15,12 @@
       <% order_line = @order_lines&.find{|order_line| order_line.product_id == product.uid} %>
       <td class="py-2"><%= product.name %></td>
       <td class="py-2" id="<%= "client_orders_#{product.uid}_product_quantity" %>"><%= order_line.try(&:product_quantity) || 0 %></td>
-      <td class="py-2"><%= number_to_currency(product.price) %></td>
+      <td class="py-2">
+        <%= number_to_currency(product.price) %>
+        <% if product.lowest_recent_price_lower_from_current? %>
+          <span title="<%= "Lowest recent price: #{number_to_currency(product.lowest_recent_price)}" %>">ℹ️</span>
+        <% end %>
+      </td>
       <td class="py-2"  id="<%= "client_orders_#{product.uid}_value" %>"><%= number_to_currency(order_line.try(&:value)) %></td>
       <td class="py-2 text-right">
         <%= button_to "Add", add_item_client_order_path(id: @order_id, product_id: product.uid), class: "hover:underline text-blue-500" %>
@@ -35,4 +40,3 @@
     <%= submit_tag("Create Order", class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded") %>
   </div>
 <% end %>
-
