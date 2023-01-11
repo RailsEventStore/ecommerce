@@ -112,10 +112,6 @@ module ClientOrders
     end
   end
 
-  class Product < ApplicationRecord
-    self.table_name = "client_order_products"
-  end
-
   class Configuration
     def call(event_store)
       event_store.subscribe(ExpireOrder, to: [Ordering::OrderExpired])
