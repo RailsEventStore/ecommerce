@@ -1,6 +1,7 @@
 require "minitest/autorun"
 require "mutant/minitest/coverage"
 require "infra"
+require "active_support/all"
 
 require_relative "../lib/processes"
 
