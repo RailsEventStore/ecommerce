@@ -2,12 +2,12 @@ PATH
   remote: ../../infra
   specs:
     infra (1.0.0)
-      aggregate_root (~> 2.7.0)
+      aggregate_root (~> 2.8.0)
       arkency-command_bus
       dry-struct
       dry-types
       rake
-      ruby_event_store (~> 2.7.0)
+      ruby_event_store (~> 2.8.0)
       ruby_event_store-transformations
       sidekiq
 
@@ -24,8 +24,8 @@ GEM
       i18n (>= 1.6, < 2)
       minitest (>= 5.1)
       tzinfo (~> 2.0)
-    aggregate_root (2.7.0)
-      ruby_event_store (= 2.7.0)
+    aggregate_root (2.8.0)
+      ruby_event_store (= 2.8.0)
     arkency-command_bus (0.4.1)
       concurrent-ruby
     ast (2.4.2)
@@ -71,7 +71,7 @@ GEM
     redis-client (0.11.2)
       connection_pool
     regexp_parser (2.6.1)
-    ruby_event_store (2.7.0)
+    ruby_event_store (2.8.0)
       concurrent-ruby (~> 1.0, >= 1.1.6)
     ruby_event_store-transformations (0.1.0)
       activesupport (>= 5.0)
