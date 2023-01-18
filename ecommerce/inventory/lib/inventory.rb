@@ -3,7 +3,6 @@ require_relative "inventory/commands/submit_reservation"
 require_relative "inventory/commands/cancel_reservation"
 require_relative "inventory/commands/complete_reservation"
 require_relative "inventory/commands/supply"
-require_relative "inventory/commands/check_availability"
 require_relative "inventory/events/reservation_canceled"
 require_relative "inventory/events/reservation_completed"
 require_relative "inventory/events/reservation_submitted"
@@ -36,10 +35,6 @@ module Inventory
       command_bus.register(
         Supply,
         inventory.public_method(:supply)
-      )
-      command_bus.register(
-        CheckAvailability,
-        inventory.public_method(:check_availability)
       )
     end
   end
