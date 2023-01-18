@@ -19,7 +19,7 @@ module Products
     private
 
     def last_price_before(time)
-      prices_before(time).last[:price]
+      (prices_before(time).last || {})[:price]
     end
 
     def prices_before(time)
