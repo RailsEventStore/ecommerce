@@ -8,23 +8,26 @@ module Products
       super.map(&method(:parese_calendar_entry))
     end
 
-    def future_prices_calendar
-      current_prices_calendar.select { |entry| time_of(entry) > Time.now }
+    def price(time = Time.now)
+      last_price_before(time)
     end
 
-    def price(time = Time.now)
-      price_on(time)
+    def future_prices_calendar
+      current_prices_calendar.select { |entry| entry[:valid_since] > Time.now }
     end
 
     private
 
-    def price_on(time)
-      current_prices_calendar.each_with_index do |entry, index|
-        next_entry = current_prices_calendar[index + 1]
-        if time_of(entry) < time && (!next_entry || time_of(next_entry) > time)
-          break entry[:price]
-        end
-      end
+    def last_price_before(time)
+      prices_before(time).last[:price]
+    end
+
+    def prices_before(time)
+      current_prices_calendar.partition { |entry| entry[:valid_since] < time }.first
+    end
+
+    def future_prices(time)
+      current_prices_catalog.find { |entry| entry[:valid_since] > time }
     end
 
     def parese_calendar_entry(entry)
