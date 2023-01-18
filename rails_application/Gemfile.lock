@@ -131,7 +131,7 @@ GEM
       dry-logic (~> 1.0, >= 1.0.2)
     erubi (1.11.0)
     ffi (1.15.4)
-    globalid (1.0.0)
+    globalid (1.0.1)
       activesupport (>= 5.0)
     honeybadger (4.9.0)
     i18n (1.12.0)
