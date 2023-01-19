@@ -4,7 +4,6 @@ module Inventory
 
     InventoryNotAvailable = Class.new(StandardError)
     StockLevelUndefined = Class.new(StandardError)
-    NotEvenReserved = Class.new(StandardError)
 
     def initialize(product_id)
       @product_id = product_id
