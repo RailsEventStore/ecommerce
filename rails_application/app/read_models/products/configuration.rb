@@ -26,10 +26,6 @@ module Products
       current_prices_calendar.partition { |entry| entry[:valid_since] < time }.first
     end
 
-    def future_prices(time)
-      current_prices_catalog.find { |entry| entry[:valid_since] > time }
-    end
-
     def parese_calendar_entry(entry)
       {
         valid_since:  Time.parse(time_of(entry)).in_time_zone(Time.now.zone),
