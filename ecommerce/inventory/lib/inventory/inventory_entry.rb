@@ -12,42 +12,66 @@ module Inventory
 
     def supply(quantity)
       apply StockLevelChanged.new(
-              data: {
-                product_id: @product_id,
-                quantity: quantity,
-                stock_level: (@in_stock || 0) + quantity
-              }
-            )
+        data: {
+          product_id: @product_id,
+          quantity: quantity,
+          stock_level: (@in_stock || 0) + quantity
+        }
+      )
+      apply AvailabilityChanged.new(
+        data: {
+          product_id: @product_id,
+          available: availability
+        }
+      )
     end
 
     def dispatch(quantity)
       apply StockLevelChanged.new(
-              data: {
-                product_id: @product_id,
-                quantity: -quantity,
-                stock_level: @in_stock - quantity
-              }
-            )
+        data: {
+          product_id: @product_id,
+          quantity: -quantity,
+          stock_level: @in_stock - quantity
+        }
+      )
+      apply AvailabilityChanged.new(
+        data: {
+          product_id: @product_id,
+          available: availability
+        }
+      )
     end
 
     def reserve(quantity)
       raise StockLevelUndefined unless stock_level_defined?
       check_availability!(quantity)
       apply StockReserved.new(
-              data: {
-                product_id: @product_id,
-                quantity: quantity
-              }
-            )
+        data: {
+          product_id: @product_id,
+          quantity: quantity
+        }
+      )
+      apply AvailabilityChanged.new(
+        data: {
+          product_id: @product_id,
+          available: availability
+        }
+      )
     end
 
     def release(quantity)
       apply StockReleased.new(
-              data: {
-                product_id: @product_id,
-                quantity: quantity
-              }
-            )
+        data: {
+          product_id: @product_id,
+          quantity: quantity
+        }
+      )
+      apply AvailabilityChanged.new(
+        data: {
+          product_id: @product_id,
+          available: availability
+        }
+      )
     end
 
     def check_availability!(desired_quantity)
@@ -67,6 +91,9 @@ module Inventory
 
     on StockReleased do |event|
       @reserved -= event.data.fetch(:quantity)
+    end
+
+    on AvailabilityChanged do |_|
     end
 
     def availability

@@ -53,12 +53,15 @@ class OrdersController < ApplicationController
   end
 
   def add_item
+    read_model = Orders::OrderLine.where(order_uid: params[:id], product_id: params[:product_id]).first
+    if Availability::Product.exists?(["uid = ? and available < ?", params[:product_id], (read_model&.quantity || 0) + 1])
+      redirect_to edit_client_order_path(params[:id]),
+                  alert: "Product not available in requested quantity!" and return
+    end
     ActiveRecord::Base.transaction do
       command_bus.(Ordering::AddItemToBasket.new(order_id: params[:id], product_id: params[:product_id]))
     end
     head :ok
-  rescue Inventory::InventoryEntry::InventoryNotAvailable
-    redirect_to edit_order_path(params[:id]), alert: "Product not available in requested quantity!"
   end
 
   def remove_item

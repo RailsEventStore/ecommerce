@@ -36,6 +36,11 @@ module Client
     end
 
     def add_item
+      read_model = ClientOrders::OrderLine.where(order_uid: params[:id], product_id: params[:product_id]).first
+      if Availability::Product.exists?(["uid = ? and available < ?", params[:product_id], (read_model&.product_quantity || 0) + 1])
+        redirect_to edit_client_order_path(params[:id]),
+                    alert: "Product not available in requested quantity!" and return
+      end
       ActiveRecord::Base.transaction do
         command_bus.(
           Ordering::AddItemToBasket.new(
@@ -44,9 +49,6 @@ module Client
           )
         )
       end
-    rescue Inventory::InventoryEntry::InventoryNotAvailable
-      redirect_to edit_client_order_path(params[:id]),
-                  alert: "Product not available in requested quantity!"
     end
 
     def remove_item
