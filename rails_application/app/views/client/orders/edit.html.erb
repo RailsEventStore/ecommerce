@@ -21,7 +21,7 @@
         <%= button_to "Add", add_item_client_order_path(id: @order_id, product_id: product.uid), class: "hover:underline text-blue-500" %>
       </td>
       <td class="py-2 text-right">
-        <%= link_to "Remove", remove_item_client_order_path(id: @order_id, product_id: product.uid), class: "hover:underline text-blue-500" %>
+        <%= button_to "Remove", remove_item_client_order_path(id: @order_id, product_id: product.uid), class: "hover:underline text-blue-500" %>
       </td>
     </tr>
   <% end %>
