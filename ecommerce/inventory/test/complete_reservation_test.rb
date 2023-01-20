@@ -22,13 +22,15 @@ module Inventory
         assert_events(
           inventory_entry_stream(product_id),
           StockReleased.new(data: { product_id: product_id, quantity: 1 }),
+          AvailabilityChanged.new(data: { product_id: product_id, available: 1 }),
           StockLevelChanged.new(
             data: {
               product_id: product_id,
               quantity: -1,
               stock_level: 0
             }
-          )
+          ),
+          AvailabilityChanged.new(data: { product_id: product_id, available: 0 })
         ) { act(complete_reservation(order_id)) }
       end
     end

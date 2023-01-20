@@ -18,7 +18,8 @@ module Inventory
       ) do
         assert_events(
           inventory_entry_stream(product_id),
-          StockReleased.new(data: { product_id: product_id, quantity: 1 })
+          StockReleased.new(data: { product_id: product_id, quantity: 1 }),
+          AvailabilityChanged.new(data: { product_id: product_id, available: 1 })
         ) { act(cancel_reservation(order_id)) }
       end
     end

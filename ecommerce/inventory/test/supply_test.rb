@@ -12,6 +12,9 @@ module Inventory
             quantity: 1,
             stock_level: 1
           }
+        ),
+        AvailabilityChanged.new(
+          data: { product_id: product_id, available: 1 }
         )
       ) { act(supply(product_id, 1)) }
       assert_events(
@@ -22,7 +25,8 @@ module Inventory
             quantity: 1,
             stock_level: 2
           }
-        )
+        ),
+        AvailabilityChanged.new(data: { product_id: product_id, available: 2 })
       ) { act(supply(product_id, 1)) }
     end
   end
