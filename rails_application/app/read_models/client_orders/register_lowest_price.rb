@@ -52,8 +52,6 @@ module ClientOrders
         event.event_id,
         stream_name: stream_name(product_id)
       )
-    rescue RubyEventStore::EventDuplicatedInStream => e
-      Rails.log.info("Duplicated event in stream detected: #{e}")
     end
 
     def stream_name(product_id)
