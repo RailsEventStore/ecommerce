@@ -32,6 +32,7 @@ end
 
 group :test do
   eval_gemfile "../infra/Gemfile.test"
+  gem "timecop"
 end
 
 gem "infra", path: "../infra"
