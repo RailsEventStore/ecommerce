@@ -48,7 +48,7 @@ module ClientOrders
     end
 
     def link_to_stream(event, product_id)
-      Rails.configuration.event_store.link(
+      event_store.link(
         event.event_id,
         stream_name: stream_name(product_id)
       )
