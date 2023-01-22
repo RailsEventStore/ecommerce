@@ -75,8 +75,9 @@ module ClientOrders
 
       set_price(product1_id, 35)
       set_price(product2_id, 25)
+      set_price(product1_id, 30)
 
-      assert_equal 35, Product.find_by_uid(product1_id).lowest_recent_price
+      assert_equal 30, Product.find_by_uid(product1_id).lowest_recent_price
     end
 
     private
