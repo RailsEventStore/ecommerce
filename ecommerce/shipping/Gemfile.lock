@@ -96,7 +96,7 @@ DEPENDENCIES
   infra!
   minitest (= 5.15.0)!
   mutant-license!
-  mutant-minitest!
+  mutant-minitest (= 0.10.34)!
 
 BUNDLED WITH
    2.3.14
