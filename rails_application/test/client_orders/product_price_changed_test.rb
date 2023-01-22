@@ -69,6 +69,16 @@ module ClientOrders
       assert_equal 35, Product.find_by_uid(product_id).lowest_recent_price
     end
 
+    def test_ignores_other_products
+      product1_id = prepare_product
+      product2_id = prepare_product
+
+      set_price(product1_id, 35)
+      set_price(product2_id, 25)
+
+      assert_equal 35, Product.find_by_uid(product1_id).lowest_recent_price
+    end
+
     private
 
     def prepare_product
