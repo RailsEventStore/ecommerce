@@ -8,7 +8,6 @@ matcher:
     - Processes*
   ignore:
     - Processes::Configuration*
-    - Processes::ProcessManager*
     - Processes::OrderConfirmation#stream_name
     - Processes::Test*
     - Processes::ShipmentProcess*

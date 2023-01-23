@@ -8,7 +8,6 @@ require_relative "../../inventory/lib/inventory"
 require_relative "../../shipping/lib/shipping"
 require_relative "../../taxes/lib/taxes"
 require_relative "../../invoicing/lib/invoicing"
-require_relative 'processes/process_manager'
 require_relative 'processes/confirm_order_on_payment_captured'
 require_relative 'processes/release_payment_process'
 require_relative 'processes/shipment_process'
