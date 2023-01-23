@@ -14,7 +14,7 @@ module ClientOrders
 
       div class: "max-w-6xl mx-auto py-6 sm:px-6 lg:px-8" do
         client_name_header(client)
-        orders_table(client_orders)
+        orders_table(client, client_orders)
         new_order_button
       end
 
@@ -28,7 +28,7 @@ module ClientOrders
       end
     end
 
-    def orders_table(client_orders)
+    def orders_table(client, client_orders)
       if client_orders.count > 0
         table class: "w-full" do
           thead do
@@ -56,6 +56,14 @@ module ClientOrders
                 td class: "py-2 text-right" do
                   number_to_currency(client_order.discounted_value)
                 end
+              end
+            end
+            tr class: "border-t font-bold" do
+              td colspan: 2, class: "py-2" do
+                para "Total orders summary"
+              end
+              td class: "py-2 text-right border-t" do
+                number_to_currency(client.paid_orders_summary)
               end
             end
           end
