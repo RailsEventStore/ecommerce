@@ -12,10 +12,12 @@ module ClientOrders
     def test_update_orders_cummary
       event_store = Rails.configuration.event_store
       customer_id = SecureRandom.uuid
+      other_customer_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
       price = 3
 
+      register_customer(other_customer_id)
       register_customer(customer_id)
       confirm_order(customer_id, order_id, 3)
 
