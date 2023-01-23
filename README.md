@@ -159,10 +159,9 @@ Things worth knowing about:
 - But sometimes we allow ourselves for mutant ignores (explicit mark for mutant to ignore)
 - Mutant ignores are considered technical debt.
 - REST is not followed here for routes, no need for that
-- `register_command` accepts events because it's used in the `/architecture` view. 
-  It's a visualisation/documentation of the events flow
 - Certain ideas are in the Work In Progress status - sorry about that
 - Feel free to ask.
+- We keep domains/BC code decoupled from each other - with the long term goal of reusability.
 - After you make a contribution, we'll invite you to a special Discord
 - Contributing is a good way to learn DDD/CQRS/Event sourcing.
 

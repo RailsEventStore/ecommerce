@@ -11,5 +11,3 @@ matcher:
     - Pricing::Test*
     - Pricing::CalculateOrderTotalSubAmountsValue*
     - Pricing::CalculateOrderTotalValue*
-    - Pricing::IncreaseOrderPrice*
-    - Pricing::ReduceOrderTotalValue*
