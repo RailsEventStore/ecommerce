@@ -16,12 +16,17 @@ module ClientOrders
       order_id = SecureRandom.uuid
       order_number = Ordering::FakeNumberGenerator::FAKE_NUMBER
 
-      event_store.publish(Crm::CustomerRegistered.new(
-        data: {
-          customer_id: customer_id,
-          name: "John Doe"
-        }
-      ))
+      run_command(Crm::RegisterCustomer.new(customer_id: customer_id, name: "John Doe"))
+
+      event_store.publish(
+        Pricing::OrderTotalValueCalculated.new(
+          data: {
+            order_id: order_id,
+            discounted_amount: 30,
+            total_amount: 30
+          }
+        )
+      )
 
       event_store.publish(
         Ordering::OrderSubmitted.new(
@@ -32,6 +37,10 @@ module ClientOrders
             order_lines: { }
           }
         )
+      )
+
+      run_command(
+        Crm::AssignCustomerToOrder.new(customer_id: customer_id, order_id: order_id)
       )
 
       event_store.publish(
