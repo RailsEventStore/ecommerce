@@ -12,8 +12,6 @@ require_relative "pricing/promotions_calendar"
 require_relative "pricing/calculate_order_sub_amounts_value"
 require_relative "pricing/calculate_order_total_value"
 
-require_relative "../../ordering/lib/ordering/events/order_submitted"
-
 module Pricing
   def self.command_bus=(value)
     @command_bus = value
@@ -89,7 +87,6 @@ module Pricing
         RemoveFreeProductFromOrderHandler.new(event_store)
       )
       event_store.subscribe(CalculateOrderTotalValue, to: [
-        Ordering::OrderSubmitted,
         PriceItemAdded,
         PriceItemRemoved,
         PercentageDiscountSet,
@@ -98,8 +95,6 @@ module Pricing
         ProductMadeFreeForOrder,
         FreeProductRemovedFromOrder
       ])
-
-      event_store.subscribe(CalculateOrderTotalSubAmountsValue, to: [Ordering::OrderSubmitted])
     end
   end
 end

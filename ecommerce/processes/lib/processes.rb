@@ -50,6 +50,16 @@ module Processes
                           Pricing::RemovePriceItem,        [:order_id, :product_id])
     end
 
+    def recalculate_pricing_offer_on_order_submitted(event_store, command_bus)
+      Infra::Process.new(event_store, command_bus)
+                    .call(Ordering::OrderSubmitted, [:order_id],
+                          Pricing::CalculateTotalValue, [:order_id])
+
+      Infra::Process.new(event_store, command_bus)
+                    .call(Ordering::OrderSubmitted, [:order_id],
+                          Pricing::CalculateSubAmounts, [:order_id])
+    end
+
     def enable_shipment_sync(event_store, command_bus)
       SyncShipmentFromOrdering.new(event_store, command_bus)
     end
