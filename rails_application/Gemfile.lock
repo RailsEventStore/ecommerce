@@ -1,3 +1,30 @@
+GIT
+  remote: https://github.com/RailsEventStore/rails_event_store.git
+  revision: 758bc4665ce4c8f9666581e4fbfbeb240a17d632
+  ref: 758bc4665ce4c8f9666581e4fbfbeb240a17d632
+  specs:
+    aggregate_root (2.8.1)
+      ruby_event_store (= 2.8.1)
+    rails_event_store (2.8.1)
+      activejob (>= 6.0)
+      activemodel (>= 6.0)
+      activesupport (>= 6.0)
+      aggregate_root (= 2.8.1)
+      arkency-command_bus (>= 0.4)
+      rails_event_store_active_record (= 2.8.1)
+      ruby_event_store (= 2.8.1)
+      ruby_event_store-browser (= 2.8.1)
+    rails_event_store_active_record (2.8.1)
+      ruby_event_store-active_record (= 2.8.1)
+    ruby_event_store (2.8.1)
+      concurrent-ruby (~> 1.0, >= 1.1.6)
+    ruby_event_store-active_record (2.8.1)
+      activerecord (>= 6.0)
+      ruby_event_store (= 2.8.1)
+    ruby_event_store-browser (2.8.1)
+      rack
+      ruby_event_store (= 2.8.1)
+
 PATH
   remote: ../infra
   specs:
@@ -87,8 +114,6 @@ GEM
       i18n (>= 1.6, < 2)
       minitest (>= 5.1)
       tzinfo (~> 2.0)
-    aggregate_root (2.8.1)
-      ruby_event_store (= 2.8.1)
     arbre (1.5.0)
       activesupport (>= 3.0.0, < 7.1)
       ruby2_keywords (>= 0.0.2, < 1.0)
@@ -220,17 +245,6 @@ GEM
       nokogiri (>= 1.6)
     rails-html-sanitizer (1.4.4)
       loofah (~> 2.19, >= 2.19.1)
-    rails_event_store (2.8.1)
-      activejob (>= 6.0)
-      activemodel (>= 6.0)
-      activesupport (>= 6.0)
-      aggregate_root (= 2.8.1)
-      arkency-command_bus (>= 0.4)
-      rails_event_store_active_record (= 2.8.1)
-      ruby_event_store (= 2.8.1)
-      ruby_event_store-browser (= 2.8.1)
-    rails_event_store_active_record (2.8.1)
-      ruby_event_store-active_record (= 2.8.1)
     railties (7.0.4)
       actionpack (= 7.0.4)
       activesupport (= 7.0.4)
@@ -249,14 +263,6 @@ GEM
       redis (>= 3.0.0, < 6.0)
     regexp_parser (2.1.1)
     ruby2_keywords (0.0.5)
-    ruby_event_store (2.8.1)
-      concurrent-ruby (~> 1.0, >= 1.1.6)
-    ruby_event_store-active_record (2.8.1)
-      activerecord (>= 6.0)
-      ruby_event_store (= 2.8.1)
-    ruby_event_store-browser (2.8.1)
-      rack
-      ruby_event_store (= 2.8.1)
     ruby_event_store-sidekiq_scheduler (0.1.1)
       ruby_event_store (>= 2.0.0, < 3.0.0)
     ruby_event_store-transformations (0.1.0)
@@ -326,7 +332,7 @@ DEPENDENCIES
   pg (~> 1.4)
   puma (~> 5.6)
   rails (= 7.0.4)
-  rails_event_store (>= 2.7.0, < 3.0)
+  rails_event_store (>= 2.7.0, < 3.0)!
   redis
   ruby_event_store-sidekiq_scheduler (~> 0.1.1)
   sidekiq (~> 7.0)
