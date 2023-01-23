@@ -126,6 +126,7 @@ module ClientOrders
       event_store.subscribe(UpdateDiscount, to: [Pricing::PercentageDiscountSet, Pricing::PercentageDiscountChanged])
       event_store.subscribe(ResetDiscount, to: [Pricing::PercentageDiscountReset])
       event_store.subscribe(UpdateOrderTotalValue, to: [Pricing::OrderTotalValueCalculated])
+      event_store.subscribe(UpdatePaidOrdersSummary, to: [Ordering::OrderConfirmed])
     end
   end
 end
