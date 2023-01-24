@@ -115,10 +115,6 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
     post "/client_orders/#{order_id}/add_item?product_id=#{async_remote_id}"
   end
 
-  def pay_order(order_id)
-    post "/orders/#{order_id}/pay"
-  end
-
   def cancel_order(order_id)
     post "/orders/#{order_id}/cancel"
   end
@@ -132,11 +128,6 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
     add_item_to_basket_for_order(anti_if, order_id)
     submit_order_for_customer(customer_id, order_id)
     cancel_order(order_id)
-  end
-
-  def login(arkency_id)
-    post "/login", params: { client_id: arkency_id }
-    follow_redirect!
   end
 
   def order_and_pay(customer_id, order_id, *product_ids)
