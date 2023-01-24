@@ -92,6 +92,10 @@ class InMemoryRESIntegrationTestCase < ActionDispatch::IntegrationTest
     post "/orders/#{order_id}/pay"
   end
 
+  def visit_client_orders
+    get "/client_orders"
+  end
+
   def add_product_to_basket(order_id, product_id)
     post "/orders/#{order_id}/add_item?product_id=#{product_id}"
   end
