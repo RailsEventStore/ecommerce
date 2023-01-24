@@ -33,9 +33,17 @@ module Processes
     class FakeCommandBus
       attr_reader :received, :all_received
 
+      def initialize
+        @all_received = []
+      end
+
       def call(command)
         @received = command
-        @all_received = @all_received ? @all_received << command : [command]
+        @all_received << command
+      end
+
+      def clear_all_received
+        @all_received = []
       end
     end
 
