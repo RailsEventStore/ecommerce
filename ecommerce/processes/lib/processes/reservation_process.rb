@@ -66,18 +66,6 @@ module Processes
       command_bus.(Ordering::RejectOrder.new(order_id: state.order_id))
     end
 
-    def build_previous_state(event)
-      stream_name = "ReservationProcess$#{event.data.fetch(:order_id)}"
-      past_events = event_store.read.stream(stream_name).to_a
-      last_stored = past_events.size - 1
-      event_store.link(event.event_id, stream_name: stream_name, expected_version: last_stored)
-      ProcessState.new.tap do |state|
-        past_events.each { |ev| state.call(ev) }
-      end
-    rescue RubyEventStore::WrongExpectedEventVersion
-      retry
-    end
-
     class ProcessState
       def initialize
         @reserved_product_ids = []
