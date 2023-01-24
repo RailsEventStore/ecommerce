@@ -15,7 +15,6 @@ module ClientOrders
       other_customer_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
-      price = 3
 
       register_customer(other_customer_id)
       register_customer(customer_id)
