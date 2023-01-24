@@ -3,7 +3,6 @@ module Inventory
     include AggregateRoot
 
     InventoryNotAvailable = Class.new(StandardError)
-    StockLevelUndefined = Class.new(StandardError)
 
     def initialize(product_id)
       @product_id = product_id
@@ -18,12 +17,7 @@ module Inventory
           stock_level: (@in_stock || 0) + quantity
         }
       )
-      apply AvailabilityChanged.new(
-        data: {
-          product_id: @product_id,
-          available: availability
-        }
-      )
+      apply_availability_changed
     end
 
     def dispatch(quantity)
@@ -33,53 +27,52 @@ module Inventory
           quantity: -quantity,
           stock_level: @in_stock - quantity
         }
-      )
-      apply AvailabilityChanged.new(
-        data: {
-          product_id: @product_id,
-          available: availability
-        }
-      )
+      ) if stock_level_defined?
+      apply_availability_changed
     end
 
-    def reserve(quantity)
-      raise StockLevelUndefined unless stock_level_defined?
-      check_availability!(quantity)
-      apply StockReserved.new(
-        data: {
-          product_id: @product_id,
-          quantity: quantity
-        }
-      )
-      apply AvailabilityChanged.new(
-        data: {
-          product_id: @product_id,
-          available: availability
-        }
-      )
+    def reserve(order_id, quantity)
+      if stock_level_defined? && quantity > availability
+        apply StockUnavailable.new(
+          data: {
+            order_id: order_id,
+            product_id: @product_id,
+            quantity: quantity
+          }
+        )
+      else
+        apply StockReserved.new(
+          data: {
+            order_id: order_id,
+            product_id: @product_id,
+            quantity: quantity
+          }
+        )
+        apply_availability_changed
+      end
     end
 
-    def release(quantity)
+    def release(order_id, quantity)
       apply StockReleased.new(
         data: {
+          order_id: order_id,
           product_id: @product_id,
           quantity: quantity
         }
       )
-      apply AvailabilityChanged.new(
-        data: {
-          product_id: @product_id,
-          available: availability
-        }
-      )
-    end
-
-    def check_availability!(desired_quantity)
-      return unless stock_level_defined?
-      raise InventoryNotAvailable if desired_quantity > availability
+      apply_availability_changed
     end
 
     private
+
+    def apply_availability_changed
+      apply AvailabilityChanged.new(
+        data: {
+          product_id: @product_id,
+          available: availability
+        }
+      ) if stock_level_defined?
+    end
 
     on StockLevelChanged do |event|
       @in_stock = event.data.fetch(:stock_level)

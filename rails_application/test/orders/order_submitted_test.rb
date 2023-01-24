@@ -86,17 +86,15 @@ module Orders
         )
       )
 
-      assert_raises(Inventory::Reservation::AlreadySubmitted) do
-        event_store.publish(
-          Ordering::OrderSubmitted.new(
-            data: {
-              order_id: order_id,
-              order_number: order_number,
-              order_lines: { product_id => 1 }
-            }
-          )
+      event_store.publish(
+        Ordering::OrderSubmitted.new(
+          data: {
+            order_id: order_id,
+            order_number: order_number,
+            order_lines: { product_id => 1 }
+          }
         )
-      end
+      )
 
       assert_equal(Order.count, 1)
       order = Order.find_by(uid: order_id)

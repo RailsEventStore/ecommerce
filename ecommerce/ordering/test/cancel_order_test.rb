@@ -35,7 +35,8 @@ module Ordering
           order_id: aggregate_id,
           order_number: "2018/12/1",
           customer_id: customer_id
-        )
+        ),
+        AcceptOrder.new(order_id: aggregate_id)
       )
 
       assert_events(
@@ -59,6 +60,7 @@ module Ordering
           order_number: "2018/12/1",
           customer_id: customer_id
         ),
+        AcceptOrder.new(order_id: aggregate_id),
         ConfirmOrder.new(order_id: aggregate_id)
       )
 

@@ -2,3 +2,4 @@ source "https://rubygems.org"
 
 eval_gemfile "../../infra/Gemfile.test"
 gem "infra", path: "../../infra"
+gem "byebug", require: true

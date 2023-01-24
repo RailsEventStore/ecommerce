@@ -64,7 +64,7 @@ module Processes
       events
     end
 
-    def order_submitted
+    def order_pre_submitted
       Ordering::OrderSubmitted.new(
         data: {
           order_id: order_id,
