@@ -12,7 +12,8 @@
   <thead>
     <tr>
       <th class="text-left py-2">Name</th>
-      <th class="text-left py-2">Vip</th>
+      <th class="text-center py-2">Vip</th>
+      <th class="text-right py-2">Paid oders summary</th>
     </tr>
   </thead>
 
@@ -21,7 +22,7 @@
     <tr class="border-t">
 
         <td class="py-2"><%= customer.name %></td>
-        <td class="py-2">
+        <td class="py-2 text-center">
           <%- if customer.vip %>
             Already a VIP
           <%- else %>
@@ -32,6 +33,9 @@
               <% end %>
             <% end %>
           <% end %>
+        </td>
+        <td class="py-2 text-right">
+          <%= number_to_currency(customer.paid_orders_summary) %>
         </td>
     </tr>
   <% end %>
