@@ -14,7 +14,7 @@ gem "sprockets-rails"
 gem "turbo-rails"
 gem "stimulus-rails"
 gem "importmap-rails", "~> 1.1"
-gem "rails_event_store",  ">= 2.7.0", "< 3.0", github: "RailsEventStore/rails_event_store", ref: "758bc4665ce4c8f9666581e4fbfbeb240a17d632"
+gem "rails_event_store",  ">= 2.9.0", "< 3.0"
 gem 'arbre'
 gem 'redis'
 gem 'activejob-uniqueness'
