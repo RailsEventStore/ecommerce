@@ -17,7 +17,6 @@ require_relative 'processes/notify_payments_about_order_value'
 require_relative 'processes/sync_shipment_from_ordering'
 require_relative 'processes/three_plus_one_free'
 require_relative 'processes/reservation_process'
-require 'byebug'
 
 module Processes
   class Configuration
