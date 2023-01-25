@@ -62,7 +62,7 @@ module Ordering
         ConfirmOrder.new(order_id: aggregate_id)
       )
 
-      assert_raises(Order::NotSubmitted) do
+      assert_raises(Order::AlreadyConfirmed) do
         act(CancelOrder.new(order_id: aggregate_id))
       end
     end

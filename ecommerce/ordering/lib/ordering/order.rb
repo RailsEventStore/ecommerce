@@ -56,6 +56,7 @@ module Ordering
 
     def cancel
       raise OrderHasExpired if @state.equal?(:expired)
+      raise AlreadyConfirmed if @state.equal?(:confirmed)
       raise NotSubmitted unless @state.equal?(:submitted)
       apply OrderCancelled.new(data: { order_id: @id })
     end
