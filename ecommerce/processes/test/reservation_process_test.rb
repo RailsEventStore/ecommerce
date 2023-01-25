@@ -15,7 +15,13 @@ module Processes
 
     def test_accept_order_command_is_dispatched_when_all_stock_is_reserved
       process = ReservationProcess.new(event_store, command_bus)
-      given([order_pre_submitted, stock_reserved(product_id), stock_reserved(another_product_id)]).each { |event| process.call(event) }
+      given([order_pre_submitted]).each { |event| process.call(event) }
+
+      command_bus.clear_all_received
+      given([stock_reserved(product_id)]).each { |event| process.call(event) }
+      assert_no_command
+
+      given([stock_reserved(another_product_id)]).each { |event| process.call(event) }
       assert_command(Ordering::AcceptOrder.new(order_id: order_id))
     end
 
@@ -73,6 +79,14 @@ module Processes
         Inventory::Dispatch.new(product_id: product_id, quantity: 1),
         Inventory::Dispatch.new(product_id: another_product_id, quantity: 2)
       )
+    end
+
+    def test_for_idempotency
+      process = ReservationProcess.new(event_store, command_bus)
+      event = order_pre_submitted
+      given([event])
+      2.times { process.call(event) }
+      assert_equal 1, @event_store.read.stream("ReservationProcess$#{order_id}").count
     end
 
     private
