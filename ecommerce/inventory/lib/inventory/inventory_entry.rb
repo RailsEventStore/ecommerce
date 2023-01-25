@@ -3,6 +3,7 @@ module Inventory
     include AggregateRoot
 
     InventoryNotAvailable = Class.new(StandardError)
+    InventoryNotEvenReserved = Class.new(StandardError)
 
     def initialize(product_id)
       @product_id = product_id
@@ -53,6 +54,7 @@ module Inventory
     end
 
     def release(order_id, quantity)
+      raise InventoryNotEvenReserved if quantity > @reserved
       apply StockReleased.new(
         data: {
           order_id: order_id,
@@ -87,6 +89,9 @@ module Inventory
     end
 
     on AvailabilityChanged do |_|
+    end
+
+    on StockUnavailable do |_|
     end
 
     def availability
