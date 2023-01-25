@@ -70,8 +70,8 @@ module Processes
 
       given([order_confirmed]).each { |event| process.call(event) }
       assert_all_commands(
-        Inventory::Dispatch.new(product_id: product_id, order_id: order_id, quantity: 1),
-        Inventory::Dispatch.new(product_id: another_product_id, order_id: order_id, quantity: 2)
+        Inventory::Dispatch.new(product_id: product_id, quantity: 1),
+        Inventory::Dispatch.new(product_id: another_product_id, quantity: 2)
       )
     end
 

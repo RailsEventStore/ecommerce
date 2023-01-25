@@ -25,16 +25,16 @@ module Processes
       when [:not_started, 'Ordering::OrderPreSubmitted']
         reserve_stock(state.order_id, state.order_lines)
       when [:awaiting_reservation, 'Inventory::StockReserved']
-        confirm_order(state) if state.all_reserved?
+        accept_order(state) if state.all_reserved?
       when [:awaiting_reservation, 'Inventory::StockUnavailable']
         reject_order(state)
         release_stock(state.order_id, state.order_lines.slice(*state.reserved_product_ids))
       when [:reserved, 'Ordering::OrderCancelled']
-        release_stock(state.order_id, state.order_lines.slice(*state.reserved_product_ids))
+        release_stock(state.order_id, state.order_lines)
       when [:abandoned, 'Inventory::StockReserved']
         release_stock(state.order_id, state.order_lines.slice(event.data.fetch(:product_id)))
       when [:reserved, 'Ordering::OrderConfirmed']
-        dispatch_stock(state.order_id, state.order_lines)
+        dispatch_stock(state.order_lines)
       end
     end
 
@@ -54,13 +54,13 @@ module Processes
       end
     end
 
-    def dispatch_stock(order_id, order_lines)
+    def dispatch_stock(order_lines)
       order_lines.each do |product_id, quantity|
-        command_bus.(Inventory::Dispatch.new(order_id: order_id, product_id: product_id, quantity: quantity))
+        command_bus.(Inventory::Dispatch.new(product_id: product_id, quantity: quantity))
       end
     end
 
-    def confirm_order(state)
+    def accept_order(state)
       command_bus.(Ordering::AcceptOrder.new(order_id: state.order_id))
     end
 
