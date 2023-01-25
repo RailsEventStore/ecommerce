@@ -1,7 +1,6 @@
 require "minitest/autorun"
 require "mutant/minitest/coverage"
 require "infra"
-
 require_relative "../lib/processes"
 
 module Processes
@@ -43,7 +42,7 @@ module Processes
       end
 
       def clear_all_received
-        @all_received = []
+        @all_received, @received = [], nil
       end
     end
 
@@ -80,6 +79,10 @@ module Processes
 
     def order_confirmed
       Ordering::OrderConfirmed.new(data: { order_id: order_id })
+    end
+
+    def order_cancelled
+      Ordering::OrderCancelled.new(data: { order_id: order_id })
     end
 
     def payment_authorized

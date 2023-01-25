@@ -3,6 +3,7 @@ requires:
 integration: minitest
 coverage_criteria:
   process_abort: true
+  timeout: true
 matcher:
   subjects:
     - Processes*
@@ -17,3 +18,4 @@ matcher:
     - Processes::SyncInventoryFromOrdering*
     - Processes::NotifyPaymentsAboutOrderValue*
     - Processes::ThreePlusOneFree*
+mutation_timeout: 1.0

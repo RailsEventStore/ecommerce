@@ -13,6 +13,8 @@ module Processes
         event_store.link(event.event_id, stream_name: stream_name, expected_version: last_stored)
       rescue RubyEventStore::WrongExpectedEventVersion
         retry
+      rescue RubyEventStore::EventDuplicatedInStream
+        return
       end
       state = ProcessState.new
       past_events.each { |ev| state.call(ev) }
@@ -27,7 +29,7 @@ module Processes
       when [:awaiting_reservation, 'Inventory::StockUnavailable']
         reject_order(state)
         release_stock(state.order_id, state.order_lines.slice(*state.reserved_product_ids))
-      when [:awaiting_reservation, 'Ordering::OrderExpired'], [:reserved, 'Ordering::OrderCancelled']
+      when [:reserved, 'Ordering::OrderCancelled']
         release_stock(state.order_id, state.order_lines.slice(*state.reserved_product_ids))
       when [:abandoned, 'Inventory::StockReserved']
         release_stock(state.order_id, state.order_lines.slice(event.data.fetch(:product_id)))
@@ -69,7 +71,6 @@ module Processes
     class ProcessState
       def initialize
         @reserved_product_ids = []
-        @abandon = false
         @state = :not_started
       end
 
@@ -82,9 +83,9 @@ module Processes
           @order_lines = event.data.fetch(:order_lines)
           @state = :awaiting_reservation
         when Inventory::StockReserved
-          @reserved_product_ids << event.data.fetch(:product_id)
+          reserved_product_ids << event.data.fetch(:product_id)
           @state = :reserved if all_reserved?
-        when Inventory::StockUnavailable, Ordering::OrderExpired, Ordering::OrderCancelled
+        when Inventory::StockUnavailable, Ordering::OrderCancelled
           @state = :abandoned
         when Ordering::OrderConfirmed
           @state = :complete
@@ -92,7 +93,7 @@ module Processes
       end
 
       def all_reserved?
-        @order_lines.keys.sort == @reserved_product_ids.sort
+        order_lines.keys.sort.eql?(reserved_product_ids.sort)
       end
     end
   end

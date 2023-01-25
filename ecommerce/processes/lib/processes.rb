@@ -22,7 +22,6 @@ module Processes
   class Configuration
     def call(event_store, command_bus)
       notify_payments_about_order_total_value(event_store, command_bus)
-      # enable_inventory_sync_from_ordering(event_store, command_bus)
       enable_shipment_sync(event_store, command_bus)
       determine_vat_rates_on_order_submitted(event_store, command_bus)
       set_invoice_payment_date_when_order_confirmed(event_store, command_bus)
@@ -139,7 +138,6 @@ module Processes
         ReservationProcess.new(event_store, command_bus),
         to: [
           Ordering::OrderPreSubmitted,
-          Ordering::OrderExpired,
           Ordering::OrderCancelled,
           Ordering::OrderConfirmed,
           Inventory::StockReserved,

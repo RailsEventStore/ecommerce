@@ -31,22 +31,22 @@ module Processes
 
       command_bus.clear_all_received
 
-      given([stock_unavailable(product_id)]).each { |event| process.call(event) }
+      given([stock_unavailable(another_product_id)]).each { |event| process.call(event) }
       assert_all_commands(
         Ordering::RejectOrder.new(order_id: order_id),
         Inventory::Release.new(product_id: product_id, order_id: order_id, quantity: 1)
       )
     end
 
-    def test_compensation_on_order_expired
+    def test_compensation_when_sth_is_unavailable_with_different_events_order
       process = ReservationProcess.new(event_store, command_bus)
-      given([order_pre_submitted, stock_reserved(product_id)]).each { |event| process.call(event) }
+      given([order_pre_submitted, stock_unavailable(product_id)]).each { |event| process.call(event) }
 
       command_bus.clear_all_received
 
-      given([order_expired]).each { |event| process.call(event) }
+      given([stock_reserved(another_product_id)]).each { |event| process.call(event) }
       assert_all_commands(
-        Inventory::Release.new(product_id: product_id, order_id: order_id, quantity: 1)
+        Inventory::Release.new(product_id: another_product_id, order_id: order_id, quantity: 2)
       )
     end
 
@@ -55,7 +55,6 @@ module Processes
       given([order_pre_submitted, stock_reserved(product_id), stock_reserved(another_product_id)]).each { |event| process.call(event) }
 
       command_bus.clear_all_received
-
       given([order_cancelled]).each { |event| process.call(event) }
       assert_all_commands(
         Inventory::Release.new(product_id: product_id, order_id: order_id, quantity: 1),
@@ -75,6 +74,8 @@ module Processes
         Inventory::Dispatch.new(product_id: another_product_id, order_id: order_id, quantity: 2)
       )
     end
+
+    private
 
     def product_id
       @product_id ||= SecureRandom.uuid
