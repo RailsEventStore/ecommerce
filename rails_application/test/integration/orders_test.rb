@@ -140,6 +140,32 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     assert_select("dd", "Cancelled")
   end
 
+  def test_confirmed_order_doesnt_show_cancel_button
+    shopify_id = register_customer("Shopify")
+
+    order_id = SecureRandom.uuid
+    async_remote_id = register_product("Async Remote", 39, 10)
+
+    Sidekiq::Job.drain_all
+
+    get "/"
+    get "/orders/new"
+    post "/orders/#{order_id}/add_item?product_id=#{async_remote_id}"
+    post "/orders",
+         params: {
+           "authenticity_token" => "[FILTERED]",
+           "order_id" => order_id,
+           "customer_id" => shopify_id,
+           "commit" => "Submit order"
+         }
+    post "/orders/#{order_id}/pay"
+    Shipments::MarkOrderSubmitted.drain
+    follow_redirect!
+    assert_select("td", text: "Paid")
+    get "/orders/#{order_id}"
+    assert_select("button", 2)
+  end
+
   private
 
   def assert_res_browser_order_history
