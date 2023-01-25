@@ -2,9 +2,9 @@ require_relative "test_helper"
 
 module Inventory
   class DispatchTest < Test
-    def nothing_changes_when_stock_level_is_undefined
+    def test_nothing_changes_when_stock_level_is_undefined
       product_id = SecureRandom.uuid
-      assert_events(inventory_entry_stream(product_id), []) do
+      assert_events(inventory_entry_stream(product_id)) do
         act(dispatch(product_id, 1))
       end
     end
