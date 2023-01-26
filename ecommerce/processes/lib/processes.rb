@@ -138,9 +138,7 @@ module Processes
         to: [
           Ordering::OrderPreSubmitted,
           Ordering::OrderCancelled,
-          Ordering::OrderConfirmed,
-          Inventory::StockReserved,
-          Inventory::StockUnavailable,
+          Ordering::OrderConfirmed
         ]
       )
     end

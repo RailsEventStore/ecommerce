@@ -4,113 +4,74 @@ module Processes
   class ReservationProcessTest < Test
     cover "Processes::ReservationProcess*"
 
-    def test_reserve_commands_are_dispatched
+    def test_happy_path
       process = ReservationProcess.new(event_store, command_bus)
       given([order_pre_submitted]).each { |event| process.call(event) }
       assert_all_commands(
-        Inventory::Reserve.new(product_id: product_id, order_id: order_id, quantity: 1),
-        Inventory::Reserve.new(product_id: another_product_id, order_id: order_id, quantity: 2)
+        Inventory::Reserve.new(product_id: product_id, quantity: 1),
+        Inventory::Reserve.new(product_id: another_product_id, quantity: 2),
+        Ordering::AcceptOrder.new(order_id: order_id)
       )
     end
 
-    def test_accept_order_command_is_dispatched_when_all_stock_is_reserved
-      process = ReservationProcess.new(event_store, command_bus)
-      given([order_pre_submitted]).each { |event| process.call(event) }
+    class EnhancedFakeCommandBus < SimpleDelegator
+      def initialize(command_bus, command_error_hash = {})
+        super(command_bus)
+        @command_error_hash = command_error_hash
+      end
 
-      command_bus.clear_all_received
-      given([stock_reserved(product_id)]).each { |event| process.call(event) }
-      assert_no_command
-
-      given([stock_reserved(another_product_id)]).each { |event| process.call(event) }
-      assert_command(Ordering::AcceptOrder.new(order_id: order_id))
+      def call(command)
+        super(command)
+        raise @command_error_hash[command] if @command_error_hash[command]
+      end
     end
 
     def test_reject_order_command_is_dispatched_when_sth_is_unavailable
-      process = ReservationProcess.new(event_store, command_bus)
-      given([order_pre_submitted, stock_unavailable(product_id)]).each { |event| process.call(event) }
-      assert_command(Ordering::RejectOrder.new(order_id: order_id))
+      failing_command = Inventory::Reserve.new(product_id: product_id, quantity: 1)
+      enhanced_command_bus = EnhancedFakeCommandBus.new(command_bus, failing_command => Inventory::InventoryEntry::InventoryNotAvailable)
+      process = ReservationProcess.new(event_store, enhanced_command_bus)
+      given([order_pre_submitted]).each { |event| process.call(event) }
+      assert_all_commands(
+        failing_command,
+        Ordering::RejectOrder.new(order_id: order_id)
+      )
     end
 
     def test_compensation_when_sth_is_unavailable
-      process = ReservationProcess.new(event_store, command_bus)
-      given([order_pre_submitted, stock_reserved(product_id)]).each { |event| process.call(event) }
-
-      command_bus.clear_all_received
-
-      given([stock_unavailable(another_product_id)]).each { |event| process.call(event) }
+      failing_command = Inventory::Reserve.new(product_id: another_product_id, quantity: 2)
+      enhanced_command_bus = EnhancedFakeCommandBus.new(command_bus, failing_command => Inventory::InventoryEntry::InventoryNotAvailable)
+      process = ReservationProcess.new(event_store, enhanced_command_bus)
+      given([order_pre_submitted]).each { |event| process.call(event) }
       assert_all_commands(
-        Ordering::RejectOrder.new(order_id: order_id),
-        Inventory::Release.new(product_id: product_id, order_id: order_id, quantity: 1)
+        Inventory::Reserve.new(product_id: product_id, quantity: 1),
+        failing_command,
+        Inventory::Release.new(product_id: product_id, quantity: 1),
+        Ordering::RejectOrder.new(order_id: order_id)
       )
     end
 
-    def test_compensation_when_sth_is_unavailable_with_different_events_order
+    def test_release_stock_when_order_is_cancelled
       process = ReservationProcess.new(event_store, command_bus)
-      given([order_pre_submitted, stock_unavailable(product_id)]).each { |event| process.call(event) }
-
-      command_bus.clear_all_received
-
-      given([stock_reserved(another_product_id)]).each { |event| process.call(event) }
-      assert_all_commands(
-        Inventory::Release.new(product_id: another_product_id, order_id: order_id, quantity: 2)
-      )
-    end
-
-    def test_compensation_on_order_cancelled
-      process = ReservationProcess.new(event_store, command_bus)
-      given([order_pre_submitted, stock_reserved(product_id), stock_reserved(another_product_id)]).each { |event| process.call(event) }
+      given([order_pre_submitted]).each { |event| process.call(event) }
 
       command_bus.clear_all_received
       given([order_cancelled]).each { |event| process.call(event) }
       assert_all_commands(
-        Inventory::Release.new(product_id: product_id, order_id: order_id, quantity: 1),
-        Inventory::Release.new(product_id: another_product_id, order_id: order_id, quantity: 2)
+        Inventory::Release.new(product_id: product_id, quantity: 1),
+        Inventory::Release.new(product_id: another_product_id, quantity: 2)
       )
     end
 
-    def test_dispatch_on_order_confirmed
+    def test_dispatch_stock_when_order_is_confirmed
       process = ReservationProcess.new(event_store, command_bus)
-      given([order_pre_submitted, stock_reserved(product_id), stock_reserved(another_product_id)]).each { |event| process.call(event) }
+      given([order_pre_submitted]).each { |event| process.call(event) }
 
       command_bus.clear_all_received
-
       given([order_confirmed]).each { |event| process.call(event) }
       assert_all_commands(
         Inventory::Dispatch.new(product_id: product_id, quantity: 1),
         Inventory::Dispatch.new(product_id: another_product_id, quantity: 2)
       )
-    end
-
-    def test_for_idempotency
-      process = ReservationProcess.new(event_store, command_bus)
-      given([order_pre_submitted, stock_unavailable(product_id), event = stock_reserved(another_product_id)]).each { |event| process.call(event) }
-
-      command_bus.clear_all_received
-
-      process.call(event)
-      assert_no_command
-      assert_equal 3, @event_store.read.stream("ReservationProcess$#{order_id}").count
-    end
-
-    class DecoratedEventStore < SimpleDelegator
-      def initialize(*args)
-        @link_usage_count = 0
-        super
-      end
-      attr_reader :link_usage_count
-      def link(event_ids, stream_name:, expected_version: :any)
-        @link_usage_count += 1
-        raise RubyEventStore::WrongExpectedEventVersion if expected_version == -1 and @link_usage_count < 2
-        super
-      end
-
-    end
-
-    def test_for_dealing_with_concurrency_with_optimistic_locking
-      decorated_es = DecoratedEventStore.new(event_store)
-      process = ReservationProcess.new(DecoratedEventStore.new(decorated_es), command_bus)
-      given([order_pre_submitted]).each { |event| process.call(event) }
-      assert_equal 2, decorated_es.link_usage_count
     end
 
     private
@@ -138,26 +99,6 @@ module Processes
       Ordering::OrderCancelled.new(
         data: {
           order_id: order_id
-        }
-      )
-    end
-
-    def stock_reserved(product_id)
-      Inventory::StockReserved.new(
-        data: {
-          product_id: product_id,
-          order_id: order_id,
-          quantity: 1
-        }
-      )
-    end
-
-    def stock_unavailable(product_id)
-      Inventory::StockUnavailable.new(
-        data: {
-          product_id: product_id,
-          order_id: order_id,
-          quantity: 1
         }
       )
     end

@@ -2,6 +2,7 @@ module Inventory
   class InventoryEntry
     include AggregateRoot
 
+    InventoryNotAvailable = Class.new(StandardError)
     InventoryNotEvenReserved = Class.new(StandardError)
 
     def initialize(product_id)
@@ -31,32 +32,21 @@ module Inventory
       apply_availability_changed
     end
 
-    def reserve(order_id, quantity)
-      if stock_level_defined? && quantity > availability
-        apply StockUnavailable.new(
-          data: {
-            order_id: order_id,
-            product_id: @product_id,
-            quantity: quantity
-          }
-        )
-      else
-        apply StockReserved.new(
-          data: {
-            order_id: order_id,
-            product_id: @product_id,
-            quantity: quantity
-          }
-        )
-        apply_availability_changed
-      end
+    def reserve(quantity)
+      raise InventoryNotAvailable if stock_level_defined? && quantity > availability
+      apply StockReserved.new(
+        data: {
+          product_id: @product_id,
+          quantity: quantity
+        }
+      )
+      apply_availability_changed
     end
 
-    def release(order_id, quantity)
+    def release(quantity)
       raise InventoryNotEvenReserved if quantity > @reserved
       apply StockReleased.new(
         data: {
-          order_id: order_id,
           product_id: @product_id,
           quantity: quantity
         }
@@ -88,9 +78,6 @@ module Inventory
     end
 
     on AvailabilityChanged do |_|
-    end
-
-    on StockUnavailable do |_|
     end
 
     def availability

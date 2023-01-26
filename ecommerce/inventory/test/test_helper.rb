@@ -16,12 +16,12 @@ module Inventory
       "Inventory::InventoryEntry$#{product_id}"
     end
 
-    def reserve(order_id, product_id, quantity)
-      Reserve.new(product_id: product_id, order_id: order_id, quantity: quantity)
+    def reserve(product_id, quantity)
+      Reserve.new(product_id: product_id, quantity: quantity)
     end
 
-    def release(order_id, product_id, quantity)
-      Release.new(product_id: product_id, order_id: order_id, quantity: quantity)
+    def release(product_id, quantity)
+      Release.new(product_id: product_id, quantity: quantity)
     end
 
     def dispatch(product_id, quantity)

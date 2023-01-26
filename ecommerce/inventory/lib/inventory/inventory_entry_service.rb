@@ -18,13 +18,13 @@ module Inventory
 
     def reserve(command)
       with_inventory_entry(command.product_id) do |entry|
-        entry.reserve(command.order_id, command.quantity)
+        entry.reserve(command.quantity)
       end
     end
 
     def release(command)
       with_inventory_entry(command.product_id) do |entry|
-        entry.release(command.order_id, command.quantity)
+        entry.release(command.quantity)
       end
     end
 

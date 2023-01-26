@@ -7,7 +7,6 @@ require_relative "inventory/events/stock_level_changed"
 require_relative "inventory/events/stock_released"
 require_relative "inventory/events/stock_reserved"
 require_relative "inventory/events/availability_changed"
-require_relative "inventory/events/stock_unavailable"
 require_relative "inventory/inventory_entry_service"
 require_relative "inventory/inventory_entry"
 
