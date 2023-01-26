@@ -3,6 +3,7 @@ module Authentication
     include AggregateRoot
 
     AlreadyRegistered = Class.new(StandardError)
+    WrongPassword = Class.new(StandardError)
 
     def initialize(id)
       @id = id
@@ -26,6 +27,17 @@ module Authentication
       apply AccountConnectedToClient.new(data: { account_id: @id, client_id: client_id })
     end
 
+    def login!(password)
+      raise WrongPassword unless correct_password?(password)
+      apply LoggedIn.new(data: { account_id: @id })
+    end
+
+    private
+
+    def correct_password?(password)
+      Digest::SHA256.hexdigest(password) == @password_hash
+    end
+
     on AccountRegistered do |event|
       @registered = true
     end
@@ -41,5 +53,7 @@ module Authentication
     on AccountConnectedToClient do |event|
       @client_id = event.data[:client_id]
     end
+
+    on(LoggedIn) {|_|}
   end
 end
