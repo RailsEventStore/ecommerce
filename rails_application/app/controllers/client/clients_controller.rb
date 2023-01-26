@@ -13,13 +13,15 @@ module Client
     def login
       password = params[:password]
       client_id = params[:client_id]
-      customer = Customers::Customer.find(client_id)
-      command_bus.(
-        Authentication::Login.new(
-          account_id: customer.account_id,
-          password: password
+      if password.present?
+        customer = Customers::Customer.find(client_id)
+        command_bus.(
+          Authentication::Login.new(
+            account_id: customer.account_id,
+            password: password
+          )
         )
-      )
+      end
       cookies[:client_id] = client_id
       redirect_to client_orders_path
     rescue Authentication::Account::WrongPassword
