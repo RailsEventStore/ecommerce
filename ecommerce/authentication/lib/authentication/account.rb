@@ -35,7 +35,7 @@ module Authentication
     private
 
     def correct_password?(password)
-      password == @password_hash
+      password.eql?(@password_hash)
     end
 
     on AccountRegistered do |event|
