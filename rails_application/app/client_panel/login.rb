@@ -11,7 +11,9 @@ class Login < Arbre::Component
         text_node(form_tag("login", method: :post)),
         div do
           safe_join([
+            label_tag(:name),
             select_tag(:client_id, options_from_collection_for_select(clients, :uid, :name), id: "client", class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"),
+            label_tag(:password),
             password_field_tag(:password, nil, class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-sm sm:text-sm border-gray-300 rounded-md"),
             button_tag('Login', class: "mt-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded")
           ])
