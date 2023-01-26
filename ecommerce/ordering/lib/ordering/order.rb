@@ -2,10 +2,11 @@ module Ordering
   class Order
     include AggregateRoot
 
-    AlreadySubmitted = Class.new(StandardError)
-    AlreadyConfirmed = Class.new(StandardError)
-    NotSubmitted = Class.new(StandardError)
-    OrderHasExpired = Class.new(StandardError)
+    InvalidState = Class.new(StandardError)
+    AlreadySubmitted = Class.new(InvalidState)
+    AlreadyConfirmed = Class.new(InvalidState)
+    NotSubmitted = Class.new(InvalidState)
+    OrderHasExpired = Class.new(InvalidState)
     CannotRemoveZeroQuantityItem = Class.new(StandardError)
 
     def initialize(id)
@@ -15,13 +16,33 @@ module Ordering
     end
 
     def submit(order_number)
-      raise AlreadySubmitted if @state.equal?(:submitted)
+      raise AlreadySubmitted if @state.equal?(:pre_submitted)
       raise OrderHasExpired if @state.equal?(:expired)
-      apply OrderSubmitted.new(
+      apply OrderPreSubmitted.new(
         data: {
           order_id: @id,
           order_number: order_number,
           order_lines: @basket.order_lines
+        }
+      )
+    end
+
+    def accept
+      raise InvalidState unless @state.equal?(:pre_submitted)
+      apply OrderSubmitted.new(
+        data: {
+          order_id: @id,
+          order_number: @order_number,
+          order_lines: @basket.order_lines
+        }
+      )
+    end
+
+    def reject
+      raise InvalidState unless @state.equal?(:pre_submitted)
+      apply OrderRejected.new(
+        data: {
+          order_id: @id
         }
       )
     end
@@ -62,8 +83,6 @@ module Ordering
     end
 
     on OrderSubmitted do |event|
-      @customer_id = event.data[:customer_id]
-      @number = event.data[:order_number]
       @state = :submitted
     end
 
@@ -85,6 +104,15 @@ module Ordering
 
     on ItemRemovedFromBasket do |event|
       @basket.decrease_quantity(event.data[:product_id])
+    end
+
+    on OrderPreSubmitted do |event|
+      @order_number = event.data[:order_number]
+      @state = :pre_submitted
+    end
+
+    on OrderRejected do |event|
+      @state = :draft
     end
 
     class Basket

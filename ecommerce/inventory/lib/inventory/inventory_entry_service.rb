@@ -10,6 +10,24 @@ module Inventory
       end
     end
 
+    def dispatch(command)
+      with_inventory_entry(command.product_id) do |entry|
+        entry.dispatch(command.quantity)
+      end
+    end
+
+    def reserve(command)
+      with_inventory_entry(command.product_id) do |entry|
+        entry.reserve(command.quantity)
+      end
+    end
+
+    def release(command)
+      with_inventory_entry(command.product_id) do |entry|
+        entry.release(command.quantity)
+      end
+    end
+
     private
 
     def with_inventory_entry(product_id)

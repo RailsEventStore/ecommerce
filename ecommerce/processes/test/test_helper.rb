@@ -1,7 +1,6 @@
 require "minitest/autorun"
 require "mutant/minitest/coverage"
 require "infra"
-
 require_relative "../lib/processes"
 
 module Processes
@@ -17,11 +16,11 @@ module Processes
     end
 
     def assert_command(command)
-      assert_equal(@command_bus.received, command)
+      assert_equal(command, @command_bus.received)
     end
 
     def assert_all_commands(*commands)
-      assert_equal(@command_bus.all_received, commands)
+      assert_equal(commands, @command_bus.all_received)
     end
 
     def assert_no_command
@@ -33,9 +32,17 @@ module Processes
     class FakeCommandBus
       attr_reader :received, :all_received
 
+      def initialize
+        @all_received = []
+      end
+
       def call(command)
         @received = command
-        @all_received = @all_received ? @all_received << command : [command]
+        @all_received << command
+      end
+
+      def clear_all_received
+        @all_received, @received = [], nil
       end
     end
 
@@ -56,7 +63,7 @@ module Processes
       events
     end
 
-    def order_submitted
+    def order_pre_submitted
       Ordering::OrderSubmitted.new(
         data: {
           order_id: order_id,
@@ -72,6 +79,10 @@ module Processes
 
     def order_confirmed
       Ordering::OrderConfirmed.new(data: { order_id: order_id })
+    end
+
+    def order_cancelled
+      Ordering::OrderCancelled.new(data: { order_id: order_id })
     end
 
     def payment_authorized

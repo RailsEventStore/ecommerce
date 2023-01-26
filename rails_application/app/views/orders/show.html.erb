@@ -1,7 +1,7 @@
 <% content_for(:header) do %>
   Order <%= @order.number %>
 <% end %>
-
+<%= turbo_stream_from "orders_order_#{@order.uid}" %>
 <% content_for(:actions) do %>
   <%= secondary_action_button do %>
     <%= order_history_link(@order.uid) %>
@@ -32,7 +32,7 @@
   <dt class="font-bold">Customer</dt>
   <dd class="mb-2"><%= @order.customer || "None" %></dd>
   <dt class="font-bold">State</dt>
-  <dd class="mb-2"><%= @order.state %></dd>
+  <dd class="mb-2" id="<%= "orders_order_#{@order.uid}_state" %>"><%= @order.state %></dd>
   <dt class="font-bold">Shipping Details</dt>
   <dd class="mb-2">
     <% unless @shipment %>

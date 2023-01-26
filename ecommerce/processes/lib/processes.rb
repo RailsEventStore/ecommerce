@@ -14,14 +14,13 @@ require_relative 'processes/determine_vat_rates_on_order_submitted'
 require_relative 'processes/order_item_invoicing_process'
 require_relative 'processes/notify_payments_about_order_value'
 require_relative 'processes/sync_shipment_from_ordering'
-require_relative 'processes/sync_inventory_from_ordering'
 require_relative 'processes/three_plus_one_free'
+require_relative 'processes/reservation_process'
 
 module Processes
   class Configuration
     def call(event_store, command_bus)
       notify_payments_about_order_total_value(event_store, command_bus)
-      enable_inventory_sync_from_ordering(event_store, command_bus)
       enable_shipment_sync(event_store, command_bus)
       determine_vat_rates_on_order_submitted(event_store, command_bus)
       set_invoice_payment_date_when_order_confirmed(event_store, command_bus)
@@ -31,6 +30,7 @@ module Processes
       enable_release_payment_process(event_store, command_bus)
       enable_shipment_process(event_store, command_bus)
       enable_order_item_invoicing_process(event_store, command_bus)
+      enable_reservation_process(event_store, command_bus)
       build_pricing_offer_from_ordering_items(event_store, command_bus)
     end
 
@@ -130,6 +130,17 @@ module Processes
 
     def enable_three_plus_one_free_process(event_store, command_bus)
       ThreePlusOneFree.new(event_store, command_bus)
+    end
+
+    def enable_reservation_process(event_store, command_bus)
+      event_store.subscribe(
+        ReservationProcess.new(event_store, command_bus),
+        to: [
+          Ordering::OrderPreSubmitted,
+          Ordering::OrderCancelled,
+          Ordering::OrderConfirmed
+        ]
+      )
     end
   end
 end

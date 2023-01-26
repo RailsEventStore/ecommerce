@@ -72,4 +72,28 @@ module Ordering
       end
     end
   end
+
+  class OnAcceptOrder
+    def initialize(event_store)
+      @repository = Infra::AggregateRootRepository.new(event_store)
+    end
+
+    def call(command)
+      @repository.with_aggregate(Order, command.aggregate_id) do |order|
+        order.accept
+      end
+    end
+  end
+
+  class OnRejectOrder
+    def initialize(event_store)
+      @repository = Infra::AggregateRootRepository.new(event_store)
+    end
+
+    def call(command)
+      @repository.with_aggregate(Order, command.aggregate_id) do |order|
+        order.reject
+      end
+    end
+  end
 end

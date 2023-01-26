@@ -17,18 +17,7 @@ module Orders
       order_number = Ordering::FakeNumberGenerator::FAKE_NUMBER
 
       run_command(Crm::RegisterCustomer.new(customer_id: customer_id, name: "John Doe"))
-
-      event_store.publish(
-        Ordering::OrderSubmitted.new(
-          data: {
-            order_id: order_id,
-            order_number: order_number,
-            customer_id: customer_id,
-            order_lines: { }
-          }
-        )
-      )
-
+      run_command(Ordering::SubmitOrder.new(order_id: order_id, order_number: order_number))
       run_command(
         Crm::AssignCustomerToOrder.new(customer_id: customer_id, order_id: order_id)
       )
@@ -45,7 +34,7 @@ module Orders
       assert_not_empty(orders)
       assert_equal(1, orders.count)
       assert_equal(order_number, orders.first.number)
-      assert_equal("Paid",  orders.first.state)
+      assert_equal("Paid", orders.first.state)
       assert event_store.event_in_stream?(order_confirmed.event_id, "Orders$all")
     end
   end

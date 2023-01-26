@@ -55,7 +55,7 @@ class OrdersController < ApplicationController
   def add_item
     read_model = Orders::OrderLine.where(order_uid: params[:id], product_id: params[:product_id]).first
     if Availability::Product.exists?(["uid = ? and available < ?", params[:product_id], (read_model&.quantity || 0) + 1])
-      redirect_to edit_client_order_path(params[:id]),
+      redirect_to edit_order_path(params[:id]),
                   alert: "Product not available in requested quantity!" and return
     end
     ActiveRecord::Base.transaction do
@@ -73,11 +73,9 @@ class OrdersController < ApplicationController
 
   def create
     ApplicationRecord.transaction { submit_order(params[:order_id], params[:customer_id]) }
-    redirect_to order_path(params[:order_id]), notice: "Order was successfully submitted"
+    redirect_to order_path(params[:order_id]), notice: "Your order is being submitted"
   rescue Crm::Customer::NotExists
     redirect_to order_path(params[:order_id]), alert: "Order can not be submitted! Customer does not exist."
-  rescue Inventory::InventoryEntry::InventoryNotAvailable
-    redirect_to order_path(params[:order_id]), alert: "Order can not be submitted! Some products are not available"
   end
 
   def expire
