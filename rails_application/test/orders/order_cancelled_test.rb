@@ -23,16 +23,7 @@ module Orders
         }
       ))
 
-      event_store.publish(
-        Ordering::OrderSubmitted.new(
-          data: {
-            order_id: order_id,
-            order_number: order_number,
-            customer_id: customer_id,
-            order_lines: {}
-          }
-        )
-      )
+      run_command(Ordering::SubmitOrder.new(order_id: order_id, order_number: order_number))
 
       order_cancelled = Ordering::OrderCancelled.new(
         data: {

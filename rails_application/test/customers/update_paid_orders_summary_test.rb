@@ -50,16 +50,7 @@ module Customers
       run_command(
         Crm::AssignCustomerToOrder.new(customer_id: customer_id, order_id: order_id)
       )
-      event_store.publish(
-        Ordering::OrderSubmitted.new(
-          data: {
-            order_id: order_id,
-            order_number: order_number,
-            customer_id: customer_id,
-            order_lines: { }
-          }
-        )
-      )
+      run_command(Ordering::SubmitOrder.new(order_id: order_id, order_number: order_number))
       event_store.publish(
         order_confirmed = Ordering::OrderConfirmed.new(
           data: {
