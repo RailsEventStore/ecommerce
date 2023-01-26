@@ -23,6 +23,9 @@ matcher:
     - ClientOrders::OrdersList*
     - ClientOrders::RemoveItemFromOrder*
     - ClientOrders::AddItemToOrder*
+    - ClientOrders::ChangeProductName*
+    - ClientOrders::ChangeProductPrice*
+    - ClientOrders::RegisterProduct*
     - Orders::Broadcaster*
     - Orders::AddItemToOrder*
     - Orders::RemoveItemFromOrder*

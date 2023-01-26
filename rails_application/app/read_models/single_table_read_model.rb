@@ -20,7 +20,7 @@ class SingleTableReadModel
   end
 
   def create_record(event, id_column)
-    @active_record_name.create(id: event.data.fetch(id_column))
+    @active_record_name.find_or_create_by(id: event.data.fetch(id_column))
   end
 
   def copy_event_attribute_to_column(event, event_attribute, column)
@@ -36,6 +36,6 @@ class SingleTableReadModel
   end
 
   def find(id)
-    @active_record_name.where(id: id).first
+    @active_record_name.find_or_create_by(id: id)
   end
 end
