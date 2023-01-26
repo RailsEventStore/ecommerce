@@ -107,7 +107,6 @@ module Ordering
     end
 
     on OrderPreSubmitted do |event|
-      @customer_id = event.data[:customer_id]
       @order_number = event.data[:order_number]
       @state = :pre_submitted
     end
