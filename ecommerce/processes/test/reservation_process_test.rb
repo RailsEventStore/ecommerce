@@ -83,10 +83,34 @@ module Processes
 
     def test_for_idempotency
       process = ReservationProcess.new(event_store, command_bus)
-      event = order_pre_submitted
-      given([event])
-      2.times { process.call(event) }
-      assert_equal 1, @event_store.read.stream("ReservationProcess$#{order_id}").count
+      given([order_pre_submitted, stock_unavailable(product_id), event = stock_reserved(another_product_id)]).each { |event| process.call(event) }
+
+      command_bus.clear_all_received
+
+      process.call(event)
+      assert_no_command
+      assert_equal 3, @event_store.read.stream("ReservationProcess$#{order_id}").count
+    end
+
+    class DecoratedEventStore < SimpleDelegator
+      def initialize(*args)
+        @link_usage_count = 0
+        super
+      end
+      attr_reader :link_usage_count
+      def link(event_ids, stream_name:, expected_version: :any)
+        @link_usage_count += 1
+        raise RubyEventStore::WrongExpectedEventVersion if expected_version == -1 and @link_usage_count < 2
+        super
+      end
+
+    end
+
+    def test_for_dealing_with_concurrency_with_optimistic_locking
+      decorated_es = DecoratedEventStore.new(event_store)
+      process = ReservationProcess.new(DecoratedEventStore.new(decorated_es), command_bus)
+      given([order_pre_submitted]).each { |event| process.call(event) }
+      assert_equal 2, decorated_es.link_usage_count
     end
 
     private
