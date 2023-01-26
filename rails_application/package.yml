@@ -1,0 +1,7 @@
+enforce_dependencies: true
+enforce_privacy: false
+dependencies:
+  - "app/models"
+  - "app/read_models/orders"
+  - "app/read_models/client_orders"
+  - "app/read_models/customers"
