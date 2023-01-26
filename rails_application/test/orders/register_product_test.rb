@@ -28,6 +28,7 @@ module Orders
 
       product_registered = ProductCatalog::ProductRegistered.new(data: { product_id: product_id })
       event_store.publish(product_registered)
+      Sidekiq::Job.drain_all
 
       product = Product.find_by_uid(product_id)
       assert product
