@@ -16,6 +16,14 @@ module Orders
       assert event_store.event_in_stream?(price_events.event_id, "Orders$all")
     end
 
+    def test_race_condition
+      product_id = SecureRandom.uuid
+      run_command(Pricing::SetPrice.new(product_id: product_id, price: 100))
+      run_command(ProductCatalog::RegisterProduct.new(product_id: product_id))
+
+      assert_equal 100, Product.find_by_uid(product_id).price
+    end
+
     private
 
     def event_store

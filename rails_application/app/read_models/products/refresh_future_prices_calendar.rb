@@ -2,7 +2,7 @@ module Products
   class RefreshFuturePricesCalendar < Infra::EventHandler
     def call(event)
       product_id = event.data.fetch(:product_id)
-      product = Product.find(product_id)
+      product = Product.find_or_create_by(id: product_id)
       product.update!(current_prices_calendar: updated_prices_calendar(event, product))
     end
 
