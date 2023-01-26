@@ -7,7 +7,6 @@ module Ordering
     def test_order_is_submitted
       aggregate_id = SecureRandom.uuid
       stream = "Ordering::Order$#{aggregate_id}"
-      customer_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
       order_number = FakeNumberGenerator::FAKE_NUMBER
       arrange(
@@ -27,15 +26,13 @@ module Ordering
           }
         )
       ) do
-        act(SubmitOrder.new(order_id: aggregate_id, customer_id: customer_id))
+        act(SubmitOrder.new(order_id: aggregate_id))
       end
     end
 
     def test_already_created_order_could_not_be_created_again
       aggregate_id = SecureRandom.uuid
-      customer_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
-      another_customer_id = SecureRandom.uuid
       order_number = FakeNumberGenerator::FAKE_NUMBER
 
       arrange(
@@ -46,15 +43,13 @@ module Ordering
         SubmitOrder.new(
           order_id: aggregate_id,
           order_number: order_number,
-          customer_id: customer_id
         )
       )
 
       assert_raises(Order::AlreadySubmitted) do
         act(
           SubmitOrder.new(
-            order_id: aggregate_id,
-            customer_id: another_customer_id
+            order_id: aggregate_id
           )
         )
       end
@@ -62,7 +57,6 @@ module Ordering
 
     def test_expired_order_could_not_be_created
       aggregate_id = SecureRandom.uuid
-      customer_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
 
       arrange(
@@ -74,7 +68,7 @@ module Ordering
       )
 
       assert_raises(Order::OrderHasExpired) do
-        act(SubmitOrder.new(order_id: aggregate_id, customer_id: customer_id))
+        act(SubmitOrder.new(order_id: aggregate_id))
       end
     end
   end
