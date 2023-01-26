@@ -5,7 +5,7 @@ module Products
 
     def current_prices_calendar
       return [] unless super
-      super.map(&method(:parese_calendar_entry))
+      super.map(&method(:parse_calendar_entry))
     end
 
     def price(time = Time.now)
@@ -26,7 +26,7 @@ module Products
       current_prices_calendar.partition { |entry| entry[:valid_since] < time }.first
     end
 
-    def parese_calendar_entry(entry)
+    def parse_calendar_entry(entry)
       {
         valid_since:  Time.parse(time_of(entry)).in_time_zone(Time.now.zone),
         price: BigDecimal(entry[:price])

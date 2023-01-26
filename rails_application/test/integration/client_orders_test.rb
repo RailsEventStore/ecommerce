@@ -73,6 +73,27 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
     assert_select("td", order_price)
   end
 
+  def test_paid_orders_summary
+    customer_id = register_customer("Customer Shop")
+    product_1_id = register_product("Fearless Refactoring", 4, 10)
+    product_2_id = register_product("Asycn Remote", 3, 10)
+    Sidekiq::Job.drain_all
+
+    login(customer_id)
+    visit_client_orders
+    assert_select "Total orders summary", false
+
+    order_and_pay(customer_id, SecureRandom.uuid, product_1_id, product_2_id)
+    visit_client_orders
+
+    assert_orders_summary("$7.00")
+
+    order_and_pay(customer_id, SecureRandom.uuid, product_1_id)
+    visit_client_orders
+
+    assert_orders_summary("$11.00")
+  end
+
   private
 
   def submit_order_for_customer(customer_id, order_id)
@@ -94,10 +115,6 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
     post "/client_orders/#{order_id}/add_item?product_id=#{async_remote_id}"
   end
 
-  def pay_order(order_id)
-    post "/orders/#{order_id}/pay"
-  end
-
   def cancel_order(order_id)
     post "/orders/#{order_id}/cancel"
   end
@@ -113,8 +130,19 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
     cancel_order(order_id)
   end
 
-  def login(arkency_id)
-    post "/login", params: { client_id: arkency_id }
-    follow_redirect!
+  def order_and_pay(customer_id, order_id, *product_ids)
+    product_ids.each do |product_id|
+      as_client_add_item_to_basket_for_order(product_id, order_id)
+    end
+    submit_order_for_customer(customer_id, order_id)
+    pay_order(order_id)
+    Sidekiq::Job.drain_all
+  end
+
+  def assert_orders_summary(summary)
+    assert_select 'tr' do
+      assert_select 'td:nth-child(1)', "Total orders summary"
+      assert_select 'td:nth-child(2)', summary
+    end
   end
 end

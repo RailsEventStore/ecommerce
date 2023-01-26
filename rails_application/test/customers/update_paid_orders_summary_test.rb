@@ -1,12 +1,12 @@
 require "test_helper"
 
-module ClientOrders
+module Customers
   class UpdatePaidOrdersSummaryTest < InMemoryTestCase
-    cover "ClientOrders*"
+    cover "Customers"
 
     def setup
       super
-      Client.destroy_all
+      Customer.destroy_all
     end
 
     def test_update_orders_cummary
@@ -20,13 +20,13 @@ module ClientOrders
       register_customer(customer_id)
       confirm_order(customer_id, order_id, 3)
 
-      customer = Client.find_by(uid: customer_id)
+      customer = Customer.find(customer_id)
       assert_equal 3.to_d, customer.paid_orders_summary
 
       order_id = SecureRandom.uuid
       confirm_order(customer_id, order_id, 6)
 
-      customer = Client.find_by(uid: customer_id)
+      customer = Customer.find(customer_id)
       assert_equal 9.to_d, customer.paid_orders_summary
     end
 

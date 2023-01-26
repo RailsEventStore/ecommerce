@@ -74,6 +74,32 @@ class InMemoryRESIntegrationTestCase < ActionDispatch::IntegrationTest
     follow_redirect!
   end
 
+  def submit_order(customer_id, order_id)
+    post "/orders",
+         params: {
+           "authenticity_token" => "[FILTERED]",
+           "order_id" => order_id,
+           "customer_id" => customer_id,
+           "commit" => "Submit order"
+         }
+  end
+
+  def visit_customers_index
+    get "/customers"
+  end
+
+  def pay_order(order_id)
+    post "/orders/#{order_id}/pay"
+  end
+
+  def visit_client_orders
+    get "/client_orders"
+  end
+
+  def add_product_to_basket(order_id, product_id)
+    post "/orders/#{order_id}/add_item?product_id=#{product_id}"
+  end
+
   def run_command(command)
     puts "Command: #{command.class} used in integrations test."
     Rails.configuration.command_bus.call(command)
