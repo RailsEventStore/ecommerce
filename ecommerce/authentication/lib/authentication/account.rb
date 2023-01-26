@@ -35,7 +35,7 @@ module Authentication
     private
 
     def correct_password?(password)
-      Digest::SHA256.hexdigest(password) == @password_hash
+      password == @password_hash
     end
 
     on AccountRegistered do |event|

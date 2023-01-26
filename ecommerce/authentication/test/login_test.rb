@@ -26,7 +26,7 @@ module Authentication
       act(Authentication::SetPasswordHash.new(account_id: account_id, password_hash: password_hash))
 
       assert_events("Authentication::Account$#{account_id}", LoggedIn.new(data: { account_id: account_id })) do
-        run_command(Login.new(account_id: account_id, password: password))
+        run_command(Login.new(account_id: account_id, password: password_hash))
       end
     end
   end

@@ -14,15 +14,20 @@ module Client
       password = params[:password]
       client_id = params[:client_id]
       if password.present?
-        customer = Customers::Customer.find(client_id)
-        command_bus.(
-          Authentication::Login.new(
-            account_id: customer.account_id,
-            password: password
+        ActiveRecord::Base.transaction do
+          customer = Customers::Customer.find(client_id)
+          password_hash = Digest::SHA256.hexdigest(password)
+          command_bus.(
+            Authentication::Login.new(
+              account_id: customer.account_id,
+              password: password_hash
+            )
           )
-        )
+        cookies[:client_id] = client_id
+        end
+      else
+        cookies[:client_id] = client_id
       end
-      cookies[:client_id] = client_id
       redirect_to client_orders_path
     rescue Authentication::Account::WrongPassword
       flash[:alert] = "Incorrect password"
