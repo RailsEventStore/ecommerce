@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_01_24_195547) do
+ActiveRecord::Schema[7.0].define(version: 2023_01_26_174907) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -71,6 +71,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_24_195547) do
     t.datetime "registered_at", precision: nil
     t.boolean "vip", default: false, null: false
     t.decimal "paid_orders_summary", precision: 8, scale: 2, default: "0.0"
+    t.uuid "account_id"
   end
 
   create_table "event_store_events", id: :serial, force: :cascade do |t|
