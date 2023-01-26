@@ -2,7 +2,6 @@ module Inventory
   class InventoryEntry
     include AggregateRoot
 
-    InventoryNotAvailable = Class.new(StandardError)
     InventoryNotEvenReserved = Class.new(StandardError)
 
     def initialize(product_id)
