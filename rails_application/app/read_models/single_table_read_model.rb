@@ -44,7 +44,7 @@ class SingleTableReadModel
   end
 
   def find(id)
-    @active_record_name.find_or_create_by(id: id)
+    @active_record_name.lock.find_or_create_by(id: id)
   end
 
   def concurrent_safely(event)
