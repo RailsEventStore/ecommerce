@@ -32,6 +32,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_26_174907) do
     t.uuid "uid", null: false
     t.string "name"
     t.decimal "price", precision: 8, scale: 2
+    t.decimal "lowest_recent_price", precision: 8, scale: 2
   end
 
   create_table "client_orders", force: :cascade do |t|
