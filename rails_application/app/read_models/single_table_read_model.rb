@@ -19,6 +19,8 @@ class SingleTableReadModel
       -> (event) { copy_nested_event_attribute_to_column(event, top_event_attribute, nested_attribute, column) }, to: [event])
   end
 
+  private
+
   def create_record(event, id_column)
     concurrent_safely(event) do
       @active_record_name.find_or_create_by(id: event.data.fetch(id_column))
@@ -44,8 +46,6 @@ class SingleTableReadModel
   def find(id)
     @active_record_name.find_or_create_by(id: id)
   end
-
-  private
 
   def concurrent_safely(event)
     stream_name = "#{@active_record_name}$#{event.data.fetch(@id_column)}$#{event.event_type}"
