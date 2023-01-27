@@ -18,3 +18,4 @@ matcher:
     - Processes::NotifyPaymentsAboutOrderValue*
     - Processes::ThreePlusOneFree*
     - Processes::ReservationProcess#build_state
+    - Processes::ReservationProcess::ProcessState#call

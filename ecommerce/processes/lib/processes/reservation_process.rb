@@ -1,7 +1,5 @@
 module Processes
   class ReservationProcess
-    InvalidStateTransition = Class.new(StandardError)
-
     def initialize(event_store, command_bus)
       @event_store = event_store
       @command_bus = command_bus
@@ -9,8 +7,8 @@ module Processes
 
     def call(event)
       state = build_state(event)
-      case [state.state, event.event_type]
-      when [:not_started, 'Ordering::OrderPreSubmitted']
+      case event.event_type
+      when 'Ordering::OrderPreSubmitted'
         begin
           reserve_stock(state)
         rescue Inventory::InventoryEntry::InventoryNotAvailable
@@ -19,10 +17,10 @@ module Processes
         else
           accept_order(state)
         end
-      when [:reserved, 'Ordering::OrderCancelled']
+      when 'Ordering::OrderCancelled'
         release_stock(state)
-      when [:reserved, 'Ordering::OrderConfirmed']
-        dispatch_stock(state.order_lines)
+      when 'Ordering::OrderConfirmed'
+        dispatch_stock(state)
       end
     end
 
@@ -43,8 +41,8 @@ module Processes
       end
     end
 
-    def dispatch_stock(order_lines)
-      order_lines.each do |product_id, quantity|
+    def dispatch_stock(state)
+      state.order_lines.each do |product_id, quantity|
         command_bus.(Inventory::Dispatch.new(product_id: product_id, quantity: quantity))
       end
     end
@@ -79,17 +77,15 @@ module Processes
         @reserved_product_ids = []
       end
 
-      attr_reader :order_id, :order_lines, :reserved_product_ids, :state
+      attr_reader :order_id, :order_lines, :reserved_product_ids
 
       def call(event)
         case event
         when Ordering::OrderPreSubmitted
           @order_lines = event.data.fetch(:order_lines)
           @order_id = event.data.fetch(:order_id)
-          @state = :not_started
         when Ordering::OrderCancelled, Ordering::OrderConfirmed
           @reserved_product_ids = order_lines.keys
-          @state = :reserved
         end
       end
 
