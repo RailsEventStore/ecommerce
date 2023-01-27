@@ -30,7 +30,7 @@ module Authentication
 
     def call(command)
       @repository.with_aggregate(Account, command.account_id) do |account|
-        account.login!(command.password)
+        account.login(command.password)
       end
     end
   end

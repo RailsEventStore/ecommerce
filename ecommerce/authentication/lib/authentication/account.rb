@@ -27,7 +27,7 @@ module Authentication
       apply AccountConnectedToClient.new(data: { account_id: @id, client_id: client_id })
     end
 
-    def login!(password)
+    def login(password)
       raise WrongPassword unless correct_password?(password)
       apply LoggedIn.new(data: { account_id: @id })
     end
