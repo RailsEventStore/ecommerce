@@ -42,7 +42,7 @@ module Customers
         Pricing::OrderTotalValueCalculated.new(
           data: {
             order_id: order_id,
-            discounted_amount: 0,
+            discounted_amount: total_amount,
             total_amount: total_amount
           }
         )
