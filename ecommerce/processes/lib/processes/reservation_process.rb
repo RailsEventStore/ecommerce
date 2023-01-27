@@ -1,5 +1,5 @@
 module Processes
-  class ReservationProcess
+  class ReservationProcess < Infra::EventHandler
     def initialize(event_store, command_bus)
       @event_store = event_store
       @command_bus = command_bus
