@@ -54,12 +54,14 @@ module PublicOffer
   class Configuration
     def initialize(event_store)
       @read_model = SingleTableReadModel.new(event_store, Product, :product_id)
+      @event_store = event_store
     end
 
     def call
       @read_model.subscribe_create(ProductCatalog::ProductRegistered)
       @read_model.copy(ProductCatalog::ProductNamed,       :name)
       @read_model.copy(Pricing::PriceSet,                  :price)
+      @event_store.subscribe(RegisterLowestPrice, to: [Pricing::PriceSet])
     end
   end
 end
