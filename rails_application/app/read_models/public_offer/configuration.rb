@@ -37,7 +37,16 @@ module PublicOffer
                   product.name
                 end
                 td class: "py-2 text-right" do
-                  number_to_currency(product.price)
+                  if product.lowest_recent_price_lower_from_current?
+                    span title: "Lowest recent price: #{number_to_currency(product.lowest_recent_price)}",
+                      id: "lowest-price-info-#{product.id}" do
+                      "ℹ️"
+                    end
+                  end
+
+                  span do
+                    number_to_currency(product.price)
+                  end
                 end
               end
             end
