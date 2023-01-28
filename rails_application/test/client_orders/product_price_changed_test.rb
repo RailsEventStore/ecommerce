@@ -80,6 +80,21 @@ module ClientOrders
       assert_equal 30, Product.find_by_uid(product1_id).lowest_recent_price
     end
 
+    def test_takes_last_event_when_no_events_in_last_30_days
+      product_id = SecureRandom.uuid
+      run_command(
+        ProductCatalog::RegisterProduct.new(
+          product_id: product_id,
+        )
+      )
+
+      set_past_price(product_id, 15, 45.days.ago.to_s)
+      set_past_price(product_id, 45, 32.days.ago.to_s)
+      set_future_price(product_id, 11, (Time.now + 2.days).to_s)
+
+      assert_equal 45, Product.find_by_uid(product_id).lowest_recent_price
+    end
+
     private
 
     def prepare_product
