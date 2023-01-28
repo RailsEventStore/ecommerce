@@ -1,4 +1,4 @@
-module ClientOrders
+module PublicOffer
   class RegisterLowestPrice < Infra::EventHandler
     RECENT_PERIOD = 30.days
 
@@ -9,7 +9,7 @@ module ClientOrders
 
       lowest_recent_price = lowest_recent_price_for(product_id)
 
-      product = Product.find_by_uid(product_id)
+      product = Product.find(product_id)
       product.update!(lowest_recent_price: lowest_recent_price)
     end
 
