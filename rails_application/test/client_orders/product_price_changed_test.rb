@@ -45,9 +45,9 @@ module ClientOrders
     end
 
     def test_ignores_prices_older_than_30_days
-      product_id = prepare_product
+      freeze_time do
+        product_id = prepare_product
 
-      Timecop.freeze(Time.now) do
         set_past_price(product_id, 20, 31.days.ago.beginning_of_day.to_s)
         set_past_price(product_id, 25, (30.days.ago.beginning_of_day - 1.second).to_s)
         set_past_price(product_id, 30, 30.days.ago.beginning_of_day.to_s)
