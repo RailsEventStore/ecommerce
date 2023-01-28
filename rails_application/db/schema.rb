@@ -181,6 +181,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_30_172623) do
     t.decimal "price"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.decimal "lowest_recent_price", precision: 8, scale: 2
   end
 
   create_table "shipments", force: :cascade do |t|
