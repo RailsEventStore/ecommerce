@@ -18,9 +18,14 @@ module ClientOrders
     def lowest_recent_price_for(product_id)
       price_changes = project_price_changes(product_id)
       border_event = find_border_event(price_changes)
-      recent_events = price_changes.select { |price_change| recent_event?(price_change) }.push(border_event)
 
-      recent_events.min_by { |price_change| price_change.fetch(:price) }.fetch(:price)
+      events_to_compare = price_changes.select do |price_change|
+        recent_event?(price_change) && !future_event?(price_change)
+      end
+
+      events_to_compare.push(border_event) if border_event.present?
+
+      events_to_compare.min_by { |price_change| price_change.fetch(:price) }&.fetch(:price)
     end
 
     def project_price_changes(product_id)
@@ -36,15 +41,15 @@ module ClientOrders
     end
 
     def find_border_event(price_changes)
-      first_in_scope_index = price_changes.find_index { |price_change| recent_event?(price_change) }
-      index = [first_in_scope_index - 1, 0].max
-
-      price_changes.fetch(index)
+      price_changes.reverse.find { |price_change| !recent_event?(price_change) }
     end
 
     def recent_event?(price_change)
-      valid_at = price_change.fetch(:valid_at)
-      valid_at > RECENT_PERIOD.ago.beginning_of_day && valid_at < Time.now
+      price_change.fetch(:valid_at) > RECENT_PERIOD.ago.beginning_of_day
+    end
+
+    def future_event?(price_change)
+      price_change.fetch(:valid_at) > Time.now
     end
 
     def link_to_stream(event, product_id)
