@@ -1,8 +1,4 @@
 module PublicOffer
-  class Product < ApplicationRecord
-    self.table_name = "public_offer_products"
-  end
-
   class ProductsList < Arbre::Component
 
     def self.build(view_context)
@@ -19,7 +15,6 @@ module PublicOffer
     end
 
     private
-
 
     def products_table(products)
       if products.count > 0
