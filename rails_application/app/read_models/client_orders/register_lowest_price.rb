@@ -57,6 +57,8 @@ module ClientOrders
         event.event_id,
         stream_name: stream_name(product_id)
       )
+    rescue RubyEventStore::EventDuplicatedInStream => error
+      Rails.logger.info("Duplicated event registered for PricesHistoryReport: #{error}")
     end
 
     def stream_name(product_id)
