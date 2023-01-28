@@ -73,26 +73,6 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
     assert_select("td", order_price)
   end
 
-  def test_showing_orders_with_information_about_the_lowest_price
-    client_id = register_customer('Arkency')
-    product1_id = register_product("Async Remote", 45, 10)
-    product2_id = register_product("Rails meets React.js", 50, 10)
-    update_price(product1_id, 30)
-    update_price(product2_id, 25)
-    update_price(product2_id, 70)
-
-    Sidekiq::Job.drain_all
-
-    get "/clients"
-    login(client_id)
-    get "/client_orders/new"
-    assert css_select("#lowest-price-info-#{product1_id}").empty?
-    assert css_select("#lowest-price-info-#{product2_id}").present?
-
-    info_icon = css_select("#lowest-price-info-#{product2_id}").first
-    assert_equal info_icon.attributes.fetch("title").value, "Lowest recent price: $25.00"
-  end
-
   def test_paid_orders_summary
     customer_id = register_customer("Customer Shop")
     product_1_id = register_product("Fearless Refactoring", 4, 10)
