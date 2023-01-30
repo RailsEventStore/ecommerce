@@ -19,7 +19,13 @@ require_relative 'processes/reservation_process'
 
 module Processes
   class Configuration
+    class << self
+      attr_accessor :event_store, :command_bus
+    end
+
     def call(event_store, command_bus)
+      self.class.event_store = event_store
+      self.class.command_bus = command_bus
       notify_payments_about_order_total_value(event_store, command_bus)
       enable_shipment_sync(event_store, command_bus)
       determine_vat_rates_on_order_submitted(event_store, command_bus)
@@ -43,10 +49,10 @@ module Processes
     def build_pricing_offer_from_ordering_items(event_store, command_bus)
       Infra::Process.new(event_store, command_bus)
                     .call(Ordering::ItemAddedToBasket, [:order_id, :product_id],
-                          Pricing::AddPriceItem,       [:order_id, :product_id])
+                          Pricing::AddPriceItem, [:order_id, :product_id])
       Infra::Process.new(event_store, command_bus)
                     .call(Ordering::ItemRemovedFromBasket, [:order_id, :product_id],
-                          Pricing::RemovePriceItem,        [:order_id, :product_id])
+                          Pricing::RemovePriceItem, [:order_id, :product_id])
     end
 
     def recalculate_pricing_offer_on_order_submitted(event_store, command_bus)
@@ -134,7 +140,7 @@ module Processes
 
     def enable_reservation_process(event_store, command_bus)
       event_store.subscribe(
-        ReservationProcess.new(event_store, command_bus),
+        ReservationProcess,
         to: [
           Ordering::OrderPreSubmitted,
           Ordering::OrderCancelled,

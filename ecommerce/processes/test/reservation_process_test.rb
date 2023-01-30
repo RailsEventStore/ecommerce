@@ -5,7 +5,7 @@ module Processes
     cover "Processes::ReservationProcess*"
 
     def test_happy_path
-      process = ReservationProcess.new(event_store, command_bus)
+      process = ReservationProcess.new
       given([order_pre_submitted]).each { |event| process.call(event) }
       assert_all_commands(
         Inventory::Reserve.new(product_id: product_id, quantity: 1),
@@ -29,7 +29,8 @@ module Processes
     def test_reject_order_command_is_dispatched_when_sth_is_unavailable
       failing_command = Inventory::Reserve.new(product_id: product_id, quantity: 1)
       enhanced_command_bus = EnhancedFakeCommandBus.new(command_bus, failing_command => Inventory::InventoryEntry::InventoryNotAvailable)
-      process = ReservationProcess.new(event_store, enhanced_command_bus)
+      process = ReservationProcess.new
+      process.command_bus = enhanced_command_bus
       given([order_pre_submitted]).each { |event| process.call(event) }
       assert_all_commands(
         failing_command,
@@ -40,7 +41,8 @@ module Processes
     def test_compensation_when_sth_is_unavailable
       failing_command = Inventory::Reserve.new(product_id: another_product_id, quantity: 2)
       enhanced_command_bus = EnhancedFakeCommandBus.new(command_bus, failing_command => Inventory::InventoryEntry::InventoryNotAvailable)
-      process = ReservationProcess.new(event_store, enhanced_command_bus)
+      process = ReservationProcess.new
+      process.command_bus = enhanced_command_bus
       given([order_pre_submitted]).each { |event| process.call(event) }
       assert_all_commands(
         Inventory::Reserve.new(product_id: product_id, quantity: 1),
@@ -51,7 +53,7 @@ module Processes
     end
 
     def test_release_stock_when_order_is_cancelled
-      process = ReservationProcess.new(event_store, command_bus)
+      process = ReservationProcess.new
       given([order_pre_submitted]).each { |event| process.call(event) }
 
       command_bus.clear_all_received
@@ -63,7 +65,7 @@ module Processes
     end
 
     def test_dispatch_stock_when_order_is_confirmed
-      process = ReservationProcess.new(event_store, command_bus)
+      process = ReservationProcess.new
       given([order_pre_submitted]).each { |event| process.call(event) }
 
       command_bus.clear_all_received

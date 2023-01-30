@@ -1,9 +1,10 @@
 module Processes
   class ReservationProcess < Infra::EventHandler
-    def initialize(event_store, command_bus)
-      @event_store = event_store
-      @command_bus = command_bus
+    def initialize
+      @event_store = Configuration.event_store
+      @command_bus = Configuration.command_bus
     end
+    attr_accessor :event_store, :command_bus
 
     def call(event)
       state = build_state(event)
@@ -25,8 +26,6 @@ module Processes
     end
 
     private
-
-    attr_reader :command_bus, :event_store
 
     def reserve_stock(state)
       state.order_lines.each do |product_id, quantity|
