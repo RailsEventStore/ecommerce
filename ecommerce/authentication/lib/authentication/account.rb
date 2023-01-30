@@ -27,10 +27,6 @@ module Authentication
       apply AccountConnectedToClient.new(data: { account_id: @id, client_id: client_id })
     end
 
-    def login(password)
-      apply LoggedIn.new(data: { account_id: @id })
-    end
-
     private
 
     on AccountRegistered do |event|
@@ -48,7 +44,5 @@ module Authentication
     on AccountConnectedToClient do |event|
       @client_id = event.data[:client_id]
     end
-
-    on(LoggedIn) {|_|}
   end
 end
