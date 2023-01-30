@@ -23,18 +23,6 @@ module Authentication
     end
   end
 
-  class LoginHandler
-    def initialize(event_store)
-      @repository = Infra::AggregateRootRepository.new(event_store)
-    end
-
-    def call(command)
-      @repository.with_aggregate(Account, command.account_id) do |account|
-        account.login(command.password)
-      end
-    end
-  end
-
   class SetPasswordHashHandler
     def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)
