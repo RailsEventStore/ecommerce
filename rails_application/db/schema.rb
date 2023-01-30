@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_01_30_172454) do
+ActiveRecord::Schema[7.0].define(version: 2023_01_30_172623) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -18,6 +18,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_01_30_172454) do
   create_table "accounts", force: :cascade do |t|
     t.uuid "client_id"
     t.text "password"
+    t.uuid "account_id"
   end
 
   create_table "availability_products", force: :cascade do |t|

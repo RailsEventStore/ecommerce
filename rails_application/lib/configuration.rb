@@ -15,6 +15,7 @@ class Configuration
     enable_time_promotions_read_model(event_store)
     enable_shipments_read_model(event_store)
     enable_availability_read_model(event_store)
+    enable_authentication_read_model(event_store)
 
     Ecommerce::Configuration.new(
       number_generator: Rails.configuration.number_generator,
@@ -74,5 +75,9 @@ class Configuration
 
   def enable_availability_read_model(event_store)
     Availability::Configuration.new.call(event_store)
+  end
+
+  def enable_authentication_read_model(event_store)
+    ClientAuthentication::Configuration.new.call(event_store)
   end
 end

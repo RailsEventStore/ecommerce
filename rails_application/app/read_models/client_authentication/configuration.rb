@@ -4,11 +4,8 @@ module ClientAuthentication
   end
 
   class Configuration
-    def initialize(event_store)
-      @event_store = event_store
-    end
-
-    def call
+    def call(event_store)
+      event_store.subscribe(CreateAccount, to: [Authentication::AccountConnectedToClient])
     end
   end
 end
