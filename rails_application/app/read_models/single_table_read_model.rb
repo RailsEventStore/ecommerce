@@ -10,13 +10,8 @@ class SingleTableReadModel
     @event_store.subscribe(-> (event) { create_record(event) }, to: [creation_event])
   end
 
-  def copy(event, attribute)
-    @event_store.subscribe(-> (event) { copy_event_attribute_to_column(event, attribute, attribute) }, to: [event])
-  end
-
-  def copy_nested_to_column(event, top_event_attribute, nested_attribute, column)
-    @event_store.subscribe(
-      -> (event) { copy_event_attribute_to_column(event, [top_event_attribute, nested_attribute], column) }, to: [event])
+  def copy(event, sequence_of_keys, column = Array(sequence_of_keys).first)
+    @event_store.subscribe(-> (event) { copy_event_attribute_to_column(event, sequence_of_keys, column) }, to: [event])
   end
 
   private
