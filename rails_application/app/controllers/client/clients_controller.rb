@@ -2,6 +2,8 @@ module Client
   class ClientsController < ApplicationController
     layout "client_panel"
 
+    WrongPassword = Class.new(StandardError)
+
     def index
       if cookies[:client_id]
         redirect_to client_orders_path
@@ -14,22 +16,13 @@ module Client
       password = params[:password]
       client_id = params[:client_id]
       if password.present?
-        ActiveRecord::Base.transaction do
-          customer = Customers::Customer.find(client_id)
-          password_hash = Digest::SHA256.hexdigest(password)
-          command_bus.(
-            Authentication::Login.new(
-              account_id: customer.account_id,
-              password: password_hash
-            )
-          )
+        raise WrongPassword unless correct_password?(client_id, password)
         cookies[:client_id] = client_id
-        end
       else
         cookies[:client_id] = client_id
       end
       redirect_to client_orders_path
-    rescue Authentication::Account::WrongPassword
+    rescue WrongPassword
       flash[:alert] = "Incorrect password"
       redirect_to clients_path
     end
@@ -37,6 +30,13 @@ module Client
     def logout
       cookies.delete(:client_id)
       redirect_to clients_path
+    end
+
+
+    def correct_password?(client_id, password)
+      password_hash = Digest::SHA256.hexdigest(password)
+      account = ClientAuthentication::Account.find_by(client_id: client_id)
+      password_hash.eql?(account.password)
     end
   end
 end

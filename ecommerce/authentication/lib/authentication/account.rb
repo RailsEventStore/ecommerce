@@ -28,15 +28,10 @@ module Authentication
     end
 
     def login(password)
-      raise WrongPassword unless correct_password?(password)
       apply LoggedIn.new(data: { account_id: @id })
     end
 
     private
-
-    def correct_password?(password)
-      password.eql?(@password_hash)
-    end
 
     on AccountRegistered do |event|
       @registered = true
