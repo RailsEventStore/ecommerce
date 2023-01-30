@@ -6,19 +6,21 @@ class SingleTableReadModelTest < InMemoryTestCase
   def test_subscribe_create
     event = product_registered
     event_store.append(event)
-    read_model.send :create_record, event
+    CreateRecord.new(event_store, PublicOffer::Product, :product_id).call(event)
     assert_equal 1, PublicOffer::Product.count
   end
 
   def test_dealing_with_at_least_once_delivery
     event = product_registered
     event_store.append(event)
-    2.times { read_model.send :create_record, event }
+    2.times { CreateRecord.new(event_store, PublicOffer::Product, :product_id).call(event) }
     assert_equal 1, PublicOffer::Product.count
   end
 
   def test_copy
-    event_store.publish(product_named)
+    event = product_named
+    event_store.append(event)
+    CopyEventAttribute.new(event_store, PublicOffer::Product, :product_id, :name, :name).call(event)
     assert_equal product_name, PublicOffer::Product.first.name
   end
 
@@ -26,8 +28,9 @@ class SingleTableReadModelTest < InMemoryTestCase
     event_store.append(first_event = product_named(product_name))
     event_store.append(second_event = product_named('New name'))
 
-    read_model.send :copy_event_attribute_to_column, second_event, :name, :name
-    read_model.send :copy_event_attribute_to_column, first_event, :name, :name
+    handler = CopyEventAttribute.new(event_store, PublicOffer::Product, :product_id, :name, :name)
+    handler.call(second_event)
+    handler.call(first_event)
 
     assert_equal 'New name', PublicOffer::Product.first.name
   end
