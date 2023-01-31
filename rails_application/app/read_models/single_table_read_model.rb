@@ -1,5 +1,4 @@
 class SingleTableReadModel
-
   def initialize(event_store, active_record_name, id_column)
     @event_store = event_store
     @active_record_name = active_record_name
@@ -98,6 +97,5 @@ class CopyEventAttribute < ReadModelHandler
   end
 
   private
-
   attr_reader :sequence_of_keys, :column
 end

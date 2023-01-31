@@ -1,9 +1,8 @@
 require "test_helper"
 
-class SingleTableReadModelTest < InMemoryTestCase
-  cover "SingleTableReadModel*"
+class ReadModelHandlerTest < InMemoryTestCase
 
-  def test_subscribe_create
+  def test_create_record
     event = product_registered
     event_store.append(event)
     CreateRecord.new(event_store, PublicOffer::Product, :product_id).call(event)
