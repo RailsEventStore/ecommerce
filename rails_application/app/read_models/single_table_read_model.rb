@@ -25,9 +25,7 @@ class SingleTableReadModel
       Object.const_set(
         "Set#{@active_record_name.name.gsub('::', '')}#{column.to_s.camelcase}On#{event.name.gsub('::', '')}",
         Class.new(CopyEventAttribute) do
-          define_method(:event_store) do
-            _event_store_
-          end
+          define_method(:event_store) { _event_store_ }
           define_method(:active_record_name) { _active_record_name_ }
           define_method(:id_column) { _id_column_ }
           define_method(:sequence_of_keys) { sequence_of_keys }
@@ -95,7 +93,7 @@ class CopyEventAttribute < ReadModelHandler
 
   def call(event)
     concurrent_safely(event) do
-      find_record(event).update_attribute(column, event.data.dig(sequence_of_keys))
+      find_record(event).update_attribute(column, event.data.dig(*sequence_of_keys))
     end
   end
 
