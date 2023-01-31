@@ -76,6 +76,7 @@ class BuildEventsCatalog
   def create_event_index(event_directory, event)
     File.open("#{event_directory}/index.md", "w") do |f|
       f.write(EventTemplate.new.render(event))
+      puts "   - event: #{event}"
     end
   end
 
