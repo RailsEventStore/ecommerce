@@ -62,11 +62,25 @@ class BuildEventsCatalog
   def create_domain_events(domain)
     domain_events_directory = "#{domains_catalog}/#{domain}/events"
     FileUtils.mkdir(domain_events_directory)
-    scan_domain_for_events(domain)
+    build_events(domain)
+  end
+
+  def build_events(domain)
+    scan_domain_for_events(domain).each do |event|
+      domain_event_directory = "#{domains_catalog}/#{domain}/events/#{event}"
+      FileUtils.mkdir(domain_event_directory)
+      create_event_index(domain_event_directory, event)
+    end
+  end
+
+  def create_event_index(event_directory, event)
+    File.open("#{event_directory}/index.md", "w") do |f|
+      f.write(EventTemplate.new.render(event))
+    end
   end
 
   def scan_domain_for_events(domain)
-    files =  Dir.glob("#{source_domain_path}/**/*").reject { |f| File.directory?(f) || f =='.' || f == '..' }
+    files =  Dir.glob("#{source_domain_directory(domain)}/**/*").reject { |f| File.directory?(f) || f =='.' || f == '..' }
     list = files.map do |file|
       IO.read(file).scan(/class (.*?) < #{EVENT_TYPE}/)
     end.flatten
