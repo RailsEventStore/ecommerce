@@ -95,7 +95,9 @@ class DomainTemplate
       ---
       name: #{name}
       summary: |
+        Summary
       owners:
+        - Arkency
       ---
 
       <Admonition>Domain description</Admonition>
@@ -113,21 +115,17 @@ class EventTemplate
   def render(name)
     <<~EOS
       ---
-      name: AddedItemToCart
-      version:
+      name: #{name}
+      version: 0.0.1
       summary: |
-      producers:
-      consumers:
+        Summary
       owners:
+        - Arkency
       ---
 
-      <Admonition>Event description</Admonition>
+      #{name}
 
-      ### Details
-
-      -
-
-      <SchemaViewer renderRootTreeLines defaultExpandedDepth='0' maxHeight="500" />
+      ...
     EOS
   end
 end
