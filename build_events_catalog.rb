@@ -2,6 +2,7 @@ require 'fileutils'
 
 class BuildEventsCatalog
   PATH = "./"
+  SOURCE_PATH = "./ecommerce/"
   EVENTS_CATALOG_DIRECTORY_NAME = "events_catalog"
 
   def call
@@ -14,7 +15,7 @@ class BuildEventsCatalog
   end
 
   def read_domains
-    Dir.entries(PATH).select {|entry| File.directory?(entry) and !(entry =='.' || entry == '..') }
+    Dir.entries(SOURCE_PATH).select {|entry| File.directory?("#{SOURCE_PATH}#{entry}") and !(entry =='.' || entry == '..' || entry == 'processes') }
   end
 
   def recreate_domains_catalog
