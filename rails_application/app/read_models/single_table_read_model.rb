@@ -49,7 +49,7 @@ class ReadModelHandler < Infra::EventHandler
   attr_reader :active_record_name, :id_column, :event_store
 
   def concurrent_safely(event)
-    stream_name = "#{active_record_name}$#{event.data.fetch(id_column)}$#{event.event_type}"
+    stream_name = "#{active_record_name}$#{record_id(event)}$#{event.event_type}"
     begin
       past_events = event_store.read.as_at.stream(stream_name)
       last_stored = past_events.count - 1
@@ -60,23 +60,23 @@ class ReadModelHandler < Infra::EventHandler
       return
     else
       return if past_events.last && past_events.last.timestamp > event.timestamp
-      yield
+      ApplicationRecord.with_advisory_lock(active_record_name, record_id(event)) { yield }
     end
   end
 
-  def find_record(event)
-    find(event.data.fetch(id_column))
+  def find_or_create_record(event)
+    active_record_name.find_or_create_by(id: record_id(event))
   end
 
-  def find(id)
-    active_record_name.lock.find_or_create_by(id: id)
+  def record_id(event)
+    event.data.fetch(id_column)
   end
 end
 
 class CreateRecord < ReadModelHandler
   def call(event)
     concurrent_safely(event) do
-      active_record_name.find_or_create_by(id: event.data.fetch(id_column))
+      find_or_create_record(event)
     end
   end
 end
@@ -92,7 +92,7 @@ class CopyEventAttribute < ReadModelHandler
 
   def call(event)
     concurrent_safely(event) do
-      find_record(event).update_attribute(column, event.data.dig(*sequence_of_keys))
+      find_or_create_record(event).update_attribute(column, event.data.dig(*sequence_of_keys))
     end
   end
 
