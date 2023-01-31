@@ -65,12 +65,11 @@ class ReadModelHandler < Infra::EventHandler
     rescue RubyEventStore::WrongExpectedEventVersion
       retry
     rescue RubyEventStore::EventDuplicatedInStream
-      return
     end
   end
 
-  def find_or_create_record(event)
-    active_record_name.find_or_create_by(id: record_id(event))
+  def find_or_initialize_record(event)
+    active_record_name.find_or_initialize_by(id: record_id(event))
   end
 
   def record_id(event)
@@ -81,7 +80,7 @@ end
 class CreateRecord < ReadModelHandler
   def call(event)
     concurrent_safely(event) do
-      find_or_create_record(event)
+      find_or_initialize_record(event).save
     end
   end
 end
@@ -97,7 +96,7 @@ class CopyEventAttribute < ReadModelHandler
 
   def call(event)
     concurrent_safely(event) do
-      find_or_create_record(event).update_attribute(column, event.data.dig(*sequence_of_keys))
+      find_or_initialize_record(event).update_attribute(column, event.data.dig(*sequence_of_keys))
     end
   end
 
