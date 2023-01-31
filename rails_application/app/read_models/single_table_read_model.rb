@@ -50,17 +50,22 @@ class ReadModelHandler < Infra::EventHandler
 
   def concurrent_safely(event)
     stream_name = "#{active_record_name}$#{record_id(event)}$#{event.event_type}"
+    read_scope = event_store.read.as_at.stream(stream_name)
     begin
-      past_events = event_store.read.as_at.stream(stream_name)
-      last_stored = past_events.count - 1
-      event_store.link(event.event_id, stream_name: stream_name, expected_version: last_stored)
+      last_event = read_scope.last
+      return if last_event && last_event.timestamp > event.timestamp
+      ApplicationRecord.with_advisory_lock(active_record_name, record_id(event)) do
+        yield
+        event_store.link(
+          event.event_id,
+          stream_name: stream_name,
+          expected_version: last_event ? read_scope.to(last_event.event_id).count : -1
+        )
+      end
     rescue RubyEventStore::WrongExpectedEventVersion
       retry
     rescue RubyEventStore::EventDuplicatedInStream
       return
-    else
-      return if past_events.last && past_events.last.timestamp > event.timestamp
-      ApplicationRecord.with_advisory_lock(active_record_name, record_id(event)) { yield }
     end
   end
 
