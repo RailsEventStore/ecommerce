@@ -3,7 +3,7 @@ require 'fileutils'
 class BuildEventsCatalog
   PATH = "./"
   SOURCE_PATH = "./ecommerce/"
-  EVENTS_CATALOG_DIRECTORY_NAME = "rails_application/events_catalog"
+  EVENTS_CATALOG_DIRECTORY_NAME = "events_catalog"
   EVENT_TYPE = "Infra::Event"
 
   def call
