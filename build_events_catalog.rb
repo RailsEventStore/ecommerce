@@ -130,5 +130,3 @@ class EventTemplate
     EOS
   end
 end
-
-BuildEventsCatalog.new.call
