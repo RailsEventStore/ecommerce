@@ -23,6 +23,8 @@ Rails.application.routes.draw do
 
   resources :shipments, only: [:index]
 
+  resources :events_catalog, only: [:index]
+
   resources :invoices, only: [:show]
 
   resources :products, only: [:new, :show, :create, :index, :edit, :update] do
