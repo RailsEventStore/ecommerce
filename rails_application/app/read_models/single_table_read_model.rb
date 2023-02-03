@@ -6,31 +6,43 @@ class SingleTableReadModel
   end
 
   def subscribe_create(creation_event)
-    _active_record_name_, _id_column_, _event_store_ = @active_record_name, @id_column, @event_store
-    @event_store.subscribe(
-      Object.const_set(
-        "Create#{@active_record_name.name.gsub('::', '')}On#{creation_event.name.gsub('::', '')}",
-        Class.new(CreateRecord) do
-          define_method(:event_store) { _event_store_ }
-          define_method(:active_record_name) { _active_record_name_ }
-          define_method(:id_column) { _id_column_ }
-        end
-      ), to: [creation_event])
+    @event_store.subscribe(create_handler(creation_event), to: [creation_event])
   end
 
   def copy(event, sequence_of_keys, column = Array(sequence_of_keys).first)
+    @event_store.subscribe(copy_handler(event, sequence_of_keys, column), to: [event])
+  end
+
+  private
+
+  def create_handler(event)
+    handler_class_name = "Create#{@active_record_name.name.gsub('::', '')}On#{event.name.gsub('::', '')}"
+    Object.send(:remove_const, handler_class_name) if self.class.const_defined?(handler_class_name)
     _active_record_name_, _id_column_, _event_store_ = @active_record_name, @id_column, @event_store
-    @event_store.subscribe(
-      Object.const_set(
-        "Set#{@active_record_name.name.gsub('::', '')}#{column.to_s.camelcase}On#{event.name.gsub('::', '')}",
-        Class.new(CopyEventAttribute) do
-          define_method(:event_store) { _event_store_ }
-          define_method(:active_record_name) { _active_record_name_ }
-          define_method(:id_column) { _id_column_ }
-          define_method(:sequence_of_keys) { sequence_of_keys }
-          define_method(:column) { column }
-        end
-      ), to: [event])
+    Object.const_set(
+      handler_class_name,
+      Class.new(CreateRecord) do
+        define_method(:event_store) { _event_store_ }
+        define_method(:active_record_name) { _active_record_name_ }
+        define_method(:id_column) { _id_column_ }
+      end
+    )
+  end
+
+  def copy_handler(event, sequence_of_keys, column)
+    handler_class_name = "Set#{@active_record_name.name.gsub('::', '')}#{column.to_s.camelcase}On#{event.name.gsub('::', '')}"
+    Object.send(:remove_const, handler_class_name) if self.class.const_defined?(handler_class_name)
+    _active_record_name_, _id_column_, _event_store_ = @active_record_name, @id_column, @event_store
+    Object.const_set(
+      handler_class_name,
+      Class.new(CopyEventAttribute) do
+        define_method(:event_store) { _event_store_ }
+        define_method(:active_record_name) { _active_record_name_ }
+        define_method(:id_column) { _id_column_ }
+        define_method(:sequence_of_keys) { sequence_of_keys }
+        define_method(:column) { column }
+      end
+    )
   end
 end
 
