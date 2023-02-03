@@ -68,8 +68,8 @@ module PublicOffer
 
     def call
       @read_model.subscribe_create(ProductCatalog::ProductRegistered)
-      @read_model.copy(ProductCatalog::ProductNamed,       :name)
-      @read_model.copy(Pricing::PriceSet,                  :price)
+      @read_model.subscribe_copy(ProductCatalog::ProductNamed, :name)
+      @read_model.subscribe_copy(Pricing::PriceSet, :price)
       @event_store.subscribe(RegisterLowestPrice, to: [Pricing::PriceSet])
     end
   end

@@ -28,7 +28,7 @@ module Products
 
     def parse_calendar_entry(entry)
       {
-        valid_since:  Time.parse(time_of(entry)).in_time_zone(Time.now.zone),
+        valid_since: Time.parse(time_of(entry)).in_time_zone(Time.now.zone),
         price: BigDecimal(entry[:price])
       }
     end
@@ -46,9 +46,9 @@ module Products
 
     def call
       @read_model.subscribe_create(ProductCatalog::ProductRegistered)
-      @read_model.copy(ProductCatalog::ProductNamed,       :name)
-      @read_model.copy(Inventory::StockLevelChanged,       :stock_level)
-      @read_model.copy(Taxes::VatRateSet, [:vat_rate, :code], :vat_rate_code)
+      @read_model.subscribe_copy(ProductCatalog::ProductNamed, :name)
+      @read_model.subscribe_copy(Inventory::StockLevelChanged, :stock_level)
+      @read_model.subscribe_copy(Taxes::VatRateSet, [:vat_rate, :code])
       @event_store.subscribe(RefreshFuturePricesCalendar, to: [Pricing::PriceSet])
     end
   end
