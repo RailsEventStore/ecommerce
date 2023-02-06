@@ -52,6 +52,28 @@ class ReadModelHandlerTest < InMemoryTestCase
     assert_equal 'New name', PublicOffer::Product.first.name
   end
 
+  def test_updating_with_newest_data_concurrently
+    events = 3.times.map { |i| product_named("#{product_name} #{i}") }
+    events += [product_named('New name')]
+    events.each { |event| event_store.append(event) }
+    handler = CopyEventAttribute.new(event_store, PublicOffer::Product, :product_id, :name, :name)
+
+    assert_equal(5, ActiveRecord::Base.connection.pool.size)
+
+    wait_for_it = true
+    threads = events.reverse.map do |event|
+      Thread.new do
+        true while wait_for_it
+        handler.call(event)
+      end
+    end
+    wait_for_it = false
+    threads.each(&:join)
+    assert_equal 'New name', PublicOffer::Product.first.name
+  ensure
+    ActiveRecord::Base.connection_pool.disconnect!
+  end
+
   private
 
   def read_model
