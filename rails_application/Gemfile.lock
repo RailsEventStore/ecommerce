@@ -110,7 +110,7 @@ GEM
     connection_pool (2.3.0)
     constant_resolver (0.2.0)
     crass (1.0.6)
-    date (0.0.1)
+    date (3.3.3)
     diff-lcs (1.4.4)
     dotenv (2.7.6)
     dotenv-rails (2.7.6)
