@@ -6,10 +6,7 @@ module Pricing
 
     def test_configuration
       Pricing.event_store = Infra::EventStore.in_memory
-      Pricing.event_store = Infra::CommandBus
-
       assert Pricing.event_store, Infra::EventStore.in_memory
-      assert Pricing.command_bus, Infra::CommandBus
     end
 
     def test_calculates_total_value

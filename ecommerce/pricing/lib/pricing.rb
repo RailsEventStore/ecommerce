@@ -13,13 +13,6 @@ require_relative "pricing/calculate_order_sub_amounts_value"
 require_relative "pricing/calculate_order_total_value"
 
 module Pricing
-  def self.command_bus=(value)
-    @command_bus = value
-  end
-
-  def self.command_bus
-    @command_bus
-  end
 
   def self.event_store=(value)
     @event_store = value
@@ -32,7 +25,6 @@ module Pricing
   class Configuration
     def call(event_store, command_bus)
       Pricing.event_store = event_store
-      Pricing.command_bus = command_bus
 
       command_bus.register(
         AddPriceItem,
@@ -86,7 +78,7 @@ module Pricing
         RemoveFreeProductFromOrder,
         RemoveFreeProductFromOrderHandler.new(event_store)
       )
-      event_store.subscribe(CalculateOrderTotalValue, to: [
+      event_store.subscribe(-> (event) { CalculateOrderTotalValue.new.call(event, command_bus)} , to: [
         PriceItemAdded,
         PriceItemRemoved,
         PercentageDiscountSet,
