@@ -41,7 +41,7 @@ module.exports = {
     {
       id: 'Arkency',
       name: 'Arkency',
-      avatarUrl: 'https://randomuser.me/api/portraits/lego/3.jpg',
+      avatarUrl: 'https://arkency.com/logo.svg',
       role: 'Developer',
     },
   ],
