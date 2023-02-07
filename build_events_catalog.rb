@@ -7,7 +7,8 @@ class BuildEventsCatalog
   EVENT_TYPE = "Infra::Event"
 
   def call
-    recreate_domains_catalog
+    clear_domains
+    clear_events
     read_domains.each do |domain|
       domain.capitalize!
       domain_directory = create_domain_directory(domain)
@@ -15,6 +16,8 @@ class BuildEventsCatalog
       create_domain_events(domain)
     end
   end
+
+  private
 
   def read_domains
     Dir.entries(SOURCE_PATH).select {|entry| File.directory?("#{SOURCE_PATH}#{entry}") and !(entry =='.' || entry == '..' || entry == 'processes') }
@@ -24,18 +27,23 @@ class BuildEventsCatalog
     "#{SOURCE_PATH}#{domain.downcase}"
   end
 
-  def recreate_domains_catalog
-    remove_domains_catalog
-    create_domains_catalog
+  def clear_domains
+    remove_catalog(domains_catalog)
+    create_catalog(domains_catalog)
   end
 
-  def create_domains_catalog
-    FileUtils.mkdir(domains_catalog)
+  def clear_events
+    remove_catalog(events_catalog)
+    create_catalog(events_catalog)
   end
 
-  def remove_domains_catalog
-    File.exist?(domains_catalog) && File.directory?(domains_catalog)
-    FileUtils.rm_rf(domains_catalog)
+  def create_catalog(catalog)
+    FileUtils.mkdir(catalog)
+  end
+
+  def remove_catalog(catalog)
+    File.exist?(catalog) && File.directory?(catalog)
+    FileUtils.rm_rf(catalog)
   end
 
   def root_catalog
@@ -44,6 +52,10 @@ class BuildEventsCatalog
 
   def domains_catalog
     "#{root_catalog}/domains"
+  end
+
+  def events_catalog
+    "#{root_catalog}/events"
   end
 
   def create_domain_directory(domain)
