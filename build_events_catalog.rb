@@ -5,8 +5,10 @@ class BuildEventsCatalog
   SOURCE_PATH = "./ecommerce/"
   EVENTS_CATALOG_DIRECTORY_NAME = "events_catalog"
   EVENT_TYPE = "Infra::Event"
+  CONFIG_FILE = "./eventcatalog.config.js"
 
   def call
+    configure
     clear_domains
     clear_events
     clear_services
@@ -19,6 +21,10 @@ class BuildEventsCatalog
   end
 
   private
+
+  def configure
+    replace_config_file
+  end
 
   def read_domains
     Dir.entries(SOURCE_PATH).select {|entry| File.directory?("#{SOURCE_PATH}#{entry}") and !(entry =='.' || entry == '..' || entry == 'processes') }
@@ -109,6 +115,10 @@ class BuildEventsCatalog
     end.flatten
       .reject {|e| e.empty?}
       .compact
+  end
+
+  def replace_config_file
+    FileUtils.cp(CONFIG_FILE, root_catalog)
   end
 end
 
