@@ -73,10 +73,6 @@ module Processes
       NotifyPaymentsAboutOrderValue.new(event_store, command_bus)
     end
 
-    def enable_inventory_sync_from_ordering(event_store, command_bus)
-      SyncInventoryFromOrdering.new(event_store, command_bus)
-    end
-
     def confirm_order_on_payment_captured(event_store, command_bus)
       event_store.subscribe(
         ConfirmOrderOnPaymentCaptured.new(command_bus),
