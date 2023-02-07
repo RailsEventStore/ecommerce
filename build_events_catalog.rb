@@ -9,6 +9,7 @@ class BuildEventsCatalog
   def call
     clear_domains
     clear_events
+    clear_services
     read_domains.each do |domain|
       domain.capitalize!
       domain_directory = create_domain_directory(domain)
@@ -37,6 +38,11 @@ class BuildEventsCatalog
     create_catalog(events_catalog)
   end
 
+  def clear_services
+    remove_catalog(services_catalog)
+    create_catalog(services_catalog)
+  end
+
   def create_catalog(catalog)
     FileUtils.mkdir(catalog)
   end
@@ -56,6 +62,10 @@ class BuildEventsCatalog
 
   def events_catalog
     "#{root_catalog}/events"
+  end
+
+  def services_catalog
+    "#{root_catalog}/services"
   end
 
   def create_domain_directory(domain)
