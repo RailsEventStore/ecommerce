@@ -8,8 +8,6 @@ module Pricing
   class NotPossibleToChangeDiscount < StandardError
   end
 
-  class OverlappingHappyHours < StandardError; end
-
   class FreeProductAlreadyMade < StandardError
   end
 
