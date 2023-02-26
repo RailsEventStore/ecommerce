@@ -10,4 +10,3 @@ matcher:
     - Pricing::Configuration*
     - Pricing::Test*
     - Pricing::CalculateOrderTotalSubAmountsValue*
-    - Pricing::CalculateOrderTotalValue*
