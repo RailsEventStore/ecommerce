@@ -3,6 +3,16 @@ module Pricing
     class UnacceptableDiscountRange < StandardError
     end
 
+    class Discount
+      def self.build(discount)
+        if discount.zero?
+          NoPercentageDiscount.new
+        else
+          PercentageDiscount.new(discount)
+        end
+      end
+    end
+
     class PercentageDiscount
       attr_reader :value
 

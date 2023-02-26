@@ -134,14 +134,7 @@ module Pricing
     private
 
     def time_promotions_discount
-      promotions_calendar = PromotionsCalendar.new(@event_store)
-      time_promotions_discount = promotions_calendar.current_time_promotions_discount
-      if time_promotions_discount.zero?
-        time_percentage_discount = Discounts::NoPercentageDiscount.new
-      else
-        time_percentage_discount = Discounts::PercentageDiscount.new(time_promotions_discount)
-      end
-      time_percentage_discount
+      PromotionsCalendar.new(@event_store).current_time_promotions_discount
     end
 
   end
