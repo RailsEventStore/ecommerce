@@ -68,7 +68,7 @@ GEM
       mutant (= 0.10.34)
     parser (3.0.2.0)
       ast (~> 2.4.1)
-    rack (3.0.4.1)
+    rack (3.0.4.2)
     rake (13.0.6)
     redis-client (0.11.2)
       connection_pool
