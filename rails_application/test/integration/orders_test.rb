@@ -77,24 +77,8 @@ class OrdersTest < InMemoryRESIntegrationTestCase
 
     Shipments::MarkOrderSubmitted.drain
 
-    get "/orders/#{order_id}"
-    assert_select("dd", "Shipping address is missing.")
-    assert_select("a", "Add shipment address")
-    get "/orders/#{order_id}/shipping_address/edit"
-    assert_select("label", "Addressee's full name (Person or Company)")
-    put "/orders/#{order_id}/shipping_address", params: {
-      "shipments_shipment" => {
-        address_line_1: "123 Main Street",
-        address_line_2: "Apt 1",
-        address_line_3: "San Francisco",
-        address_line_4: "US",
-      }
-    }
-    Shipments::SetShippingAddress.drain
-    follow_redirect!
-    assert_select("dd", "Your shipment has been queued for processing.")
-    get "/shipments"
-    assert_select("td", "123 Main Street Apt 1 San Francisco US")
+    verify_shipping(order_id)
+    verify_invoice_generation(order_id)
 
     assert_res_browser_order_history
   end
@@ -167,6 +151,46 @@ class OrdersTest < InMemoryRESIntegrationTestCase
   end
 
   private
+
+  def verify_shipping(order_id)
+    get "/orders/#{order_id}"
+    assert_select("dd", "Shipping address is missing.")
+    assert_select("a", "Add shipment address")
+    get "/orders/#{order_id}/shipping_address/edit"
+    assert_select("label", "Addressee's full name (Person or Company)")
+    put "/orders/#{order_id}/shipping_address", params: {
+      "shipments_shipment" => {
+        address_line_1: "123 Main Street",
+        address_line_2: "Apt 1",
+        address_line_3: "San Francisco",
+        address_line_4: "US",
+      }
+    }
+    Shipments::SetShippingAddress.drain
+    follow_redirect!
+    assert_select("dd", "Your shipment has been queued for processing.")
+    get "/shipments"
+    assert_select("td", "123 Main Street Apt 1 San Francisco US")
+  end
+
+  def verify_invoice_generation(order_id)
+    get "/orders/#{order_id}"
+    assert_select("a", "Add billing address")
+    get "/orders/#{order_id}/billing_address/edit"
+    assert_select("label", "Addressee's full name (Person or Company)")
+    put "/orders/#{order_id}/billing_address", params: {
+      "invoices_invoice" => {
+        address_line_1: "44 Main Street",
+        address_line_2: "Apt 2",
+        address_line_3: "Francisco",
+        address_line_4: "UK",
+      }
+    }
+    follow_redirect!
+    assert_select("button", "Issue now")
+    post "/orders/#{order_id}/invoice"
+    follow_redirect!
+  end
 
   def assert_res_browser_order_history
     get "/res/api/streams/Orders%24all/relationships/events"

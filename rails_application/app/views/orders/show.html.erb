@@ -62,8 +62,8 @@
         %>
       <% else %>
         Invoice not issued
-        <%= link_to "Issue now",
-                    order_invoice_path(@order.uid), method: :post,
+        <%= button_to "Issue now",
+                    order_invoice_path(@order.uid),
                     class: 'px-2 py-1 border rounded-md shadow-sm text-xs font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 border-transparent text-white bg-blue-600 hover:bg-blue-700'
         %>
       <% end %>
