@@ -109,7 +109,7 @@ module Pricing
           }
         )
       ) { run_command(CalculateTotalValue.new(order_id: order_id)) }
-      assert_events(
+      assert_events_contain(
         stream,
         PercentageDiscountSet.new(
           data: {
@@ -129,7 +129,7 @@ module Pricing
           Pricing::SetPercentageDiscount.new(order_id: order_id, amount: 10)
         )
       end
-      assert_events(
+      assert_events_contain(
         stream,
         PercentageDiscountChanged.new(
           data: {
@@ -149,7 +149,7 @@ module Pricing
           Pricing::ChangePercentageDiscount.new(order_id: order_id, amount: 50)
         )
       end
-      assert_events(
+      assert_events_contain(
         stream,
         PercentageDiscountReset.new(
           data: {
@@ -176,7 +176,7 @@ module Pricing
       order_id = SecureRandom.uuid
       add_item(order_id, product_1_id)
       stream = "Pricing::Order$#{order_id}"
-      assert_events(
+      assert_events_contain(
         stream,
         PercentageDiscountSet.new(
           data: {
@@ -274,7 +274,7 @@ module Pricing
         Pricing::SetPercentageDiscount.new(order_id: order_id, amount: 10)
       )
 
-      assert_events(
+      assert_events_contain(
         stream,
         PercentageDiscountChanged.new(
           data: {
@@ -309,7 +309,7 @@ module Pricing
         Pricing::ChangePercentageDiscount.new(order_id: order_id, amount: 20)
       )
 
-      assert_events(
+      assert_events_contain(
         stream,
         PercentageDiscountChanged.new(
           data: {
@@ -344,7 +344,7 @@ module Pricing
         Pricing::ChangePercentageDiscount.new(order_id: order_id, amount: 20)
       )
 
-      assert_events(
+      assert_events_contain(
         stream,
         PercentageDiscountReset.new(
           data: {

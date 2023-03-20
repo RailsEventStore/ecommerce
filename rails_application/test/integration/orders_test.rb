@@ -190,6 +190,16 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     assert_select("button", "Issue now")
     post "/orders/#{order_id}/invoice"
     follow_redirect!
+
+    assert_select("td", "Async Remote")
+    assert_select("td", "$35.10")
+    assert_select("td", "1")
+    assert_select("td", "Fearless Refactoring")
+    assert_select("td", "$44.10")
+    assert_select("td", "2")
+    assert_select("td", "$88.20")
+    assert_select("td", "$123.30")
+
   end
 
   def assert_res_browser_order_history

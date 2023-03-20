@@ -42,6 +42,18 @@ module Infra
                      actual_events.map(&to_compare)
       end
 
+      def assert_events_contain(stream_name, *expected_events)
+        scope = event_store.read.stream(stream_name)
+        before = scope.last
+        yield
+        actual_events =
+          before.nil? ? scope.to_a : scope.from(before.event_id).to_a
+        to_compare = ->(ev) { { type: ev.event_type, data: ev.data } }
+        expected_events.map(&to_compare).each do |expected|
+          assert_includes(actual_events.map(&to_compare), expected)
+        end
+      end
+
       def assert_changes(actuals, expected)
         expects = expected.map(&:data)
         assert_equal(expects, actuals.map(&:data))

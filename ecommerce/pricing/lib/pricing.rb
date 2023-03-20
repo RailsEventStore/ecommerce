@@ -95,6 +95,15 @@ module Pricing
         ProductMadeFreeForOrder,
         FreeProductRemovedFromOrder
       ])
+      event_store.subscribe(CalculateOrderTotalSubAmountsValue, to: [
+        PriceItemAdded,
+        PriceItemRemoved,
+        PercentageDiscountSet,
+        PercentageDiscountReset,
+        PercentageDiscountChanged,
+        ProductMadeFreeForOrder,
+        FreeProductRemovedFromOrder
+      ])
     end
   end
 end

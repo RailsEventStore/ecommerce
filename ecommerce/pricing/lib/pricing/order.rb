@@ -56,7 +56,7 @@ module Pricing
     end
 
     def make_product_free(order_id, product_id)
-      raise FreeProductAlreadyMade if @product_quantity_hash.any? {|key, value| key.instance_of?(FreeProduct) && value.eql?(1)}
+      raise FreeProductAlreadyMade if @product_quantity_hash.keys.any? {|key| key.instance_of?(FreeProduct)}
       apply ProductMadeFreeForOrder.new(
         data: {
           order_id: order_id,
@@ -66,7 +66,7 @@ module Pricing
     end
 
     def remove_free_product(order_id, product_id)
-      raise FreeProductNotExists if @product_quantity_hash.none? {|key, value| key.instance_of?(FreeProduct) && value.eql?(1)}
+      raise FreeProductNotExists if @product_quantity_hash.keys.none? {|key| key.instance_of?(FreeProduct)}
       apply FreeProductRemovedFromOrder.new(
         data: {
           order_id: order_id,
@@ -125,6 +125,11 @@ module Pricing
       else
         @product_quantity_hash[FreeProduct.new(event.data.fetch(:product_id))] -= 1
       end
+      clear_empty_products
+    end
+
+    def clear_empty_products
+      @product_quantity_hash.delete_if { |_, value| value.zero? }
     end
 
     on PriceItemValueCalculated do |event|
@@ -147,10 +152,12 @@ module Pricing
 
     on ProductMadeFreeForOrder do |event|
       replace(Product, FreeProduct, event.data.fetch(:product_id))
+      clear_empty_products
     end
 
     on FreeProductRemovedFromOrder do |event|
       replace(FreeProduct, Product, event.data.fetch(:product_id))
+      clear_empty_products
     end
 
     def calculate_total_sub_discounts(pricing_catalog, time_promotions_discount)

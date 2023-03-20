@@ -14,7 +14,7 @@ module Pricing
       add_item(order_id, product_1_id)
       stream = "Pricing::Order$#{order_id}"
 
-      assert_events(
+      assert_events_contain(
         stream,
         ProductMadeFreeForOrder.new(
           data: {
@@ -48,7 +48,7 @@ module Pricing
       add_item(order_id, cheaper_product)
       stream = "Pricing::Order$#{order_id}"
 
-      assert_events(
+      assert_events_contain(
         stream,
         ProductMadeFreeForOrder.new(
           data: {
@@ -62,7 +62,7 @@ module Pricing
             discounted_amount: 60,
             total_amount: 60
           }
-        )
+        ),
       ) do
         run_command(
           Pricing::MakeProductFreeForOrder.new(order_id: order_id, product_id: cheaper_product)
@@ -116,7 +116,7 @@ module Pricing
         Pricing::AddPriceItem.new(order_id: order_id, product_id: product_1_id)
       )
 
-      assert_events(
+      assert_events_contain(
         stream,
         ProductMadeFreeForOrder.new(
           data: {
@@ -152,7 +152,7 @@ module Pricing
         Pricing::MakeProductFreeForOrder.new(order_id: order_id, product_id: product_1_id)
       )
 
-      assert_events(
+      assert_events_contain(
         stream,
         FreeProductRemovedFromOrder.new(
           data: {
