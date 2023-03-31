@@ -8,7 +8,7 @@ module Infra
     ID = Types::Strict::Integer
     Metadata =
       Types::Hash.schema(
-        timestamp: Types::Params::DateTime.meta(omittable: true)
+        timestamp: Types::Params::Time.meta(omittable: true)
       )
     OrderNumber =
       Types::Strict::String.constrained(format: /\A\d{4}\/\d{2}\/\d+\z/i)

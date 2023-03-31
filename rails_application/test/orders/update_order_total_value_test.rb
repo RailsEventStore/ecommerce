@@ -25,8 +25,8 @@ module Orders
       prepare_product(product_id)
       item_added_to_basket(order_id, product_id)
 
-      event_store.publish(Pricing::OrderTotalValueCalculated.new(data: { order_id: order_id, discounted_amount: 0, total_amount: 10 }, metadata: { timestamp: Time.now }))
-      event_store.publish(Pricing::OrderTotalValueCalculated.new(data: { order_id: order_id, amount: 20, discounted_amount: 10, total_amount: 20 }, metadata: { timestamp: Time.now - 1.minute }))
+      event_store.publish(Pricing::OrderTotalValueCalculated.new(data: { order_id: order_id, discounted_amount: 0, total_amount: 10 }, metadata: { timestamp: Time.current }))
+      event_store.publish(Pricing::OrderTotalValueCalculated.new(data: { order_id: order_id, amount: 20, discounted_amount: 10, total_amount: 20 }, metadata: { timestamp: 1.minute.ago }))
 
       order = Orders::Order.find_by(uid: order_id)
       assert_equal 10, order.total_value

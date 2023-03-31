@@ -21,7 +21,7 @@ module Pricing
     end
 
     def is_promotion_running?(event)
-      timestamp = DateTime.now
+      timestamp = Time.current
       start_time = event.data.fetch(:start_time)
       end_time = event.data.fetch(:end_time)
 

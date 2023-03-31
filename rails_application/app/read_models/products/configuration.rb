@@ -8,12 +8,12 @@ module Products
       super.map(&method(:parse_calendar_entry))
     end
 
-    def price(time = Time.now)
+    def price(time = Time.current)
       last_price_before(time)
     end
 
     def future_prices_calendar
-      current_prices_calendar.select { |entry| entry[:valid_since] > Time.now }
+      current_prices_calendar.select { |entry| entry[:valid_since] > Time.current }
     end
 
     private
@@ -28,7 +28,7 @@ module Products
 
     def parse_calendar_entry(entry)
       {
-        valid_since: Time.parse(time_of(entry)).in_time_zone(Time.now.zone),
+        valid_since:  Time.zone.parse(time_of(entry)).in_time_zone(Time.current.zone),
         price: BigDecimal(entry[:price])
       }
     end

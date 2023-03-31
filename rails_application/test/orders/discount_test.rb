@@ -65,8 +65,8 @@ module Orders
       prepare_product(product_id)
       item_added_to_basket(order_id, product_id)
 
-      event_store.publish(Pricing::PercentageDiscountSet.new(data: { order_id: order_id, amount: 30 }, metadata: { timestamp: Time.now }))
-      event_store.publish(Pricing::PercentageDiscountSet.new(data: { order_id: order_id, amount: 20 }, metadata: { timestamp: Time.now - 1.minute }))
+      event_store.publish(Pricing::PercentageDiscountSet.new(data: { order_id: order_id, amount: 30 }, metadata: { timestamp: Time.current }))
+      event_store.publish(Pricing::PercentageDiscountSet.new(data: { order_id: order_id, amount: 20 }, metadata: { timestamp: 1.minute.ago }))
 
       assert_equal 30, Orders::Order.find_by(uid: order_id).percentage_discount
     end

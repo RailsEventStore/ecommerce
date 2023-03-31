@@ -31,7 +31,7 @@ module Pricing
   class SetFuturePrice < Infra::Command
     attribute :product_id, Infra::Types::UUID
     attribute :price, Infra::Types::Price
-    attribute :valid_since, Infra::Types::Params::DateTime
+    attribute :valid_since, Infra::Types::Params::Time
   end
 
   class SetPercentageDiscount < Infra::Command
@@ -56,8 +56,8 @@ module Pricing
   class CreateTimePromotion < Infra::Command
     attribute :time_promotion_id, Infra::Types::UUID.meta(omittable: true)
     attribute :discount, Infra::Types::PercentageDiscount
-    attribute :start_time, Infra::Types::Params::DateTime
-    attribute :end_time, Infra::Types::Params::DateTime
+    attribute :start_time, Infra::Types::Params::Time
+    attribute :end_time, Infra::Types::Params::Time
     attribute :label, Infra::Types::String
   end
 

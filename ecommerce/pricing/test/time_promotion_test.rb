@@ -8,8 +8,8 @@ module Pricing
 
     def test_creates_time_promotion
       uid = SecureRandom.uuid
-      start_time = DateTime.new(2022, 7, 1, 12, 15, 0)
-      end_time = DateTime.new(2022, 7, 4, 14, 30, 30)
+      start_time = Time.utc(2022, 7, 1, 12, 15, 0)
+      end_time = Time.utc(2022, 7, 4, 14, 30, 30)
       discount = 25
       label = "Summer Sale"
       data = {
@@ -41,7 +41,7 @@ module Pricing
     cover "Pricing*"
 
     def test_calculates_total_value_with_time_promotion
-      timestamp = DateTime.new(2022, 5, 30, 15, 33)
+      timestamp = Time.utc(2022, 5, 30, 15, 33)
 
       Timecop.freeze(timestamp) do
         product_1_id = SecureRandom.uuid
@@ -102,7 +102,7 @@ module Pricing
     end
 
     def test_calculates_sub_amounts_with_combined_discounts
-      timestamp = DateTime.new(2022, 5, 30, 15, 33)
+      timestamp = Time.utc(2022, 5, 30, 15, 33)
       Timecop.freeze(timestamp) do
 
         product_1_id = SecureRandom.uuid
@@ -172,7 +172,7 @@ module Pricing
     end
 
     def test_takes_last_values_for_time_promotion
-      timestamp = DateTime.new(2022, 5, 30, 15, 33)
+      timestamp = Time.new(2022, 5, 30, 15, 33)
       time_promotion_id = SecureRandom.uuid
       start_time = timestamp - 5
       end_time = timestamp - 2

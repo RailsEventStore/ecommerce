@@ -12,7 +12,7 @@ module Pricing
 
     def test_set_future_price
       product_id = SecureRandom.uuid
-      valid_since = DateTime.current + 2.days
+      valid_since = 2.days.from_now
       price = 20
 
       future_price_set = [

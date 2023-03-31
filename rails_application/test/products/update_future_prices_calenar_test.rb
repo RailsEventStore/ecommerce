@@ -13,9 +13,9 @@ module Products
       event_store.publish(product_named)
       event_store.publish(set_price)
 
-      date_1 = Time.now + 3600
-      date_2 = Time.now + 7200
-      date_3 = Time.now + 10800
+      date_1 = Time.current + 3600
+      date_2 = Time.current + 7200
+      date_3 = Time.current + 10800
 
 
       product = Product.find_by_id(product_id)
