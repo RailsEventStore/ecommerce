@@ -7,7 +7,7 @@ module Pricing
     def test_future_price_is_not_included_when_calculating_total_value
       product_1_id = SecureRandom.uuid
       set_price(product_1_id, 20)
-      future_date_timestamp = Time.current.utc + days_number(5)
+      future_date_timestamp = Time.current + days_number(5)
       set_future_price(product_1_id, 30, future_date_timestamp)
       order_id = SecureRandom.uuid
       add_item(order_id, product_1_id)
@@ -28,7 +28,7 @@ module Pricing
     def test_check_future_price
       product_1_id = SecureRandom.uuid
       set_price(product_1_id, 20)
-      future_date_timestamp = Time.current.utc + days_number(5)
+      future_date_timestamp = Time.current + days_number(5)
       set_future_price(product_1_id, 30, future_date_timestamp)
 
       Timecop.travel(future_date_timestamp + 2137) do
