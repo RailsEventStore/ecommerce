@@ -46,7 +46,7 @@ module Pricing
     end
 
     def future_prices(e)
-      e.metadata.fetch(:valid_at) > Time.now.utc
+      e.metadata.fetch(:valid_at) > Time.now
     end
 
     def to_calendar_entry(e)
