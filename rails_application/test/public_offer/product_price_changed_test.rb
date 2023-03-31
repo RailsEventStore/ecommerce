@@ -37,7 +37,7 @@ module PublicOffer
       product_id = prepare_product
 
       set_price(product_id, 100)
-      set_past_price(product_id, 15, 31.days.ago.beginning_of_day.to_s)
+      set_past_price(product_id, 15, 31.days.ago.beginning_of_day)
       set_price(product_id, 50)
       set_price(product_id, 70)
 
@@ -48,12 +48,12 @@ module PublicOffer
       freeze_time do
         product_id = prepare_product
 
-        set_past_price(product_id, 20, 31.days.ago.beginning_of_day.to_s)
-        set_past_price(product_id, 25, (30.days.ago.beginning_of_day - 1.second).to_s)
-        set_past_price(product_id, 30, 30.days.ago.beginning_of_day.to_s)
-        set_past_price(product_id, 32, (30.days.ago.beginning_of_day + 1.second).to_s)
-        set_past_price(product_id, 35, 30.days.ago.to_s)
-        set_past_price(product_id, 40, 29.days.ago.beginning_of_day.to_s)
+        set_past_price(product_id, 20, 31.days.ago.beginning_of_day)
+        set_past_price(product_id, 25, 30.days.ago.beginning_of_day - 1.second)
+        set_past_price(product_id, 30, 30.days.ago.beginning_of_day)
+        set_past_price(product_id, 32, 30.days.ago.beginning_of_day + 1.second)
+        set_past_price(product_id, 35, 30.days.ago)
+        set_past_price(product_id, 40, 29.days.ago.beginning_of_day)
 
         assert_equal 30, Product.find(product_id).lowest_recent_price
       end
@@ -62,9 +62,9 @@ module PublicOffer
     def test_ignores_future_prices
       product_id = prepare_product
 
-      set_past_price(product_id, 45, 2.days.ago.to_s)
+      set_past_price(product_id, 45, 2.days.ago)
       set_price(product_id, 35)
-      set_future_price(product_id, 11, (Time.now + 2.days).to_s)
+      set_future_price(product_id, 11, 2.days.from_now)
 
       assert_equal 35, Product.find(product_id).lowest_recent_price
     end
@@ -88,9 +88,9 @@ module PublicOffer
         )
       )
 
-      set_past_price(product_id, 15, 45.days.ago.to_s)
-      set_past_price(product_id, 45, 32.days.ago.to_s)
-      set_future_price(product_id, 11, (Time.now + 2.days).to_s)
+      set_past_price(product_id, 15, 45.days.ago)
+      set_past_price(product_id, 45, 32.days.ago)
+      set_future_price(product_id, 11, 2.days.from_now)
 
       assert_equal 45, Product.find(product_id).lowest_recent_price
     end

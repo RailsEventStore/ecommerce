@@ -20,9 +20,9 @@ module Products
       product = Product.find_by_id(product_id)
       assert_equal [], product.future_prices_calendar
 
-      run_command(Pricing::SetFuturePrice.new(product_id: product_id, price: BigDecimal("12.01"), valid_since: date_3.to_s ))
-      run_command(Pricing::SetFuturePrice.new(product_id: product_id, price: BigDecimal("1.0"), valid_since: date_1.to_s ))
-      run_command(Pricing::SetFuturePrice.new(product_id: product_id, price: BigDecimal("2.0"), valid_since: date_2.to_s ))
+      run_command(Pricing::SetFuturePrice.new(product_id: product_id, price: BigDecimal("12.01"), valid_since: date_3 ))
+      run_command(Pricing::SetFuturePrice.new(product_id: product_id, price: BigDecimal("1.0"), valid_since: date_1 ))
+      run_command(Pricing::SetFuturePrice.new(product_id: product_id, price: BigDecimal("2.0"), valid_since: date_2 ))
 
       product.reload
       assert_equal 4, product.current_prices_calendar.length

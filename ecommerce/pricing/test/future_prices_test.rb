@@ -8,7 +8,7 @@ module Pricing
       product_1_id = SecureRandom.uuid
       set_price(product_1_id, 20)
       future_date_timestamp = Time.current.utc + days_number(5)
-      set_future_price(product_1_id, 30, future_date_timestamp.to_s)
+      set_future_price(product_1_id, 30, future_date_timestamp)
       order_id = SecureRandom.uuid
       add_item(order_id, product_1_id)
       stream = "Pricing::Order$#{order_id}"
@@ -29,7 +29,7 @@ module Pricing
       product_1_id = SecureRandom.uuid
       set_price(product_1_id, 20)
       future_date_timestamp = Time.current.utc + days_number(5)
-      set_future_price(product_1_id, 30, future_date_timestamp.to_s)
+      set_future_price(product_1_id, 30, future_date_timestamp)
 
       Timecop.travel(future_date_timestamp + 2137) do
         order_id = SecureRandom.uuid
@@ -56,9 +56,9 @@ module Pricing
       future_date_timestamp_2 = Time.current + days_number(3)
       future_date_timestamp_3 = Time.current + days_number(4)
 
-      set_future_price(product_id, 30, future_date_timestamp_3.to_s)
-      set_future_price(product_id, 40, future_date_timestamp_1.to_s)
-      set_future_price(product_id, 50, future_date_timestamp_2.to_s)
+      set_future_price(product_id, 30, future_date_timestamp_3)
+      set_future_price(product_id, 40, future_date_timestamp_1)
+      set_future_price(product_id, 50, future_date_timestamp_2)
 
       pricing_catalog = PricingCatalog.new(event_store)
 
@@ -78,10 +78,10 @@ module Pricing
           BigDecimal(30)
         ], pricing_catalog.current_prices_catalog_by_product_id(product_id).map { |entry| entry[:price] }
         assert_equal [
-          future_date_timestamp_1.to_s,
-          future_date_timestamp_2.to_s,
-          future_date_timestamp_3.to_s,
-        ], pricing_catalog.current_prices_catalog_by_product_id(product_id).map { |entry| entry[:valid_since].to_s }
+          future_date_timestamp_1,
+          future_date_timestamp_2,
+          future_date_timestamp_3,
+        ], pricing_catalog.current_prices_catalog_by_product_id(product_id).map { |entry| entry[:valid_since] }
         assert_equal BigDecimal(40), pricing_catalog.price_by_product_id(product_id)
       end
 
@@ -91,9 +91,9 @@ module Pricing
           BigDecimal(30)
         ], pricing_catalog.current_prices_catalog_by_product_id(product_id).map { |entry| entry[:price] }
         assert_equal [
-          future_date_timestamp_2.to_s,
-          future_date_timestamp_3.to_s,
-        ], pricing_catalog.current_prices_catalog_by_product_id(product_id).map { |entry| entry[:valid_since].to_s }
+          future_date_timestamp_2,
+          future_date_timestamp_3,
+        ], pricing_catalog.current_prices_catalog_by_product_id(product_id).map { |entry| entry[:valid_since] }
         assert_equal BigDecimal(50), pricing_catalog.price_by_product_id(product_id)
       end
 
@@ -102,8 +102,8 @@ module Pricing
       Timecop.travel(future_date_timestamp_3 + 1) do
         assert_equal [BigDecimal(30)], pricing_catalog.current_prices_catalog_by_product_id(product_id).map { |entry| entry[:price] }
         assert_equal [
-          future_date_timestamp_3.to_s
-        ], pricing_catalog.current_prices_catalog_by_product_id(product_id).map { |entry| entry[:valid_since].to_s }
+          future_date_timestamp_3
+        ], pricing_catalog.current_prices_catalog_by_product_id(product_id).map { |entry| entry[:valid_since] }
         assert_equal BigDecimal(30), pricing_catalog.price_by_product_id(product_id)
       end
     end

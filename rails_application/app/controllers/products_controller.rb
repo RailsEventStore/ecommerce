@@ -44,7 +44,7 @@ class ProductsController < ApplicationController
         set_future_product_price(
           params[:product_id],
           future_price["price"],
-          Time.zone.parse(future_price["start_time"]).utc.to_s
+          Time.zone.parse(future_price["start_time"]).utc
         )
       end
     end
