@@ -52,9 +52,9 @@ module Pricing
     def test_future_prices_catalog_by_product_id
       product_id = SecureRandom.uuid
       set_price(product_id, 20)
-      future_date_timestamp_1 = Time.current + days_number(2)
-      future_date_timestamp_2 = Time.current + days_number(3)
-      future_date_timestamp_3 = Time.current + days_number(4)
+      future_date_timestamp_1 = with_precision(Time.current + days_number(2))
+      future_date_timestamp_2 = with_precision(Time.current + days_number(3))
+      future_date_timestamp_3 = with_precision(Time.current + days_number(4))
 
       set_future_price(product_id, 30, future_date_timestamp_3)
       set_future_price(product_id, 40, future_date_timestamp_1)
@@ -114,5 +114,8 @@ module Pricing
       3600 * 24 * n
     end
 
+    def with_precision(time)
+      time.round(6)
+    end
   end
 end
