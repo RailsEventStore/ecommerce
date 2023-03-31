@@ -7,7 +7,7 @@ module Pricing
     def test_future_price_is_not_included_when_calculating_total_value
       product_1_id = SecureRandom.uuid
       set_price(product_1_id, 20)
-      future_date_timestamp = 5.days.from_now
+      future_date_timestamp = Time.current.utc + days_number(5)
       set_future_price(product_1_id, 30, future_date_timestamp)
       order_id = SecureRandom.uuid
       add_item(order_id, product_1_id)
@@ -28,10 +28,10 @@ module Pricing
     def test_check_future_price
       product_1_id = SecureRandom.uuid
       set_price(product_1_id, 20)
-      future_date_timestamp = 5.days.from_now
+      future_date_timestamp = Time.current.utc + days_number(5)
       set_future_price(product_1_id, 30, future_date_timestamp)
 
-      Timecop.travel(future_date_timestamp + 2137.seconds) do
+      Timecop.travel(future_date_timestamp + 2137) do
         order_id = SecureRandom.uuid
         add_item(order_id, product_1_id)
         stream = "Pricing::Order$#{order_id}"
@@ -52,9 +52,9 @@ module Pricing
     def test_future_prices_catalog_by_product_id
       product_id = SecureRandom.uuid
       set_price(product_id, 20)
-      future_date_timestamp_1 = 2.days.from_now
-      future_date_timestamp_2 = 3.days.from_now
-      future_date_timestamp_3 = 4.days.from_now
+      future_date_timestamp_1 = Time.current + days_number(2)
+      future_date_timestamp_2 = Time.current + days_number(3)
+      future_date_timestamp_3 = Time.current + days_number(4)
 
       set_future_price(product_id, 30, future_date_timestamp_3)
       set_future_price(product_id, 40, future_date_timestamp_1)
@@ -107,5 +107,12 @@ module Pricing
         assert_equal BigDecimal(30), pricing_catalog.price_by_product_id(product_id)
       end
     end
+
+    private
+
+    def days_number(n)
+      3600 * 24 * n
+    end
+
   end
 end
