@@ -11,7 +11,6 @@ module ClientAuthentication
 
     def test_set_password
       customer_id = SecureRandom.uuid
-      product_id = SecureRandom.uuid
       account_id = SecureRandom.uuid
       password = "1234qwer"
       password_hash = Digest::SHA256.hexdigest(password)
@@ -22,6 +21,26 @@ module ClientAuthentication
       run_command(
         Authentication::SetPasswordHash.new(account_id: account_id, password_hash: password_hash)
       )
+      Sidekiq::Job.drain_all
+
+      account = Account.find_by(client_id: customer_id, account_id: account_id)
+      assert_equal password_hash, account.password
+    end
+
+    def test_set_password_then_connect_account
+      customer_id = SecureRandom.uuid
+      account_id = SecureRandom.uuid
+      password = "1234qwer"
+      password_hash = Digest::SHA256.hexdigest(password)
+
+      register_customer(customer_id)
+      Sidekiq::Job.drain_all
+      run_command(
+        Authentication::SetPasswordHash.new(account_id: account_id, password_hash: password_hash)
+      )
+      Sidekiq::Job.drain_all
+      connect_to_account(customer_id, account_id)
+
       Sidekiq::Job.drain_all
 
       account = Account.find_by(client_id: customer_id, account_id: account_id)

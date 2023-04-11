@@ -7,7 +7,7 @@ module ClientAuthentication
     private
 
     def find(account_id)
-      Account.where(account_id: account_id).first
+      Account.find_or_create_by(account_id: account_id)
     end
   end
 end
