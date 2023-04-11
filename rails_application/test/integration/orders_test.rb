@@ -171,10 +171,12 @@ class OrdersTest < InMemoryRESIntegrationTestCase
            "commit" => "Submit order"
          }
     follow_redirect!
+    Sidekiq::Job.drain_all
     get "/orders/#{order_id}"
     assert_select("td", text: "$39.00")
     assert_select("td", text: "$78.00")
     update_price(async_remote_id, 49)
+    Sidekiq::Job.drain_all
     get "/orders/#{order_id}"
 
     assert_select("td", text: "$39.00")
