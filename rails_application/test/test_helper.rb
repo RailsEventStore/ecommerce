@@ -69,6 +69,15 @@ class InMemoryRESIntegrationTestCase < ActionDispatch::IntegrationTest
     product_id
   end
 
+  def update_price(product_id, new_price)
+    patch "/products/#{product_id}",
+          params: {
+            "authenticity_token" => "[FILTERED]",
+            "product_id" => product_id,
+            price: new_price,
+          }
+  end
+
   def login(client_id)
     post "/login", params: { client_id: client_id }
     follow_redirect!

@@ -39,14 +39,4 @@ class PublicOfferTest < InMemoryRESIntegrationTestCase
     assert_equal info_icon.attributes.fetch("title").value, "Lowest recent price: $25.00"
   end
 
-  private
-
-  def update_price(product_id, new_price)
-    patch "/products/#{product_id}",
-      params: {
-        "authenticity_token" => "[FILTERED]",
-        "product_id" => product_id,
-        price: new_price,
-      }
-  end
 end

@@ -150,6 +150,37 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     assert_select("button", 2)
   end
 
+  def test_order_value_doesnt_change_after_changing_price
+    shopify_id = register_customer("Shopify")
+
+    order_id = SecureRandom.uuid
+    async_remote_id = register_product("Async Remote", 39, 10)
+
+    Sidekiq::Job.drain_all
+
+    get "/"
+    get "/orders/new"
+    post "/orders/#{order_id}/add_item?product_id=#{async_remote_id}"
+    post "/orders/#{order_id}/add_item?product_id=#{async_remote_id}"
+
+    post "/orders",
+         params: {
+           "authenticity_token" => "[FILTERED]",
+           "order_id" => order_id,
+           "customer_id" => shopify_id,
+           "commit" => "Submit order"
+         }
+    follow_redirect!
+    get "/orders/#{order_id}"
+    assert_select("td", text: "$39.00")
+    assert_select("td", text: "$78.00")
+    update_price(async_remote_id, 49)
+    get "/orders/#{order_id}"
+
+    assert_select("td", text: "$39.00")
+    assert_select("td", text: "$78.00")
+  end
+
   private
 
   def verify_shipping(order_id)
