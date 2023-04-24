@@ -29,8 +29,8 @@ GEM
     arkency-command_bus (0.4.1)
       concurrent-ruby
     ast (2.4.2)
-    concurrent-ruby (1.2.0)
-    connection_pool (2.3.0)
+    concurrent-ruby (1.2.2)
+    connection_pool (2.4.0)
     diff-lcs (1.5.0)
     dry-core (1.0.0)
       concurrent-ruby (~> 1.0)
@@ -67,7 +67,7 @@ GEM
       ast (~> 2.4.1)
     rack (3.0.7)
     rake (13.0.6)
-    redis-client (0.12.1)
+    redis-client (0.14.1)
       connection_pool
     regexp_parser (2.6.2)
     ruby_event_store (2.9.1)
@@ -75,7 +75,7 @@ GEM
     ruby_event_store-transformations (0.1.0)
       activesupport (>= 5.0)
       ruby_event_store (>= 2.0.0, < 3.0.0)
-    sidekiq (7.0.3)
+    sidekiq (7.0.9)
       concurrent-ruby (< 2)
       connection_pool (>= 2.3.0)
       rack (>= 2.2.4)
