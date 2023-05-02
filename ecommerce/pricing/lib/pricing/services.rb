@@ -56,7 +56,7 @@ module Pricing
     end
 
     def call(cmd)
-      @repository.with_aggregate(Product, cmd.product_id) do |product|
+      @repository.with_aggregate(Price, cmd.product_id) do |product|
         product.set_price(cmd.price)
       end
     end
@@ -70,7 +70,7 @@ module Pricing
 
     def call(cmd)
       @event_store.with_metadata({ valid_at: cmd.valid_since }) do
-        @repository.with_aggregate(Product, cmd.product_id) do |product|
+        @repository.with_aggregate(Price, cmd.product_id) do |product|
           product.set_price(cmd.price)
         end
       end
