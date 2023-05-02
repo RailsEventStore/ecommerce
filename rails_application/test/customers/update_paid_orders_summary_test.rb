@@ -9,11 +9,9 @@ module Customers
       Customer.destroy_all
     end
 
-    def test_update_orders_cummary
-      event_store = Rails.configuration.event_store
+    def test_update_orders_summary
       customer_id = SecureRandom.uuid
       other_customer_id = SecureRandom.uuid
-      product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
 
       register_customer(other_customer_id)
