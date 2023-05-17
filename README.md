@@ -144,6 +144,7 @@ As for the local dev setup:
 - we use Makefile, so `make install` should simplify a lot
 - to start the web application and all the workers type `make dev`
 - there's docker-compose in the rails_application, if you're into Docker
+- Ruby version, it's best to use the same, which we use for CI/production: [as defined in this file](https://github.com/RailsEventStore/ecommerce/blob/master/.github/workflows/rails_application.yml#L31)
 
 **Bundler note**
 
