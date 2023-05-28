@@ -22,6 +22,19 @@ module Customers
       assert_equal account_id, customer.account_id
     end
 
+    def test_first_connect_then_register
+      customer_id = SecureRandom.uuid
+      account_id = SecureRandom.uuid
+
+      run_command(
+        Authentication::ConnectAccountToClient.new(account_id: account_id, client_id: customer_id)
+      )
+      register_customer(customer_id)
+
+      customer = Customer.find(customer_id)
+      assert_equal account_id, customer.account_id
+    end
+
 
     private
 

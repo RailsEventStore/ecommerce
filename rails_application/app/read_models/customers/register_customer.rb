@@ -1,7 +1,9 @@
 module Customers
   class RegisterCustomer < Infra::EventHandler
     def call(event)
-      Customer.create(id: event.data.fetch(:customer_id), name: event.data.fetch(:name))
+      ApplicationRecord.with_advisory_lock(event.data.fetch(:customer_id)) do
+        Customer.find_or_create_by(id: event.data.fetch(:customer_id)).update(name: event.data.fetch(:name))
+      end
     end
   end
 end
