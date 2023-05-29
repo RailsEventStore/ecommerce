@@ -27,7 +27,7 @@ module Pricing
     end
 
     def apply_discount(discount)
-      raise NotPossibleToAssignDiscountTwice if @discount.value.nonzero?
+      raise NotPossibleToAssignDiscountTwice if @discount.exists?
       apply PercentageDiscountSet.new(
         data: {
           order_id: @id,
@@ -37,7 +37,7 @@ module Pricing
     end
 
     def change_discount(discount)
-      raise NotPossibleToChangeDiscount if @discount.value.zero?
+      raise NotPossibleToChangeDiscount unless @discount.exists?
       apply PercentageDiscountChanged.new(
         data: {
           order_id: @id,
@@ -47,7 +47,7 @@ module Pricing
     end
 
     def reset_discount
-      raise NotPossibleToResetWithoutDiscount if @discount.value.zero?
+      raise NotPossibleToResetWithoutDiscount unless @discount.exists?
       apply PercentageDiscountReset.new(
         data: {
           order_id: @id
@@ -185,7 +185,7 @@ module Pricing
       end
 
       def contains_free_products?
-        @products_quantities.keys.any? {|key| key.instance_of?(FreeProduct) }
+        @products_quantities.keys.any? {|key| key.free? }
       end
 
       def base_sum(pricing_catalog)
@@ -212,6 +212,10 @@ module Pricing
         @id = id
       end
 
+      def free?
+        false
+      end
+
       def eql?(other)
         other.instance_of?(Product) && id.eql?(other.id)
       end
@@ -228,6 +232,10 @@ module Pricing
 
       def initialize(id)
         @id = id
+      end
+
+      def free?
+        true
       end
 
       def eql?(other)

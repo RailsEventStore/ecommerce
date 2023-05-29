@@ -33,6 +33,10 @@ module Pricing
         PercentageDiscount.new(new_value)
       end
 
+      def exists?
+        true
+      end
+
       private
 
       def discount(total)
@@ -51,6 +55,9 @@ module Pricing
 
       def value
         0
+      end
+
+      def exists?
       end
     end
   end
