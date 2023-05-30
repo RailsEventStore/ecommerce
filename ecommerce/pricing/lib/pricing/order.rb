@@ -213,7 +213,6 @@ module Pricing
       end
 
       def free?
-        false
       end
 
       def eql?(other)
