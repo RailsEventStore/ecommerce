@@ -19,7 +19,7 @@ module Pricing
         PriceSet.new(data: { product_id: product_id, price: price }),
       ]
 
-      assert_events("Pricing::Price$#{product_id}", *future_price_set) do
+      assert_events("Pricing::PriceChange$#{product_id}", *future_price_set) do
         set_future_price(product_id, price, valid_since)
       end
     end

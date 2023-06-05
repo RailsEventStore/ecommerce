@@ -1,5 +1,5 @@
 module Pricing
-  class Price
+  class PriceChange
     include AggregateRoot
 
     def initialize(product_id)
