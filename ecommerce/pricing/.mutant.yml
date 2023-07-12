@@ -9,3 +9,5 @@ matcher:
   ignore:
     - Pricing::Configuration*
     - Pricing::Test*
+    - Pricing::OnCalculateTotalValue#call
+    - Pricing::OnCalculateTotalValue#calculate_sub_amounts

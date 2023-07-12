@@ -123,12 +123,18 @@ module Pricing
       @repository.with_aggregate(Order, command.aggregate_id) do |order|
         order.calculate_total_value(PricingCatalog.new(@event_store), time_promotions_discount)
       end
+    rescue WrongExpectedEventVersion
+      retry
     end
+
+
 
     def calculate_sub_amounts(command)
       @repository.with_aggregate(Order, command.aggregate_id) do |order|
         order.calculate_sub_amounts(PricingCatalog.new(@event_store), time_promotions_discount)
       end
+    rescue WrongExpectedEventVersion
+      retry
     end
 
     private
