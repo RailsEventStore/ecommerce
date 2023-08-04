@@ -15,7 +15,6 @@ Rails.application.routes.draw do
       get :edit_discount
       post :update_discount
       post :reset_discount
-      get :reset_discount
     end
     resource :shipping_address, only: [:edit, :update]
     resource :billing_address, only: [:edit, :update]
