@@ -27,7 +27,7 @@ class DiscountTest < InMemoryRESIntegrationTestCase
     apply_discount_10_percent(order_id)
     Sidekiq::Job.drain_all
 
-    assert_select("a", "Reset")
+    assert_select("button", "Reset")
     post "/orders/#{order_id}/reset_discount"
     Sidekiq::Job.drain_all
     follow_redirect!
