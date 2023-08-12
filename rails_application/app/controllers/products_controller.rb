@@ -36,6 +36,9 @@ class ProductsController < ApplicationController
   end
 
   def update
+    if params[:name].present?
+      set_product_name(params[:product_id], params[:name])
+    end
     if params[:price].present?
       set_product_price(params[:product_id], params[:price])
     end
@@ -48,7 +51,7 @@ class ProductsController < ApplicationController
         )
       end
     end
-    redirect_to products_path, notice: "Price was successfully updated"
+    redirect_to products_path, notice: "Product was successfully updated"
   end
 
   private
@@ -69,6 +72,10 @@ class ProductsController < ApplicationController
   def set_product_vat_rate(product_id, vat_rate_code)
     vat_rate = Taxes::Configuration.available_vat_rates.find{|rate| rate.code == vat_rate_code}
     command_bus.(set_product_vat_rate_cmd(product_id, vat_rate))
+  end
+
+  def set_product_name(product_id, name)
+    command_bus.(name_product_cmd(product_id, name))
   end
 
   def create_product_cmd(product_id, name)
