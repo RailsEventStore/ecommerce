@@ -19,9 +19,11 @@
 <%= form_tag({controller: "products", action: "update"}, method: "patch", id: "form") do %>
   <%= hidden_field_tag(:product_id, @product.id) %>
 
-  <div>
-    <p class="font-bold">Name</p>
-    <%= @product.name %>
+  <div class="mt-2">
+    <label for="vat_rate" class="block font-bold">
+      Product Name
+    </label>
+    <%= text_field_tag :name, @product.name, required: true, class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-sm sm:text-sm border-gray-300 rounded-md" %>
   </div>
   <div class="mt-2">
     <label for="vat_rate" class="block font-bold">

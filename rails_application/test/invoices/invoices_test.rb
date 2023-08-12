@@ -1,7 +1,7 @@
 require "test_helper"
 
 module Invoices
-  class InvoicesTest < InMemoryTestCase
+  class InvoicesTest < InMemoryRESIntegrationTestCase
     cover "Invoices*"
 
     def setup
@@ -23,6 +23,48 @@ module Invoices
       )
       assert_equal(Invoice.count, 1)
       assert_equal(18, Invoice.last.total_value)
+    end
+
+    def test_product_name_change_affects_existing_invoices
+      product_id = SecureRandom.uuid
+      initial_product_name = "Initial Name"
+      updated_product_name = "Updated Name"
+      
+      product_id = register_product(initial_product_name, 100, 20)
+      customer_id = register_customer("Test Customer")
+      
+      order_id = SecureRandom.uuid
+      add_product_to_basket(order_id, product_id)
+      submit_order(customer_id, order_id)
+      pay_order(order_id)
+      
+      update_product_name(product_id, updated_product_name)
+      
+      assert_invoice_product_name(order_id, initial_product_name)
+
+      new_order_id = SecureRandom.uuid
+      add_product_to_basket(new_order_id, product_id)
+      submit_order(customer_id, new_order_id)
+      pay_order(new_order_id)
+  
+      assert_invoice_product_name(new_order_id, updated_product_name)
+    end
+    
+    private
+    
+    def update_product_name(product_id, new_name)
+      patch "/products/#{product_id}",
+            params: {
+              "authenticity_token" => "[FILTERED]",
+              "product_id" => product_id,
+              name: new_name,
+            }
+    end
+    
+    def assert_invoice_product_name(order_id, expected_name)
+      get "/invoices/#{order_id}"
+      assert_response :success
+      assert_select ".py-2", text: expected_name
     end
   end
 end
