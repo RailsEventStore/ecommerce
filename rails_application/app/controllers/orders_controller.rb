@@ -53,6 +53,12 @@ class OrdersController < ApplicationController
   end
 
   def add_item
+    order = Orders::Order.find_by_uid(params[:id])
+    if order && order.state == "Submitted"
+      redirect_to order_path(params[:id]), alert: "Items cannot be added to an already placed order."
+      return
+    
+    end
     read_model = Orders::OrderLine.where(order_uid: params[:id], product_id: params[:product_id]).first
     if Availability::Product.exists?(["uid = ? and available < ?", params[:product_id], (read_model&.quantity || 0) + 1])
       redirect_to edit_order_path(params[:id]),
