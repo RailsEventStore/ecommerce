@@ -36,7 +36,6 @@ module Invoices
       order_id = SecureRandom.uuid
       add_product_to_basket(order_id, product_id)
       submit_order(customer_id, order_id)
-      pay_order(order_id)
       
       update_product_name(product_id, updated_product_name)
       
@@ -45,7 +44,6 @@ module Invoices
       new_order_id = SecureRandom.uuid
       add_product_to_basket(new_order_id, product_id)
       submit_order(customer_id, new_order_id)
-      pay_order(new_order_id)
   
       assert_invoice_product_name(new_order_id, updated_product_name)
     end
