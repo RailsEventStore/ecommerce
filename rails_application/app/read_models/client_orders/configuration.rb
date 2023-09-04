@@ -121,7 +121,7 @@ module ClientOrders
       event_store.subscribe(AddItemToOrder, to: [Ordering::ItemAddedToBasket])
       event_store.subscribe(RemoveItemFromOrder, to: [Ordering::ItemRemovedFromBasket])
 
-      event_store.subscribe(CreateCustomer, to: [Crm::CustomerRegistered])
+      event_store.subscribe(CreateCustomer.new, to: [Crm::CustomerRegistered])
       event_store.subscribe(AssignCustomerToOrder, to: [Crm::CustomerAssignedToOrder])
 
       event_store.subscribe(ChangeProductName, to: [ProductCatalog::ProductNamed])
