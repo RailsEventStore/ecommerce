@@ -32,20 +32,20 @@ module Orders
 
       Rails.configuration.broadcaster = Orders::Broadcaster.new
 
-      event_store.subscribe(AddItemToOrder, to: [Ordering::ItemAddedToBasket])
-      event_store.subscribe(RemoveItemFromOrder, to: [Ordering::ItemRemovedFromBasket])
-      event_store.subscribe(UpdateDiscount, to: [Pricing::PercentageDiscountSet, Pricing::PercentageDiscountChanged])
-      event_store.subscribe(ResetDiscount, to: [Pricing::PercentageDiscountReset])
-      event_store.subscribe(UpdateOrderTotalValue, to: [Pricing::OrderTotalValueCalculated])
-      event_store.subscribe(RegisterProduct, to: [ProductCatalog::ProductRegistered])
-      event_store.subscribe(ChangeProductName, to: [ProductCatalog::ProductNamed])
-      event_store.subscribe(ChangeProductPrice, to: [Pricing::PriceSet])
-      event_store.subscribe(CreateCustomer, to: [Crm::CustomerRegistered])
-      event_store.subscribe(AssignCustomerToOrder, to: [Crm::CustomerAssignedToOrder])
-      event_store.subscribe(SubmitOrder, to: [Ordering::OrderSubmitted])
-      event_store.subscribe(ExpireOrder, to: [Ordering::OrderExpired])
-      event_store.subscribe(ConfirmOrder, to: [Ordering::OrderConfirmed])
-      event_store.subscribe(CancelOrder, to: [Ordering::OrderCancelled])
+      event_store.subscribe(AddItemToOrder.new, to: [Ordering::ItemAddedToBasket])
+      event_store.subscribe(RemoveItemFromOrder.new, to: [Ordering::ItemRemovedFromBasket])
+      event_store.subscribe(UpdateDiscount.new, to: [Pricing::PercentageDiscountSet, Pricing::PercentageDiscountChanged])
+      event_store.subscribe(ResetDiscount.new, to: [Pricing::PercentageDiscountReset])
+      event_store.subscribe(UpdateOrderTotalValue.new, to: [Pricing::OrderTotalValueCalculated])
+      event_store.subscribe(RegisterProduct.new, to: [ProductCatalog::ProductRegistered])
+      event_store.subscribe(ChangeProductName.new, to: [ProductCatalog::ProductNamed])
+      event_store.subscribe(ChangeProductPrice.new, to: [Pricing::PriceSet])
+      event_store.subscribe(CreateCustomer.new, to: [Crm::CustomerRegistered])
+      event_store.subscribe(AssignCustomerToOrder.new, to: [Crm::CustomerAssignedToOrder])
+      event_store.subscribe(SubmitOrder.new, to: [Ordering::OrderSubmitted])
+      event_store.subscribe(ExpireOrder.new, to: [Ordering::OrderExpired])
+      event_store.subscribe(ConfirmOrder.new, to: [Ordering::OrderConfirmed])
+      event_store.subscribe(CancelOrder.new, to: [Ordering::OrderCancelled])
 
 
       subscribe(

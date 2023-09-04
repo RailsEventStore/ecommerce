@@ -52,7 +52,6 @@ module Orders
         )
       )
       run_command(Pricing::SetPrice.new(product_id: product_id, price: 50))
-      Sidekiq::Job.drain_all
     end
 
     def customer_registered(customer_id)
