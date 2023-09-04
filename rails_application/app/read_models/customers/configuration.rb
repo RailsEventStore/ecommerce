@@ -5,10 +5,10 @@ module Customers
 
   class Configuration
     def call(event_store)
-      event_store.subscribe(RegisterCustomer, to: [Crm::CustomerRegistered])
-      event_store.subscribe(PromoteToVip, to: [Crm::CustomerPromotedToVip])
-      event_store.subscribe(UpdatePaidOrdersSummary, to: [Ordering::OrderConfirmed])
-      event_store.subscribe(ConnectAccount, to: [Authentication::AccountConnectedToClient])
+      event_store.subscribe(RegisterCustomer.new, to: [Crm::CustomerRegistered])
+      event_store.subscribe(PromoteToVip.new, to: [Crm::CustomerPromotedToVip])
+      event_store.subscribe(UpdatePaidOrdersSummary.new, to: [Ordering::OrderConfirmed])
+      event_store.subscribe(ConnectAccount.new, to: [Authentication::AccountConnectedToClient])
     end
   end
 end
