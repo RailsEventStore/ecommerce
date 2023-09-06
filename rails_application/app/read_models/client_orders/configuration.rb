@@ -60,7 +60,7 @@ module ClientOrders
             end
             tr class: "border-t font-bold" do
               td colspan: 2, class: "py-2" do
-                para "Total orders summary"
+                para "Total paid orders"
               end
               td class: "py-2 text-right border-t" do
                 number_to_currency(client.paid_orders_summary)

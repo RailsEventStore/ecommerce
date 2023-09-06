@@ -81,7 +81,7 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
 
     login(customer_id)
     visit_client_orders
-    assert_select "Total orders summary", false
+    assert_select "Total paid orders", false
 
     order_and_pay(customer_id, SecureRandom.uuid, product_1_id, product_2_id)
     visit_client_orders
@@ -141,7 +141,7 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
 
   def assert_orders_summary(summary)
     assert_select 'tr' do
-      assert_select 'td:nth-child(1)', "Total orders summary"
+      assert_select 'td:nth-child(1)', "Total paid orders"
       assert_select 'td:nth-child(2)', summary
     end
   end
