@@ -2,12 +2,12 @@ PATH
   remote: ../infra
   specs:
     infra (1.0.0)
-      aggregate_root (~> 2.9.0)
+      aggregate_root (~> 2.9)
       arkency-command_bus
       dry-struct
       dry-types
       rake
-      ruby_event_store (~> 2.9.0)
+      ruby_event_store (~> 2.9)
       ruby_event_store-transformations
       sidekiq
 
