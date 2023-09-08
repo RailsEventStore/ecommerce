@@ -36,7 +36,8 @@ class OrdersController < ApplicationController
 
   def update_discount
     @order_id = params[:id]
-    if Orders::Order.find_by_uid(params[:id]).percentage_discount
+    order = Orders::Order.find_or_create_by!(uid: params[:id])
+    if order.percentage_discount
       command_bus.(Pricing::ChangePercentageDiscount.new(order_id: @order_id, amount: params[:amount]))
     else
       command_bus.(Pricing::SetPercentageDiscount.new(order_id: @order_id, amount: params[:amount]))

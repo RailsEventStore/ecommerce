@@ -183,6 +183,31 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     assert_select("td", text: "$78.00")
   end
 
+  def test_discount_is_applied_for_new_order
+    order_id = SecureRandom.uuid
+    async_remote_id = register_product("Async Remote", 39, 10)
+    fearless_id     = register_product("Fearless Refactoring", 49, 10)
+    shopify_id = register_customer("Shopify")
+
+    assert_nothing_raised { apply_discount_10_percent(order_id)}
+
+    post "/orders/#{order_id}/add_item?product_id=#{async_remote_id}"
+    post "/orders/#{order_id}/add_item?product_id=#{fearless_id}"
+
+    post "/orders",
+         params: {
+           "authenticity_token" => "[FILTERED]",
+           "order_id" => order_id,
+           "customer_id" => shopify_id,
+           "commit" => "Submit order"
+         }
+
+    follow_redirect!
+    assert_select("td", "$79.20")
+    assert_select("dd", "Submitted")
+    assert_select("td", "10.0%")
+  end
+
   private
 
   def verify_shipping(order_id)
