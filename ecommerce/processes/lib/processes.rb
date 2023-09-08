@@ -136,7 +136,7 @@ module Processes
 
     def enable_reservation_process(event_store, command_bus)
       event_store.subscribe(
-        ReservationProcess,
+        ReservationProcess.new,
         to: [
           Ordering::OrderPreSubmitted,
           Ordering::OrderCancelled,
