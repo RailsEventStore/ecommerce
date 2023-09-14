@@ -4,11 +4,14 @@ during setup, please reach us so we can help you set it up before the workshop.
 
 1. Clone the project `git clone git@github.com:RailsEventStore/ecommerce.git`
 2. `cd ecommerce`
-3. run `make install`
-4. run `make dev` - the app should be up and running. Take a look around
-5. run `make test` to make sure the tests are running. Tests will be important
+3. Ensure you have `postgresql` and `redis` services configured, up and running;
+   see Setup section in [rails_application/README.md](rails_application/README.md)
+4. run `make install`
+5. run `make dev` - the app should be up and running. Take a look around
+6. run `make test` to make sure the tests are running. Tests will be important
 part of the workshop
-6. Take a look at `README.md`. It explains how the app is structured and the goal
+7. Take a look at `README.md`. It explains how the app is structured and the goal
 of this repository
 
 See you at the workshop 👋
+
