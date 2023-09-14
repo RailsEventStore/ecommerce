@@ -1,4 +1,4 @@
-CONTEXTS = $(shell find ecommerce -type d -maxdepth 1 -mindepth 1 -exec basename {} \;)
+CONTEXTS = $(shell find ecommerce -maxdepth 1 -mindepth 1 -type d -exec basename {} \;)
 
 $(addprefix install-, $(CONTEXTS)):
 	@make -C ecommerce/$(subst install-,,$@) install
