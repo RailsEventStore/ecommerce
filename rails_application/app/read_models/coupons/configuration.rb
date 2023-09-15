@@ -5,7 +5,7 @@ module Coupons
 
   class Configuration
     def call(event_store)
-      event_store.subscribe(RegisterCoupon, to: [Pricing::CouponRegistered])
+      event_store.subscribe(RegisterCoupon.new, to: [Pricing::CouponRegistered])
     end
   end
 end
