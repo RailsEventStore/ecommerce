@@ -2,10 +2,11 @@
 
 ROM::SQL.migration do
   change do
-    create_table(:orders) do
-      primary_key :id
+    run 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp";'
 
-      column :uuid, :uuid
+    create_table(:orders) do
+      primary_key :id, :uuid, default: Sequel.function(:uuid_generate_v4)
+
       column :number, String
       column :customer, String
       column :state, String

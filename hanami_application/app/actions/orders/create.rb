@@ -12,9 +12,9 @@ module Ecommerce
           submit_order(request.params[:order_id], request.params[:customer_id])
 
           response.format = :json
-          response.body = orders.by_uuid(request.params[:order_id])
+          response.body = orders.by_id(request.params[:order_id])
             .attributes
-            .slice(:uuid)
+            .slice(:id)
             .to_json
         end
 

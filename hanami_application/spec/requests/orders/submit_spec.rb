@@ -13,7 +13,7 @@ RSpec.describe "Submit Order", type: :request do
     post "/orders", { order_id: order_id, customer_id: customer_id}
 
     # Assert
-    response_uuid = JSON.parse(last_response.body)["uuid"]
+    response_uuid = JSON.parse(last_response.body)["id"]
     expect(response_uuid).to eq(order_id)
 
     expect(last_response).to be_successful

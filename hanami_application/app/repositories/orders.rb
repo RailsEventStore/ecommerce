@@ -5,8 +5,8 @@ module Ecommerce
 
       commands :create
 
-      def by_uuid(uuid)
-        orders.where(uuid: uuid).one
+      def by_id(id)
+        orders.by_pk(id).one
       end
     end
   end

@@ -8,7 +8,7 @@ module Ecommerce
 
         def call(event)
           orders.create(
-            uuid: event.data[:order_id],
+            id: event.data[:order_id],
             number: event.data[:order_number]
           )
         end
