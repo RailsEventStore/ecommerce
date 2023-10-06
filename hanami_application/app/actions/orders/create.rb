@@ -5,6 +5,7 @@ module Ecommerce
         include Deps[
           "command_bus",
           "repositories.orders",
+          "persistence.transaction",
         ]
 
         def handle(request, response)
@@ -20,8 +21,10 @@ module Ecommerce
         private
 
         def submit_order(order_id, customer_id)
-          command_bus.(Ordering::SubmitOrder.new(order_id: order_id))
-          # command_bus.(Crm::AssignCustomerToOrder.new(order_id: order_id, customer_id: customer_id))
+          transaction.call do
+            command_bus.(Ordering::SubmitOrder.new(order_id: order_id))
+            command_bus.(Crm::AssignCustomerToOrder.new(order_id: order_id, customer_id: customer_id))
+          end
         end
       end
     end

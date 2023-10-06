@@ -18,5 +18,6 @@ Hanami.app.register_provider :persistence, namespace: true do
      register 'config', config
      register 'db', config.gateways[:default].connection
      register 'rom', ROM.container(config)
+     register 'transaction', Infra::Transaction.new(container: config)
   end
 end
