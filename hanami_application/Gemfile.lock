@@ -156,6 +156,14 @@ GEM
     hanami-validations (2.0.1)
       dry-validation (>= 1.10, < 2)
       zeitwerk (~> 2.6.0)
+    hanami-view (2.1.0.beta2)
+      concurrent-ruby (~> 1.0)
+      dry-configurable (~> 1.0)
+      dry-core (~> 1.0)
+      dry-inflector (~> 1.0, < 2)
+      temple (~> 0.10.0, >= 0.10.2)
+      tilt (~> 2.0, >= 2.0.6)
+      zeitwerk (~> 2.6)
     hansi (0.2.1)
     i18n (1.14.1)
       concurrent-ruby (~> 1.0)
@@ -257,7 +265,9 @@ GEM
       connection_pool (>= 2.3.0)
       rack (>= 2.2.4)
       redis-client (>= 0.14.0)
+    temple (0.10.3)
     thor (1.2.2)
+    tilt (2.3.0)
     transproc (1.1.1)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
@@ -277,8 +287,10 @@ DEPENDENCIES
   hanami-router (~> 2.0)
   hanami-rspec
   hanami-validations (~> 2.0)
+  hanami-view (~> 2.0)
   infra!
   pg
+  pry
   pry-byebug
   puma
   rack-test

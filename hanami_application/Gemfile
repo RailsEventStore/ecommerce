@@ -6,6 +6,7 @@ gem "hanami", "~> 2.0"
 gem "hanami-router", "~> 2.0"
 gem "hanami-controller", "~> 2.0"
 gem "hanami-validations", "~> 2.0"
+gem "hanami-view", "~> 2.0"
 
 gem "dry-types", "~> 1.0", ">= 1.6.1"
 gem "puma"
@@ -23,6 +24,7 @@ gem "infra", path: "../infra"
 
 group :development, :test do
   gem "dotenv"
+  gem "pry"
   gem "pry-byebug"
 end
 

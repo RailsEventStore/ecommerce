@@ -8,6 +8,10 @@ module Ecommerce
       def by_id(id)
         orders.by_pk(id).one
       end
+
+      def all
+        orders.to_a
+      end
     end
   end
 end

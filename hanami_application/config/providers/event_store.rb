@@ -19,7 +19,7 @@ Hanami.app.register_provider :event_store, namespace: true do
 
     register "repository", repository
     register "client", client
-  
+
     client.subscribe(
       target["event_handlers.orders.submit"], to: [Ordering::OrderSubmitted]
     )
