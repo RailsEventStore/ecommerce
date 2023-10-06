@@ -3,7 +3,7 @@
 require "rack/test"
 
 RSpec.shared_context "Hanami app" do
-  let(:app) { Hanami.app }
+  let(:app) { Hanami.app.boot }
 end
 
 RSpec.configure do |config|

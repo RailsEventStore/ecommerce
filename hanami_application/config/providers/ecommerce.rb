@@ -9,7 +9,7 @@ Hanami.app.register_provider :ecommerce, namespace: true do
     number_generator = -> { Ordering::NumberGenerator.new }
     payment_gateway = -> { Payments::FakeGateway.new }
 
-    Ecommerce::Configuration.new(
+    config = Ecommerce::Configuration.new(
       event_store: event_store,
       command_bus: command_bus,
       number_generator: number_generator,
@@ -20,8 +20,6 @@ Hanami.app.register_provider :ecommerce, namespace: true do
       ]
     ).call(event_store, command_bus)
 
-    event_store.subscribe(
-      target["event_handlers.orders.submit"], to: [Ordering::OrderSubmitted]
-    )
+    register "config", config
   end
 end
