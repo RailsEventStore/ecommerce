@@ -18,6 +18,8 @@ class Configuration
     enable_authentication_read_model(event_store)
 
     Ecommerce::Configuration.new(
+      event_store: Rails.configuration.event_store,
+      command_bus: Rails.configuration.command_bus,
       number_generator: Rails.configuration.number_generator,
       payment_gateway: Rails.configuration.payment_gateway,
       available_vat_rates: [
