@@ -19,6 +19,8 @@ gem "ruby_event_store"
 gem "ruby_event_store-rom", require: "ruby_event_store/rom/sql"
 gem "arkency-command_bus"
 
+gem "infra", path: "../infra"
+
 group :development, :test do
   gem "dotenv"
 end
