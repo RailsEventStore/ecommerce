@@ -1,3 +1,14 @@
 # frozen_string_literal: true
 
 require "hanami/rake_tasks"
+require "hanami/prepare"
+require "ruby_event_store/rom/rake_task"
+require "rom/sql/rake_task"
+
+namespace :db do
+  task :setup do
+    Ecommerce::App.prepare :persistence
+    config = Ecommerce::Container['persistence.config']
+    ROM::SQL::RakeSupport.env = ROM.container(config)
+  end
+end

@@ -11,6 +11,14 @@ gem "dry-types", "~> 1.0", ">= 1.6.1"
 gem "puma"
 gem "rake"
 
+gem "rom"
+gem "rom-sql"
+gem "pg"
+
+gem "ruby_event_store"
+gem "ruby_event_store-rom", require: "ruby_event_store/rom/sql"
+gem "arkency-command_bus"
+
 group :development, :test do
   gem "dotenv"
 end
