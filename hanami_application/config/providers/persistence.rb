@@ -4,20 +4,19 @@ Hanami.app.register_provider :persistence, namespace: true do
      require 'rom/core'
      require 'rom/sql'
      require 'rom-repository'
- 
+
      config =
        ROM::Configuration.new(
          :sql, target['settings'].database_url
        )
 
-      config.auto_registration(
-        target.root.join('app/persistence'),
-        namespace: 'Ecommerce::Persistence'
-      )
- 
+     config.auto_registration(
+       target.root.join('app/persistence'),
+       namespace: 'Ecommerce::Persistence::Relations'
+     )
+
      register 'config', config
      register 'db', config.gateways[:default].connection
      register 'rom', ROM.container(config)
-   end
- end
- 
+  end
+end

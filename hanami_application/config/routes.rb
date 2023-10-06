@@ -4,7 +4,6 @@ module Ecommerce
   class Routes < Hanami::Routes
     root { "Hello from Hanami" }
 
-    slice :orders, at: "/orders" do
-    end
+    post "/orders", to: "orders.create"
   end
 end

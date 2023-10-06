@@ -5,10 +5,10 @@ Hanami.app.register_provider :ecommerce, namespace: true do
 
     event_store = target["event_store.client"]
     command_bus = target["command_bus"]
-  
+
     number_generator = -> { Ordering::NumberGenerator.new }
     payment_gateway = -> { Payments::FakeGateway.new }
-  
+
     Ecommerce::Configuration.new(
       event_store: event_store,
       command_bus: command_bus,
@@ -19,5 +19,9 @@ Hanami.app.register_provider :ecommerce, namespace: true do
         Infra::Types::VatRate.new(code: "20", rate: 20)
       ]
     ).call(event_store, command_bus)
+
+    event_store.subscribe(
+      target["event_handlers.orders.submit"], to: [Ordering::OrderSubmitted]
+    )
   end
 end

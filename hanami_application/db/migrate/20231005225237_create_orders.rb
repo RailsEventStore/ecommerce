@@ -3,8 +3,9 @@
 ROM::SQL.migration do
   change do
     create_table(:orders) do
-      primary_key :id # TODO: change to uuid
+      primary_key :id
 
+      column :uuid, :uuid
       column :number, String
       column :customer, String
       column :state, String

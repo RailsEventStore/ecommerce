@@ -8,3 +8,5 @@ require "hanami/prepare"
 
 require_relative "support/rspec"
 require_relative "support/requests"
+
+Hanami.app.boot
