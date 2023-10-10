@@ -1,6 +1,7 @@
 module ClientOrders
 
   class OrdersList < Arbre::Component
+    include Rails.application.routes.url_helpers
 
     def self.build(view_context, client_id)
       new(Arbre::Context.new(nil, view_context)).build(
@@ -30,7 +31,7 @@ module ClientOrders
 
     def orders_table(client, client_orders)
       if client_orders.count > 0
-        table class: "w-full" do
+        table class: "w-full", id: "orders" do
           thead do
             tr class: "border-t" do
               th class: "text-left py-2" do
@@ -48,7 +49,7 @@ module ClientOrders
             client_orders.each do |client_order|
               tr class: "border-t" do
                 td class: "py-2" do
-                  para (client_order.number || 'Not submitted')
+                  para(order_link_with_order_number(client_order) || 'Not submitted')
                 end
                 td class: "py-2 text-left" do
                   client_order.state
@@ -81,6 +82,14 @@ module ClientOrders
           "New order",
           new_client_order_path,
           class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"))
+    end
+
+    def order_link_with_order_number(order)
+      link_to(
+        order.number,
+        client_order_path(order.order_uid),
+        class: "text-blue-500 hover:text-blue-700"
+      )
     end
   end
 
