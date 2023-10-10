@@ -30,48 +30,65 @@ module ClientOrders
     end
 
     def orders_table(client, client_orders)
-      if client_orders.count > 0
-        table class: "w-full", id: "orders" do
-          thead do
-            tr class: "border-t" do
-              th class: "text-left py-2" do
-                "Number"
-              end
-              th class: "text-left py-2" do
-                "State"
-              end
-              th class: "text-right py-2" do
-                "Price"
-              end
-            end
+      return no_orders_message if client_orders.empty?
+      orders_table_content(client, client_orders)
+    end
+
+    def orders_table_content(client, client_orders)
+      table class: "w-full", id: "orders" do
+        headers_row
+        tbody do
+          orders_rows(client_orders)
+          summary_row(client)
+        end
+      end
+    end
+
+    def no_orders_message
+      para class: "py-6" do
+        "No orders to display."
+      end
+    end
+
+    def summary_row(client)
+      tr class: "border-t font-bold" do
+        td colspan: 2, class: "py-2" do
+          para "Total paid orders"
+        end
+        td class: "py-2 text-right border-t" do
+          number_to_currency(client.paid_orders_summary)
+        end
+      end
+    end
+
+    def orders_rows(client_orders)
+      client_orders.each do |client_order|
+        tr class: "border-t" do
+          td class: "py-2" do
+            para(order_link_with_order_number(client_order) || 'Not submitted')
           end
-          tbody do
-            client_orders.each do |client_order|
-              tr class: "border-t" do
-                td class: "py-2" do
-                  para(order_link_with_order_number(client_order) || 'Not submitted')
-                end
-                td class: "py-2 text-left" do
-                  client_order.state
-                end
-                td class: "py-2 text-right" do
-                  number_to_currency(client_order.discounted_value)
-                end
-              end
-            end
-            tr class: "border-t font-bold" do
-              td colspan: 2, class: "py-2" do
-                para "Total paid orders"
-              end
-              td class: "py-2 text-right border-t" do
-                number_to_currency(client.paid_orders_summary)
-              end
-            end
+          td class: "py-2 text-left" do
+            client_order.state
+          end
+          td class: "py-2 text-right" do
+            number_to_currency(client_order.discounted_value)
           end
         end
-      else
-        para class: "py-6" do
-          "No orders to display."
+      end
+    end
+
+    def headers_row
+      thead do
+        tr class: "border-t" do
+          th class: "text-left py-2" do
+            "Number"
+          end
+          th class: "text-left py-2" do
+            "State"
+          end
+          th class: "text-right py-2" do
+            "Price"
+          end
         end
       end
     end
