@@ -23,6 +23,7 @@ module Client
     def show
       @order = ClientOrders::Order.find_by_order_uid(params[:id])
       @order_lines = ClientOrders::OrderLine.where(order_uid: params[:id])
+      render html: ClientOrders::ShowOrder.build(view_context, @order, @order_lines), layout: true
     end
 
     def edit
