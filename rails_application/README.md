@@ -43,3 +43,20 @@ you need to update `DATABASE_URL` and `REDIS_URL` accordingly.
 
 - run `make test` to run unit and integration tests
 - run `make mutate` to perform mutation coverage
+
+## Big Picture
+
+In event-driven architectures, navigation between events and handlers can be 
+challenging, so we've created a script that generates two classes:
+
+- `EventToHandlers`
+- `HandlerToEvents`
+
+They contain mappings between events and handlers, so it should help you with 
+navigation during the development.
+
+The script is called `big_picture.rb`, and you can execute it like this:
+
+```shell
+bin/rails r script/big_picture.rb
+```
