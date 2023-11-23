@@ -48,7 +48,7 @@ module Pricing
         set_price(product_1_id, 20)
         order_id = SecureRandom.uuid
         add_item(order_id, product_1_id)
-        stream = "Pricing::Order$#{order_id}"
+        stream = stream_name(order_id)
 
         assert_events(
           stream,
@@ -110,7 +110,7 @@ module Pricing
         set_price(product_1_id, 20)
         set_price(product_2_id, 30)
         order_id = SecureRandom.uuid
-        stream = "Pricing::Order$#{order_id}"
+        stream = stream_name(order_id)
 
         assert_events(stream) { calculate_sub_amounts(order_id) }
 
@@ -188,7 +188,7 @@ module Pricing
         set_price(product_1_id, 20)
         order_id = SecureRandom.uuid
         add_item(order_id, product_1_id)
-        stream = "Pricing::Order$#{order_id}"
+        stream = stream_name(order_id)
 
         assert_events(
           stream,
@@ -204,6 +204,10 @@ module Pricing
     end
 
     private
+
+    def stream_name(order_id)
+      "Pricing::Offer$#{order_id}"
+    end
 
     def set_time_promotion_range(time_promotion_id, start_time, end_time, discount)
       run_command(

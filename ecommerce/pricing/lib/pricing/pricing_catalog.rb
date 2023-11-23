@@ -6,7 +6,7 @@ module Pricing
 
     def price_for(product)
       case product
-      when Order::FreeProduct
+      when Offer::FreeProduct
         0
       else
         price_by_product_id(product.id)

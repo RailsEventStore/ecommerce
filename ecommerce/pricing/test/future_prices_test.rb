@@ -11,7 +11,7 @@ module Pricing
       set_future_price(product_1_id, 30, future_date_timestamp)
       order_id = SecureRandom.uuid
       add_item(order_id, product_1_id)
-      stream = "Pricing::Order$#{order_id}"
+      stream = stream_name(order_id)
 
       assert_events(
         stream,
@@ -34,7 +34,7 @@ module Pricing
       Timecop.travel(future_date_timestamp + 2137) do
         order_id = SecureRandom.uuid
         add_item(order_id, product_1_id)
-        stream = "Pricing::Order$#{order_id}"
+        stream = stream_name(order_id)
 
         assert_events(
           stream,
@@ -109,6 +109,10 @@ module Pricing
     end
 
     private
+
+    def stream_name(order_id)
+      "Pricing::Offer$#{order_id}"
+    end
 
     def days_number(n)
       3600 * 24 * n

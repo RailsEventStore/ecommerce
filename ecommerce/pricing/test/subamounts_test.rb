@@ -26,7 +26,7 @@ module Pricing
     end
 
     def stream
-      "Pricing::Order$#{order_id}"
+      "Pricing::Offer$#{order_id}"
     end
 
     def product_id

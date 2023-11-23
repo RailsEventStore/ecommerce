@@ -20,7 +20,7 @@ module Pricing
     end
 
     def call(cmd)
-      @repository.with_aggregate(Order, cmd.aggregate_id) do |order|
+      @repository.with_aggregate(Offer, cmd.aggregate_id) do |order|
         order.apply_discount(Discounts::PercentageDiscount.new(cmd.amount))
       end
     end
@@ -32,7 +32,7 @@ module Pricing
     end
 
     def call(cmd)
-      @repository.with_aggregate(Order, cmd.aggregate_id) do |order|
+      @repository.with_aggregate(Offer, cmd.aggregate_id) do |order|
         order.reset_discount
       end
     end
@@ -44,7 +44,7 @@ module Pricing
     end
 
     def call(cmd)
-      @repository.with_aggregate(Order, cmd.aggregate_id) do |order|
+      @repository.with_aggregate(Offer, cmd.aggregate_id) do |order|
         order.change_discount(Discounts::PercentageDiscount.new(cmd.amount))
       end
     end
@@ -95,7 +95,7 @@ module Pricing
     end
 
     def call(command)
-      @repository.with_aggregate(Order, command.aggregate_id) do |order|
+      @repository.with_aggregate(Offer, command.aggregate_id) do |order|
         order.add_item(command.product_id)
       end
     end
@@ -107,7 +107,7 @@ module Pricing
     end
 
     def call(command)
-      @repository.with_aggregate(Order, command.aggregate_id) do |order|
+      @repository.with_aggregate(Offer, command.aggregate_id) do |order|
         order.remove_item(command.product_id)
       end
     end
@@ -120,7 +120,7 @@ module Pricing
     end
 
     def call(command)
-      @repository.with_aggregate(Order, command.aggregate_id) do |order|
+      @repository.with_aggregate(Offer, command.aggregate_id) do |order|
         order.calculate_total_value(PricingCatalog.new(@event_store), time_promotions_discount)
       end
     rescue RubyEventStore::WrongExpectedEventVersion
@@ -130,7 +130,7 @@ module Pricing
 
 
     def calculate_sub_amounts(command)
-      @repository.with_aggregate(Order, command.aggregate_id) do |order|
+      @repository.with_aggregate(Offer, command.aggregate_id) do |order|
         order.calculate_sub_amounts(PricingCatalog.new(@event_store), time_promotions_discount)
       end
     rescue RubyEventStore::WrongExpectedEventVersion
@@ -163,7 +163,7 @@ module Pricing
     end
 
     def call(command)
-      @repository.with_aggregate(Order, command.aggregate_id) do |order|
+      @repository.with_aggregate(Offer, command.aggregate_id) do |order|
         order.make_product_free(command.order_id, command.product_id)
       end
     end
@@ -175,7 +175,7 @@ module Pricing
     end
 
     def call(command)
-      @repository.with_aggregate(Order, command.aggregate_id) do |order|
+      @repository.with_aggregate(Offer, command.aggregate_id) do |order|
         order.remove_free_product(command.order_id, command.product_id)
       end
     end

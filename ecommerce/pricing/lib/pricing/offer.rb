@@ -1,5 +1,5 @@
 module Pricing
-  class Order
+  class Offer
     include AggregateRoot
 
     def initialize(id)

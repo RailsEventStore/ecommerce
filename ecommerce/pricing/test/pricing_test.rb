@@ -20,7 +20,7 @@ module Pricing
       order_id = SecureRandom.uuid
       add_item(order_id, product_1_id)
       add_item(order_id, product_2_id)
-      stream = "Pricing::Order$#{order_id}"
+      stream = stream_name(order_id)
       assert_events(
         stream,
         OrderTotalValueCalculated.new(
@@ -39,7 +39,7 @@ module Pricing
       set_price(product_1_id, 20)
       set_price(product_2_id, 30)
       order_id = SecureRandom.uuid
-      stream = "Pricing::Order$#{order_id}"
+      stream = stream_name(order_id)
 
       assert_events(stream) { calculate_sub_amounts(order_id) }
 
@@ -98,7 +98,7 @@ module Pricing
       set_price(product_1_id, 20)
       order_id = SecureRandom.uuid
       add_item(order_id, product_1_id)
-      stream = "Pricing::Order$#{order_id}"
+      stream = stream_name(order_id)
       assert_events(
         stream,
         OrderTotalValueCalculated.new(
@@ -175,7 +175,7 @@ module Pricing
       set_price(product_1_id, 20)
       order_id = SecureRandom.uuid
       add_item(order_id, product_1_id)
-      stream = "Pricing::Order$#{order_id}"
+      stream = stream_name(order_id)
       assert_events_contain(
         stream,
         PercentageDiscountSet.new(
@@ -269,7 +269,7 @@ module Pricing
       set_price(product_1_id, 20)
       order_id = SecureRandom.uuid
       add_item(order_id, product_1_id)
-      stream = "Pricing::Order$#{order_id}"
+      stream = stream_name(order_id)
       run_command(
         Pricing::SetPercentageDiscount.new(order_id: order_id, amount: 10)
       )
@@ -301,7 +301,7 @@ module Pricing
       set_price(product_1_id, 20)
       order_id = SecureRandom.uuid
       add_item(order_id, product_1_id)
-      stream = "Pricing::Order$#{order_id}"
+      stream = stream_name(order_id)
       run_command(
         Pricing::SetPercentageDiscount.new(order_id: order_id, amount: 10)
       )
@@ -336,7 +336,7 @@ module Pricing
       set_price(product_1_id, 20)
       order_id = SecureRandom.uuid
       add_item(order_id, product_1_id)
-      stream = "Pricing::Order$#{order_id}"
+      stream = stream_name(order_id)
       run_command(
         Pricing::SetPercentageDiscount.new(order_id: order_id, amount: 10)
       )
@@ -389,6 +389,10 @@ module Pricing
     end
 
     private
+
+    def stream_name(order_id)
+      "Pricing::Offer$#{order_id}"
+    end
 
     def calculate_sub_amounts(order_id)
       run_command(CalculateSubAmounts.new(order_id: order_id))

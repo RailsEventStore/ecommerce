@@ -9,7 +9,7 @@ module Pricing
       set_price(product_1_id, 20)
       order_id = SecureRandom.uuid
       add_item(order_id, product_1_id)
-      stream = "Pricing::Order$#{order_id}"
+      stream = "Pricing::Offer$#{order_id}"
       assert_events(
         stream,
         OrderTotalValueCalculated.new(

@@ -1,9 +1,9 @@
 require_relative "test_helper"
 
 module Pricing
-  class Order
+  class Offer
     class ProductTest < Test
-      cover "Pricing::Order::Product"
+      cover "Pricing::Offer::Product"
 
       def setup
         super
@@ -24,7 +24,7 @@ module Pricing
     end
 
     class FreeProductTest < Test
-      cover "Pricing::Order::FreeProduct"
+      cover "Pricing::Offer::FreeProduct"
 
       def setup
         super
