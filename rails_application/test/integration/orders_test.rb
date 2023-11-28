@@ -135,6 +135,12 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     get "/"
     get "/orders/new"
     post "/orders/#{order_id}/add_item?product_id=#{async_remote_id}"
+    Sidekiq::Job.drain_all
+
+    get "/orders/#{order_id}"
+
+    assert_select("button", text: "Cancel Order", count: 0)
+
     post "/orders",
          params: {
            "authenticity_token" => "[FILTERED]",
@@ -142,12 +148,20 @@ class OrdersTest < InMemoryRESIntegrationTestCase
            "customer_id" => shopify_id,
            "commit" => "Submit order"
          }
+    Sidekiq::Job.drain_all
+
+    get "/orders/#{order_id}"
+    assert_select("button", text: "History")
+    #assert_select("button", text: "Cancel Order", count: 1)
+
+
     post "/orders/#{order_id}/pay"
     Shipments::MarkOrderSubmitted.drain
     follow_redirect!
     assert_select("td", text: "Paid")
     get "/orders/#{order_id}"
-    assert_select("button", 2)
+    assert_select("button", text: "History")
+    assert_select("button", text: "Cancel Order", count: 0)
   end
 
   def test_order_value_doesnt_change_after_changing_price
