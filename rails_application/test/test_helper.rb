@@ -7,6 +7,12 @@ require "sidekiq/testing"
 ActiveJob::Base.logger = Logger.new(nil)
 
 class InMemoryTestCase < ActiveSupport::TestCase
+
+  def setup
+    super
+    Sidekiq.logger.level = Logger::WARN
+  end
+
   def before_setup
     result = super
     @previous_event_store = Rails.configuration.event_store
@@ -33,6 +39,11 @@ class InMemoryTestCase < ActiveSupport::TestCase
 end
 
 class RealRESIntegrationTestCase < ActionDispatch::IntegrationTest
+  def setup
+    super
+    Sidekiq.logger.level = Logger::WARN
+  end
+
   def run_command(command)
     Rails.configuration.command_bus.call(command)
   end
