@@ -152,7 +152,7 @@ class OrdersTest < InMemoryRESIntegrationTestCase
 
     get "/orders/#{order_id}"
     assert_select("button", text: "History")
-    #assert_select("button", text: "Cancel Order", count: 1)
+    assert_select("button", text: "Cancel Order", count: 1)
 
 
     post "/orders/#{order_id}/pay"
