@@ -39,6 +39,12 @@ class RealRESIntegrationTestCase < ActionDispatch::IntegrationTest
 end
 
 class InMemoryRESIntegrationTestCase < ActionDispatch::IntegrationTest
+
+  def setup
+    super
+    Sidekiq.logger.level = Logger::WARN
+  end
+
   def before_setup
     result = super
     @previous_event_store = Rails.configuration.event_store
@@ -110,7 +116,6 @@ class InMemoryRESIntegrationTestCase < ActionDispatch::IntegrationTest
   end
 
   def run_command(command)
-    puts "Command: #{command.class} used in integrations test."
     Rails.configuration.command_bus.call(command)
   end
 end
