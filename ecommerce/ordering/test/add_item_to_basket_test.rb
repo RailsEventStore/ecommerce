@@ -9,24 +9,21 @@ module Ordering
       stream = "Ordering::Order$#{aggregate_id}"
       product_id = SecureRandom.uuid
 
-      [0, 1].each do |quantity_before|
-        expected_events = [
-          ItemAddedToBasket.new(
-            data: {
-              order_id: aggregate_id,
-              product_id: product_id,
-              quantity_before: quantity_before
-            }
+      expected_events = [
+        ItemAddedToBasket.new(
+          data: {
+            order_id: aggregate_id,
+            product_id: product_id,
+          }
+        )
+      ]
+      assert_events(stream, *expected_events) do
+        act(
+          AddItemToBasket.new(
+            order_id: aggregate_id,
+            product_id: product_id
           )
-        ]
-        assert_events(stream, *expected_events) do
-          act(
-            AddItemToBasket.new(
-              order_id: aggregate_id,
-              product_id: product_id
-            )
-          )
-        end
+        )
       end
     end
 

@@ -64,7 +64,6 @@ module Ordering
         data: {
           order_id: @id,
           product_id: product_id,
-          quantity_before: @basket.quantity(product_id)
         }
       )
     end
