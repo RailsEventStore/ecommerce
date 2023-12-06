@@ -1,5 +1,9 @@
 module Orders
   class AddItemToOrder < Infra::EventHandler
+    include Rails.application.routes.url_helpers
+    include ActionView::Helpers::UrlHelper
+    include ActionView::Helpers::FormTagHelper
+
     def call(event)
       order_id = event.data.fetch(:order_id)
       ApplicationRecord.with_advisory_lock(order_id) do
@@ -13,6 +17,7 @@ module Orders
 
         broadcaster.call(order_id, product_id, "quantity", item.quantity)
         broadcaster.call(order_id, product_id, "value", ActiveSupport::NumberHelper.number_to_currency(item.value))
+        broadcaster.call(order_id, product_id, "remove_item_button", button_to("Remove", remove_item_order_path(id: order_id, product_id: product_id), class: "hover:underline text-blue-500"))
       end
 
       event_store.link_event_to_stream(event, "Orders$all")

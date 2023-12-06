@@ -9,6 +9,7 @@ module Orders
 
       broadcaster.call(order_id, product_id, "quantity", item.quantity)
       broadcaster.call(order_id, product_id, "value", ActiveSupport::NumberHelper.number_to_currency(item.value))
+      broadcaster.call(order_id, product_id, "remove_item_button", "") if item.quantity.zero?
 
       event_store.link_event_to_stream(event, "Orders$all")
     end

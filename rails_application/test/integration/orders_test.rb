@@ -47,10 +47,16 @@ class OrdersTest < InMemoryRESIntegrationTestCase
 
     get "/"
     get "/orders/new"
+    follow_redirect!
+
+    assert_remove_buttons_not_visible(async_remote_id, fearless_id)
+
     post "/orders/#{order_id}/add_item?product_id=#{async_remote_id}"
     post "/orders/#{order_id}/add_item?product_id=#{fearless_id}"
     post "/orders/#{order_id}/add_item?product_id=#{fearless_id}"
     Sidekiq::Job.drain_all
+    get "/orders/#{order_id}/edit"
+    assert_remove_buttons_visible(async_remote_id, fearless_id, order_id)
 
     apply_discount_10_percent(order_id)
     Sidekiq::Job.drain_all
@@ -223,6 +229,22 @@ class OrdersTest < InMemoryRESIntegrationTestCase
   end
 
   private
+
+  def assert_remove_buttons_visible(async_remote_id, fearless_id, order_id)
+    assert_match(/#{Regexp.escape(remove_item_order_path(id: order_id, product_id: async_remote_id))}/, response.body)
+    assert_match(/#{Regexp.escape(remove_item_order_path(id: order_id, product_id: fearless_id))}/, response.body)
+  end
+
+  def assert_remove_buttons_not_visible(async_remote_id, fearless_id)
+    url = request.original_url
+    uri = URI.parse(url)
+    puts uri.query
+    path_components = uri.path.split('/')
+    order_uuid = path_components[-2]
+
+    assert_no_match(/#{Regexp.escape(remove_item_order_path(id: order_uuid, product_id: async_remote_id))}/, response.body)
+    assert_no_match(/#{Regexp.escape(remove_item_order_path(id: order_uuid, product_id: fearless_id))}/, response.body)
+  end
 
   def verify_shipping(order_id)
     get "/orders/#{order_id}"
