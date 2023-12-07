@@ -49,7 +49,7 @@
         <td class="py-2 text-right" id="<%= "orders_order_#{product.id}_remove_item_button" %>"></td>
       <%  else %>
         <td class="py-2 text-right" id="<%= "orders_order_#{product.id}_remove_item_button" %>"><%=  button_to("Remove", remove_item_order_path(id: @order_id, product_id: product.id), class: "hover:underline text-blue-500") %></td>
-        <% end %>
+      <% end %>
     </tr>
   <% end %>
   </tbody>

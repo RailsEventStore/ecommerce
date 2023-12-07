@@ -20,9 +20,13 @@
       <td class="py-2 text-right">
         <%= button_to "Add", add_item_client_order_path(id: @order_id, product_id: product.uid), class: "hover:underline text-blue-500" %>
       </td>
-      <td class="py-2 text-right">
-        <%= button_to "Remove", remove_item_client_order_path(id: @order_id, product_id: product.uid), class: "hover:underline text-blue-500" %>
-      </td>
+      <% if order_line.nil? %>
+        <td class="py-2 text-right" id="<%= "client_orders_#{product.uid}_remove_item_button" %>"></td>
+      <%  else %>
+        <td class="py-2 text-right" id="<%= "client_orders_#{product.uid}_remove_item_button" %>">
+          <%=  button_to("Remove", remove_item_client_order_path(id: @order_id, product_id: product.uid), class: "hover:underline text-blue-500") %>
+        </td>
+      <% end %>
     </tr>
   <% end %>
   </tbody>

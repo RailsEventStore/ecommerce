@@ -1,5 +1,9 @@
 module ClientOrders
   class AddItemToOrder < Infra::EventHandler
+    include Rails.application.routes.url_helpers
+    include ActionView::Helpers::UrlHelper
+    include ActionView::Helpers::FormTagHelper
+
     def call(event)
       order_id = event.data.fetch(:order_id)
       product_id = event.data.fetch(:product_id)
@@ -13,10 +17,19 @@ module ClientOrders
 
         broadcast_update(order_id, product_id, "product_quantity", item.product_quantity)
         broadcast_update(order_id, product_id, "value", ActiveSupport::NumberHelper.number_to_currency(item.value))
+        show_remove_item_button(order_id, product_id)
       end
     end
 
     private
+
+    def show_remove_item_button(order_id, product_id)
+      broadcast_update(order_id, product_id, "remove_item_button", remove_button_html(order_id, product_id))
+    end
+
+    def remove_button_html(order_id, product_id)
+      button_to("Remove", remove_item_client_order_path(id: order_id, product_id: product_id), class: "hover:underline text-blue-500")
+    end
 
     def broadcast_update(order_id, product_id, target, content)
       Turbo::StreamsChannel.broadcast_update_to(

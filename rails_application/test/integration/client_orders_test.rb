@@ -15,6 +15,7 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
   def test_happy_path
     arkency_id = register_customer('Arkency')
     async_remote_id = register_product("Async Remote", 39, 10)
+    fearless_id = register_product("Fearless Refactoring", 49, 10)
     Sidekiq::Job.drain_all
 
     get "/clients"
@@ -29,6 +30,10 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
     order_id = SecureRandom.uuid
     add_item_to_basket_for_order(async_remote_id, order_id)
     Sidekiq::Job.drain_all
+    get "/client_orders/#{order_id}/edit"
+    assert_match(/#{Regexp.escape(remove_item_client_order_path(id: order_id, product_id: async_remote_id))}/, response.body)
+    assert_no_match(/#{Regexp.escape(remove_item_client_order_path(id: order_id, product_id: fearless_id))}/, response.body)
+
     submit_order_for_customer(arkency_id, order_id)
     Sidekiq::Job.drain_all
     get "/client_orders"
