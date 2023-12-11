@@ -68,8 +68,6 @@ class OrdersController < ApplicationController
   def remove_item
     command_bus.(Ordering::RemoveItemFromBasket.new(order_id: params[:id], product_id: params[:product_id]))
     head :ok
-  rescue Ordering::Order::CannotRemoveZeroQuantityItem
-    redirect_to edit_order_path(params[:id]), alert: "Cannot remove the product with 0 quantity"
   end
 
   def create
