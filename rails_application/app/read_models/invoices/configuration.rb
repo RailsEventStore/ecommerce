@@ -15,11 +15,11 @@ module Invoices
 
   class Configuration
     def call(event_store)
-      event_store.subscribe(CreateInvoiceItem, to: [Invoicing::InvoiceItemAdded])
-      event_store.subscribe(SetBillingAddress, to: [Invoicing::BillingAddressSet])
-      event_store.subscribe(SetPaymentDate, to: [Invoicing::InvoicePaymentDateSet])
-      event_store.subscribe(MarkAsIssued, to: [Invoicing::InvoiceIssued])
-      event_store.subscribe(MarkOrderSubmitted, to: [Ordering::OrderSubmitted])
+      event_store.subscribe(CreateInvoiceItem.new, to: [Invoicing::InvoiceItemAdded])
+      event_store.subscribe(SetBillingAddress.new, to: [Invoicing::BillingAddressSet])
+      event_store.subscribe(SetPaymentDate.new, to: [Invoicing::InvoicePaymentDateSet])
+      event_store.subscribe(MarkAsIssued.new, to: [Invoicing::InvoiceIssued])
+      event_store.subscribe(MarkOrderSubmitted.new, to: [Ordering::OrderSubmitted])
     end
   end
 end
