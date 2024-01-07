@@ -3,11 +3,16 @@ module Client
 
     layout 'client_panel'
 
-    def index
+    before_action :ensure_logged_in
+
+    def ensure_logged_in
       if ClientOrders::Client.find_by(uid: cookies[:client_id]).nil?
         redirect_to logout_path
         return
       end
+    end
+
+    def index
       render html: ClientOrders::OrdersList.build(view_context, cookies[:client_id]), layout: true
     end
 
