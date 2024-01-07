@@ -40,7 +40,7 @@ class LoginTest < InMemoryRESIntegrationTestCase
     follow_redirect!
 
     refute cookies["client_id"].present?
-    assert_equal "/clients", response.original_url
+    assert_equal "/clients", path
   end
 
   private
