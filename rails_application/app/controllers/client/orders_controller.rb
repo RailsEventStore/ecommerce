@@ -4,6 +4,10 @@ module Client
     layout 'client_panel'
 
     def index
+      if ClientOrders::Client.find_by(uid: cookies[:client_id]).nil?
+        redirect_to logout_path
+        return
+      end
       render html: ClientOrders::OrdersList.build(view_context, cookies[:client_id]), layout: true
     end
 

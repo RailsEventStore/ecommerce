@@ -32,6 +32,17 @@ class LoginTest < InMemoryRESIntegrationTestCase
     refute cookies["client_id"].present?
   end
 
+  def test_cookies_set_to_not_existing_customer_should_log_out_and_redirect_to_login
+    cookies["client_id"] = "not-existing-customer"
+
+    get "/client_orders"
+    follow_redirect!
+    follow_redirect!
+
+    refute cookies["client_id"].present?
+    assert_equal "/clients", response.original_url
+  end
+
   private
 
   def set_password(customer_id, password)
