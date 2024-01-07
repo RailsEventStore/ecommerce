@@ -2,8 +2,6 @@ module Client
   class ClientsController < ApplicationController
     layout "client_panel"
 
-    WrongPassword = Class.new(StandardError)
-
     def index
       if cookies[:client_id]
         redirect_to client_orders_path
@@ -16,15 +14,16 @@ module Client
       password = params[:password]
       client_id = params[:client_id]
       if password.present?
-        raise WrongPassword unless correct_password?(client_id, password)
+        if not correct_password?(client_id, password)
+          flash[:alert] = "Incorrect password"
+          redirect_to clients_path
+          return
+        end
         cookies[:client_id] = client_id
       else
         cookies[:client_id] = client_id
       end
       redirect_to client_orders_path
-    rescue WrongPassword
-      flash[:alert] = "Incorrect password"
-      redirect_to clients_path
     end
 
     def logout
