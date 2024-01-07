@@ -1,6 +1,5 @@
 module Client
-  class ProductsController < ApplicationController
-    layout 'client_panel'
+  class ProductsController < BaseController
 
     def index
       render html: PublicOffer::ProductsList.build(view_context), layout: true

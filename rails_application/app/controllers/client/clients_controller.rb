@@ -1,6 +1,7 @@
 module Client
-  class ClientsController < ApplicationController
-    layout "client_panel"
+  class ClientsController < BaseController
+
+    skip_before_action :ensure_logged_in, only: [:index, :login, :logout]
 
     def index
       if cookies[:client_id]
@@ -31,6 +32,7 @@ module Client
       redirect_to clients_path
     end
 
+    private
 
     def correct_password?(client_id, password)
       password_hash = Digest::SHA256.hexdigest(password)

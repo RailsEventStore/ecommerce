@@ -1,16 +1,5 @@
 module Client
-  class OrdersController < ApplicationController
-
-    layout 'client_panel'
-
-    before_action :ensure_logged_in
-
-    def ensure_logged_in
-      if ClientOrders::Client.find_by(uid: cookies[:client_id]).nil?
-        redirect_to logout_path
-        return
-      end
-    end
+  class OrdersController < BaseController
 
     def index
       render html: ClientOrders::OrdersList.build(view_context, cookies[:client_id]), layout: true
