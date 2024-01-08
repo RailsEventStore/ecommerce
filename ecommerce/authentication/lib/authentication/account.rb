@@ -3,7 +3,6 @@ module Authentication
     include AggregateRoot
 
     AlreadyRegistered = Class.new(StandardError)
-    WrongPassword = Class.new(StandardError)
 
     def initialize(id)
       @id = id
