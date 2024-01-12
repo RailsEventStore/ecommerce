@@ -1,8 +1,10 @@
 ---
+mutation:
+  timeout: 10.0
 includes:
   - test
-integration: minitest
-mutation_timeout: 10.0
+integration:
+  name: minitest
 coverage_criteria:
   timeout: true
   process_abort: true
