@@ -2,7 +2,6 @@
 mutation:
   operators: light
   timeout: 10.0
-jobs: 1
 includes:
   - test
 integration:
