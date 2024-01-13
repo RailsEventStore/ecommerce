@@ -1,7 +1,6 @@
 require "test_helper"
 
 class PublicOfferTest < InMemoryRESIntegrationTestCase
-  cover "PublicOffer*"
 
   def setup
     super

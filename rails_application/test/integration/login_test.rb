@@ -1,7 +1,6 @@
 require "test_helper"
 
 class LoginTest < InMemoryRESIntegrationTestCase
-  cover "Authentication*"
 
   def setup
     super

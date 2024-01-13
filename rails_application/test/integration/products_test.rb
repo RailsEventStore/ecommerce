@@ -2,7 +2,6 @@ require "test_helper"
 
 class ProductsTest < InMemoryRESIntegrationTestCase
   include ActionView::Helpers::NumberHelper
-  cover "Products*"
 
   def setup
     super

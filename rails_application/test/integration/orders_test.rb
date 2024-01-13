@@ -1,7 +1,6 @@
 require "test_helper"
 
 class OrdersTest < InMemoryRESIntegrationTestCase
-  cover "Orders*"
 
   def setup
     super

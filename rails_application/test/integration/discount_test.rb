@@ -1,7 +1,6 @@
 require "test_helper"
 
 class DiscountTest < InMemoryRESIntegrationTestCase
-  cover "Orders*"
 
   def setup
     super
