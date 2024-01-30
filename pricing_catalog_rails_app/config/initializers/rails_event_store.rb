@@ -1,29 +1,26 @@
-require "rails_event_store"
-require "aggregate_root"
-require "arkency/command_bus"
+require_relative "../../../ecommerce/pricing/lib/pricing"
+require_relative "../../../ecommerce/product_catalog//lib/product_catalog"
+require_relative "../../../infra/lib/infra"
 
-Rails.configuration.to_prepare do
-  Rails.configuration.event_store = RailsEventStore::Client.new
-  Rails.configuration.command_bus = Arkency::CommandBus.new
+class Configuration
+  def call(event_store, command_bus)
+    enable_res_infra_event_linking(event_store)
+    [
+      Pricing::Configuration.new,
+      ProductCatalog::Configuration.new,
+    ].each { |c| c.call(event_store, command_bus) }
 
-  AggregateRoot.configure do |config|
-    config.default_event_store = Rails.configuration.event_store
   end
 
-  # Subscribe event handlers below
-  Rails.configuration.event_store.tap do |store|
-    # store.subscribe(InvoiceReadModel.new, to: [InvoicePrinted])
-    # store.subscribe(lambda { |event| SendOrderConfirmation.new.call(event) }, to: [OrderSubmitted])
-    # store.subscribe_to_all_events(lambda { |event| Rails.logger.info(event.event_type) })
+  private
 
-    store.subscribe_to_all_events(RailsEventStore::LinkByEventType.new)
-    store.subscribe_to_all_events(RailsEventStore::LinkByCorrelationId.new)
-    store.subscribe_to_all_events(RailsEventStore::LinkByCausationId.new)
+  def enable_res_infra_event_linking(event_store)
+    [
+      RailsEventStore::LinkByEventType.new,
+      RailsEventStore::LinkByCorrelationId.new,
+      RailsEventStore::LinkByCausationId.new
+    ].each { |h| event_store.subscribe_to_all_events(h) }
   end
 
-  # Register command handlers below
-  # Rails.configuration.command_bus.tap do |bus|
-  #   bus.register(PrintInvoice, Invoicing::OnPrint.new)
-  #   bus.register(SubmitOrder, ->(cmd) { Ordering::OnSubmitOrder.new.call(cmd) })
-  # end
 end
+

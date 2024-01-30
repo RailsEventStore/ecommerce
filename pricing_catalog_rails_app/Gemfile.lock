@@ -1,3 +1,16 @@
+PATH
+  remote: ../infra
+  specs:
+    infra (1.0.0)
+      aggregate_root (~> 2.13)
+      arkency-command_bus
+      dry-struct
+      dry-types
+      rake
+      ruby_event_store (~> 2.13)
+      ruby_event_store-transformations
+      sidekiq
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -106,11 +119,32 @@ GEM
       reline (>= 0.3.8)
     drb (2.2.0)
       ruby2_keywords
+    dry-core (1.0.1)
+      concurrent-ruby (~> 1.0)
+      zeitwerk (~> 2.6)
+    dry-inflector (1.0.0)
+    dry-logic (1.5.0)
+      concurrent-ruby (~> 1.0)
+      dry-core (~> 1.0, < 2)
+      zeitwerk (~> 2.6)
+    dry-struct (1.6.0)
+      dry-core (~> 1.0, < 2)
+      dry-types (>= 1.7, < 2)
+      ice_nine (~> 0.11)
+      zeitwerk (~> 2.6)
+    dry-types (1.7.2)
+      bigdecimal (~> 3.0)
+      concurrent-ruby (~> 1.0)
+      dry-core (~> 1.0)
+      dry-inflector (~> 1.0)
+      dry-logic (~> 1.4)
+      zeitwerk (~> 2.6)
     erubi (1.12.0)
     globalid (1.2.1)
       activesupport (>= 6.1)
     i18n (1.14.1)
       concurrent-ruby (~> 1.0)
+    ice_nine (0.11.2)
     importmap-rails (2.0.1)
       actionpack (>= 6.0.0)
       activesupport (>= 6.0.0)
@@ -229,12 +263,20 @@ GEM
     ruby_event_store-browser (2.14.0)
       rack
       ruby_event_store (= 2.14.0)
+    ruby_event_store-transformations (0.1.0)
+      activesupport (>= 5.0)
+      ruby_event_store (>= 2.0.0, < 3.0.0)
     rubyzip (2.3.2)
     selenium-webdriver (4.17.0)
       base64 (~> 0.2)
       rexml (~> 3.2, >= 3.2.5)
       rubyzip (>= 1.2.2, < 3.0)
       websocket (~> 1.0)
+    sidekiq (7.2.1)
+      concurrent-ruby (< 2)
+      connection_pool (>= 2.3.0)
+      rack (>= 2.2.4)
+      redis-client (>= 0.19.0)
     sqlite3 (1.7.1-aarch64-linux)
     sqlite3 (1.7.1-arm-linux)
     sqlite3 (1.7.1-arm64-darwin)
@@ -279,6 +321,7 @@ DEPENDENCIES
   capybara
   debug
   importmap-rails
+  infra!
   puma (>= 5.0)
   rails (~> 7.1.3)
   rails_event_store (~> 2.14.0)
