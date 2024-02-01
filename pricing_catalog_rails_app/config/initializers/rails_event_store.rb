@@ -3,7 +3,7 @@ require_relative "../../../ecommerce/product_catalog//lib/product_catalog"
 require_relative "../../../infra/lib/infra"
 require "rails_event_store"
 require "arkency/command_bus"
-require_relative "../../app/read_models/public_catalog/public_catalog"
+require_relative "../../app/public/read_models/public_catalog/public_catalog"
 
 Rails.configuration.to_prepare do
   Rails.configuration.event_store = Infra::EventStore.main
