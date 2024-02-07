@@ -8,4 +8,9 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   root "catalog#index"
+
+  namespace :admin do
+    root "catalog#index"
+    post "catalog", to: "catalog#create"
+  end
 end

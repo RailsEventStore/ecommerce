@@ -1,0 +1,19 @@
+Admin Catalog
+
+<%= form_for new_product, url: {controller: "admin/catalog", action: "create"} do |f| %>
+  <p>
+  <%= f.label :name %>
+  <%= f.text_field :name %>
+  </p>
+  <p>
+  <%= f.label :price %>
+  <%= f.text_field :price %>
+  </p>
+  <%= f.submit %>
+<% end %>
+
+<ul>
+  <% products.each do |product| %>
+    <li> <%= product.name %>, $<%= product.price %></li>
+  <% end %>
+</ul>

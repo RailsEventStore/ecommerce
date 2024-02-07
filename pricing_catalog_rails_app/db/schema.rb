@@ -10,7 +10,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_02_01_133038) do
+ActiveRecord::Schema[7.1].define(version: 2024_02_01_154705) do
+  create_table "admin_catalog_products", force: :cascade do |t|
+    t.string "product_id"
+    t.string "name"
+    t.decimal "price"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "event_store_events", force: :cascade do |t|
     t.string "event_id", limit: 36, null: false
     t.string "event_type", null: false
