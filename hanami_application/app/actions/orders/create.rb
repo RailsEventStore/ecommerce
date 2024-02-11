@@ -1,0 +1,32 @@
+module Ecommerce
+  module Actions
+    module Orders
+      class Create < Ecommerce::Action
+        include Deps[
+          "command_bus",
+          "repositories.orders",
+          "persistence.transaction",
+        ]
+
+        def handle(request, response)
+          submit_order(request.params[:order_id], request.params[:customer_id])
+
+          response.format = :json
+          response.body = orders.by_id(request.params[:order_id])
+            .attributes
+            .slice(:id)
+            .to_json
+        end
+
+        private
+
+        def submit_order(order_id, customer_id)
+          transaction.call do
+            command_bus.(Ordering::SubmitOrder.new(order_id: order_id))
+            command_bus.(Crm::AssignCustomerToOrder.new(order_id: order_id, customer_id: customer_id))
+          end
+        end
+      end
+    end
+  end
+end

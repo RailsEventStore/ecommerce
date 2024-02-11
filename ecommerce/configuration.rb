@@ -12,10 +12,12 @@ require_relative "processes/lib/processes"
 
 module Ecommerce
   class Configuration
-    def initialize(number_generator: nil, payment_gateway: nil, available_vat_rates: [])
+    def initialize(number_generator: nil, payment_gateway: nil, available_vat_rates: [], event_store:, command_bus:)
       @number_generator = number_generator
       @payment_gateway = payment_gateway
       @available_vat_rates = available_vat_rates
+      @event_store = event_store
+      @command_bus = command_bus
     end
 
     def call(event_store, command_bus)
@@ -24,9 +26,6 @@ module Ecommerce
     end
 
     def configure_bounded_contexts
-      event_store = Rails.configuration.event_store
-      command_bus = Rails.configuration.command_bus
-
       raise ArgumentError.new(
         "Neither number_generator nor payment_gateway can be null"
       ) if @number_generator.nil? || @payment_gateway.nil?
@@ -41,11 +40,11 @@ module Ecommerce
         Pricing::Configuration.new,
         Taxes::Configuration.new(@available_vat_rates),
         ProductCatalog::Configuration.new,
-      ].each { |c| c.call(event_store, command_bus) }
+      ].each { |c| c.call(@event_store, @command_bus) }
     end
 
     def configure_processes(event_store, command_bus)
-      Processes::Configuration.new.call(event_store, command_bus)
+      Processes::Configuration.new.call(@event_store, @command_bus)
     end
   end
 end
