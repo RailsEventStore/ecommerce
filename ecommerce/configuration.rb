@@ -19,14 +19,11 @@ module Ecommerce
     end
 
     def call(event_store, command_bus)
-      configure_bounded_contexts
+      configure_bounded_contexts(event_store, command_bus)
       configure_processes(event_store, command_bus)
     end
 
-    def configure_bounded_contexts
-      event_store = Rails.configuration.event_store
-      command_bus = Rails.configuration.command_bus
-
+    def configure_bounded_contexts(event_store, command_bus)
       raise ArgumentError.new(
         "Neither number_generator nor payment_gateway can be null"
       ) if @number_generator.nil? || @payment_gateway.nil?
