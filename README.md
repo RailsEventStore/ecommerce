@@ -62,9 +62,14 @@ The customer perspective is "simulated" only - via using the select box.
 
 ### Read models
 
-Read models live at the application level. In our case it's in the Rails app:
+Read models are application specific so they live at the application level. 
+In our case it's in the main ecommerce Rails app:
 
 [Read models](https://github.com/RailsEventStore/ecommerce/tree/master/rails_application/app/read_models)
+
+Additionally, we have created the Pricing Catalog application that is a separate Rails application. 
+It's a good example of how to create a separate application that uses the same domains, but has different read models.
+
 
 ### Process Managers
 
@@ -93,16 +98,16 @@ It does it, when a successful payment is detected.
 
 This project has several high-level goals:
 
-- to show that it's possible to modularize a non-trivial Rails app
-- to serve as an example of a DDD project (not only in Rails)
-- to let people play with this codebase to get a feel if DDD is for them
-- to show that tests can be fast if the app is well modularized
-- to show a proper pyramid of tests
-- to teach event-driven architectures
-- to show how to use RailsEventStore
-- to bring DDD enthusiasts from .Net/Java/PHP/others to the Ruby world 😎
-- to popularize professional testing techniques - mutation testing
-- to allow programmers to reuse existing and popular domains
+- ✅to show that it's possible to modularize a non-trivial Rails app
+- ✅to serve as an example of a DDD project (not only in Rails)
+- ✅to let people play with this codebase to get a feel if DDD is for them
+- ✅to show that tests can be fast if the app is well modularized
+- ✅to show a proper pyramid of tests
+- ✅to teach event-driven architectures
+- ✅to show how to use RailsEventStore
+- ✅to bring DDD enthusiasts from .Net/Java/PHP/others to the Ruby world 😎
+- ✅to popularize professional testing techniques - mutation testing
+- ✅to allow programmers to reuse existing and popular domains (shown in `pricing_catalog` app)
 - to build new apps like Lego 
 
 # Contributing guide
