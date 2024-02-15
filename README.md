@@ -5,6 +5,30 @@ A non-trivial application with DDD, CQRS and Event Sourcing built on Rails and [
 👉 [ecommerce.arkademy.dev](https://ecommerce.arkademy.dev)
 
 [![imgur](https://imgur.com/ymJeLnP.png)](https://ecommerce.arkademy.dev)
+
+# The Big Vision
+
+This project has several high-level goals:
+
+- ✅to show that it's possible to modularize a non-trivial Rails app
+- ✅to show that DDD is possible in Rails
+- ✅to show that CQRS is possible in Rails
+- ✅to show that Event Sourcing is possible in Rails
+- ✅to show that it's possible to use RailsEventStore in a non-trivial app
+- ✅to show that User class doesn't have to be the center of the universe
+- ✅to serve as an example of a DDD project (not only in Rails)
+- ✅to let people play with this codebase to get a feel if DDD is for them
+- ✅to show that tests can be fast if the app is well modularized
+- ✅to show a proper pyramid of tests
+- ✅to teach event-driven architectures
+- ✅to show how to use RailsEventStore
+- ✅to bring DDD enthusiasts from .Net/Java/PHP/others to the Ruby world 😎
+- ✅to popularize professional testing techniques - mutation testing
+- ✅to allow programmers to reuse existing and popular domains (shown in `pricing_catalog` app)
+- to build new apps like Lego
+- to have reusable SaaS components
+- to be a good SaaS starter app
+
 ## Domains
 
 Event storming (events and commands) - [Miro documentation](https://miro.com/app/board/o9J_l7eqFP0=/)
@@ -93,22 +117,6 @@ When certain conditions are met the process manager return a
 Another process manager is responsible for confirming order.
 It does it, when a successful payment is detected.
 
-
-# The Big Vision
-
-This project has several high-level goals:
-
-- ✅to show that it's possible to modularize a non-trivial Rails app
-- ✅to serve as an example of a DDD project (not only in Rails)
-- ✅to let people play with this codebase to get a feel if DDD is for them
-- ✅to show that tests can be fast if the app is well modularized
-- ✅to show a proper pyramid of tests
-- ✅to teach event-driven architectures
-- ✅to show how to use RailsEventStore
-- ✅to bring DDD enthusiasts from .Net/Java/PHP/others to the Ruby world 😎
-- ✅to popularize professional testing techniques - mutation testing
-- ✅to allow programmers to reuse existing and popular domains (shown in `pricing_catalog` app)
-- to build new apps like Lego 
 
 # Contributing guide
 
