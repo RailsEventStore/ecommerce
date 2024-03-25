@@ -1,0 +1,11 @@
+requires:
+  - ./test/test_helper
+integration: minitest
+coverage_criteria:
+  process_abort: true
+matcher:
+  subjects:
+    - Todo*
+  ignore:
+    - Todo::Test*
+    - Todo::AddTaskHandler#task_stream
