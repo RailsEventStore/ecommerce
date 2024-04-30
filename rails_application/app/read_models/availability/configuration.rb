@@ -3,6 +3,12 @@ module Availability
     self.table_name = "availability_products"
   end
 
+  # private_constant :Product
+
+  def self.approximately_available?(product_id, desired_quantity)
+    !Product.exists?(["uid = ? and available < ?", product_id, desired_quantity])
+  end
+
   class UpdateAvailability < Infra::EventHandler
     def call(event)
       order = Product.find_or_create_by!(uid: event.data.fetch(:product_id))

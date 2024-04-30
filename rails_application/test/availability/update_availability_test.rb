@@ -10,12 +10,10 @@ module Availability
 
       event_store.publish(Inventory::AvailabilityChanged.new(data: { product_id: product_id, available: 0 }))
 
-      product = Availability::Product.find_by(uid: product_id)
-      assert_equal 0, product.available
+      refute Availability.approximately_available?(product_id, 1)
 
       event_store.publish(Inventory::AvailabilityChanged.new(data: { product_id: product_id, available: 1 }))
-      product.reload
-      assert_equal 1, product.available
+      assert Availability.approximately_available?(product_id, 1)
     end
 
     private
