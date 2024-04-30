@@ -63,7 +63,7 @@ module Processes
       events
     end
 
-    def order_submitted
+    def order_placed
       Ordering::OrderPlaced.new(
         data: {
           order_id: order_id,
