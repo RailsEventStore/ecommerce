@@ -19,7 +19,7 @@ module Shipments
   class Configuration
     def call(event_store)
       event_store.subscribe(SetShippingAddress, to: [Shipping::ShippingAddressAddedToShipment])
-      event_store.subscribe(MarkOrderSubmitted, to: [Ordering::OrderSubmitted])
+      event_store.subscribe(MarkOrderPlaced, to: [Ordering::OrderPlaced])
     end
   end
 end

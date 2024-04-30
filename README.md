@@ -103,7 +103,7 @@ There's a process manager responsible for dealing with the process of
 expiring orders.
 
 It takes the following events as the input:
-- Ordering::OrderSubmitted
+- Ordering::OrderPlaced
 - Ordering::OrderExpired
 - Ordering::OrderConfirmed
 - Payments::PaymentAuthorized

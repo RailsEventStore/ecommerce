@@ -1,7 +1,7 @@
 require "test_helper"
 
 module ClientOrders
-  class OrderSubmittedTest < InMemoryTestCase
+  class OrderPlacedTest < InMemoryTestCase
     cover "ClientOrders*"
 
     def setup
@@ -10,7 +10,7 @@ module ClientOrders
       Order.destroy_all
     end
 
-    def test_order_submitted
+    def test_order_placed
       event_store = Rails.configuration.event_store
       customer_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
@@ -24,7 +24,7 @@ module ClientOrders
       ))
 
       event_store.publish(
-        Ordering::OrderSubmitted.new(
+        Ordering::OrderPlaced.new(
           data: {
             order_id: order_id,
             order_number: order_number,
@@ -68,7 +68,7 @@ module ClientOrders
       ))
 
       event_store.publish(
-        Ordering::OrderSubmitted.new(
+        Ordering::OrderPlaced.new(
           data: {
             order_id: order_id,
             order_number: order_number,

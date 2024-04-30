@@ -70,7 +70,7 @@ This code is duplicated for admin creating orders and clients creating orders.
 
 UI -> Ordering::SubmitOrder -> Ordering::Presubmitted -> Reservation(process) -> Ordering::AcceptOrder
 
-Ordering::AcceptOrder -> Ordering::OrderSubmitted -> 
+Ordering::AcceptOrder -> Ordering::OrderPlaced -> 
 
   -> Shipment::SubmitShipment
   -> Pricing::CalculateTotalValue
