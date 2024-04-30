@@ -38,7 +38,7 @@ Some of the states here are actually duplicates of the states of the Order in ot
 #### Multiplication and naming of states
 
 We clearly have a naming issue here. 
-What is the actual difference between presubmit/submit/confirm/accept?
+What is the actual difference between submit/confirm/accept?
 Not all the names match between method names and event names.
 
 #### Order items
@@ -68,7 +68,7 @@ This code is duplicated for admin creating orders and clients creating orders.
 
 #### Mapping of events between domains
 
-UI -> Ordering::SubmitOrder -> Ordering::Presubmitted -> Reservation(process) -> Ordering::AcceptOrder
+UI -> Ordering::SubmitOrder -> Ordering::Submitted -> Reservation(process) -> Ordering::AcceptOrder
 
 Ordering::AcceptOrder -> Ordering::OrderPlaced -> 
 
