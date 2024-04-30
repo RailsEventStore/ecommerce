@@ -3,7 +3,7 @@ module Availability
     self.table_name = "availability_products"
   end
 
-  # private_constant :Product
+  private_constant :Product
 
   def self.approximately_available?(product_id, desired_quantity)
     !Product.exists?(["uid = ? and available < ?", product_id, desired_quantity])
