@@ -138,7 +138,7 @@ module Processes
       event_store.subscribe(
         ReservationProcess.new,
         to: [
-          Ordering::OrderPreSubmitted,
+          Ordering::OrderSubmitted,
           Ordering::OrderCancelled,
           Ordering::OrderConfirmed
         ]

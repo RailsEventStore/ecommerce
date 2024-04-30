@@ -35,7 +35,7 @@ module Ordering
       end
     end
 
-    def test_order_must_be_pre_submitted_to_get_accepted
+    def test_order_must_be_submitted_to_get_accepted
       aggregate_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
 

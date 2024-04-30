@@ -6,7 +6,7 @@ module Processes
 
     def test_happy_path
       process = ReservationProcess.new
-      given([order_pre_submitted]).each { |event| process.call(event) }
+      given([order_submitted]).each { |event| process.call(event) }
       assert_all_commands(
         Inventory::Reserve.new(product_id: product_id, quantity: 1),
         Inventory::Reserve.new(product_id: another_product_id, quantity: 2),
@@ -31,7 +31,7 @@ module Processes
       enhanced_command_bus = EnhancedFakeCommandBus.new(command_bus, failing_command => Inventory::InventoryEntry::InventoryNotAvailable)
       process = ReservationProcess.new
       process.command_bus = enhanced_command_bus
-      given([order_pre_submitted]).each { |event| process.call(event) }
+      given([order_submitted]).each { |event| process.call(event) }
       assert_all_commands(
         failing_command,
         Ordering::RejectOrder.new(order_id: order_id)
@@ -43,7 +43,7 @@ module Processes
       enhanced_command_bus = EnhancedFakeCommandBus.new(command_bus, failing_command => Inventory::InventoryEntry::InventoryNotAvailable)
       process = ReservationProcess.new
       process.command_bus = enhanced_command_bus
-      given([order_pre_submitted]).each { |event| process.call(event) }
+      given([order_submitted]).each { |event| process.call(event) }
       assert_all_commands(
         Inventory::Reserve.new(product_id: product_id, quantity: 1),
         failing_command,
@@ -54,7 +54,7 @@ module Processes
 
     def test_release_stock_when_order_is_cancelled
       process = ReservationProcess.new
-      given([order_pre_submitted]).each { |event| process.call(event) }
+      given([order_submitted]).each { |event| process.call(event) }
 
       command_bus.clear_all_received
       given([order_cancelled]).each { |event| process.call(event) }
@@ -66,7 +66,7 @@ module Processes
 
     def test_dispatch_stock_when_order_is_confirmed
       process = ReservationProcess.new
-      given([order_pre_submitted]).each { |event| process.call(event) }
+      given([order_submitted]).each { |event| process.call(event) }
 
       command_bus.clear_all_received
       given([order_confirmed]).each { |event| process.call(event) }
@@ -86,8 +86,8 @@ module Processes
       @another_product_id ||= SecureRandom.uuid
     end
 
-    def order_pre_submitted
-      Ordering::OrderPreSubmitted.new(
+    def order_submitted
+      Ordering::OrderSubmitted.new(
         data: {
           order_id: order_id,
           order_number: order_number,

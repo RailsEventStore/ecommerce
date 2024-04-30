@@ -15,9 +15,9 @@ module Ordering
     end
 
     def submit(order_number)
-      raise AlreadySubmitted if @state.equal?(:pre_submitted)
+      raise AlreadySubmitted if @state.equal?(:submitted)
       raise OrderHasExpired if @state.equal?(:expired)
-      apply OrderPreSubmitted.new(
+      apply OrderSubmitted.new(
         data: {
           order_id: @id,
           order_number: order_number,
@@ -27,7 +27,7 @@ module Ordering
     end
 
     def accept
-      raise InvalidState unless @state.equal?(:pre_submitted)
+      raise InvalidState unless @state.equal?(:submitted)
       apply OrderPlaced.new(
         data: {
           order_id: @id,
@@ -38,7 +38,7 @@ module Ordering
     end
 
     def reject
-      raise InvalidState unless @state.equal?(:pre_submitted)
+      raise InvalidState unless @state.equal?(:submitted)
       apply OrderRejected.new(
         data: {
           order_id: @id
@@ -103,9 +103,9 @@ module Ordering
       @basket.decrease_quantity(event.data[:product_id])
     end
 
-    on OrderPreSubmitted do |event|
+    on OrderSubmitted do |event|
       @order_number = event.data[:order_number]
-      @state = :pre_submitted
+      @state = :submitted
     end
 
     on OrderRejected do |event|
