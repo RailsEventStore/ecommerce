@@ -18,7 +18,7 @@ module Ordering
 
       assert_events(
         stream,
-        OrderPreSubmitted.new(
+        OrderSubmitted.new(
           data: {
             order_id: aggregate_id,
             order_number: order_number,

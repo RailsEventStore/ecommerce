@@ -9,7 +9,7 @@ module Processes
     def call(event)
       state = build_state(event)
       case event.event_type
-      when 'Ordering::OrderPreSubmitted'
+      when 'Ordering::OrderSubmitted'
         begin
           reserve_stock(state)
         rescue Inventory::InventoryEntry::InventoryNotAvailable
@@ -80,7 +80,7 @@ module Processes
 
       def call(event)
         case event
-        when Ordering::OrderPreSubmitted
+        when Ordering::OrderSubmitted
           @order_lines = event.data.fetch(:order_lines)
           @order_id = event.data.fetch(:order_id)
         when Ordering::OrderCancelled, Ordering::OrderConfirmed
