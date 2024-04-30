@@ -8,7 +8,7 @@ module Processes
         to: [
           Shipping::ShippingAddressAddedToShipment,
           Shipping::ShipmentSubmitted,
-          Ordering::OrderSubmitted,
+          Ordering::OrderPlaced,
           Ordering::OrderConfirmed
         ]
       )
@@ -59,8 +59,8 @@ module Processes
           @shipment = :address_set
         when Shipping::ShipmentSubmitted
           @shipment = :submitted
-        when Ordering::OrderSubmitted
-          @order = :submitted
+        when Ordering::OrderPlaced
+          @order = :placed
           @order_id = event.data.fetch(:order_id)
         when Ordering::OrderConfirmed
           @order = :confirmed

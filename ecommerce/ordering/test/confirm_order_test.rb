@@ -14,7 +14,7 @@ module Ordering
           product_id: product_id
         )
       )
-      assert_raises(Order::NotSubmitted) do
+      assert_raises(Order::NotPlaced) do
         act(ConfirmOrder.new(order_id: aggregate_id))
       end
     end

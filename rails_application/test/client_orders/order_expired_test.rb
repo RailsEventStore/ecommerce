@@ -24,7 +24,7 @@ module ClientOrders
       ))
 
       event_store.publish(
-        Ordering::OrderSubmitted.new(
+        Ordering::OrderPlaced.new(
           data: {
             order_id: order_id,
             order_number: order_number,

@@ -1,7 +1,7 @@
 require "infra"
 require_relative "ordering/events/item_added_to_basket"
 require_relative "ordering/events/item_removed_from_basket"
-require_relative "ordering/events/order_submitted"
+require_relative "ordering/events/order_placed"
 require_relative "ordering/events/order_expired"
 require_relative "ordering/events/order_confirmed"
 require_relative "ordering/events/order_cancelled"

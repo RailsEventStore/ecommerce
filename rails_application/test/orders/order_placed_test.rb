@@ -1,7 +1,7 @@
 require "test_helper"
 
 module Orders
-  class OrderSubmittedTest < InMemoryTestCase
+  class OrderPlacedTest < InMemoryTestCase
     include ActiveJob::TestHelper
     cover "Orders"
 
@@ -33,14 +33,14 @@ module Orders
           }
         )
       )
-      order_submitted = Ordering::OrderSubmitted.new(
+      order_placed = Ordering::OrderPlaced.new(
         data: {
           order_id: order_id,
           order_number: order_number,
           order_lines: { product_id => 1 }
         }
       )
-      event_store.publish(order_submitted)
+      event_store.publish(order_placed)
 
       assert_equal(Order.count, 1)
       order = Order.find_by(uid: order_id)
@@ -51,7 +51,7 @@ module Orders
         job: Turbo::Streams::ActionBroadcastJob,
         args: action_broadcast_args(order_id, 'Submitted')
       )
-      assert event_store.event_in_stream?(order_submitted.event_id, "Orders$all")
+      assert event_store.event_in_stream?(order_placed.event_id, "Orders$all")
     end
 
     def test_skip_when_duplicated
@@ -77,7 +77,7 @@ module Orders
         )
       )
       event_store.publish(
-        Ordering::OrderSubmitted.new(
+        Ordering::OrderPlaced.new(
           data: {
             order_id: order_id,
             order_number: order_number,
@@ -87,7 +87,7 @@ module Orders
       )
 
       event_store.publish(
-        Ordering::OrderSubmitted.new(
+        Ordering::OrderPlaced.new(
           data: {
             order_id: order_id,
             order_number: order_number,

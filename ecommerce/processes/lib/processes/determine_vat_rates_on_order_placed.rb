@@ -1,5 +1,5 @@
 module Processes
-  class DetermineVatRatesOnOrderSubmitted
+  class DetermineVatRatesOnOrderPlaced
     def initialize(command_bus)
       @command_bus = command_bus
     end

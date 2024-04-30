@@ -15,7 +15,7 @@ module Ordering
         )
       )
 
-      assert_raises(Order::NotSubmitted) do
+      assert_raises(Order::NotPlaced) do
         act(CancelOrder.new(order_id: aggregate_id))
       end
     end

@@ -80,7 +80,7 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     assert_select("td", text: "Paid")
     assert_payment_gateway_value(123.30)
 
-    Shipments::MarkOrderSubmitted.drain
+    Shipments::MarkOrderPlaced.drain
 
     verify_shipping(order_id)
     verify_invoice_generation(order_id)
@@ -161,7 +161,7 @@ class OrdersTest < InMemoryRESIntegrationTestCase
 
 
     post "/orders/#{order_id}/pay"
-    Shipments::MarkOrderSubmitted.drain
+    Shipments::MarkOrderPlaced.drain
     follow_redirect!
     assert_select("td", text: "Paid")
     get "/orders/#{order_id}"
@@ -302,7 +302,7 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     assert(event_names.include?("Ordering::OrderConfirmed"))
     assert(event_names.include?("Ordering::ItemAddedToBasket"))
     assert(event_names.include?("Pricing::OrderTotalValueCalculated"))
-    assert(event_names.include?("Ordering::OrderSubmitted"))
+    assert(event_names.include?("Ordering::OrderPlaced"))
   end
 
   def assert_payment_gateway_value(value)

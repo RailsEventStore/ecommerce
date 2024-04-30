@@ -5,7 +5,7 @@ module Ordering
     InvalidState = Class.new(StandardError)
     AlreadySubmitted = Class.new(InvalidState)
     AlreadyConfirmed = Class.new(InvalidState)
-    NotSubmitted = Class.new(InvalidState)
+    NotPlaced = Class.new(InvalidState)
     OrderHasExpired = Class.new(InvalidState)
 
     def initialize(id)
@@ -28,7 +28,7 @@ module Ordering
 
     def accept
       raise InvalidState unless @state.equal?(:pre_submitted)
-      apply OrderSubmitted.new(
+      apply OrderPlaced.new(
         data: {
           order_id: @id,
           order_number: @order_number,
@@ -48,7 +48,7 @@ module Ordering
 
     def confirm
       raise OrderHasExpired if @state.equal?(:expired)
-      raise NotSubmitted unless @state.equal?(:submitted)
+      raise NotPlaced unless @state.equal?(:placed)
       apply OrderConfirmed.new(data: { order_id: @id })
     end
 
@@ -75,12 +75,12 @@ module Ordering
     def cancel
       raise OrderHasExpired if @state.equal?(:expired)
       raise AlreadyConfirmed if @state.equal?(:confirmed)
-      raise NotSubmitted unless @state.equal?(:submitted)
+      raise NotPlaced unless @state.equal?(:placed)
       apply OrderCancelled.new(data: { order_id: @id })
     end
 
-    on OrderSubmitted do |event|
-      @state = :submitted
+    on OrderPlaced do |event|
+      @state = :placed
     end
 
     on OrderConfirmed do |event|

@@ -32,7 +32,7 @@ module ClientOrders
     def call(event_store)
       event_store.subscribe(ExpireOrder, to: [Ordering::OrderExpired])
       event_store.subscribe(CancelOrder, to: [Ordering::OrderCancelled])
-      event_store.subscribe(SubmitOrder, to: [Ordering::OrderSubmitted])
+      event_store.subscribe(SubmitOrder, to: [Ordering::OrderPlaced])
       event_store.subscribe(ConfirmOrder, to: [Ordering::OrderConfirmed])
       event_store.subscribe(AddItemToOrder, to: [Ordering::ItemAddedToBasket])
       event_store.subscribe(RemoveItemFromOrder, to: [Ordering::ItemRemovedFromBasket])

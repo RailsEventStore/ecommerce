@@ -23,7 +23,7 @@ module Ordering
 
       assert_events(
         stream,
-        OrderSubmitted.new(
+        OrderPlaced.new(
           data: {
             order_id: aggregate_id,
             order_number: order_number,

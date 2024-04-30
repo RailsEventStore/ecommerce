@@ -95,7 +95,7 @@ class OrdersController < ApplicationController
       flash[:alert] = "Payment was already captured"
     rescue Payments::Payment::NotAuthorized
       flash[:alert] = "Payment wasn't yet authorized"
-    rescue Ordering::Order::NotSubmitted
+    rescue Ordering::Order::NotPlaced
       flash[:alert] = "You can't pay for an order which is not submitted"
     end
     redirect_to orders_path
