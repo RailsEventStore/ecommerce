@@ -7,7 +7,7 @@ module Processes
 
     def call(event)
       order_id = event.data.fetch(:order_id)
-      command_bus.call(Ordering::ConfirmOrder.new(order_id: order_id))
+      command_bus.call(Fulfillment::ConfirmOrder.new(order_id: order_id))
     end
 
     private

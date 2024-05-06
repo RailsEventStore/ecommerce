@@ -8,6 +8,7 @@ require_relative "inventory/lib/inventory"
 require_relative "shipping/lib/shipping"
 require_relative "invoicing/lib/invoicing"
 require_relative "taxes/lib/taxes"
+require_relative "fulfillment/lib/fulfillment"
 require_relative "processes/lib/processes"
 
 module Ecommerce
@@ -38,6 +39,7 @@ module Ecommerce
         Pricing::Configuration.new,
         Taxes::Configuration.new(@available_vat_rates),
         ProductCatalog::Configuration.new,
+        Fulfillment::Configuration.new
       ].each { |c| c.call(event_store, command_bus) }
     end
 

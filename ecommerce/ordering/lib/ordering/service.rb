@@ -23,30 +23,6 @@ module Ordering
     end
   end
 
-  class OnCancelOrder
-    def initialize(event_store)
-      @repository = Infra::AggregateRootRepository.new(event_store)
-    end
-
-    def call(command)
-      @repository.with_aggregate(Order, command.aggregate_id) do |order|
-        order.cancel
-      end
-    end
-  end
-
-  class OnConfirmOrder
-    def initialize(event_store)
-      @repository = Infra::AggregateRootRepository.new(event_store)
-    end
-
-    def call(command)
-      @repository.with_aggregate(Order, command.aggregate_id) do |order|
-        order.confirm
-      end
-    end
-  end
-
   class OnSetOrderAsExpired
     def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)

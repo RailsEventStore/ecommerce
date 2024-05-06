@@ -9,7 +9,7 @@ module Processes
       given([payment_authorized]).each do |event|
         process.call(event)
       end
-      assert_command(Ordering::ConfirmOrder.new(order_id: order_id))
+      assert_command(Fulfillment::ConfirmOrder.new(order_id: order_id))
     end
   end
 end

@@ -35,7 +35,7 @@ module ClientOrders
       )
 
       event_store.publish(
-        Ordering::OrderConfirmed.new(
+        Fulfillment::OrderConfirmed.new(
           data: {
             order_id: order_id
           }

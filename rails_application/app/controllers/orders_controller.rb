@@ -102,7 +102,7 @@ class OrdersController < ApplicationController
   end
 
   def cancel
-    command_bus.(Ordering::CancelOrder.new(order_id: params[:id]))
+    command_bus.(Fulfillment::CancelOrder.new(order_id: params[:id]))
     redirect_to root_path, notice: "Order cancelled"
   end
 

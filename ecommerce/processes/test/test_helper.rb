@@ -78,11 +78,11 @@ module Processes
     end
 
     def order_confirmed
-      Ordering::OrderConfirmed.new(data: { order_id: order_id })
+      Fulfillment::OrderConfirmed.new(data: { order_id: order_id })
     end
 
     def order_cancelled
-      Ordering::OrderCancelled.new(data: { order_id: order_id })
+      Fulfillment::OrderCancelled.new(data: { order_id: order_id })
     end
 
     def payment_authorized
