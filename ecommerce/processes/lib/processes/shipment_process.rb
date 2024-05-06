@@ -9,7 +9,7 @@ module Processes
           Shipping::ShippingAddressAddedToShipment,
           Shipping::ShipmentSubmitted,
           Ordering::OrderPlaced,
-          Ordering::OrderConfirmed
+          Fulfillment::OrderConfirmed
         ]
       )
     end
@@ -62,7 +62,7 @@ module Processes
         when Ordering::OrderPlaced
           @order = :placed
           @order_id = event.data.fetch(:order_id)
-        when Ordering::OrderConfirmed
+        when Fulfillment::OrderConfirmed
           @order = :confirmed
         end
       end

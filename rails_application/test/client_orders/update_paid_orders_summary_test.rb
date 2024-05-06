@@ -52,7 +52,7 @@ module ClientOrders
       )
       run_command(Ordering::SubmitOrder.new(order_id: order_id, order_number: order_number))
       event_store.publish(
-        order_confirmed = Ordering::OrderConfirmed.new(
+        order_confirmed = Fulfillment::OrderConfirmed.new(
           data: {
             order_id: order_id
           }

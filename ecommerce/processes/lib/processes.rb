@@ -7,6 +7,7 @@ require_relative "../../inventory/lib/inventory"
 require_relative "../../shipping/lib/shipping"
 require_relative "../../taxes/lib/taxes"
 require_relative "../../invoicing/lib/invoicing"
+require_relative "../../fulfillment/lib/fulfillment"
 require_relative 'processes/confirm_order_on_payment_captured'
 require_relative 'processes/release_payment_process'
 require_relative 'processes/shipment_process'
@@ -32,6 +33,7 @@ module Processes
       set_invoice_payment_date_when_order_confirmed(event_store, command_bus)
       enable_product_name_sync(event_store, command_bus)
       confirm_order_on_payment_captured(event_store, command_bus)
+      register_order_on_order_placed(event_store, command_bus)
 
       enable_release_payment_process(event_store, command_bus)
       enable_shipment_process(event_store, command_bus)
@@ -76,7 +78,7 @@ module Processes
         to: [
           Ordering::OrderPlaced,
           Ordering::OrderExpired,
-          Ordering::OrderConfirmed,
+          Fulfillment::OrderConfirmed,
           Payments::PaymentAuthorized,
           Payments::PaymentReleased
         ]
@@ -116,7 +118,7 @@ module Processes
             )
           )
         end,
-        to: [Ordering::OrderConfirmed]
+        to: [Fulfillment::OrderConfirmed]
       )
     end
 
@@ -129,9 +131,22 @@ module Processes
         ReservationProcess.new,
         to: [
           Ordering::OrderSubmitted,
-          Ordering::OrderCancelled,
-          Ordering::OrderConfirmed
+          Fulfillment::OrderCancelled,
+          Fulfillment::OrderConfirmed
         ]
+      )
+    end
+
+    def register_order_on_order_placed(event_store, command_bus)
+      event_store.subscribe(
+        ->(event) do
+          command_bus.call(
+            Fulfillment::RegisterOrder.new(
+              order_id: event.data.fetch(:order_id)
+            )
+          )
+        end,
+        to: [Ordering::OrderPlaced]
       )
     end
   end

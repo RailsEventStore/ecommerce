@@ -40,51 +40,27 @@ module Ordering
       draft_order.submit(NumberGenerator.new.call)
       assert_raises(Order::InvalidState) { draft_order.accept }
       assert_raises(Order::InvalidState) { draft_order.reject }
-      assert_raises(Order::InvalidState) { draft_order.cancel }
-      assert_raises(Order::InvalidState) { draft_order.confirm }
       draft_order.expire
 
       assert_raises(Order::InvalidState) { submitted_order.submit(NumberGenerator.new.call) }
       submitted_order.accept
       submitted_order.reject
-      assert_raises(Order::InvalidState) { submitted_order.cancel }
-      assert_raises(Order::InvalidState) { submitted_order.confirm }
       assert_raises(Order::InvalidState) { submitted_order.expire }
 
       placed_order.submit(NumberGenerator.new.call)
       assert_raises(Order::InvalidState) { placed_order.accept }
       assert_raises(Order::InvalidState) { placed_order.reject }
-      placed_order.cancel
-      placed_order.confirm
       assert_raises(Order::InvalidState) { placed_order.expire }
-
-      confirmed_order.submit(NumberGenerator.new.call)
-      assert_raises(Order::InvalidState) { confirmed_order.accept }
-      assert_raises(Order::InvalidState) { confirmed_order.reject }
-      assert_raises(Order::InvalidState) { confirmed_order.cancel }
-      assert_raises(Order::InvalidState) { confirmed_order.confirm }
-      assert_raises(Order::InvalidState) { confirmed_order.expire }
 
       assert_raises(Order::InvalidState) { expired_order.submit(NumberGenerator.new.call) }
       assert_raises(Order::InvalidState) { rejected_order.accept }
       assert_raises(Order::InvalidState) { rejected_order.reject }
-      assert_raises(Order::InvalidState) { rejected_order.cancel }
-      assert_raises(Order::InvalidState) { rejected_order.confirm }
       rejected_order.expire
 
       assert_raises(Order::InvalidState) { expired_order.submit(NumberGenerator.new.call) }
       assert_raises(Order::InvalidState) { expired_order.accept }
       assert_raises(Order::InvalidState) { expired_order.reject }
-      assert_raises(Order::InvalidState) { expired_order.cancel }
-      assert_raises(Order::InvalidState) { expired_order.confirm }
       assert_raises(Order::InvalidState) { expired_order.expire }
-
-      cancelled_order.submit(NumberGenerator.new.call)
-      assert_raises(Order::InvalidState) { cancelled_order.accept }
-      assert_raises(Order::InvalidState) { cancelled_order.reject }
-      assert_raises(Order::InvalidState) { cancelled_order.confirm }
-      assert_raises(Order::InvalidState) { cancelled_order.cancel }
-      cancelled_order.expire
     end
 
     def draft_order
@@ -109,21 +85,9 @@ module Ordering
       end
     end
 
-    def confirmed_order
-      placed_order.tap do |order|
-        order.confirm
-      end
-    end
-
     def expired_order
       draft_order.tap do |order|
         order.expire
-      end
-    end
-
-    def cancelled_order
-      submitted_order.tap do |order|
-        order.reject
       end
     end
   end

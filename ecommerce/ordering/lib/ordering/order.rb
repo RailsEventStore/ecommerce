@@ -4,7 +4,6 @@ module Ordering
 
     InvalidState = Class.new(StandardError)
     AlreadySubmitted = Class.new(InvalidState)
-    AlreadyConfirmed = Class.new(InvalidState)
     NotPlaced = Class.new(InvalidState)
     OrderHasExpired = Class.new(InvalidState)
 
@@ -46,11 +45,6 @@ module Ordering
       )
     end
 
-    def confirm
-      raise NotPlaced unless @state.equal?(:placed)
-      apply OrderConfirmed.new(data: { order_id: @id })
-    end
-
     def expire
       raise AlreadySubmitted unless @state.equal?(:draft)
       apply OrderExpired.new(data: { order_id: @id })
@@ -71,26 +65,12 @@ module Ordering
       apply ItemRemovedFromBasket.new(data: { order_id: @id, product_id: product_id })
     end
 
-    def cancel
-      raise AlreadyConfirmed if @state.equal?(:confirmed)
-      raise NotPlaced unless @state.equal?(:placed)
-      apply OrderCancelled.new(data: { order_id: @id })
-    end
-
     on OrderPlaced do |event|
       @state = :placed
     end
 
-    on OrderConfirmed do |event|
-      @state = :confirmed
-    end
-
     on OrderExpired do |event|
       @state = :expired
-    end
-
-    on OrderCancelled do |event|
-      @state = :cancelled
     end
 
     on ItemAddedToBasket do |event|

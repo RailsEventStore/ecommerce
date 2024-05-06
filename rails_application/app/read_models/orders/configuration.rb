@@ -44,8 +44,8 @@ module Orders
       event_store.subscribe(AssignCustomerToOrder.new, to: [Crm::CustomerAssignedToOrder])
       event_store.subscribe(SubmitOrder.new, to: [Ordering::OrderPlaced])
       event_store.subscribe(ExpireOrder.new, to: [Ordering::OrderExpired])
-      event_store.subscribe(ConfirmOrder.new, to: [Ordering::OrderConfirmed])
-      event_store.subscribe(CancelOrder.new, to: [Ordering::OrderCancelled])
+      event_store.subscribe(ConfirmOrder.new, to: [Fulfillment::OrderConfirmed])
+      event_store.subscribe(CancelOrder.new, to: [Fulfillment::OrderCancelled])
 
 
       subscribe(
@@ -58,11 +58,11 @@ module Orders
       )
       subscribe(
         ->(event) { broadcast_order_state_change(event.data.fetch(:order_id), "Paid") },
-        [Ordering::OrderConfirmed]
+        [Fulfillment::OrderConfirmed]
       )
       subscribe(
         ->(event) { broadcast_order_state_change(event.data.fetch(:order_id), "Cancelled") },
-        [Ordering::OrderCancelled]
+        [Fulfillment::OrderCancelled]
       )
     end
 

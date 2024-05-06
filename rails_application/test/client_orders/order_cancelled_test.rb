@@ -26,7 +26,7 @@ module ClientOrders
       run_command(Ordering::SubmitOrder.new(order_id: order_id, order_number: order_number))
 
       event_store.publish(
-        Ordering::OrderCancelled.new(
+        Fulfillment::OrderCancelled.new(
           data: {
             order_id: order_id
           }

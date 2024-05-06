@@ -18,9 +18,9 @@ module Processes
         else
           accept_order(state)
         end
-      when 'Ordering::OrderCancelled'
+      when 'Fulfillment::OrderCancelled'
         release_stock(state)
-      when 'Ordering::OrderConfirmed'
+      when 'Fulfillment::OrderConfirmed'
         dispatch_stock(state)
       end
     end
@@ -83,7 +83,7 @@ module Processes
         when Ordering::OrderSubmitted
           @order_lines = event.data.fetch(:order_lines)
           @order_id = event.data.fetch(:order_id)
-        when Ordering::OrderCancelled, Ordering::OrderConfirmed
+        when Fulfillment::OrderCancelled, Fulfillment::OrderConfirmed
           @reserved_product_ids = order_lines.keys
         end
       end

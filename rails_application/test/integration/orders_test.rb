@@ -299,7 +299,7 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     get "/res/api/streams/Orders%24all/relationships/events"
     event_names = JSON.load(body).fetch("data").map { |data| data.fetch("attributes").fetch("event_type") }
 
-    assert(event_names.include?("Ordering::OrderConfirmed"))
+    assert(event_names.include?("Fulfillment::OrderConfirmed"))
     assert(event_names.include?("Ordering::ItemAddedToBasket"))
     assert(event_names.include?("Pricing::OrderTotalValueCalculated"))
     assert(event_names.include?("Ordering::OrderPlaced"))

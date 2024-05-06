@@ -50,7 +50,7 @@ module Processes
           @order_id = event.data.fetch(:order_id)
         when Ordering::OrderExpired
           @order = :expired
-        when Ordering::OrderConfirmed
+        when Fulfillment::OrderConfirmed
           @order = :confirmed
         end
       end

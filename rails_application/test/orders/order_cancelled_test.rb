@@ -25,7 +25,7 @@ module Orders
 
       run_command(Ordering::SubmitOrder.new(order_id: order_id, order_number: order_number))
 
-      order_cancelled = Ordering::OrderCancelled.new(
+      order_cancelled = Fulfillment::OrderCancelled.new(
         data: {
           order_id: order_id
         }

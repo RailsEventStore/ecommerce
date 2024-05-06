@@ -23,7 +23,7 @@ module Orders
       )
 
       event_store.publish(Pricing::OrderTotalValueCalculated.new(data: { order_id: order_id, discounted_amount: 0, total_amount: 10 }))
-      order_confirmed = Ordering::OrderConfirmed.new(
+      order_confirmed = Fulfillment::OrderConfirmed.new(
         data: {
           order_id: order_id
         }

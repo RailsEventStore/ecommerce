@@ -98,7 +98,7 @@ module Processes
     end
 
     def order_cancelled
-      Ordering::OrderCancelled.new(
+      Fulfillment::OrderCancelled.new(
         data: {
           order_id: order_id
         }
