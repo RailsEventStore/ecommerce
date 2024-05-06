@@ -68,28 +68,5 @@ module Ordering
         act(CancelOrder.new(order_id: aggregate_id))
       end
     end
-
-    def test_expired_order_cant_be_cancelled
-      aggregate_id = SecureRandom.uuid
-      product_id = SecureRandom.uuid
-      customer_id = SecureRandom.uuid
-
-      arrange(
-        AddItemToBasket.new(
-          order_id: aggregate_id,
-          product_id: product_id
-        ),
-        SubmitOrder.new(
-          order_id: aggregate_id,
-          order_number: "2018/12/1",
-          customer_id: customer_id
-        ),
-        SetOrderAsExpired.new(order_id: aggregate_id)
-      )
-
-      assert_raises(Order::OrderHasExpired) do
-        act(CancelOrder.new(order_id: aggregate_id))
-      end
-    end
   end
 end

@@ -47,13 +47,12 @@ module Ordering
     end
 
     def confirm
-      raise OrderHasExpired if @state.equal?(:expired)
       raise NotPlaced unless @state.equal?(:placed)
       apply OrderConfirmed.new(data: { order_id: @id })
     end
 
     def expire
-      raise AlreadyConfirmed if @state.equal?(:confirmed)
+      raise AlreadySubmitted unless @state.equal?(:draft)
       apply OrderExpired.new(data: { order_id: @id })
     end
 
@@ -73,7 +72,6 @@ module Ordering
     end
 
     def cancel
-      raise OrderHasExpired if @state.equal?(:expired)
       raise AlreadyConfirmed if @state.equal?(:confirmed)
       raise NotPlaced unless @state.equal?(:placed)
       apply OrderCancelled.new(data: { order_id: @id })

@@ -49,14 +49,14 @@ module Ordering
       submitted_order.reject
       assert_raises(Order::InvalidState) { submitted_order.cancel }
       assert_raises(Order::InvalidState) { submitted_order.confirm }
-      submitted_order.expire
+      assert_raises(Order::InvalidState) { submitted_order.expire }
 
       placed_order.submit(NumberGenerator.new.call)
       assert_raises(Order::InvalidState) { placed_order.accept }
       assert_raises(Order::InvalidState) { placed_order.reject }
       placed_order.cancel
       placed_order.confirm
-      placed_order.expire
+      assert_raises(Order::InvalidState) { placed_order.expire }
 
       confirmed_order.submit(NumberGenerator.new.call)
       assert_raises(Order::InvalidState) { confirmed_order.accept }
@@ -77,7 +77,7 @@ module Ordering
       assert_raises(Order::InvalidState) { expired_order.reject }
       assert_raises(Order::InvalidState) { expired_order.cancel }
       assert_raises(Order::InvalidState) { expired_order.confirm }
-      expired_order.expire
+      assert_raises(Order::InvalidState) { expired_order.expire }
 
       cancelled_order.submit(NumberGenerator.new.call)
       assert_raises(Order::InvalidState) { cancelled_order.accept }
