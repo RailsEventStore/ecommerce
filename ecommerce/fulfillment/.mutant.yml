@@ -1,0 +1,12 @@
+requires:
+  - ./test/test_helper
+integration: minitest
+coverage_criteria:
+  process_abort: true
+matcher:
+  subjects:
+    - Fulfillment*
+  ignore:
+    - Fulfillment::Test*
+    - Fulfillment::Configuration#call
+    - Fulfillment::Configuration#initialize
