@@ -66,7 +66,7 @@ module Ordering
     end
 
     on OrderPlaced do |event|
-      @state = :placed
+      @state = :accepted
     end
 
     on OrderExpired do |event|

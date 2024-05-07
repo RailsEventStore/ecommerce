@@ -47,15 +47,10 @@ module Ordering
       submitted_order.reject
       assert_raises(Order::InvalidState) { submitted_order.expire }
 
-      placed_order.submit(NumberGenerator.new.call)
-      assert_raises(Order::InvalidState) { placed_order.accept }
-      assert_raises(Order::InvalidState) { placed_order.reject }
-      assert_raises(Order::InvalidState) { placed_order.expire }
-
-      assert_raises(Order::InvalidState) { expired_order.submit(NumberGenerator.new.call) }
-      assert_raises(Order::InvalidState) { rejected_order.accept }
-      assert_raises(Order::InvalidState) { rejected_order.reject }
-      rejected_order.expire
+      assert_raises(Order::InvalidState) { accepted_order.submit(NumberGenerator.new.call) }
+      assert_raises(Order::InvalidState) { accepted_order.accept }
+      assert_raises(Order::InvalidState) { accepted_order.reject }
+      assert_raises(Order::InvalidState) { accepted_order.expire }
 
       assert_raises(Order::InvalidState) { expired_order.submit(NumberGenerator.new.call) }
       assert_raises(Order::InvalidState) { expired_order.accept }
@@ -73,7 +68,7 @@ module Ordering
       end
     end
 
-    def placed_order
+    def accepted_order
       submitted_order.tap do |order|
         order.accept
       end
