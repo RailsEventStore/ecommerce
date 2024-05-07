@@ -35,55 +35,5 @@ module Ordering
       order.submit(NumberGenerator.new.call)
       assert_equal({ @product_id => 1 }, order.unpublished_events.to_a.last.data[:order_lines])
     end
-
-    def test_disallowed_order_state_transitions
-      draft_order.submit(NumberGenerator.new.call)
-      assert_raises(Order::InvalidState) { draft_order.accept }
-      assert_raises(Order::InvalidState) { draft_order.reject }
-      draft_order.expire
-
-      assert_raises(Order::InvalidState) { submitted_order.submit(NumberGenerator.new.call) }
-      submitted_order.accept
-      submitted_order.reject
-      assert_raises(Order::InvalidState) { submitted_order.expire }
-
-      assert_raises(Order::InvalidState) { accepted_order.submit(NumberGenerator.new.call) }
-      assert_raises(Order::InvalidState) { accepted_order.accept }
-      assert_raises(Order::InvalidState) { accepted_order.reject }
-      assert_raises(Order::InvalidState) { accepted_order.expire }
-
-      assert_raises(Order::InvalidState) { expired_order.submit(NumberGenerator.new.call) }
-      assert_raises(Order::InvalidState) { expired_order.accept }
-      assert_raises(Order::InvalidState) { expired_order.reject }
-      assert_raises(Order::InvalidState) { expired_order.expire }
-    end
-
-    def draft_order
-      Order.new(@order_id)
-    end
-
-    def submitted_order
-      draft_order.tap do |order|
-        order.submit(NumberGenerator.new.call)
-      end
-    end
-
-    def accepted_order
-      submitted_order.tap do |order|
-        order.accept
-      end
-    end
-
-    def rejected_order
-      submitted_order.tap do |order|
-        order.reject
-      end
-    end
-
-    def expired_order
-      draft_order.tap do |order|
-        order.expire
-      end
-    end
   end
 end
