@@ -14,8 +14,8 @@ module Ordering
     end
 
     def submit(order_number)
-      raise AlreadySubmitted if @state.equal?(:submitted)
       raise OrderHasExpired if @state.equal?(:expired)
+      raise AlreadySubmitted unless @state.equal?(:draft)
       apply OrderSubmitted.new(
         data: {
           order_id: @id,
