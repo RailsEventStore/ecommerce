@@ -8,7 +8,7 @@ gem "puma", "~> 5.6"
 gem "bootsnap", ">= 1.9.2", require: false
 gem "honeybadger", "~> 4.0"
 gem "skylight"
-gem "tailwindcss-rails"
+gem "tailwindcss-rails", "~> 2.6.0"
 gem "kaminari"
 gem "sprockets-rails"
 gem "turbo-rails"
