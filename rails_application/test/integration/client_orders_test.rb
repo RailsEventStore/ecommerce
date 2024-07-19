@@ -98,6 +98,19 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
     assert_orders_summary("$11.00")
   end
 
+  def test_adding_the_same_product_twice_bug
+    customer_id = register_customer("Customer Shop")
+    product_id = register_product("Fearless Refactoring", 4, 10)
+    Sidekiq::Job.drain_all
+
+    login(customer_id)
+    visit_client_orders
+
+    order_id = SecureRandom.uuid
+    as_client_add_item_to_basket_for_order(product_id, order_id)
+    as_client_add_item_to_basket_for_order(product_id, order_id)
+  end
+
   private
 
   def submit_order_for_customer(customer_id, order_id)
