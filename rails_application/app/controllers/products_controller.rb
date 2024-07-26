@@ -1,4 +1,19 @@
 class ProductsController < ApplicationController
+  class CreateProduct
+    attr_reader :price, :vat_rate, :product_id, :name
+
+    def initialize(price:, vat_rate:, product_id:, name:)
+      @price = price
+      @vat_rate = vat_rate
+      @product_id = product_id
+      @name = name
+    end
+
+    def valid?
+      price.present? && vat_rate.present? && product_id.present? && name.present? && price.to_d > 0 && vat_rate.to_d > 0
+    end
+  end
+
   def index
     @products = Products::Product.all
   end
@@ -16,6 +31,10 @@ class ProductsController < ApplicationController
   end
 
   def create
+    is_form_valid = CreateProduct.new(**product_params).valid?
+
+    return head :bad_request unless is_form_valid
+
     ActiveRecord::Base.transaction do
       create_product(params[:product_id], params[:name])
       if params[:price].present?
@@ -100,5 +119,9 @@ class ProductsController < ApplicationController
       price: price,
       valid_since: valid_since
     )
+  end
+
+  def product_params
+    params.permit(:name, :price, :vat_rate, :product_id).to_h.symbolize_keys.slice(:price, :vat_rate, :product_id, :name)
   end
 end
