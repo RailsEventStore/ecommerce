@@ -45,4 +45,22 @@ class ProductsTest < InMemoryRESIntegrationTestCase
                    unit: ""
                  )
   end
+
+  def test_does_not_crash_when_setting_products_price_to_0
+    register_customer("Arkency")
+    product_id = SecureRandom.uuid
+
+    get "/products/new"
+    assert_select "h1", "New Product"
+    post "/products",
+         params: {
+           "authenticity_token" => "[FILTERED]",
+           "product_id" => product_id,
+           "name" => "product name",
+           "price": "0",
+           "vat_rate" => "10"
+         }
+
+    assert_response :bad_request
+  end
 end
