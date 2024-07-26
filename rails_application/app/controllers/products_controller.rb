@@ -1,17 +1,18 @@
 class ProductsController < ApplicationController
   class CreateProduct
-    attr_reader :price, :vat_rate, :product_id, :name
+    include ActiveModel::Model
+    include ActiveModel::Attributes
+    include ActiveModel::Validations
 
-    def initialize(price:, vat_rate:, product_id:, name:)
-      @price = price
-      @vat_rate = vat_rate
-      @product_id = product_id
-      @name = name
-    end
+    attribute :name, :string
+    attribute :price, :decimal
+    attribute :vat_rate, :decimal
+    attribute :product_id, :string
 
-    def valid?
-      price.present? && vat_rate.present? && product_id.present? && name.present? && price.to_d > 0 && vat_rate.to_d > 0
-    end
+    validates :name, presence: true
+    validates :price, presence: true, numericality: { greater_than: 0 }
+    validates :vat_rate, presence: true, numericality: { greater_than: 0 }
+    validates :product_id, presence: true
   end
 
   def index
