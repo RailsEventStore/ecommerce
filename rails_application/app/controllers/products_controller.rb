@@ -6,7 +6,7 @@ class ProductsController < ApplicationController
 
     attribute :name, :string
     attribute :price, :decimal
-    attribute :vat_rate, :decimal
+    attribute :vat_rate, :string
     attribute :product_id, :string
 
     validates :name, presence: true
