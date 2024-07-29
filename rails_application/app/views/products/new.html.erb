@@ -7,13 +7,14 @@
     <%= link_to 'Back', products_path %>
   <% end %>
 
-  <%= primary_form_action_button do %>
+  <%= primary_form_action_button(data: { turbo_frame: "create_product" }) do %>
     Create Product
   <% end %>
 <% end %>
 
 <%= form_tag({controller: "products", action: "create"}, method: "post", id: "form") do %>
   <%= hidden_field_tag(:product_id, @product_id) %>
+<%= turbo_frame_tag "create_product" do %>
 
   <div>
     <label for="name" class="block font-bold">
@@ -33,4 +34,5 @@
     </label>
     <%= select_tag :vat_rate, options_from_collection_for_select(Taxes::Configuration.available_vat_rates, :code, :code), class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-sm sm:text-sm border-gray-300 rounded-md" %>
   </div>
+<% end %>
 <% end %>
