@@ -52,7 +52,7 @@ class ProductsTest < InMemoryRESIntegrationTestCase
            "authenticity_token" => "[FILTERED]",
            "product_id" => product_id,
            "name" => "product name",
-           "price": "0",
+           "price" => "0",
            "vat_rate" => "10"
          }
 
