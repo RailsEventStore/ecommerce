@@ -5,6 +5,9 @@ class OrdersController < ApplicationController
 
   def show
     @order = Orders::Order.find_by_uid(params[:id])
+
+    return not_found unless @order
+
     @order_lines = Orders::OrderLine.where(order_uid: @order.uid)
     @shipment = Shipments::Shipment.find_by(order_uid: @order.uid)
     @invoice = Invoices::Invoice.find_or_initialize_by(order_uid: @order.uid)
@@ -127,5 +130,9 @@ class OrdersController < ApplicationController
 
   def capture_payment_cmd(order_id)
     Payments::CapturePayment.new(order_id: order_id)
+  end
+
+  def not_found
+    render file: "#{Rails.root}/public/404.html", layout: false, status: :not_found
   end
 end

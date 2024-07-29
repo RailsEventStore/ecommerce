@@ -104,6 +104,11 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     assert_select("td", "Expired")
   end
 
+  def test_order_not_found
+    get "/orders/123"
+    assert_response :not_found
+  end
+
   def test_cancel
     shopify_id = register_customer("Shopify")
 
