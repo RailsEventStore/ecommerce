@@ -1,5 +1,5 @@
 class ProductsController < ApplicationController
-  class CreateProduct
+  class ProductForm
     include ActiveModel::Model
     include ActiveModel::Attributes
     include ActiveModel::Validations
@@ -32,10 +32,10 @@ class ProductsController < ApplicationController
   end
 
   def create
-    form = CreateProduct.new(**product_params)
+    product_form = ProductForm.new(**product_params)
 
-    unless form.valid?
-      return render "new", locals: { form:  }, status: :unprocessable_entity
+    unless product_form.valid?
+      return render "new", locals: { product_form:  }, status: :unprocessable_entity
     end
 
 
