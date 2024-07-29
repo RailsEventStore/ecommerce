@@ -57,7 +57,7 @@ class ProductsController < ApplicationController
   private
 
   def create_product(product_id, name)
-    command_bus.(create_product_cmd(product_id, name))
+    command_bus.(create_product_cmd(product_id))
     command_bus.(name_product_cmd(product_id, name))
   end
 
@@ -78,7 +78,7 @@ class ProductsController < ApplicationController
     command_bus.(name_product_cmd(product_id, name))
   end
 
-  def create_product_cmd(product_id, name)
+  def create_product_cmd(product_id)
     ProductCatalog::RegisterProduct.new(product_id: product_id)
   end
 
