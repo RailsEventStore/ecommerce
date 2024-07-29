@@ -32,9 +32,12 @@ class ProductsController < ApplicationController
   end
 
   def create
-    is_form_valid = CreateProduct.new(**product_params).valid?
+    form = CreateProduct.new(**product_params)
 
-    return head :bad_request unless is_form_valid
+    unless form.valid?
+      return render "new", locals: { form:  }, status: :unprocessable_entity
+    end
+
 
     ActiveRecord::Base.transaction do
       create_product(params[:product_id], params[:name])
