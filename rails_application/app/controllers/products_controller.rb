@@ -39,12 +39,12 @@ class ProductsController < ApplicationController
     end
 
     ActiveRecord::Base.transaction do
-      create_product(params[:product_id], params[:name])
-      if params[:price].present?
-        set_product_price(params[:product_id], params[:price])
+      create_product(product_form.product_id, product_form.name)
+      if product_form.price.present?
+        set_product_price(product_form.product_id, product_form.price)
       end
-      if params[:vat_rate].present?
-        set_product_vat_rate(params[:product_id], params[:vat_rate])
+      if product_form.vat_rate.present?
+        set_product_vat_rate(product_form.product_id, product_form.vat_rate)
       end
     rescue ProductCatalog::AlreadyRegistered
       flash[:notice] = "Product was already registered"
