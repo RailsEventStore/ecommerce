@@ -86,6 +86,10 @@ class InMemoryRESIntegrationTestCase < ActionDispatch::IntegrationTest
     product_id
   end
 
+  def supply_product(product_id, quantity)
+    post "/products/#{product_id}/supplies", params: { quantity: quantity }
+  end
+
   def update_price(product_id, new_price)
     patch "/products/#{product_id}",
           params: {

@@ -111,6 +111,47 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
     as_client_add_item_to_basket_for_order(product_id, order_id)
   end
 
+  def test_adding_product_which_is_not_available_anymore
+    customer_1_id = register_customer('Arkency')
+    customer_2_id = register_customer("Customer Shop")
+    product_id = register_product("Fearless Refactoring", 4, 10)
+    Sidekiq::Job.drain_all
+
+    supply_product(product_id, 1)
+    session_1 = login_as(customer_1_id)
+    session_2 = login_as(customer_2_id)
+
+    session_1.get "/client_orders"
+    session_2.get "/client_orders"
+
+    order_1_id = SecureRandom.uuid
+    session_1.post "/client_orders/#{order_1_id}/add_item?product_id=#{product_id}"
+
+    order_2_id = SecureRandom.uuid
+    session_2.post "/client_orders/#{order_2_id}/add_item?product_id=#{product_id}"
+
+    assert session_2.redirect?
+    assert session_2.response.location.include?("/client_orders/#{order_2_id}/edit")
+    assert_equal "Product not available in requested quantity!", session_2.flash[:alert]
+  end
+
+  def test_adding_product_which_is_not_available_in_requested_quantity
+    customer_id = register_customer("Customer Shop")
+    product_id = register_product("Fearless Refactoring", 4, 10)
+    Sidekiq::Job.drain_all
+
+    supply_product(product_id, 1)
+    login(customer_id)
+    visit_client_orders
+
+    order_id = SecureRandom.uuid
+    as_client_add_item_to_basket_for_order(product_id, order_id)
+    as_client_add_item_to_basket_for_order(product_id, order_id)
+
+    assert_redirected_to "/client_orders/#{order_id}/edit"
+    assert_equal "Product not available in requested quantity!", flash[:alert]
+  end
+
   private
 
   def submit_order_for_customer(customer_id, order_id)
@@ -170,5 +211,11 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
            "product_id" => product_id,
            price: new_price,
          }
+  end
+
+  def login_as(client_id)
+    open_session do |sess|
+      sess.post "/login", params: { client_id: client_id }
+    end
   end
 end
