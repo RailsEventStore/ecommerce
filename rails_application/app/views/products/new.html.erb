@@ -35,4 +35,11 @@
     <%= select_tag :vat_rate, options_from_collection_for_select(Taxes::Configuration.available_vat_rates, :code, :code), class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-sm sm:text-sm border-gray-300 rounded-md" %>
   </div>
 <% end %>
+    <% if defined?(form) && form.errors %>
+      <% form.errors.each do |error| %>
+        <div class="mt-2 text-red-600">
+          <span><%= error.full_message %></span>
+        </div>
+      <% end %>
+    <% end %>
 <% end %>

@@ -61,6 +61,7 @@ class ProductsTest < InMemoryRESIntegrationTestCase
            "vat_rate" => "10"
          }
 
-    assert_response :bad_request
+    assert_response :unprocessable_entity
+    assert_select "span", "Price must be greater than 0"
   end
 end
