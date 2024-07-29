@@ -8,9 +8,9 @@ module ApplicationHelper
       )
   end
 
-  def action_button(css_classes, type: "button", form: nil)
+  def action_button(css_classes, type: "button", form: nil, data: {})
     content_tag "span", class: "sm:ml-3" do
-      content_tag "button", type: type, form: form, class: class_names(
+      content_tag "button", type: type, form: form, data:, class: class_names(
         "inline-flex items-center px-4 py-2 border rounded-md shadow-sm text-sm font-medium",
         "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500",
         css_classes
@@ -20,11 +20,12 @@ module ApplicationHelper
     end
   end
 
-  def primary_form_action_button(&block)
+  def primary_form_action_button(data: {}, &block)
     action_button(
       "border-transparent text-white bg-blue-600 hover:bg-blue-700",
       type: "submit",
       form: "form",
+      data:,
       &block
     )
   end
