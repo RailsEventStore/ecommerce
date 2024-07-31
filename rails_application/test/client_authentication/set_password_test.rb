@@ -19,7 +19,10 @@ module ClientAuthentication
       connect_to_account(customer_id, account_id)
 
       run_command(
-        Authentication::SetPasswordHash.new(account_id: account_id, password_hash: password_hash)
+        Authentication::SetPasswordHash.new(
+          account_id: account_id,
+          password_hash: password_hash
+        )
       )
 
       account = Account.find_by(client_id: customer_id, account_id: account_id)
@@ -34,7 +37,10 @@ module ClientAuthentication
 
       register_customer(customer_id)
       run_command(
-        Authentication::SetPasswordHash.new(account_id: account_id, password_hash: password_hash)
+        Authentication::SetPasswordHash.new(
+          account_id: account_id,
+          password_hash: password_hash
+        )
       )
       connect_to_account(customer_id, account_id)
 
@@ -45,12 +51,17 @@ module ClientAuthentication
     private
 
     def register_customer(customer_id)
-      run_command(Crm::RegisterCustomer.new(customer_id: customer_id, name: "John Doe"))
+      run_command(
+        Crm::RegisterCustomer.new(customer_id: customer_id, name: "John Doe")
+      )
     end
 
     def connect_to_account(customer_id, account_id)
       run_command(
-        Authentication::ConnectAccountToClient.new(account_id: account_id, client_id: customer_id)
+        Authentication::ConnectAccountToClient.new(
+          account_id: account_id,
+          client_id: customer_id
+        )
       )
     end
 

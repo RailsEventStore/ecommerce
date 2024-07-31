@@ -42,5 +42,5 @@ class DiscountTest < InMemoryRESIntegrationTestCase
     follow_redirect!
     assert_select("td", "$123.30")
   end
-
 end
+

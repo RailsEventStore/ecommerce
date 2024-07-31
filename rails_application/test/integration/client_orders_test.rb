@@ -12,7 +12,7 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
   end
 
   def test_happy_path
-    arkency_id = register_customer('Arkency')
+    arkency_id = register_customer("Arkency")
     async_remote_id = register_product("Async Remote", 39, 10)
     fearless_id = register_product("Fearless Refactoring", 49, 10)
 
@@ -28,12 +28,19 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
     order_id = SecureRandom.uuid
     add_item_to_basket_for_order(async_remote_id, order_id)
     get "/client_orders/#{order_id}/edit"
-    assert_match(/#{Regexp.escape(remove_item_client_order_path(id: order_id, product_id: async_remote_id))}/, response.body)
-    assert_no_match(/#{Regexp.escape(remove_item_client_order_path(id: order_id, product_id: fearless_id))}/, response.body)
+    assert_match(
+      /#{Regexp.escape(remove_item_client_order_path(id: order_id, product_id: async_remote_id))}/,
+      response.body
+    )
+    assert_no_match(
+      /#{Regexp.escape(remove_item_client_order_path(id: order_id, product_id: fearless_id))}/,
+      response.body
+    )
 
     submit_order_for_customer(arkency_id, order_id)
     get "/client_orders"
-    order_price = number_to_currency(Orders::Order.find_by(uid: order_id).discounted_value)
+    order_price =
+      number_to_currency(Orders::Order.find_by(uid: order_id).discounted_value)
 
     assert_select("td", "Submitted")
     assert_select("td", order_price)
@@ -54,7 +61,7 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
   end
 
   def test_creating_order_as_client
-    arkency_id = register_customer('Arkency')
+    arkency_id = register_customer("Arkency")
     async_remote_id = register_product("Async Remote", 39, 10)
 
     get "/clients"
@@ -64,7 +71,8 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
     as_client_add_item_to_basket_for_order(async_remote_id, order_id)
     as_client_submit_order_for_customer(order_id)
     get "/client_orders"
-    order_price = number_to_currency(Orders::Order.find_by(uid: order_id).discounted_value)
+    order_price =
+      number_to_currency(Orders::Order.find_by(uid: order_id).discounted_value)
     assert_select("td", "Submitted")
     assert_select("td", order_price)
   end
@@ -102,7 +110,7 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
   end
 
   def test_adding_product_which_is_not_available_anymore
-    customer_1_id = register_customer('Arkency')
+    customer_1_id = register_customer("Arkency")
     customer_2_id = register_customer("Customer Shop")
     product_id = register_product("Fearless Refactoring", 4, 10)
 
@@ -121,8 +129,11 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
     session_2.post "/client_orders/#{order_2_id}/add_item?product_id=#{product_id}"
 
     assert session_2.redirect?
-    assert session_2.response.location.include?("/client_orders/#{order_2_id}/edit")
-    assert_equal "Product not available in requested quantity!", session_2.flash[:alert]
+    assert session_2.response.location.include?(
+             "/client_orders/#{order_2_id}/edit"
+           )
+    assert_equal "Product not available in requested quantity!",
+                 session_2.flash[:alert]
   end
 
   def test_adding_product_which_is_not_available_in_requested_quantity
@@ -167,7 +178,7 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
 
   def cancel_submitted_order_for_customer(customer_id)
     order_id = SecureRandom.uuid
-    anti_if = register_product('Anti If', 99, 10)
+    anti_if = register_product("Anti If", 99, 10)
 
     add_item_to_basket_for_order(anti_if, order_id)
     add_item_to_basket_for_order(anti_if, order_id)
@@ -184,24 +195,22 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
   end
 
   def assert_orders_summary(summary)
-    assert_select 'tr' do
-      assert_select 'td:nth-child(1)', "Total paid orders"
-      assert_select 'td:nth-child(2)', summary
+    assert_select "tr" do
+      assert_select "td:nth-child(1)", "Total paid orders"
+      assert_select "td:nth-child(2)", summary
     end
   end
 
   def update_price(product_id, new_price)
     patch "/products/#{product_id}",
-         params: {
-           "authenticity_token" => "[FILTERED]",
-           "product_id" => product_id,
-           price: new_price,
-         }
+          params: {
+            "authenticity_token" => "[FILTERED]",
+            "product_id" => product_id,
+            :price => new_price
+          }
   end
 
   def login_as(client_id)
-    open_session do |sess|
-      sess.post "/login", params: { client_id: client_id }
-    end
+    open_session { |sess| sess.post "/login", params: { client_id: client_id } }
   end
 end

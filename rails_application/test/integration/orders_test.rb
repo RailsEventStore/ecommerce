@@ -1,7 +1,6 @@
 require "test_helper"
 
 class OrdersTest < InMemoryRESIntegrationTestCase
-
   def setup
     super
     Rails.configuration.payment_gateway.call.reset
@@ -32,7 +31,7 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     another_order_id = SecureRandom.uuid
 
     async_remote_id = register_product("Async Remote", 39, 10)
-    fearless_id     = register_product("Fearless Refactoring", 49, 10)
+    fearless_id = register_product("Fearless Refactoring", 49, 10)
 
     post "/orders",
          params: {
@@ -188,10 +187,10 @@ class OrdersTest < InMemoryRESIntegrationTestCase
   def test_discount_is_applied_for_new_order
     order_id = SecureRandom.uuid
     async_remote_id = register_product("Async Remote", 39, 10)
-    fearless_id     = register_product("Fearless Refactoring", 49, 10)
+    fearless_id = register_product("Fearless Refactoring", 49, 10)
     shopify_id = register_customer("Shopify")
 
-    assert_nothing_raised { apply_discount_10_percent(order_id)}
+    assert_nothing_raised { apply_discount_10_percent(order_id) }
 
     post "/orders/#{order_id}/add_item?product_id=#{async_remote_id}"
     post "/orders/#{order_id}/add_item?product_id=#{fearless_id}"
@@ -213,19 +212,31 @@ class OrdersTest < InMemoryRESIntegrationTestCase
   private
 
   def assert_remove_buttons_visible(async_remote_id, fearless_id, order_id)
-    assert_match(/#{Regexp.escape(remove_item_order_path(id: order_id, product_id: async_remote_id))}/, response.body)
-    assert_match(/#{Regexp.escape(remove_item_order_path(id: order_id, product_id: fearless_id))}/, response.body)
+    assert_match(
+      /#{Regexp.escape(remove_item_order_path(id: order_id, product_id: async_remote_id))}/,
+      response.body
+    )
+    assert_match(
+      /#{Regexp.escape(remove_item_order_path(id: order_id, product_id: fearless_id))}/,
+      response.body
+    )
   end
 
   def assert_remove_buttons_not_visible(async_remote_id, fearless_id)
     url = request.original_url
     uri = URI.parse(url)
     puts uri.query
-    path_components = uri.path.split('/')
+    path_components = uri.path.split("/")
     order_uuid = path_components[-2]
 
-    assert_no_match(/#{Regexp.escape(remove_item_order_path(id: order_uuid, product_id: async_remote_id))}/, response.body)
-    assert_no_match(/#{Regexp.escape(remove_item_order_path(id: order_uuid, product_id: fearless_id))}/, response.body)
+    assert_no_match(
+      /#{Regexp.escape(remove_item_order_path(id: order_uuid, product_id: async_remote_id))}/,
+      response.body
+    )
+    assert_no_match(
+      /#{Regexp.escape(remove_item_order_path(id: order_uuid, product_id: fearless_id))}/,
+      response.body
+    )
   end
 
   def verify_shipping(order_id)
@@ -234,14 +245,15 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     assert_select("a", "Add shipment address")
     get "/orders/#{order_id}/shipping_address/edit"
     assert_select("label", "Addressee's full name (Person or Company)")
-    put "/orders/#{order_id}/shipping_address", params: {
-      "shipments_shipment" => {
-        address_line_1: "123 Main Street",
-        address_line_2: "Apt 1",
-        address_line_3: "San Francisco",
-        address_line_4: "US",
-      }
-    }
+    put "/orders/#{order_id}/shipping_address",
+        params: {
+          "shipments_shipment" => {
+            address_line_1: "123 Main Street",
+            address_line_2: "Apt 1",
+            address_line_3: "San Francisco",
+            address_line_4: "US"
+          }
+        }
     Shipments::SetShippingAddress.drain
     follow_redirect!
     assert_select("dd", "Your shipment has been queued for processing.")
@@ -254,14 +266,15 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     assert_select("a", "Add billing address")
     get "/orders/#{order_id}/billing_address/edit"
     assert_select("label", "Addressee's full name (Person or Company)")
-    put "/orders/#{order_id}/billing_address", params: {
-      "invoices_invoice" => {
-        address_line_1: "44 Main Street",
-        address_line_2: "Apt 2",
-        address_line_3: "Francisco",
-        address_line_4: "UK",
-      }
-    }
+    put "/orders/#{order_id}/billing_address",
+        params: {
+          "invoices_invoice" => {
+            address_line_1: "44 Main Street",
+            address_line_2: "Apt 2",
+            address_line_3: "Francisco",
+            address_line_4: "UK"
+          }
+        }
     follow_redirect!
     assert_select("button", "Issue now")
     post "/orders/#{order_id}/invoice"
@@ -275,12 +288,15 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     assert_select("td", "2")
     assert_select("td", "$88.20")
     assert_select("td", "$123.30")
-
   end
 
   def assert_res_browser_order_history
     get "/res/api/streams/Orders%24all/relationships/events"
-    event_names = JSON.load(body).fetch("data").map { |data| data.fetch("attributes").fetch("event_type") }
+    event_names =
+      JSON
+        .load(body)
+        .fetch("data")
+        .map { |data| data.fetch("attributes").fetch("event_type") }
 
     assert(event_names.include?("Fulfillment::OrderConfirmed"))
     assert(event_names.include?("Ordering::ItemAddedToBasket"))

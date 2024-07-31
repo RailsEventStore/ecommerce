@@ -19,7 +19,10 @@ module ClientAuthentication
       register_customer(customer_id)
 
       run_command(
-        Authentication::ConnectAccountToClient.new(account_id: account_id, client_id: customer_id)
+        Authentication::ConnectAccountToClient.new(
+          account_id: account_id,
+          client_id: customer_id
+        )
       )
 
       customer = Account.find_by(client_id: customer_id, account_id: account_id)
@@ -29,7 +32,9 @@ module ClientAuthentication
     private
 
     def register_customer(customer_id)
-      run_command(Crm::RegisterCustomer.new(customer_id: customer_id, name: "John Doe"))
+      run_command(
+        Crm::RegisterCustomer.new(customer_id: customer_id, name: "John Doe")
+      )
     end
 
     def event_store

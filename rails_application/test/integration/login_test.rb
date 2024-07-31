@@ -1,7 +1,6 @@
 require "test_helper"
 
 class LoginTest < InMemoryRESIntegrationTestCase
-
   def setup
     super
     Customers::Customer.destroy_all
@@ -19,13 +18,16 @@ class LoginTest < InMemoryRESIntegrationTestCase
     assert_equal customer_id, cookies["client_id"]
   end
 
-
   def test_login_with_incorrect_password
     password = "1234qwer"
     customer_id = register_customer("Arkency")
     set_password(customer_id, password)
 
-    post "/login", params: { client_id: customer_id, password: "Wrong password" }
+    post "/login",
+         params: {
+           client_id: customer_id,
+           password: "Wrong password"
+         }
     follow_redirect!
 
     refute cookies["client_id"].present?
@@ -49,9 +51,18 @@ class LoginTest < InMemoryRESIntegrationTestCase
     password_hash = Digest::SHA256.hexdigest(password)
 
     run_command(Authentication::RegisterAccount.new(account_id: account_id))
-    run_command(Authentication::ConnectAccountToClient.new(account_id: account_id, client_id: customer_id))
-    run_command(Authentication::SetPasswordHash.new(account_id: account_id, password_hash: password_hash))
-    Sidekiq::Job.drain_all
+    run_command(
+      Authentication::ConnectAccountToClient.new(
+        account_id: account_id,
+        client_id: customer_id
+      )
+    )
+    run_command(
+      Authentication::SetPasswordHash.new(
+        account_id: account_id,
+        password_hash: password_hash
+      )
+    )
 
     cookies["client_id"] = nil
     customer_id

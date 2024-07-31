@@ -66,9 +66,9 @@ class CustomersTest < InMemoryRESIntegrationTestCase
   end
 
   def assert_customer_summary(customer_name, summary)
-    assert_select 'tr' do
-      assert_select 'td:nth-child(1)', customer_name
-      assert_select 'td:nth-child(3)', summary
+    assert_select "tr" do
+      assert_select "td:nth-child(1)", customer_name
+      assert_select "td:nth-child(3)", summary
     end
   end
 
@@ -79,7 +79,12 @@ class CustomersTest < InMemoryRESIntegrationTestCase
     assert_select "dd", vip_status
   end
 
-  def assert_customer_orders_table(order_number, order_state, order_discounted_value, paid_orders_summary)
+  def assert_customer_orders_table(
+    order_number,
+    order_state,
+    order_discounted_value,
+    paid_orders_summary
+  )
     assert_select "table" do
       assert_select "tbody" do
         assert_select "tr" do
