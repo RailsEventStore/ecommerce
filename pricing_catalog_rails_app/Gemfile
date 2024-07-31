@@ -47,5 +47,4 @@ group :test do
   gem "selenium-webdriver"
 end
 gem "rails_event_store", "~> 2.14.0"
-gem "ruby_event_store-sidekiq_scheduler"
 gem "infra", path: "../infra"

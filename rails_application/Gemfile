@@ -18,7 +18,6 @@ gem "rails_event_store",  ">= 2.13.0", "< 3.0"
 gem 'arbre'
 gem 'redis'
 gem "sidekiq", "~> 7.0"
-gem "ruby_event_store-sidekiq_scheduler", "~> 0.1.1"
 
 group :development do
   gem "listen", "~> 3.3"

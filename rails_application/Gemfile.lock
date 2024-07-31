@@ -256,8 +256,6 @@ GEM
     ruby_event_store-browser (2.13.0)
       rack
       ruby_event_store (= 2.13.0)
-    ruby_event_store-sidekiq_scheduler (0.1.2)
-      ruby_event_store (>= 2.0.0, < 3.0.0)
     ruby_event_store-transformations (0.1.0)
       activesupport (>= 5.0)
       ruby_event_store (>= 2.0.0, < 3.0.0)
@@ -327,7 +325,6 @@ DEPENDENCIES
   rails (= 7.0.4)
   rails_event_store (>= 2.13.0, < 3.0)
   redis
-  ruby_event_store-sidekiq_scheduler (~> 0.1.1)
   sidekiq (~> 7.0)
   skylight
   sprockets-rails
