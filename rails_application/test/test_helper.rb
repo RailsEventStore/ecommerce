@@ -118,6 +118,10 @@ class InMemoryRESIntegrationTestCase < ActionDispatch::IntegrationTest
     get "/customers"
   end
 
+  def visit_customer_page(customer_id)
+    get "/customers/#{customer_id}"
+  end
+
   def pay_order(order_id)
     post "/orders/#{order_id}/pay"
   end
