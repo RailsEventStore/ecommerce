@@ -26,5 +26,9 @@ module Orders
     def broadcaster
       Rails.configuration.broadcaster
     end
+
+    def event_store
+      Rails.configuration.event_store
+    end
   end
 end

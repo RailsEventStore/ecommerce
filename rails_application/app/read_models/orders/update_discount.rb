@@ -15,6 +15,10 @@ module Orders
 
     private
 
+    def event_store
+      Rails.configuration.event_store
+    end
+
     def is_newest_value?(event, order)
       order.discount_updated_at.nil? || order.discount_updated_at < event.metadata.fetch(:timestamp)
     end

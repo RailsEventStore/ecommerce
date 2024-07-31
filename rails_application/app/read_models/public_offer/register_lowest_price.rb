@@ -61,6 +61,10 @@ module PublicOffer
       Rails.logger.info("Duplicated event registered for PricesHistoryReport: #{error}")
     end
 
+    def event_store
+      Rails.configuration.event_store
+    end
+
     def stream_name(product_id)
       "PricesHistoryReport$#{product_id}"
     end
