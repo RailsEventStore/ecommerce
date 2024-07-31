@@ -1,5 +1,5 @@
 module ClientOrders
-  class AssignCustomerToOrder < Infra::EventHandler
+  class AssignCustomerToOrder
     def call(event)
       order_uid = event.data.fetch(:order_id)
       order = Order.find_by(order_uid: order_uid)

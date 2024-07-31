@@ -1,5 +1,5 @@
 module PublicOffer
-  class RegisterLowestPrice < Infra::EventHandler
+  class RegisterLowestPrice
     RECENT_PERIOD = 30.days
 
     def call(event)

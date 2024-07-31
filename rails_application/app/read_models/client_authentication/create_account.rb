@@ -1,5 +1,5 @@
 module ClientAuthentication
-  class CreateAccount < Infra::EventHandler
+  class CreateAccount
     def call(event)
       client_id = event.data.fetch(:client_id)
       account_id = event.data.fetch(:account_id)

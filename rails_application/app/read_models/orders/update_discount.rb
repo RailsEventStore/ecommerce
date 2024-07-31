@@ -1,5 +1,5 @@
 module Orders
-  class UpdateDiscount < Infra::EventHandler
+  class UpdateDiscount
     def call(event)
       order = Order.find_by_uid(event.data.fetch(:order_id))
       if is_newest_value?(event, order)

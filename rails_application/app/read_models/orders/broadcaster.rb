@@ -1,5 +1,5 @@
 module Orders
-  class Broadcaster < Infra::EventHandler
+  class Broadcaster
     def call(stream_id, target_id, target_name, content)
       Turbo::StreamsChannel.broadcast_update_to(
         "orders_order_#{stream_id}",

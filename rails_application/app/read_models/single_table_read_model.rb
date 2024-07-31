@@ -46,7 +46,7 @@ class SingleTableReadModel
   end
 end
 
-class ReadModelHandler < Infra::EventHandler
+class ReadModelHandler
   def initialize(*args)
     if args.present?
       @event_store = args[0]

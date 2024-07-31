@@ -1,5 +1,5 @@
 module Orders
-  class ExpireOrder < Infra::EventHandler
+  class ExpireOrder
     def call(event)
       order = Order.find_by_uid(event.data.fetch(:order_id))
       order.state = "Expired"
@@ -9,3 +9,4 @@ module Orders
     end
   end
 end
+

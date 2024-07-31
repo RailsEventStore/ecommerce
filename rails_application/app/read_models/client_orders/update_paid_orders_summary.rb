@@ -1,5 +1,5 @@
 module ClientOrders
-  class UpdatePaidOrdersSummary < Infra::EventHandler
+  class UpdatePaidOrdersSummary
     def call(event)
       order = Order.find_by(order_uid: event.data.fetch(:order_id))
       client = Client.where(uid: order.client_uid).first

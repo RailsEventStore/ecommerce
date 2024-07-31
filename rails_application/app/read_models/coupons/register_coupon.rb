@@ -1,5 +1,5 @@
 module Coupons
-  class RegisterCoupon < Infra::EventHandler
+  class RegisterCoupon
     def call(event)
       event_data = event.data
       Coupon.create(

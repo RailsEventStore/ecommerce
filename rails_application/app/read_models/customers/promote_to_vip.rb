@@ -1,10 +1,11 @@
 module Customers
-  class PromoteToVip < Infra::EventHandler
+  class PromoteToVip
     def call(event)
       promote_to_vip(event)
     end
 
     private
+
     def promote_to_vip(event)
       find(event.data.fetch(:customer_id)).update(vip: true)
     end

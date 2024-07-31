@@ -1,5 +1,5 @@
 module Orders
-  class UpdateOrderTotalValue < Infra::EventHandler
+  class UpdateOrderTotalValue
     def call(event)
       order_id = event.data.fetch(:order_id)
       ApplicationRecord.with_advisory_lock(order_id) do

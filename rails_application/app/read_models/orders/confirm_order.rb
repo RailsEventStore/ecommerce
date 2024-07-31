@@ -1,5 +1,5 @@
 module Orders
-  class ConfirmOrder < Infra::EventHandler
+  class ConfirmOrder
     def call(event)
       order = Order.find_by_uid(event.data.fetch(:order_id))
       order.state = "Paid"
@@ -9,3 +9,4 @@ module Orders
     end
   end
 end
+

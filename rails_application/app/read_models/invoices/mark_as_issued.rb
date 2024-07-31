@@ -1,5 +1,5 @@
 module Invoices
-  class MarkAsIssued < Infra::EventHandler
+  class MarkAsIssued
     def call(event)
       invoice = Invoice.find_or_initialize_by(order_uid: event.data.fetch(:invoice_id))
       invoice.issued = true

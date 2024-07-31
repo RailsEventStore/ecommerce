@@ -1,5 +1,5 @@
 module Orders
-  class RegisterProduct < Infra::EventHandler
+  class RegisterProduct
     def call(event)
       Product.create(uid: event.data.fetch(:product_id))
 
@@ -7,4 +7,3 @@ module Orders
     end
   end
 end
-

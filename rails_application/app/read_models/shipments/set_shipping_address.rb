@@ -1,5 +1,5 @@
 module Shipments
-  class SetShippingAddress < Infra::EventHandler
+  class SetShippingAddress
     def call(event)
       shipment = Shipment.find_or_create_by(order_uid: event.data.fetch(:order_id))
       postal_address = event.data.fetch(:postal_address)

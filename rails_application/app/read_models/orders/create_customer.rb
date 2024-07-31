@@ -1,5 +1,5 @@
 module Orders
-  class CreateCustomer < Infra::EventHandler
+  class CreateCustomer
     def call(event)
       Customer.create(
         uid: event.data.fetch(:customer_id),

@@ -1,5 +1,5 @@
 module Orders
-  class AssignCustomerToOrder < Infra::EventHandler
+  class AssignCustomerToOrder
     def call(event)
       order_uid = event.data.fetch(:order_id)
       ApplicationRecord.with_advisory_lock(order_uid) do

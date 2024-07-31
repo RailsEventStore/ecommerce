@@ -1,5 +1,5 @@
 module Invoices
-  class MarkOrderPlaced < Infra::EventHandler
+  class MarkOrderPlaced
     def call(event)
       invoice = Invoice.find_or_initialize_by(order_uid: event.data.fetch(:order_id))
       Order.find_or_initialize_by(uid: event.data.fetch(:order_id)).update!(submitted: true)

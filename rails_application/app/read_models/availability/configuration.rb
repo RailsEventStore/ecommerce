@@ -9,7 +9,7 @@ module Availability
     !Product.exists?(["uid = ? and available < ?", product_id, desired_quantity])
   end
 
-  class UpdateAvailability < Infra::EventHandler
+  class UpdateAvailability
     def call(event)
       order = Product.find_or_create_by!(uid: event.data.fetch(:product_id))
       order.available = event.data.fetch(:available)

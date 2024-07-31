@@ -1,5 +1,5 @@
 module Orders
-  class RemoveItemFromOrder < Infra::EventHandler
+  class RemoveItemFromOrder
     def call(event)
       product_id = event.data.fetch(:product_id)
       order_id = event.data.fetch(:order_id)

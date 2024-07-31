@@ -1,5 +1,5 @@
 module TimePromotions
-  class CreateTimePromotion < Infra::EventHandler
+  class CreateTimePromotion
     def call(event)
       time_promotion = TimePromotion.create!(event.data.slice(:code, :discount, :start_time, :end_time, :label).merge(id: event.data[:time_promotion_id]))
       Broadcaster.new.call(<<~HTML

@@ -1,5 +1,5 @@
 module ClientOrders
-  class CancelOrder < Infra::EventHandler
+  class CancelOrder
     def call(event)
       order = Order.find_by(order_uid: event.data.fetch(:order_id))
       order.state = "Cancelled"
@@ -7,3 +7,4 @@ module ClientOrders
     end
   end
 end
+

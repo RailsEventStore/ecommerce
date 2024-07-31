@@ -1,5 +1,5 @@
 module Orders
-  class SubmitOrder < Infra::EventHandler
+  class SubmitOrder
     def call(event)
       order_id = event.data.fetch(:order_id)
       ApplicationRecord.with_advisory_lock(order_id) do
@@ -12,3 +12,4 @@ module Orders
     end
   end
 end
+

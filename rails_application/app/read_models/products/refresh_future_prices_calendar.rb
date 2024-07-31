@@ -1,5 +1,5 @@
 module Products
-  class RefreshFuturePricesCalendar < Infra::EventHandler
+  class RefreshFuturePricesCalendar
     def call(event)
       product_id = event.data.fetch(:product_id)
       ApplicationRecord.with_advisory_lock(Product, product_id) do

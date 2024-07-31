@@ -1,5 +1,5 @@
 module ClientOrders
-  class AddItemToOrder < Infra::EventHandler
+  class AddItemToOrder
     include Rails.application.routes.url_helpers
     include ActionView::Helpers::UrlHelper
     include ActionView::Helpers::FormTagHelper

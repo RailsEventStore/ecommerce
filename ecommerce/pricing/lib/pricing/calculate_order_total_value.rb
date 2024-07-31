@@ -1,5 +1,5 @@
 module Pricing
-  class CalculateOrderTotalValue < Infra::EventHandler
+  class CalculateOrderTotalValue
     def call(event)
       command_bus.(CalculateTotalValue.new(order_id: event.data.fetch(:order_id)))
     end
