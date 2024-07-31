@@ -126,6 +126,7 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
 
     order_1_id = SecureRandom.uuid
     session_1.post "/client_orders/#{order_1_id}/add_item?product_id=#{product_id}"
+    order_and_pay(customer_1_id, order_1_id, product_id)
 
     order_2_id = SecureRandom.uuid
     session_2.post "/client_orders/#{order_2_id}/add_item?product_id=#{product_id}"
