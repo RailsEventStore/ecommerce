@@ -21,7 +21,6 @@ module ClientAuthentication
       run_command(
         Authentication::ConnectAccountToClient.new(account_id: account_id, client_id: customer_id)
       )
-      Sidekiq::Job.drain_all
 
       customer = Account.find_by(client_id: customer_id, account_id: account_id)
       assert customer.present?

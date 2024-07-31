@@ -34,8 +34,6 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     async_remote_id = register_product("Async Remote", 39, 10)
     fearless_id     = register_product("Fearless Refactoring", 49, 10)
 
-    Sidekiq::Job.drain_all
-
     post "/orders",
          params: {
            "authenticity_token" => "[FILTERED]",
@@ -53,12 +51,10 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     post "/orders/#{order_id}/add_item?product_id=#{async_remote_id}"
     post "/orders/#{order_id}/add_item?product_id=#{fearless_id}"
     post "/orders/#{order_id}/add_item?product_id=#{fearless_id}"
-    Sidekiq::Job.drain_all
     get "/orders/#{order_id}/edit"
     assert_remove_buttons_visible(async_remote_id, fearless_id, order_id)
 
     apply_discount_10_percent(order_id)
-    Sidekiq::Job.drain_all
 
     post "/orders",
          params: {
@@ -67,7 +63,6 @@ class OrdersTest < InMemoryRESIntegrationTestCase
            "customer_id" => shopify_id,
            "commit" => "Submit order"
          }
-    Sidekiq::Job.drain_all
     follow_redirect!
     assert_select("td", "$123.30")
     assert_select("dd", "Submitted")
@@ -75,7 +70,6 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     assert_select("td", "10.0%")
     get "/orders"
     post "/orders/#{order_id}/pay"
-    Sidekiq::Job.drain_all
     follow_redirect!
     assert_select("td", text: "Paid")
     assert_payment_gateway_value(123.30)
@@ -92,14 +86,10 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     order_id = SecureRandom.uuid
     async_remote_id = register_product("Async Remote", 39, 10)
 
-    Sidekiq::Job.drain_all
-
     post "/orders/#{order_id}/add_item?product_id=#{async_remote_id}"
-    Sidekiq::Job.drain_all
     get "/orders"
     assert_select("td", "Draft")
     post "/orders/expire"
-    Sidekiq::Job.drain_all
     follow_redirect!
     assert_select("td", "Expired")
   end
@@ -115,8 +105,6 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     order_id = SecureRandom.uuid
     async_remote_id = register_product("Async Remote", 39, 10)
 
-    Sidekiq::Job.drain_all
-
     get "/"
     get "/orders/new"
     post "/orders/#{order_id}/add_item?product_id=#{async_remote_id}"
@@ -129,7 +117,6 @@ class OrdersTest < InMemoryRESIntegrationTestCase
          }
 
     post "/orders/#{order_id}/cancel"
-    Sidekiq::Job.drain_all
     get "/orders/#{order_id}"
     assert_select("dd", "Cancelled")
   end
@@ -140,12 +127,9 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     order_id = SecureRandom.uuid
     async_remote_id = register_product("Async Remote", 39, 10)
 
-    Sidekiq::Job.drain_all
-
     get "/"
     get "/orders/new"
     post "/orders/#{order_id}/add_item?product_id=#{async_remote_id}"
-    Sidekiq::Job.drain_all
 
     get "/orders/#{order_id}"
 
@@ -158,12 +142,10 @@ class OrdersTest < InMemoryRESIntegrationTestCase
            "customer_id" => shopify_id,
            "commit" => "Submit order"
          }
-    Sidekiq::Job.drain_all
 
     get "/orders/#{order_id}"
     assert_select("button", text: "History")
     assert_select("button", text: "Cancel Order", count: 1)
-
 
     post "/orders/#{order_id}/pay"
     Shipments::MarkOrderPlaced.drain
@@ -180,8 +162,6 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     order_id = SecureRandom.uuid
     async_remote_id = register_product("Async Remote", 39, 10)
 
-    Sidekiq::Job.drain_all
-
     get "/"
     get "/orders/new"
     post "/orders/#{order_id}/add_item?product_id=#{async_remote_id}"
@@ -195,12 +175,10 @@ class OrdersTest < InMemoryRESIntegrationTestCase
            "commit" => "Submit order"
          }
     follow_redirect!
-    Sidekiq::Job.drain_all
     get "/orders/#{order_id}"
     assert_select("td", text: "$39.00")
     assert_select("td", text: "$78.00")
     update_price(async_remote_id, 49)
-    Sidekiq::Job.drain_all
     get "/orders/#{order_id}"
 
     assert_select("td", text: "$39.00")

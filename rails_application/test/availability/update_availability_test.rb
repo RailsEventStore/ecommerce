@@ -35,7 +35,6 @@ module Availability
         )
       )
       run_command(Pricing::SetPrice.new(product_id: product_id, price: 50))
-      Sidekiq::Job.drain_all
     end
   end
 end

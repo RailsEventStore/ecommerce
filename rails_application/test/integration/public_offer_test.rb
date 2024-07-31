@@ -8,7 +8,6 @@ class PublicOfferTest < InMemoryRESIntegrationTestCase
 
   def test_happy_path
     arkency_id = register_customer('Arkency')
-    Sidekiq::Job.drain_all
     register_product("Async Remote", 39, 10)
     get "/clients"
     login(arkency_id)
@@ -25,8 +24,6 @@ class PublicOfferTest < InMemoryRESIntegrationTestCase
     update_price(product1_id, 30)
     update_price(product2_id, 25)
     update_price(product2_id, 70)
-
-    Sidekiq::Job.drain_all
 
     get "/clients"
     login(client_id)

@@ -21,7 +21,6 @@ module ClientAuthentication
       run_command(
         Authentication::SetPasswordHash.new(account_id: account_id, password_hash: password_hash)
       )
-      Sidekiq::Job.drain_all
 
       account = Account.find_by(client_id: customer_id, account_id: account_id)
       assert_equal password_hash, account.password
@@ -34,14 +33,10 @@ module ClientAuthentication
       password_hash = Digest::SHA256.hexdigest(password)
 
       register_customer(customer_id)
-      Sidekiq::Job.drain_all
       run_command(
         Authentication::SetPasswordHash.new(account_id: account_id, password_hash: password_hash)
       )
-      Sidekiq::Job.drain_all
       connect_to_account(customer_id, account_id)
-
-      Sidekiq::Job.drain_all
 
       account = Account.find_by(client_id: customer_id, account_id: account_id)
       assert_equal password_hash, account.password

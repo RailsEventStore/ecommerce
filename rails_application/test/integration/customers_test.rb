@@ -21,7 +21,6 @@ class CustomersTest < InMemoryRESIntegrationTestCase
     customer_id = register_customer("Customer Shop")
     product_1_id = register_product("Fearless Refactoring", 4, 10)
     product_2_id = register_product("Asycn Remote", 3, 10)
-    Sidekiq::Job.drain_all
 
     visit_customers_index
     assert_customer_summary("Customer Shop", "$0.00")
@@ -43,7 +42,6 @@ class CustomersTest < InMemoryRESIntegrationTestCase
   def test_customer_details
     customer_id = register_customer("Customer Shop")
     product_id = register_product("Fearless Refactoring", 4, 10)
-    Sidekiq::Job.drain_all
 
     order_uid = SecureRandom.uuid
 
@@ -65,7 +63,6 @@ class CustomersTest < InMemoryRESIntegrationTestCase
     end
     submit_order(customer_id, order_id)
     pay_order(order_id)
-    Sidekiq::Job.drain_all
   end
 
   def assert_customer_summary(customer_name, summary)
