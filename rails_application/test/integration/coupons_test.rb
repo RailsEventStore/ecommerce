@@ -30,7 +30,6 @@ class CouponsTest < InMemoryRESIntegrationTestCase
       code: code,
       discount: discount
     }
-    Coupons::RegisterCoupon.drain
 
     follow_redirect!
   end

@@ -73,8 +73,6 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     assert_select("td", text: "Paid")
     assert_payment_gateway_value(123.30)
 
-    Shipments::MarkOrderPlaced.drain
-
     verify_shipping(order_id)
     verify_invoice_generation(order_id)
 
@@ -147,7 +145,6 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     assert_select("button", text: "Cancel Order", count: 1)
 
     post "/orders/#{order_id}/pay"
-    Shipments::MarkOrderPlaced.drain
     follow_redirect!
     assert_select("td", text: "Paid")
     get "/orders/#{order_id}"
@@ -254,7 +251,6 @@ class OrdersTest < InMemoryRESIntegrationTestCase
             address_line_4: "US"
           }
         }
-    Shipments::SetShippingAddress.drain
     follow_redirect!
     assert_select("dd", "Your shipment has been queued for processing.")
     get "/shipments"

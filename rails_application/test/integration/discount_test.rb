@@ -36,9 +36,6 @@ class DiscountTest < InMemoryRESIntegrationTestCase
     assert_select("label", "Percentage")
 
     post "/orders/#{order_id}/update_discount?amount=10"
-    Orders::UpdateDiscount.drain
-    Pricing::CalculateOrderTotalValue.drain
-    Orders::UpdateOrderTotalValue.drain
     follow_redirect!
     assert_select("td", "$123.30")
   end
