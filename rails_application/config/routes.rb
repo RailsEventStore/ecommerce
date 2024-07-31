@@ -38,7 +38,7 @@ Rails.application.routes.draw do
   resources :coupons, only: [:new, :show, :create, :index]
   resources :time_promotions, only: [:new, :show, :create, :index]
 
-  resources :customers, only: [:new, :create, :index, :update]
+  resources :customers, only: [:new, :create, :index, :update, :show]
 
   resources :client_orders, only: [:index, :show, :new, :edit, :update, :create], controller: 'client/orders' do
     member do

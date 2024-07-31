@@ -24,6 +24,13 @@ class CustomersController < ApplicationController
     redirect_to customers_path, notice: "Customer was promoted to VIP"
   end
 
+  def show
+    @customer = Customers::Customer.find(params[:id])
+    @customer_orders = ClientOrders::Order.where(client_uid: params[:id])
+                                          .order(created_at: :desc)
+                                          .page(params[:page]).per(10)
+  end
+
   private
 
   def create_customer(customer_id, name)
