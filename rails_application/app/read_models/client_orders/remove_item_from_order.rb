@@ -16,6 +16,10 @@ module ClientOrders
 
     private
 
+    def event_store
+      Rails.configuration.event_store
+    end
+
     def zero_quantity?(item)
       item.nil? || item.product_quantity.zero?
     end
