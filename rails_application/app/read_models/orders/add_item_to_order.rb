@@ -6,19 +6,17 @@ module Orders
 
     def call(event)
       order_id = event.data.fetch(:order_id)
-      ApplicationRecord.with_advisory_lock(order_id) do
-        Order.find_or_create_by!(uid: order_id) { |order| order.state = "Draft" }
-        product_id = event.data.fetch(:product_id)
-        item =
-          find(order_id, product_id) ||
-            create(order_id, product_id)
-        item.quantity += 1
-        item.save!
+      Order.find_or_create_by!(uid: order_id) { |order| order.state = "Draft" }
+      product_id = event.data.fetch(:product_id)
+      item =
+        find(order_id, product_id) ||
+          create(order_id, product_id)
+      item.quantity += 1
+      item.save!
 
-        broadcaster.call(order_id, product_id, "quantity", item.quantity)
-        broadcaster.call(order_id, product_id, "value", ActiveSupport::NumberHelper.number_to_currency(item.value))
-        broadcaster.call(order_id, product_id, "remove_item_button", button_to("Remove", remove_item_order_path(id: order_id, product_id: product_id), class: "hover:underline text-blue-500"))
-      end
+      broadcaster.call(order_id, product_id, "quantity", item.quantity)
+      broadcaster.call(order_id, product_id, "value", ActiveSupport::NumberHelper.number_to_currency(item.value))
+      broadcaster.call(order_id, product_id, "remove_item_button", button_to("Remove", remove_item_order_path(id: order_id, product_id: product_id), class: "hover:underline text-blue-500"))
 
       event_store.link_event_to_stream(event, "Orders$all")
     end
