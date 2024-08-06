@@ -114,13 +114,6 @@ module Ordering
     end
 
     class State
-      ALLOWED_STATES = %i(draft submitted expired accepted)
-      ALLOWED_TRANSITIONS = {
-        draft: %i(submitted expired),
-        submitted: %i(accepted rejected),
-        expired: %i(draft)
-      }
-
       def initialize(state = :draft)
         @state = state
       end
