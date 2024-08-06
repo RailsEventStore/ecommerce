@@ -112,46 +112,46 @@ module Ordering
         order_lines[product_id]
       end
     end
-  end
 
-  class State
-    ALLOWED_STATES = %i(draft submitted expired accepted)
-    ALLOWED_TRANSITIONS = {
-      draft: %i(submitted expired),
-      submitted: %i(accepted rejected),
-      expired: %i(draft)
-    }
+    class State
+      ALLOWED_STATES = %i(draft submitted expired accepted)
+      ALLOWED_TRANSITIONS = {
+        draft: %i(submitted expired),
+        submitted: %i(accepted rejected),
+        expired: %i(draft)
+      }
 
-    def initialize(state = :draft)
-      @state = state
+      def initialize(state = :draft)
+        @state = state
+      end
+
+      def draft?
+        @state.equal?(:draft)
+      end
+
+      def submitted?
+        @state.equal?(:submitted)
+      end
+
+      def expired?
+        @state.equal?(:expired)
+      end
+
+      def transition_to(state)
+        raise InvalidState unless ALLOWED_STATES.include?(state)
+        raise InvalidState unless ALLOWED_TRANSITIONS[@state].include?(state)
+        State.new(state)
+      end
+
+      def eql?(other)
+        other.instance_of?(State) && other.state.equal?(@state)
+      end
+
+      def hash
+        State.hash ^ @state.hash
+      end
+
+      alias == eql?
     end
-
-    def draft?
-      @state.equal?(:draft)
-    end
-
-    def submitted?
-      @state.equal?(:submitted)
-    end
-
-    def expired?
-      @state.equal?(:expired)
-    end
-
-    def transition_to(state)
-      raise InvalidState unless ALLOWED_STATES.include?(state)
-      raise InvalidState unless ALLOWED_TRANSITIONS[@state].include?(state)
-      State.new(state)
-    end
-
-    def eql?(other)
-      other.instance_of?(State) && other.state.equal?(@state)
-    end
-
-    def hash
-      State.hash ^ @state.hash
-    end
-
-    alias == eql?
   end
 end
