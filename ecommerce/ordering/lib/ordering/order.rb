@@ -142,16 +142,6 @@ module Ordering
         raise InvalidState unless ALLOWED_TRANSITIONS[@state].include?(state)
         State.new(state)
       end
-
-      def eql?(other)
-        other.instance_of?(State) && other.state.equal?(@state)
-      end
-
-      def hash
-        State.hash ^ @state.hash
-      end
-
-      alias == eql?
     end
   end
 end
