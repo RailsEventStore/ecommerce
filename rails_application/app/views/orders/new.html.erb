@@ -26,7 +26,7 @@
       <td class="py-2"><%= product.name %></td>
       <td class="py-2"><%= number_to_currency(product.price) %></td>
       <td class="py-2">
-        <%= link_to "Add", add_item_order_path(id: @order_id, product_id: product.id), {method: :post, class: "text-blue-500 hover:underline"} %>
+        <%= button_to "Add", add_item_order_path(id: @order_id, product_id: product.id), class: "text-blue-500 hover:underline" %>
       </td>
     </tr>
   <% end %>
