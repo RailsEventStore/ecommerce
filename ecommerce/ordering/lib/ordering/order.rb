@@ -9,7 +9,7 @@ module Ordering
 
     def initialize(id)
       @id = id
-      @state = State.new(:draft)
+      @state = State.new
       @basket = Basket.new
     end
 
