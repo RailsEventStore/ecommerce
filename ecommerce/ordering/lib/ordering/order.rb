@@ -116,6 +116,12 @@ module Ordering
 
   class State
     ALLOWED_STATES = %i(draft submitted expired accepted)
+    ALLOWED_TRANSITIONS = {
+      draft: %i(submitted expired),
+      submitted: %i(accepted rejected),
+      expired: %i(draft)
+    }
+
 
     def initialize(state = :draft)
       @state = state
@@ -135,6 +141,7 @@ module Ordering
 
     def transition_to(state)
       raise InvalidState unless ALLOWED_STATES.include?(state)
+      raise InvalidState unless ALLOWED_TRANSITIONS[@state].include?(state)
       State.new(state)
     end
   end
