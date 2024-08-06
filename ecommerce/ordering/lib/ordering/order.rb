@@ -9,13 +9,13 @@ module Ordering
 
     def initialize(id)
       @id = id
-      @state = :draft
+      @state = State.new(:draft)
       @basket = Basket.new
     end
 
     def submit(order_number)
-      raise OrderHasExpired if @state.equal?(:expired)
-      raise AlreadySubmitted unless @state.equal?(:draft)
+      raise OrderHasExpired if @state.expired?
+      raise AlreadySubmitted unless @state.draft?
       apply OrderSubmitted.new(
         data: {
           order_id: @id,
@@ -26,7 +26,7 @@ module Ordering
     end
 
     def accept
-      raise InvalidState unless @state.equal?(:submitted)
+      raise InvalidState unless @state.submitted?
       apply OrderPlaced.new(
         data: {
           order_id: @id,
@@ -37,7 +37,7 @@ module Ordering
     end
 
     def reject
-      raise InvalidState unless @state.equal?(:submitted)
+      raise InvalidState unless @state.submitted?
       apply OrderRejected.new(
         data: {
           order_id: @id
@@ -46,12 +46,12 @@ module Ordering
     end
 
     def expire
-      raise AlreadySubmitted unless @state.equal?(:draft)
+      raise AlreadySubmitted unless @state.draft?
       apply OrderExpired.new(data: { order_id: @id })
     end
 
     def add_item(product_id)
-      raise AlreadySubmitted unless @state.equal?(:draft)
+      raise AlreadySubmitted unless @state.draft?
       apply ItemAddedToBasket.new(
         data: {
           order_id: @id,
@@ -61,16 +61,16 @@ module Ordering
     end
 
     def remove_item(product_id)
-      raise AlreadySubmitted unless @state.equal?(:draft)
+      raise AlreadySubmitted unless @state.draft?
       apply ItemRemovedFromBasket.new(data: { order_id: @id, product_id: product_id })
     end
 
     on OrderPlaced do |event|
-      @state = :accepted
+      @state = State.new(:accepted)
     end
 
     on OrderExpired do |event|
-      @state = :expired
+      @state = State.new(:expired)
     end
 
     on ItemAddedToBasket do |event|
@@ -83,11 +83,11 @@ module Ordering
 
     on OrderSubmitted do |event|
       @order_number = event.data[:order_number]
-      @state = :submitted
+      @state = State.new(:submitted)
     end
 
     on OrderRejected do |event|
-      @state = :draft
+      @state = State.new(:draft)
     end
 
     class Basket
@@ -111,6 +111,26 @@ module Ordering
       def quantity(product_id)
         order_lines[product_id]
       end
+    end
+  end
+
+  class State
+    ALLOWED_STATES = %i(draft submitted expired accepted)
+
+    def initialize(state = :draft)
+      @state = state
+    end
+
+    def draft?
+      @state.equal?(:draft)
+    end
+
+    def submitted?
+      @state.equal?(:submitted)
+    end
+
+    def expired?
+      @state.equal?(:expired)
     end
   end
 end
