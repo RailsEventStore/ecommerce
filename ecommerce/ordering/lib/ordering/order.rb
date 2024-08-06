@@ -65,11 +65,11 @@ module Ordering
       apply ItemRemovedFromBasket.new(data: { order_id: @id, product_id: product_id })
     end
 
-    on OrderPlaced do |event|
+    on OrderPlaced do |_|
       @state = State.new(:accepted)
     end
 
-    on OrderExpired do |event|
+    on OrderExpired do |_|
       @state = State.expired
     end
 
@@ -86,7 +86,7 @@ module Ordering
       @state = State.submitted
     end
 
-    on OrderRejected do |event|
+    on OrderRejected do |_|
       @state = State.draft
     end
 
