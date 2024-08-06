@@ -38,7 +38,7 @@ module ApplicationHelper
     )
   end
 
-  def secondary_action_button(type: "button", form: nil, &block)
+  def secondary_action_button(&block)
     action_button(
       "border-gray-300 text-gray-700 bg-white hover:bg-gray-50",
       &block
