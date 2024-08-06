@@ -9,7 +9,7 @@ module Ordering
 
     def initialize(id)
       @id = id
-      @state = State.new
+      @state = State.draft
       @basket = Basket.new
     end
 
@@ -70,7 +70,7 @@ module Ordering
     end
 
     on OrderExpired do |event|
-      @state = State.new(:expired)
+      @state = State.expired
     end
 
     on ItemAddedToBasket do |event|
@@ -83,11 +83,11 @@ module Ordering
 
     on OrderSubmitted do |event|
       @order_number = event.data[:order_number]
-      @state = State.new(:submitted)
+      @state = State.submitted
     end
 
     on OrderRejected do |event|
-      @state = State.new
+      @state = State.draft
     end
 
     class Basket
@@ -114,7 +114,19 @@ module Ordering
     end
 
     class State
-      def initialize(state = :draft)
+      def self.draft
+        new(:draft)
+      end
+
+      def self.submitted
+        new(:submitted)
+      end
+
+      def self.expired
+        new(:expired)
+      end
+
+      def initialize(state)
         @state = state
       end
 
