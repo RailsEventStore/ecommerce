@@ -4,7 +4,7 @@
 
 <% content_for(:actions) do %>
   <%= secondary_action_button do %>
-    <%= link_to 'Back', order_path(@invoice.order_uid) %>
+    <%= link_to 'Back', order_path(@invoice.id) %>
   <% end %>
 <% end %>
 
@@ -12,18 +12,18 @@
   <dt class="font-bold">Invoiced by</dt>
   <dd class="mb-2"><%= "Arkency Ecommerce" %></dd>
   <dt class="font-bold">Issue date</dt>
-  <dd class="mb-2"><%= @invoice.issue_date %></dd>
+  <dd class="mb-2"><%= @invoice.invoice_issue_date %></dd>
   <dt class="font-bold">Disposal date</dt>
-  <dd class="mb-2"><%= @invoice.disposal_date %></dd>
+  <dd class="mb-2"><%= @invoice.invoice_disposal_date %></dd>
   <dt class="font-bold">Payment date</dt>
-  <dd class="mb-2"><%= @invoice.payment_date %></dd>
+  <dd class="mb-2"><%= @invoice.invoice_payment_date %></dd>
   <dt class="font-bold">Customer</dt>
   <dd class="mb-2">
-    <%= @invoice.tax_id_number %><br/>
-    <%= @invoice.address_line_1 %><br/>
-    <%= @invoice.address_line_2 %><br/>
-    <%= @invoice.address_line_3 %><br/>
-    <%= @invoice.address_line_4 %>
+    <%= @invoice.invoice_tax_id_number %><br/>
+    <%= @invoice.invoice_addressed_to %><br/>
+    <%= @invoice.invoice_address %><br/>
+    <%= @invoice.invoice_city %><br/>
+    <%= @invoice.invoice_country %>
   </dd>
 </dl>
 
@@ -39,20 +39,20 @@
   </thead>
 
   <tbody>
-  <% @invoice.invoice_items.each do |item| %>
+  <% @invoice.order_items.each do |item| %>
     <tr class="border-t">
-      <td class="py-2"><%= item.name %></td>
-      <td class="py-2"><%= item.vat_rate %></td>
+      <td class="py-2"><%= item.product.name %></td>
+      <td class="py-2"><%= item.product.vat_rate %></td>
       <td class="py-2"><%= item.quantity %></td>
-      <td class="py-2"><%= number_to_currency(item.unit_price) %></td>
-      <td class="py-2 text-right"><%= number_to_currency(item.value) %></td>
+      <td class="py-2"><%= number_to_currency(item.product.price) %></td>
+      <td class="py-2 text-right"><%= number_to_currency(item.product.price * item.quantity * @discount / 100) %></td>
     </tr>
   <% end %>
   </tbody>
   <tfoot>
   <tr class="border-t">
     <td class="py-2" colspan="4">Total</td>
-    <td class="py-2 text-right font-bold"><%= number_to_currency(@invoice.total_value) %></td>
+    <td class="py-2 text-right font-bold"><%= number_to_currency(@invoice.invoice_total_value) %></td>
   </tr>
   </tfoot>
 </table>

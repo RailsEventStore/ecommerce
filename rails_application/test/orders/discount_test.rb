@@ -15,9 +15,9 @@ module Orders
       set_percentage_discount(order_id)
 
       order = Order.find_by(uid: order_id)
-      assert_equal 50, order.total_value
-      assert_equal 45, order.discounted_value
-      assert_equal 10, order.percentage_discount
+      assert_equal 50, order.total
+      assert_equal 45, order.discount
+      assert_equal 10, order.discount
       assert event_store.event_in_stream?(event_store.read.of_type([Pricing::PercentageDiscountSet]).last.event_id, "Orders$all")
     end
 
@@ -33,9 +33,9 @@ module Orders
       change_percentage_discount(order_id)
 
       order = Order.find_by(uid: order_id)
-      assert_equal 50, order.total_value
-      assert_equal 49.5, order.discounted_value
-      assert_equal 1, order.percentage_discount
+      assert_equal 50, order.total
+      assert_equal 49.5, order.discount
+      assert_equal 1, order.discount
       assert event_store.event_in_stream?(event_store.read.of_type([Pricing::PercentageDiscountChanged]).last.event_id, "Orders$all")
     end
 
@@ -51,9 +51,9 @@ module Orders
       reset_percentage_discount(order_id)
 
       order = Order.find_by(uid: order_id)
-      assert_equal(50, order.total_value)
-      assert_equal(50, order.discounted_value)
-      assert_nil(order.percentage_discount)
+      assert_equal(50, order.total)
+      assert_equal(50, order.discount)
+      assert_nil(order.discount)
       assert event_store.event_in_stream?(event_store.read.of_type([Pricing::PercentageDiscountReset]).last.event_id, "Orders$all")
     end
 

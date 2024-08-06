@@ -23,7 +23,7 @@
     <tr class="border-t">
       <td class="py-2"><%= link_to product.name, product_path(product), class: "hover:underline text-blue-500" %></td>
       <td class="py-2"><%= number_to_currency product.price %></td>
-      <td class="py-2"><%= product.vat_rate_code %></td>
+      <td class="py-2"><%= product.vat_rate %></td>
       <td class="py-2 text-right"><%= product.stock_level %></td>
     </tr>
   <% end %>

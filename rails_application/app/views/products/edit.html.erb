@@ -7,7 +7,7 @@
     <%= link_to 'Back', products_path %>
   <% end %>
 
-  <%= primary_button_to(add_future_price_product_path(@product)) do %>
+  <%= primary_button_to(add_future_price_path) do %>
     Add future price
   <% end %>
 
@@ -16,40 +16,26 @@
   <% end %>
 <% end %>
 
-<%= form_tag({controller: "products", action: "update"}, method: "patch", id: "form") do %>
-  <%= hidden_field_tag(:product_id, @product.id) %>
-
+<%= form_with model: @product, id: "form", method: :patch do |form| %>
   <div class="mt-2">
     <label for="vat_rate" class="block font-bold">
       Product Name
     </label>
-    <%= text_field_tag :name, @product.name, required: true, class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-sm sm:text-sm border-gray-300 rounded-md" %>
+    <%= form.text_field :name, required: true, class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-sm sm:text-sm border-gray-300 rounded-md" %>
   </div>
   <div class="mt-2">
     <label for="vat_rate" class="block font-bold">
       VAT rate
     </label>
-    <%= @product.vat_rate_code %>
+    <%= @product.vat_rate %>
   </div>
   <div class="mt-2">
     <label for="price" class="block font-bold">
       Price
     </label>
-    <%= number_field_tag :price, @product.price, min: 0, step: 0.01, required: true, class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-sm sm:text-sm border-gray-300 rounded-md" %>
+    <%= form.number_field :price, min: 0, step: 0.01, required: true, class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-sm sm:text-sm border-gray-300 rounded-md", data: { turbo_permanent: true } %>
   </div>
 
-  <% if @product.future_prices_calendar.any? %>
-    <label for="future_prices" class="mt-6 block font-bold">
-      Future prices:
-    </label>
-    <% @product.future_prices_calendar.each do |entry| %>
-      <%= render partial: "products/future_price", locals: {
-        disabled: true,
-        price: entry[:price],
-        valid_since: entry[:valid_since] }
-      %>
-    <% end %>
-  <% end %>
   <div id="future_prices" class="mt-2">
   </div>
 <% end %>

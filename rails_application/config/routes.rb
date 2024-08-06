@@ -29,9 +29,6 @@ Rails.application.routes.draw do
 
   resources :products, only: [:new, :show, :create, :index, :edit, :update] do
     resources :supplies, only: [:new, :create]
-    member do
-      post :add_future_price, to: "product/future_price#add_future_price", as: "add_future_price"
-    end
   end
 
 
@@ -50,6 +47,7 @@ Rails.application.routes.draw do
   get :logout, to: "client/clients#logout"
   get "clients", to: "client/clients#index"
   get "client/products", to: "client/products#index"
+  post :add_future_price, to: "products#add_future_price", as: "add_future_price"
 
   mount RailsEventStore::Browser => "/res"
   mount Sidekiq::Web => '/sidekiq'

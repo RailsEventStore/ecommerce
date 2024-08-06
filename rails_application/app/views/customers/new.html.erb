@@ -12,11 +12,17 @@
   <% end %>
 <% end %>
 
-<%= form_tag({controller: "customers", action: "create"}, method: "post", id: "form") do %>
-  <%= hidden_field_tag(:customer_id, @customer_id) %>
-
-  <label for="customer" class="block font-bold">
-    Name
+<%= form_with model: @customer, id: "form" do |form| %>
+  <label for="first_name" class="block font-bold">
+    First Name
   </label>
-  <%= text_field_tag :name, "", required: true, class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-sm sm:text-sm border-gray-300 rounded-md" %>
+  <%= form.text_field :first_name, required: true, class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-sm sm:text-sm border-gray-300 rounded-md" %>
+  <label for="last_name" class="block font-bold">
+    Last Name
+  </label>
+  <%= form.text_field :last_name, required: true, class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-sm sm:text-sm border-gray-300 rounded-md" %>
+  <label for="email" class="block font-bold">
+    Email
+  </label>
+  <%= form.text_field :email, required: true, class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-sm sm:text-sm border-gray-300 rounded-md" %>
 <% end %>

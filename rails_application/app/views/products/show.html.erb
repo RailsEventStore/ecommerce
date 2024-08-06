@@ -22,23 +22,8 @@
   <dt class="font-bold">Price</dt>
   <dd class="mb-2"><%= number_to_currency @product.price %></dd>
   <dt class="font-bold">VAT rate</dt>
-  <dd class="mb-2"><%= @product.vat_rate_code %></dd>
+  <dd class="mb-2"><%= @product.vat_rate %></dd>
   <dt class="font-bold">Stock Level</dt>
   <dd class="mb-2 mt-2"><%= @product.stock_level %></dd>
 </dl>
 
-<% if @product.future_prices_calendar.any? %>
-  <dl class="pt-4">
-    <label for="future_prices" class="mt-6 block font-bold">
-      Future prices:
-    </label>
-    <% @product.future_prices_calendar.each do |entry| %>
-      <%= render partial: "products/future_price", locals: {
-        disabled: true,
-        price: entry[:price],
-        valid_since: entry[:valid_since] }
-      %>
-    <% end %>
-    </dt>
-  </dl>
-<% end %>

@@ -5,9 +5,9 @@
 <% content_for(:actions) do %>
   <%= secondary_action_button do %>
     <% if @order.submitted? %>
-      <%= link_to 'Back', order_path(@order.uid) %>
+      <%= link_to 'Back', order_path(@order.id) %>
     <% else %>
-      <%= link_to 'Back', edit_order_path(@order.uid) %>
+      <%= link_to 'Back', edit_order_path(@order.id) %>
     <% end %>
   <% end %>
 
@@ -16,29 +16,29 @@
   <% end %>
 <% end %>
 
-<%= form_with(model: @shipment, url: order_shipping_address_path(@shipment.order_uid), method: "patch", id: "form") do |form| %>
+<%= form_with(model: @order, url: order_shipping_address_path(@order.id), method: "patch", id: "form") do |form| %>
   <div>
     <label for="name" class="block font-bold">
       Addressee's full name (Person or Company)
     </label>
-    <%= form.text_field :address_line_1, required: true, class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" %>
+    <%= form.text_field :addressed_to, required: true, class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" %>
   </div>
   <div>
     <label for="name" class="block font-bold">
       Street address or post office box number
     </label>
-    <%= form.text_field :address_line_2, required: true, class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" %>
+    <%= form.text_field :address, required: true, class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" %>
   </div>
   <div>
     <label for="name" class="block font-bold">
       City or town and postal code
     </label>
-    <%= form.text_field :address_line_3, required: true, class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" %>
+    <%= form.text_field :city, required: true, class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" %>
   </div>
   <div>
     <label for="name" class="block font-bold">
       Country
     </label>
-    <%= form.text_field :address_line_4, required: true, class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-sm sm:text-sm border-gray-300 rounded-md" %>
+    <%= form.text_field :country, required: true, class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-sm sm:text-sm border-gray-300 rounded-md" %>
   </div>
 <% end %>

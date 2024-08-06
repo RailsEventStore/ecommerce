@@ -1,130 +1,57 @@
 class ProductsController < ApplicationController
-  class ProductForm
-    include ActiveModel::Model
-    include ActiveModel::Attributes
-    include ActiveModel::Validations
-
-    attribute :name, :string
-    attribute :price, :decimal
-    attribute :vat_rate, :string
-    attribute :product_id, :string
-
-    validates :name, presence: true
-    validates :price, presence: true, numericality: { greater_than: 0 }
-    validates :vat_rate, presence: true, numericality: { greater_than: 0 }
-    validates :product_id, presence: true
-  end
-
   def index
-    @products = Products::Product.all
+    @products = Product.all
   end
 
   def show
-    @product = Products::Product.find(params[:id])
+    @product = Product.find(params[:id])
   end
 
   def new
-    @product_id = SecureRandom.uuid
+    @product = Product.new
   end
 
   def edit
-    @product = Products::Product.find(params[:id])
+    @product = Product.find(params[:id])
   end
 
   def create
-    product_form = ProductForm.new(**product_params)
-
-    unless product_form.valid?
-      return render "new", locals: { errors: product_form.errors }, status: :unprocessable_entity
-    end
-
-    ActiveRecord::Base.transaction do
-      create_product(product_form.product_id, product_form.name)
-      if product_form.price.present?
-        set_product_price(product_form.product_id, product_form.price)
-      end
-      if product_form.vat_rate.present?
-        set_product_vat_rate(product_form.product_id, product_form.vat_rate)
-      end
-    rescue ProductCatalog::AlreadyRegistered
-      flash[:notice] = "Product was already registered"
-      render "new"
-    rescue Taxes::Product::VatRateNotApplicable
-      flash[:notice] = "Selected VAT rate not applicable"
-      render "new"
-    else
-      redirect_to products_path, notice: "Product was successfully created"
-    end
+    Product.create!(product_params)
+    redirect_to products_path, notice: "Product was successfully created"
   end
 
   def update
-    if params[:name].present?
-      set_product_name(params[:product_id], params[:name])
+    @product = Product.find(params[:id])
+
+    if params["future_price"].present?
+      @product.future_price = params["future_price"]["price"]
+      @product.future_price_start_time = params["future_price"]["start_time"]
+      @product.save!
     end
-    if params[:price].present?
-      set_product_price(params[:product_id], params[:price])
-    end
-    if params[:future_prices].present?
-      params[:future_prices].each do |future_price|
-        set_future_product_price(
-          params[:product_id],
-          future_price["price"],
-          Time.zone.parse(future_price["start_time"]).utc
-        )
+    @product.update!(product_params)
+    redirect_to products_path, notice: "Product was successfully updated"
+  end
+
+  def add_future_price
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream:
+                 turbo_stream.update(
+                   "future_prices",
+                   partial: "/products/future_price",
+                   locals: {
+                     disabled: false,
+                     valid_since: nil,
+                     price: nil
+                   }
+                 )
       end
     end
-    redirect_to products_path, notice: "Product was successfully updated"
   end
 
   private
 
-  def create_product(product_id, name)
-    command_bus.(create_product_cmd(product_id))
-    command_bus.(name_product_cmd(product_id, name))
-  end
-
-  def set_product_price(product_id, price)
-    command_bus.(set_product_price_cmd(product_id, price))
-  end
-
-  def set_future_product_price(product_id, price, valid_since)
-    command_bus.(set_product_future_price_cmd(product_id, price, valid_since))
-  end
-
-  def set_product_vat_rate(product_id, vat_rate_code)
-    vat_rate = Taxes::Configuration.available_vat_rates.find{|rate| rate.code == vat_rate_code}
-    command_bus.(set_product_vat_rate_cmd(product_id, vat_rate))
-  end
-
-  def set_product_name(product_id, name)
-    command_bus.(name_product_cmd(product_id, name))
-  end
-
-  def create_product_cmd(product_id)
-    ProductCatalog::RegisterProduct.new(product_id: product_id)
-  end
-
-  def name_product_cmd(product_id, name)
-    ProductCatalog::NameProduct.new(product_id: product_id, name: name)
-  end
-
-  def set_product_price_cmd(product_id, price)
-    Pricing::SetPrice.new(product_id: product_id, price: price)
-  end
-
-  def set_product_vat_rate_cmd(product_id, vat_rate)
-    Taxes::SetVatRate.new(product_id: product_id, vat_rate: vat_rate)
-  end
-
-  def set_product_future_price_cmd(product_id, price, valid_since)
-    Pricing::SetFuturePrice.new(
-      product_id: product_id,
-      price: price,
-      valid_since: valid_since
-    )
-  end
-
   def product_params
-    params.permit(:name, :price, :vat_rate, :product_id).to_h.symbolize_keys.slice(:price, :vat_rate, :product_id, :name)
+    params.require(:product).permit(:name, :price, :vat_rate).to_h.symbolize_keys.slice(:price, :vat_rate, :name)
   end
 end

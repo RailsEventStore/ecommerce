@@ -1,10 +1,22 @@
 <% content_for(:header) do %>
-  New Order
+  Order
 <% end %>
 
 <% content_for(:actions) do %>
   <%= secondary_action_button do %>
     <%= link_to 'Back', orders_path %>
+  <% end %>
+
+  <%= secondary_action_button do %>
+    <%= link_to "Edit discount", edit_discount_order_path(@order_id) %>
+  <% end %>
+
+  <%= secondary_action_button do %>
+    <%= link_to "Edit Shipping Address", edit_order_shipping_address_path(@order_id) %>
+  <% end %>
+
+  <%= secondary_action_button do %>
+    <%= link_to "Edit Billing Address", edit_order_billing_address_path(@order_id) %>
   <% end %>
 
   <%= primary_form_action_button do %>
@@ -14,32 +26,50 @@
 
 <table class="w-full">
   <thead>
-    <tr>
-      <th class="text-left py-2">Product</th>
-      <th class="text-left py-2" colspan="3">Price</th>
-    </tr>
+  <tr class="border-b">
+    <th class="text-left py-2">Product</th>
+    <th class="text-left py-2">Quantity</th>
+    <th class="text-left py-2">Price</th>
+    <th class="text-left py-2" colspan="3">Value</th>
+  </tr>
   </thead>
 
   <tbody>
   <% @products.each do |product| %>
-    <tr class="border-t">
+    <tr class="border-b">
+      <% order_line = @order.order_items.find{|order_item| order_item.product_id == product.id} %>
       <td class="py-2"><%= product.name %></td>
+      <td class="py-2" id="<%= "orders_order_#{product.id}_quantity" %>"><%= order_line&.quantity || 0 %></td>
       <td class="py-2"><%= number_to_currency(product.price) %></td>
-      <td class="py-2">
-        <%= button_to "Add", add_item_order_path(id: @order_id, product_id: product.id), class: "text-blue-500 hover:underline" %>
-      </td>
+      <td class="py-2" id="<%= "orders_order_#{product.id}_value" %>"><%= number_to_currency(product.price.nil? ? 0 : product&.price * (order_line&.quantity || 0)) %></td>
+      <td class="py-2"><%= button_to "Add", add_item_order_path(id: @order_id, product_id: product.id), class: "hover:underline text-blue-500" %></td>
+      <% if order_line.nil? %>
+        <td class="py-2 text-right" id="<%= "orders_order_#{product.id}_remove_item_button" %>"></td>
+      <%  else %>
+        <td class="py-2 text-right" id="<%= "orders_order_#{product.id}_remove_item_button" %>"><%=  button_to("Remove", remove_item_order_path(id: @order_id, product_id: product.id), class: "hover:underline text-blue-500") %></td>
+      <% end %>
     </tr>
   <% end %>
   </tbody>
+  <tfoot class="border-t-4">
+  <% if @time_promotions.present? %>
+    <% @time_promotions.each do |time_promotion| %>
+      <tr class="border-t">
+        <td class="py-2" colspan="3">Promotion: <%= time_promotion.label %> (if you buy before <%= time_promotion.end_time %>)</td>
+        <td class="py-2"><%= time_promotion.discount %>%</td>
+      </tr>
+    <% end %>
+  <% end %>
+  </tfoot>
 </table>
 
 <%= form_tag({controller: "orders", action: "create"}, method: "post", id: "form") do %>
-  <%= hidden_field_tag(:order_id, @order_id) %>
+  <%= hidden_field_tag(:order_id, @order.id) %>
 
   <div class="mt-8">
     <label for="customer" class="block font-bold">
       Customer
     </label>
-    <%= select_tag(:customer_id, options_from_collection_for_select(@customers, :id, :name), id: "customer", class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-sm sm:text-sm border-gray-300 rounded-md") %>
+    <%= select_tag(:customer_id, options_from_collection_for_select(@customers, :id, :full_name), id: "customer", class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-sm sm:text-sm border-gray-300 rounded-md") %>
   </div>
 <% end %>

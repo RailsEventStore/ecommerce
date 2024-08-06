@@ -1,20 +1,37 @@
 class InvoicesController < ApplicationController
   def show
-    @invoice = Invoices::Invoice.find_by_order_uid(params[:id])
+    @invoice = Order.find(params[:id])
+    @discount = @invoice.discount == 0 ? 1 : @invoice.discount
+    time_promotions = TimePromotion.where("start_time <= ? AND end_time >= ?", @invoice.completed_at, @invoice.invoice_issue_date)
+    if time_promotions.any?
+      time_promotions.sum(&:discount).tap do |time_promotion_discount|
+        @discount += time_promotion_discount
+      end
+    end
   end
 
   def create
-    begin
-      ActiveRecord::Base.transaction do
-        command_bus.(Invoicing::IssueInvoice.new(invoice_id: params[:order_id], issue_date: Time.zone.now.to_date))
-      end
-    rescue Invoicing::Invoice::BillingAddressNotSpecified
+    @order = Order.find(params[:order_id])
+
+    if !@order.billing_address_specified?
       flash[:alert] = "Billing address is missing"
-    rescue Invoicing::Invoice::InvoiceAlreadyIssued
+    elsif @order.invoice_issued?
       flash[:alert] = "Invoice was already issued"
-    rescue Invoicing::Invoice::InvoiceNumberInUse
-      retry
+    else
+      @order.invoice_issued = true
+      @order.invoice_issue_date = Time.current
+      invoice_total_value = @order.total - ((@order.total * @order.discount) / 100)
+      time_promotions = TimePromotion.current
+
+      if time_promotions.any?
+        time_promotions.sum(&:discount).tap do |discount|
+          invoice_total_value -= (invoice_total_value * discount) / 100
+        end
+      end
+      @order.invoice_total_value = invoice_total_value
+      @order.save!
     end
+
     redirect_to(invoice_path(params[:order_id]))
   end
 end

@@ -1,35 +1,48 @@
 class OrdersController < ApplicationController
   def index
-    @orders = Orders::Order.order("id DESC").page(params[:page]).per(10)
+    @orders = Order.order("id DESC").page(params[:page]).per(10)
   end
 
   def show
-    @order = Orders::Order.find_by_uid(params[:id])
+    @order = Order.find(params[:id])
 
     return not_found unless @order
 
-    @order_lines = Orders::OrderLine.where(order_uid: @order.uid)
-    @shipment = Shipments::Shipment.find_by(order_uid: @order.uid)
-    @invoice = Invoices::Invoice.find_or_initialize_by(order_uid: @order.uid)
+    @total = @order.total - ((@order.total * @order.discount) / 100)
+    @order_lines = @order.order_items
   end
 
   def new
-    redirect_to edit_order_path(SecureRandom.uuid)
+    @order = Order.new
+    @order.status = "Draft"
+    @order.total = 0
+    @order.discount = 0
+    @order.save!
+    @order_id = @order.id
+    @products = Product.all
+    @customers = Customer.all
+    @time_promotions = TimePromotion.current
   end
 
   def edit
     @order_id = params[:id]
-    @order = Orders::Order.find_by_uid(params[:id])
-    @order_lines = Orders::OrderLine.where(order_uid: params[:id])
-    @products = Products::Product.all
-    @customers = Customers::Customer.all
-    @time_promotions = TimePromotions::TimePromotion.current
+    @order = Order.find(params[:id])
+    @products = Product.all
+    @customers = Customer.all
+    @time_promotions = TimePromotion.current
+    discounted_value = @order.total - ((@order.total * @order.discount) / 100)
+
+    if @time_promotions.any?
+      @time_promotions.sum(&:discount).tap do |discount|
+        discounted_value -= (discounted_value * discount) / 100
+      end
+    end
 
     render :edit,
            locals: {
-             discounted_value: @order&.discounted_value || 0,
-             total_value: @order&.total_value || 0,
-             percentage_discount: @order&.percentage_discount
+             discounted_value:,
+             total_value: @order.total,
+             percentage_discount: @order.discount
            }
   end
 
@@ -38,98 +51,125 @@ class OrdersController < ApplicationController
   end
 
   def update_discount
-    @order_id = params[:id]
-    order = Orders::Order.find_or_create_by!(uid: params[:id])
-    if order.percentage_discount
-      command_bus.(Pricing::ChangePercentageDiscount.new(order_id: @order_id, amount: params[:amount]))
-    else
-      command_bus.(Pricing::SetPercentageDiscount.new(order_id: @order_id, amount: params[:amount]))
-    end
+    order = Order.find(params[:id])
+    order.discount = params[:amount]
+    order.discount_updated_at = Time.current
+    order.save!
 
-    redirect_to edit_order_path(@order_id)
+    redirect_to edit_order_path(order)
   end
 
   def reset_discount
-    @order_id = params[:id]
-    command_bus.(Pricing::ResetPercentageDiscount.new(order_id: @order_id))
+    order = Order.find(params[:id])
+    order.discount = 0
+    order.discount_updated_at = Time.current
+    order.save!
 
-    redirect_to edit_order_path(@order_id)
+    redirect_to edit_order_path(order)
   end
 
   def add_item
-    read_model = Orders::OrderLine.where(order_uid: params[:id], product_id: params[:product_id]).first
-    unless Availability.approximately_available?(params[:product_id], (read_model&.quantity || 0) + 1)
+    product = Product.find(params[:product_id])
+    if product.stock_level < 1
       redirect_to edit_order_path(params[:id]),
                   alert: "Product not available in requested quantity!" and return
     end
-    ActiveRecord::Base.transaction do
-      command_bus.(Ordering::AddItemToBasket.new(order_id: params[:id], product_id: params[:product_id]))
+
+    @order = Order.find(params[:id])
+    if @order.order_items.any? { |order_item| order_item.product_id == params[:product_id].to_i }
+      @order.order_items.find_by(product_id: params[:product_id]).increment!(:quantity)
+      @order.total = @order.total + product.price
+    else
+      @order.order_items.create!(product_id: params[:product_id], quantity: 1)
+      @order.total = @order.total + product.price
     end
-    head :ok
+    product.decrement!(:stock_level)
+    @order.save!
+
+    redirect_to edit_order_path(params[:id])
   end
 
   def remove_item
-    command_bus.(Ordering::RemoveItemFromBasket.new(order_id: params[:id], product_id: params[:product_id]))
-    head :ok
+    product = Product.find(params[:product_id])
+    @order = Order.find(params[:id])
+    order_item = @order.order_items.find_by(product_id: params[:product_id])
+    if order_item && order_item.quantity > 0
+      @order.order_items.find_by(product_id: params[:product_id]).decrement!(:quantity)
+      product.increment!(:stock_level)
+      @order.total = @order.total - product.price
+      @order.save!
+    end
+
+    redirect_to edit_order_path(params[:id])
   end
 
   def create
-    ApplicationRecord.transaction { submit_order(params[:order_id], params[:customer_id]) }
+    order = Order.find(params[:order_id])
+    if order.order_items.empty?
+      redirect_to order_path(order.id), alert: "Order cannot be submitted because it is empty"
+      return
+    end
+    customer = Customer.find_by(id: params[:customer_id])
+    unless customer
+      redirect_to order_path(order.id), alert: "Order can not be submitted! Customer does not exist."
+      return
+    end
+    ApplicationRecord.transaction { submit_order(order, params[:customer_id]) }
     redirect_to order_path(params[:order_id]), notice: "Your order is being submitted"
-  rescue Crm::Customer::NotExists
-    redirect_to order_path(params[:order_id]), alert: "Order can not be submitted! Customer does not exist."
   end
 
   def expire
-    Orders::Order
-      .where(state: "Draft")
-      .find_each { |order| command_bus.(Ordering::SetOrderAsExpired.new(order_id: order.uid)) }
+    Order
+      .where(status: "Draft")
+      .find_each { |order| order.status = "Expired"; order.save! }
     redirect_to root_path
   end
 
   def pay
-    ActiveRecord::Base.transaction do
-      authorize_payment(params[:id])
-      capture_payment(params[:id])
-      flash[:notice] = "Order paid successfully"
-    rescue Payments::Payment::AlreadyAuthorized
+    order = Order.find(params[:id])
+
+    if order.invoice_payment_status == "Authorized"
       flash[:alert] = "Payment was already authorized"
-    rescue Payments::Payment::AlreadyCaptured
+    elsif order.invoice_payment_status == "Captured"
       flash[:alert] = "Payment was already captured"
-    rescue Payments::Payment::NotAuthorized
-      flash[:alert] = "Payment wasn't yet authorized"
-    rescue Ordering::Order::NotPlaced
-      flash[:alert] = "You can't pay for an order which is not submitted"
+
+    else
+      ActiveRecord::Base.transaction do
+        order.invoice_payment_status = "Authorized"
+        order.save!
+
+        order.invoice_payment_status = "Captured"
+        order.invoice_payment_date = Time.current
+        order.status = "Paid"
+        customer = order.customer
+        customer.paid_orders_summary += order.total
+        order.save!
+        customer.save!
+
+        flash[:notice] = "Order paid successfully"
+      end
     end
+
     redirect_to orders_path
   end
 
   def cancel
-    command_bus.(Fulfillment::CancelOrder.new(order_id: params[:id]))
+    order = Order.find(params[:id])
+    order.status = "Cancelled"
+    order.save!
     redirect_to root_path, notice: "Order cancelled"
   end
 
   private
 
-  def submit_order(order_id, customer_id)
-    command_bus.(Ordering::SubmitOrder.new(order_id: order_id))
-    command_bus.(Crm::AssignCustomerToOrder.new(order_id: order_id, customer_id: customer_id))
-  end
-
-  def authorize_payment(order_id)
-    command_bus.call(authorize_payment_cmd(order_id))
-  end
-
-  def capture_payment(order_id)
-    command_bus.call(capture_payment_cmd(order_id))
-  end
-
-  def authorize_payment_cmd(order_id)
-    Payments::AuthorizePayment.new(order_id: order_id)
-  end
-
-  def capture_payment_cmd(order_id)
-    Payments::CapturePayment.new(order_id: order_id)
+  def submit_order(order, customer_id)
+    if order.status == "Draft"
+      order.status = "Submitted"
+      order.number = Time.now.strftime("%Y/%m/#{SecureRandom.random_number(100)}")
+      order.customer_id = customer_id.to_i
+      order.completed_at = Time.current
+      order.save!
+    end
   end
 
   def not_found

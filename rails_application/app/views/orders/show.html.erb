@@ -1,48 +1,48 @@
 <% content_for(:header) do %>
   Order <%= @order.number %>
 <% end %>
-<%= turbo_stream_from "orders_order_#{@order.uid}" %>
+<%= turbo_stream_from "orders_order_#{@order.id}" %>
 <% content_for(:actions) do %>
   <%= secondary_action_button do %>
-    <%= order_history_link(@order.uid) %>
+    <%= order_history_link(@order.id) %>
   <% end %>
 
   <%= secondary_action_button do %>
-    <%= link_to "Invoice", invoice_path(@order.uid) %>
-  <% end if @invoice.issued? %>
+    <%= link_to "Invoice", invoice_path(@order.id) %>
+  <% end if @order.invoice_issued? %>
 
   <%= secondary_action_button do %>
     <%= link_to 'Back', orders_path %>
   <% end %>
 
   <%= primary_action_button do %>
-    <%= link_to 'Edit', edit_order_path(@order.uid) %>
+    <%= link_to 'Edit', edit_order_path(@order.id) %>
   <% end if @order.state == "Draft" %>
 
   <% if @order.state == "Submitted" %>
-    <%= button_to("Pay", pay_order_path(@order.uid), class: "mr-3 ml-3 inline-flex items-center px-4 py-2 border rounded-md shadow-sm text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 border-transparent text-white bg-blue-600 hover:bg-blue-700") %>
+    <%= button_to("Pay", pay_order_path(@order.id), class: "mr-3 ml-3 inline-flex items-center px-4 py-2 border rounded-md shadow-sm text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 border-transparent text-white bg-blue-600 hover:bg-blue-700") %>
   <% end %>
 
   <% if (@order.state == "Submitted") %>
-    <%= button_to("Cancel Order", cancel_order_path(@order.uid), class: "inline-flex items-center px-4 py-2 border rounded-md shadow-sm text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-50 border-gray-300 text-gray-700 bg-white hover:bg-gray-50") %>
+    <%= button_to("Cancel Order", cancel_order_path(@order.id), class: "inline-flex items-center px-4 py-2 border rounded-md shadow-sm text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-50 border-gray-300 text-gray-700 bg-white hover:bg-gray-50") %>
   <% end %>
 <% end %>
 
 <dl class="mb-8">
   <dt class="font-bold">Customer</dt>
-  <dd class="mb-2"><%= @order.customer || "None" %></dd>
+  <dd class="mb-2"><%= @order.customer&.full_name || "None" %></dd>
   <dt class="font-bold">State</dt>
-  <dd class="mb-2" id="<%= "orders_order_#{@order.uid}_state" %>"><%= @order.state %></dd>
+  <dd class="mb-2" id="<%= "orders_order_#{@order.id}_state" %>"><%= @order.state %></dd>
   <dt class="font-bold">Shipping Details</dt>
   <dd class="mb-2">
-    <% unless @shipment %>
+    <% unless @order.addressed_to && @order.city && @order.country && @order.address %>
       Shipping address is missing.
     <% end %>
   </dd>
   <dd class="mb-2">
-    <% unless @shipment %>
+    <% unless @order.addressed_to && @order.city && @order.country && @order.address %>
       <%= link_to "Add shipment address",
-                  edit_order_shipping_address_path(@order.uid),
+                  edit_order_shipping_address_path(@order.id),
                   class: 'px-2 py-1 border rounded-md shadow-sm text-xs font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 border-transparent text-white bg-blue-600 hover:bg-blue-700'
       %>
     <% else %>
@@ -52,18 +52,18 @@
   <% if @order.state != "Draft" %>
     <dt class="font-bold">Billing Details</dt>
     <dd class="mb-2">
-      <% if @invoice.issued? %>
-        <%= link_to @invoice.number, invoice_path(@order.uid) %>
-      <% elsif !@invoice.address_present? %>
+      <% if @order.invoice_issued? %>
+        <%= link_to @order.number, invoice_path(@order.id) %>
+      <% elsif !(@order.invoice_addressed_to && @order.invoice_city && @order.invoice_country && @order.invoice_address ) %>
         Billing address is missing.
         <%= link_to "Add billing address",
-                    edit_order_billing_address_path(@order.uid),
+                    edit_order_billing_address_path(@order.id),
                     class: 'px-2 py-1 border rounded-md shadow-sm text-xs font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 border-transparent text-white bg-blue-600 hover:bg-blue-700'
         %>
       <% else %>
         Invoice not issued
         <%= button_to "Issue now",
-                    order_invoice_path(@order.uid),
+                    order_invoice_path(@order.id),
                     class: 'px-2 py-1 border rounded-md shadow-sm text-xs font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 border-transparent text-white bg-blue-600 hover:bg-blue-700'
         %>
       <% end %>
@@ -84,30 +84,30 @@
   <tbody>
   <% @order_lines.each do |item| %>
     <tr class="border-t">
-      <td class="py-2"><%= item.product_name %></td>
+      <td class="py-2"><%= item.product.name %></td>
       <td class="py-2"><%= item.quantity %></td>
-      <td class="py-2"><%= number_to_currency(item.price) %></td>
-      <td class="py-2 text-right"><%= number_to_currency(item.value) %></td>
+      <td class="py-2"><%= number_to_currency(item.product.price) %></td>
+      <td class="py-2 text-right"><%= number_to_currency(item.product.price) %></td>
     </tr>
   <% end %>
   </tbody>
   <tfoot class="border-t-4">
-    <% if @order.discounted_value != @order.total_value %>
+    <% if @order.discount != @order.total %>
       <tr class="border-t">
         <td class="py-2" colspan="3">Before discounts</td>
-        <td class="py-2 text-right" id="before-discounts-value"><%= number_to_currency(@order.total_value) %></td>
+        <td class="py-2 text-right" id="before-discounts-value"><%= number_to_currency(@order.total) %></td>
       </tr>
     <% end %>
-    <% if @order.percentage_discount %>
+    <% if @order.discount %>
     <tr class="border-t">
       <td class="py-2" colspan="3">General discount</td>
-      <td class="py-2 text-right"><%= @order.percentage_discount %>%</td>
+      <td class="py-2 text-right"><%= @order.discount %>%</td>
     </tr>
     <% end %>
 
     <tr class="border-t">
       <td class="py-2" colspan="3">Total</td>
-      <td class="py-2 text-right font-bold"><%= number_to_currency(@order.discounted_value) %></td>
+      <td class="py-2 text-right font-bold"><%= number_to_currency(@total) %></td>
     </tr>
   </tfoot>
 </table>

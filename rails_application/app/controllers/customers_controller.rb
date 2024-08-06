@@ -1,18 +1,14 @@
 class CustomersController < ApplicationController
   def index
-    @customers = Customers::Customer.all
+    @customers = Customer.all
   end
 
   def new
-    @customer_id = SecureRandom.uuid
+    @customer = Customer.new
   end
 
   def create
-    create_customer(params[:customer_id], params[:name])
-  rescue Crm::Customer::AlreadyRegistered
-    flash[:notice] = "Customer was already registered"
-    render "new"
-  else
+    Customer.create!(customer_params)
     redirect_to customers_path, notice: "Customer was successfully created"
   end
 
@@ -25,27 +21,18 @@ class CustomersController < ApplicationController
   end
 
   def show
-    @customer = Customers::Customer.find(params[:id])
-    @customer_orders = ClientOrders::Order.where(client_uid: params[:id])
-                                          .order(created_at: :desc)
-                                          .page(params[:page]).per(10)
+    @customer = Customer.find(params[:id])
+    @customer_orders = @customer.orders.order(created_at: :desc)
+                                .page(params[:page]).per(10)
   end
 
   private
 
-  def create_customer(customer_id, name)
-    command_bus.(create_customer_cmd(customer_id, name))
+  def customer_params
+    params.require(:customer).permit(:first_name, :last_name, :email)
   end
 
   def promote_to_vip(customer_id)
-    command_bus.(promote_to_vip_cmd(customer_id))
-  end
-
-  def create_customer_cmd(customer_id, name)
-    Crm::RegisterCustomer.new(customer_id: customer_id, name: name)
-  end
-
-  def promote_to_vip_cmd(customer_id)
-    Crm::PromoteCustomerToVip.new(customer_id: customer_id)
+    Customer.find(customer_id).promote_to_vip
   end
 end

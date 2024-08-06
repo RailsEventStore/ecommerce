@@ -4,15 +4,9 @@ class SuppliesController < ApplicationController
   end
 
   def create
-    supply(params[:product_id], params[:quantity])
+    product = Product.find(params[:product_id])
+    product.stock_level == nil ? product.stock_level = params[:quantity].to_i : product.stock_level += params[:quantity].to_i
+    product.save!
     redirect_to products_path, notice: "Stock level changed"
-  end
-
-  private
-
-  def supply(product_id, quantity)
-    command_bus.(
-      Inventory::Supply.new(product_id: product_id, quantity: quantity)
-    )
   end
 end

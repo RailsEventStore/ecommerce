@@ -4,7 +4,7 @@
 
 <dl class="mb-8">
   <dt class="font-bold">Name</dt>
-  <dd class="mb-2"><%= @customer.name %></dd>
+  <dd class="mb-2"><%= @customer.full_name %></dd>
   <dt class="font-bold">VIP</dt>
   <dd class="mb-2"><%= @customer.vip? ? "Yes" : "No" %> </dd>
 </dl>
@@ -21,9 +21,9 @@
   <tbody>
   <% @customer_orders.each do |order| %>
     <tr class="border-t">
-      <td class="py-2"><%= link_to order.number || 'Not submitted', order_path(order.order_uid), class: "text-blue-500 hover:underline" %></td>
+      <td class="py-2"><%= link_to order.number || 'Not submitted', order_path(order.id), class: "text-blue-500 hover:underline" %></td>
       <td class="py-2 text-left"><%= order.state %></td>
-      <td class="py-2 text-right"><%= number_to_currency(order.discounted_value) %></td>
+      <td class="py-2 text-right"><%= number_to_currency(order.discount) %></td>
     </tr>
   <% end %>
   <tr class="border-t font-bold">

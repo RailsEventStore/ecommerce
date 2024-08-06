@@ -20,7 +20,7 @@
   <tbody>
   <% @customers.each do |customer| %>
     <tr class="border-t">
-        <td class="py-2"><%= link_to customer.name, customer_path(customer), class: "text-blue-500 hover:underline" %></td>
+        <td class="py-2"><%= link_to customer.email, customer_path(customer), class: "text-blue-500 hover:underline" %></td>
         <td class="py-2 text-center">
           <%- if customer.vip %>
             Already a VIP
