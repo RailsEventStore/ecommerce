@@ -66,11 +66,11 @@ module Ordering
     end
 
     on OrderPlaced do |event|
-      @state = State.new(:accepted)
+      @state = @state.transition_to(:accepted)
     end
 
     on OrderExpired do |event|
-      @state = State.new(:expired)
+      @state = @state.transition_to(:expired)
     end
 
     on ItemAddedToBasket do |event|
@@ -83,11 +83,11 @@ module Ordering
 
     on OrderSubmitted do |event|
       @order_number = event.data[:order_number]
-      @state = State.new(:submitted)
+      @state = @state.transition_to(:submitted)
     end
 
     on OrderRejected do |event|
-      @state = State.new(:draft)
+      @state = State.new
     end
 
     class Basket
@@ -131,6 +131,11 @@ module Ordering
 
     def expired?
       @state.equal?(:expired)
+    end
+
+    def transition_to(state)
+      raise InvalidState unless ALLOWED_STATES.include?(state)
+      State.new(state)
     end
   end
 end
