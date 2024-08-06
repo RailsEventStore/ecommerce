@@ -122,7 +122,6 @@ module Ordering
       expired: %i(draft)
     }
 
-
     def initialize(state = :draft)
       @state = state
     end
