@@ -1,0 +1,29 @@
+# Installation
+/Brewfile.lock.json
+package-lock.json
+
+tmp/
+
+# Logs
+log/
+
+# DB stuff
+db/*.sqlite
+
+# Application processes
+/.overmind*
+
+# Application settings
+/.env
+!/.env*-*
+
+# Tests
+/spec/examples.txt
+/coverage
+
+# Assets
+/yarn-error.log
+/node_modules
+/public/assets
+/.assets/tmp/*
+/.assets/node_modules
