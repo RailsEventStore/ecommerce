@@ -14,5 +14,13 @@ module Taxes
         &.data
         &.fetch(:vat_rate)
     end
+
+    def vat_rate_available?(vat_rate_code)
+      @event_store
+        .read
+        .stream("Taxes::AvailableVatRate$#{vat_rate_code}")
+        .to_a
+        .any?
+    end
   end
 end

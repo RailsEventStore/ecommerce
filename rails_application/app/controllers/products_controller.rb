@@ -91,8 +91,8 @@ class ProductsController < ApplicationController
     command_bus.(set_product_future_price_cmd(product_id, price, valid_since))
   end
 
-  def set_product_vat_rate(product_id, vat_rate_code)
-    vat_rate = Taxes::Configuration.available_vat_rates.find{|rate| rate.code == vat_rate_code}
+  def set_product_vat_rate(product_id, vat_rate)
+    vat_rate = VatRates::AvailableVatRate.find_by!(code: vat_rate).to_value
     command_bus.(set_product_vat_rate_cmd(product_id, vat_rate))
   end
 

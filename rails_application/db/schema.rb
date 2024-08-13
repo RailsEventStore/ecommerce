@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_09_06_105318) do
+ActiveRecord::Schema[7.0].define(version: 2024_08_12_080357) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -24,6 +24,14 @@ ActiveRecord::Schema[7.0].define(version: 2023_09_06_105318) do
   create_table "availability_products", force: :cascade do |t|
     t.uuid "uid"
     t.integer "available"
+  end
+
+  create_table "available_vat_rates", force: :cascade do |t|
+    t.uuid "uid", null: false
+    t.string "code", null: false
+    t.decimal "rate", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "client_order_lines", force: :cascade do |t|

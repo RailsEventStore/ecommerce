@@ -8,6 +8,7 @@ class ProductsTest < InMemoryRESIntegrationTestCase
   end
 
   def test_happy_path
+    add_available_vat_rate(10)
     register_customer("Arkency")
     product_id = SecureRandom.uuid
 
