@@ -11,7 +11,7 @@ class SuppliesController < ApplicationController
     end
 
     validates :product_id, presence: true
-    validates :quantity, presence: true, numericality: { only_integer: true, greater_than: 0, allow_blank: true, only_numeric: true }
+    validates :quantity, presence: true, numericality: { only_integer: true, greater_than: 0, allow_blank: true }
   end
 
   def new
