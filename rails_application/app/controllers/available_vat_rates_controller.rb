@@ -1,14 +1,17 @@
 class AvailableVatRatesController < ApplicationController
   class AvailableVatRateForm
     include ActiveModel::Model
-    include ActiveModel::Attributes
     include ActiveModel::Validations
 
-    attribute :code, :string
-    attribute :rate, :decimal
+    attr_reader :code, :rate
+
+    def initialize(params)
+      @code = params[:code]
+      @rate = params[:rate]
+    end
 
     validates :code, presence: true
-    validates :rate, presence: true, numericality: { greater_than: 0 }
+    validates :rate, presence: true, numericality: { only_numeric: true, greater_than: 0 }
   end
 
   def new
