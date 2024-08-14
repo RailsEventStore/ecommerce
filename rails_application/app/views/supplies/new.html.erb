@@ -18,5 +18,15 @@
   <label for="quantity" class="block font-bold">
     Quantity
   </label>
-  <%= number_field_tag :quantity, nil, min: 1, step: 1, id: "quantity", class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-sm sm:text-sm border-gray-300 rounded-md" %>
+  <%= number_field_tag :quantity, nil, min: 1, step: 1, id: "quantity",
+                        class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-sm sm:text-sm border-gray-300 rounded-md",
+                        data: { turbo_permanent: true } %>
+
+  <% if defined?(errors) %>
+    <% errors.each do |error| %>
+      <div class="mt-2 text-red-600">
+        <span><%= error.full_message %></span>
+      </div>
+    <% end %>
+  <% end %>
 <% end %>
