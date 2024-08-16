@@ -107,6 +107,7 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
     order_id = SecureRandom.uuid
     as_client_add_item_to_basket_for_order(product_id, order_id)
     as_client_add_item_to_basket_for_order(product_id, order_id)
+    assert_equal(204, response.status)
   end
 
   def test_adding_product_which_is_not_available_anymore
