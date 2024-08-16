@@ -1,6 +1,6 @@
 source "https://rubygems.org" do
   gem "minitest", "5.25.0"
-  gem "mutant-minitest", "0.11.26"
+  gem "mutant-minitest", "0.12.4"
 end
 
 source "https://oss:7AXfeZdAfCqL1PvHm2nvDJO6Zd9UW8IK@gem.mutant.dev" do
