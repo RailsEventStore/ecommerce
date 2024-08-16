@@ -1,7 +1,7 @@
 module Taxes
   class SetVatRate < Infra::Command
     attribute :product_id, Infra::Types::UUID
-    attribute :vat_rate, Infra::Types::VatRate
+    attribute :vat_rate_code, Infra::Types::String
   end
 
   class DetermineVatRate < Infra::Command

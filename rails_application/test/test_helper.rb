@@ -81,7 +81,6 @@ class InMemoryRESIntegrationTestCase < ActionDispatch::IntegrationTest
   end
 
   def register_product(name, price, vat_rate)
-    add_available_vat_rate(vat_rate)
     product_id = SecureRandom.uuid
     post "/products", params: { product_id: product_id, name: name, price: price, vat_rate: vat_rate }
     product_id

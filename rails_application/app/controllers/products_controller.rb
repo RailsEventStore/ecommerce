@@ -46,15 +46,15 @@ class ProductsController < ApplicationController
       if product_form.vat_rate.present?
         set_product_vat_rate(product_form.product_id, product_form.vat_rate)
       end
-    rescue ProductCatalog::AlreadyRegistered
-      flash[:notice] = "Product was already registered"
-      render "new"
-    rescue Taxes::Product::VatRateNotApplicable
-      flash[:notice] = "Selected VAT rate not applicable"
-      render "new"
-    else
-      redirect_to products_path, notice: "Product was successfully created"
     end
+
+    redirect_to products_path, notice: "Product was successfully created"
+  rescue ProductCatalog::AlreadyRegistered
+    flash[:notice] = "Product was already registered"
+    render "new"
+  rescue Taxes::VatRateNotApplicable
+    flash[:notice] = "Selected VAT rate is not applicable"
+    render "new"
   end
 
   def update
@@ -92,7 +92,6 @@ class ProductsController < ApplicationController
   end
 
   def set_product_vat_rate(product_id, vat_rate)
-    vat_rate = VatRates::AvailableVatRate.find_by!(code: vat_rate).to_value
     command_bus.(set_product_vat_rate_cmd(product_id, vat_rate))
   end
 
@@ -113,7 +112,7 @@ class ProductsController < ApplicationController
   end
 
   def set_product_vat_rate_cmd(product_id, vat_rate)
-    Taxes::SetVatRate.new(product_id: product_id, vat_rate: vat_rate)
+    Taxes::SetVatRate.new(product_id: product_id, vat_rate_code: vat_rate)
   end
 
   def set_product_future_price_cmd(product_id, price, valid_since)

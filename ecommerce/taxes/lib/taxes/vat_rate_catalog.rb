@@ -15,12 +15,14 @@ module Taxes
         &.fetch(:vat_rate)
     end
 
-    def vat_rate_available?(vat_rate_code)
+    def vat_rate_by_code(vat_rate_code)
       @event_store
         .read
         .stream("Taxes::AvailableVatRate$#{vat_rate_code}")
-        .to_a
-        .any?
+        .last
+        &.data
+        &.fetch(:vat_rate)
+        &.then { |vat_rate| Infra::Types::VatRate.new(vat_rate) }
     end
   end
 end

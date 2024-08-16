@@ -59,7 +59,7 @@ end
     ProductCatalog::RegisterProduct.new(product_id: product_id),
     ProductCatalog::NameProduct.new(product_id: product_id, name: name_price_tuple[0]),
     Pricing::SetPrice.new(product_id: product_id, price: name_price_tuple[1]),
-    Taxes::SetVatRate.new(product_id: product_id, vat_rate: VatRates::AvailableVatRate.first.to_value)
+    Taxes::SetVatRate.new(product_id: product_id, vat_rate_code: "20")
   ].each do |command|
     command_bus.call(command)
   end

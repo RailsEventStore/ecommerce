@@ -2,28 +2,20 @@ require_relative "test_helper"
 
 module Taxes
   class VatRateCatalogTest < Test
-    class VatRateAvailableTest < VatRateCatalogTest
-      def test_returns_true_when_vat_rate_is_available
-        vat_rate = Infra::Types::VatRate.new(code: "50", rate: 50)
-        add_available_vat_rate(vat_rate)
-
-        assert catalog.vat_rate_available?(vat_rate.code)
+    class VatRateByCodeTest < VatRateCatalogTest
+      def setup
+        @vat_rate = Infra::Types::VatRate.new(code: "50", rate: 50)
+        add_available_vat_rate(@vat_rate)
       end
 
-      def test_returns_false_when_vat_rate_is_not_available
-        vat_rate = Infra::Types::VatRate.new(code: "50", rate: 50)
-
-        refute catalog.vat_rate_available?(vat_rate.code)
+      def test_returns_available_vat_rate
+        assert_equal @vat_rate, catalog.vat_rate_by_code("50")
       end
 
-      def test_returns_false_when_vat_rate_is_not_available_even_when_other_vat_rates_are_available
-        vat_rate = Infra::Types::VatRate.new(code: "50", rate: 50)
-        add_available_vat_rate(vat_rate)
-
-        refute catalog.vat_rate_available?("60")
+      def test_returns_nil_when_vat_rate_is_not_available
+        assert_nil catalog.vat_rate_by_code("60")
       end
     end
-
 
     private
 

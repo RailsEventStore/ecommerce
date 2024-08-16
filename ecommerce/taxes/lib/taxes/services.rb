@@ -1,5 +1,6 @@
 module Taxes
   VatRateAlreadyExists = Class.new(StandardError)
+  VatRateNotApplicable = Class.new(StandardError)
   class SetVatRateHandler
     def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)
@@ -7,8 +8,10 @@ module Taxes
     end
 
     def call(cmd)
+      vat_rate = @catalog.vat_rate_by_code(cmd.vat_rate_code)
+      raise VatRateNotApplicable unless vat_rate
       @repository.with_aggregate(Product, cmd.product_id) do |product|
-        product.set_vat_rate(cmd.vat_rate, @catalog)
+        product.set_vat_rate(vat_rate)
       end
     end
   end
@@ -44,7 +47,7 @@ module Taxes
     end
 
     def call(cmd)
-      raise VatRateAlreadyExists if catalog.vat_rate_available?(cmd.vat_rate.code)
+      raise VatRateAlreadyExists if catalog.vat_rate_by_code(cmd.vat_rate.code)
 
       event_store.publish(available_vat_rate_added_event(cmd), stream_name: stream_name(cmd))
     end

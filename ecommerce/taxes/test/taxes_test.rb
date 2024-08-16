@@ -9,7 +9,7 @@ module Taxes
       product_id = SecureRandom.uuid
       vat_rate_set = VatRateSet.new(data: { product_id: product_id, vat_rate: vat_rate })
       assert_events("Taxes::Product$#{product_id}", vat_rate_set) do
-        set_vat_rate(product_id, vat_rate)
+        set_vat_rate(product_id, vat_rate.code)
       end
     end
 
@@ -17,8 +17,8 @@ module Taxes
       product_id = SecureRandom.uuid
       unavailable_vat_rate = Infra::Types::VatRate.new(code: "20", rate: 20)
 
-      assert_raises(Product::VatRateNotApplicable) do
-        set_vat_rate(product_id, unavailable_vat_rate)
+      assert_raises(Taxes::VatRateNotApplicable) do
+        set_vat_rate(product_id, unavailable_vat_rate.code)
       end
     end
 
@@ -30,7 +30,7 @@ module Taxes
       product_id = SecureRandom.uuid
       another_product_id = SecureRandom.uuid
 
-      set_vat_rate(product_id, vat_rate)
+      set_vat_rate(product_id, vat_rate.code)
       vat_rate_determined = VatRateDetermined.new(data: { order_id: order_id, product_id: product_id, vat_rate: vat_rate })
       assert_events("Taxes::Order$#{order_id}", vat_rate_determined) do
         determine_vat_rate(order_id, product_id, vat_rate)
@@ -61,8 +61,8 @@ module Taxes
 
     private
 
-    def set_vat_rate(product_id, vat_rate)
-      run_command(SetVatRate.new(product_id: product_id, vat_rate: vat_rate))
+    def set_vat_rate(product_id, vat_rate_code)
+      run_command(SetVatRate.new(product_id: product_id, vat_rate_code: vat_rate_code))
     end
 
     def determine_vat_rate(order_id, product_id, vat_rate)
