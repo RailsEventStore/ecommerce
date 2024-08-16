@@ -2,12 +2,12 @@ PATH
   remote: ../infra
   specs:
     infra (1.0.0)
-      aggregate_root (~> 2.13)
+      aggregate_root (~> 2.15)
       arkency-command_bus
       dry-struct
       dry-types
       rake
-      ruby_event_store (~> 2.13)
+      ruby_event_store (~> 2.15)
       ruby_event_store-transformations
 
 GEM
@@ -88,8 +88,8 @@ GEM
       minitest (>= 5.1)
       securerandom (>= 0.3)
       tzinfo (~> 2.0, >= 2.0.5)
-    aggregate_root (2.13.0)
-      ruby_event_store (= 2.13.0)
+    aggregate_root (2.15.0)
+      ruby_event_store (= 2.15.0)
     arbre (2.0.0)
       activesupport (>= 3.0.0)
       ruby2_keywords (>= 0.0.2)
@@ -238,17 +238,17 @@ GEM
     rails-html-sanitizer (1.6.0)
       loofah (~> 2.21)
       nokogiri (~> 1.14)
-    rails_event_store (2.13.0)
+    rails_event_store (2.15.0)
       activejob (>= 6.0)
       activemodel (>= 6.0)
       activesupport (>= 6.0)
-      aggregate_root (= 2.13.0)
+      aggregate_root (= 2.15.0)
       arkency-command_bus (>= 0.4)
-      rails_event_store_active_record (= 2.13.0)
-      ruby_event_store (= 2.13.0)
-      ruby_event_store-browser (= 2.13.0)
-    rails_event_store_active_record (2.13.0)
-      ruby_event_store-active_record (= 2.13.0)
+      rails_event_store_active_record (= 2.15.0)
+      ruby_event_store (= 2.15.0)
+      ruby_event_store-browser (= 2.15.0)
+    rails_event_store_active_record (2.15.0)
+      ruby_event_store-active_record (= 2.15.0)
     railties (7.2.0)
       actionpack (= 7.2.0)
       activesupport (= 7.2.0)
@@ -268,14 +268,14 @@ GEM
     reline (0.5.9)
       io-console (~> 0.5)
     ruby2_keywords (0.0.5)
-    ruby_event_store (2.13.0)
+    ruby_event_store (2.15.0)
       concurrent-ruby (~> 1.0, >= 1.1.6)
-    ruby_event_store-active_record (2.13.0)
+    ruby_event_store-active_record (2.15.0)
       activerecord (>= 6.0)
-      ruby_event_store (= 2.13.0)
-    ruby_event_store-browser (2.13.0)
+      ruby_event_store (= 2.15.0)
+    ruby_event_store-browser (2.15.0)
       rack
-      ruby_event_store (= 2.13.0)
+      ruby_event_store (= 2.15.0)
     ruby_event_store-transformations (0.1.0)
       activesupport (>= 5.0)
       ruby_event_store (>= 2.0.0, < 3.0.0)
@@ -342,7 +342,7 @@ DEPENDENCIES
   pg (~> 1.4)
   puma (~> 5.6)
   rails (= 7.2.0)
-  rails_event_store (>= 2.13.0, < 3.0)
+  rails_event_store (>= 2.15.0, < 3.0)
   redis
   skylight
   sprockets-rails

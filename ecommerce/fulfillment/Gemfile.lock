@@ -2,12 +2,12 @@ PATH
   remote: ../../infra
   specs:
     infra (1.0.0)
-      aggregate_root (~> 2.13)
+      aggregate_root (~> 2.15)
       arkency-command_bus
       dry-struct
       dry-types
       rake
-      ruby_event_store (~> 2.13)
+      ruby_event_store (~> 2.15)
       ruby_event_store-transformations
 
 GEM
@@ -28,9 +28,8 @@ GEM
       minitest (>= 5.1)
       mutex_m
       tzinfo (~> 2.0)
-    aggregate_root (2.14.0)
-      base64
-      ruby_event_store (= 2.14.0)
+    aggregate_root (2.15.0)
+      ruby_event_store (= 2.15.0)
     arkency-command_bus (0.4.1)
       concurrent-ruby
     ast (2.4.2)
@@ -80,7 +79,7 @@ GEM
     racc (1.7.3)
     rake (13.2.1)
     regexp_parser (2.8.3)
-    ruby_event_store (2.14.0)
+    ruby_event_store (2.15.0)
       concurrent-ruby (~> 1.0, >= 1.1.6)
     ruby_event_store-transformations (0.1.0)
       activesupport (>= 5.0)
