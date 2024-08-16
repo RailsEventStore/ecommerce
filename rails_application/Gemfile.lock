@@ -176,7 +176,7 @@ GEM
     marcel (1.0.4)
     mini_mime (1.1.5)
     mini_portile2 (2.8.1)
-    minitest (5.15.0)
+    minitest (5.25.0)
     msgpack (1.6.0)
     mutant (0.11.26)
       diff-lcs (~> 1.3)
@@ -336,7 +336,7 @@ DEPENDENCIES
   infra!
   kaminari
   listen (~> 3.3)
-  minitest (= 5.15.0)!
+  minitest (= 5.25.0)!
   mutant-license!
   mutant-minitest (= 0.11.26)!
   pg (~> 1.4)

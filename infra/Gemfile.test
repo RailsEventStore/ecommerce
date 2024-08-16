@@ -1,5 +1,5 @@
 source "https://rubygems.org" do
-  gem "minitest", "5.15.0"
+  gem "minitest", "5.25.0"
   gem "mutant-minitest", "0.11.26"
 end
 
