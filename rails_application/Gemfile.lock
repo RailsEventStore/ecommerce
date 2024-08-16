@@ -96,7 +96,6 @@ GEM
     builder (3.2.4)
     byebug (11.1.3)
     concurrent-ruby (1.2.2)
-    connection_pool (2.3.0)
     crass (1.0.6)
     date (3.3.3)
     diff-lcs (1.5.0)
@@ -243,8 +242,6 @@ GEM
     rb-inotify (0.10.1)
       ffi (~> 1.0)
     redis (4.8.0)
-    redis-client (0.11.2)
-      connection_pool
     regexp_parser (2.8.3)
     ruby2_keywords (0.0.5)
     ruby_event_store (2.13.0)
@@ -258,11 +255,6 @@ GEM
     ruby_event_store-transformations (0.1.0)
       activesupport (>= 5.0)
       ruby_event_store (>= 2.0.0, < 3.0.0)
-    sidekiq (7.0.3)
-      concurrent-ruby (< 2)
-      connection_pool (>= 2.3.0)
-      rack (>= 2.2.4)
-      redis-client (>= 0.11.0)
     skylight (5.1.1)
       activesupport (>= 5.2.0)
     sorbet-runtime (0.5.10648)
@@ -324,7 +316,6 @@ DEPENDENCIES
   rails (= 7.0.4)
   rails_event_store (>= 2.13.0, < 3.0)
   redis
-  sidekiq (~> 7.0)
   skylight
   sprockets-rails
   stimulus-rails

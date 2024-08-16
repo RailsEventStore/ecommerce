@@ -17,7 +17,6 @@ gem "importmap-rails", "~> 1.1"
 gem "rails_event_store",  ">= 2.13.0", "< 3.0"
 gem 'arbre'
 gem 'redis'
-gem "sidekiq", "~> 7.0"
 
 group :development do
   gem "listen", "~> 3.3"

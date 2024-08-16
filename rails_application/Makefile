@@ -19,9 +19,6 @@ help:
 .PHONY: help test db
 .DEFAULT_GOAL := help
 
-worker:
-	bundle exec sidekiq -C config/sidekiq.yml
-
 css:
 	bin/rails tailwindcss:watch
 

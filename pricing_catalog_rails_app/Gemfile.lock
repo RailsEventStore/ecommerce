@@ -9,7 +9,6 @@ PATH
       rake
       ruby_event_store (~> 2.13)
       ruby_event_store-transformations
-      sidekiq
 
 GEM
   remote: https://rubygems.org/
@@ -272,11 +271,6 @@ GEM
       rexml (~> 3.2, >= 3.2.5)
       rubyzip (>= 1.2.2, < 3.0)
       websocket (~> 1.0)
-    sidekiq (7.2.1)
-      concurrent-ruby (< 2)
-      connection_pool (>= 2.3.0)
-      rack (>= 2.2.4)
-      redis-client (>= 0.19.0)
     sqlite3 (1.7.1-aarch64-linux)
     sqlite3 (1.7.1-arm-linux)
     sqlite3 (1.7.1-arm64-darwin)
@@ -332,6 +326,9 @@ DEPENDENCIES
   turbo-rails
   tzinfo-data
   web-console
+
+RUBY VERSION
+   ruby 3.2.0p0
 
 BUNDLED WITH
    2.5.9
