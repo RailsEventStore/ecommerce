@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-ruby ENV["HEROKU_RUBY_VERSION"] if ENV["HEROKU_RUBY_VERSION"]
+ruby '3.3.4'
 
 gem "rails", "7.0.4"
 gem "pg", "~> 1.4"
