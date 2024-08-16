@@ -2,16 +2,10 @@ ENV["RAILS_ENV"] ||= "test"
 require_relative "../config/environment"
 require "rails/test_help"
 require "mutant/minitest/coverage"
-require "sidekiq/testing"
 
 ActiveJob::Base.logger = Logger.new(nil)
 
 class InMemoryTestCase < ActiveSupport::TestCase
-
-  def setup
-    super
-    Sidekiq.logger.level = Logger::WARN
-  end
 
   def before_setup
     result = super
@@ -39,10 +33,6 @@ class InMemoryTestCase < ActiveSupport::TestCase
 end
 
 class RealRESIntegrationTestCase < ActionDispatch::IntegrationTest
-  def setup
-    super
-    Sidekiq.logger.level = Logger::WARN
-  end
 
   def run_command(command)
     Rails.configuration.command_bus.call(command)
@@ -50,11 +40,6 @@ class RealRESIntegrationTestCase < ActionDispatch::IntegrationTest
 end
 
 class InMemoryRESIntegrationTestCase < ActionDispatch::IntegrationTest
-
-  def setup
-    super
-    Sidekiq.logger.level = Logger::WARN
-  end
 
   def before_setup
     result = super

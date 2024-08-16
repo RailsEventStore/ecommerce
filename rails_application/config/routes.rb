@@ -1,5 +1,3 @@
-require 'sidekiq/web'
-
 Rails.application.routes.draw do
   root "orders#index"
 
@@ -52,5 +50,4 @@ Rails.application.routes.draw do
   get "client/products", to: "client/products#index"
 
   mount RailsEventStore::Browser => "/res"
-  mount Sidekiq::Web => '/sidekiq'
 end

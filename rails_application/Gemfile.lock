@@ -9,7 +9,6 @@ PATH
       rake
       ruby_event_store (~> 2.13)
       ruby_event_store-transformations
-      sidekiq
 
 GEM
   remote: https://oss:7AXfeZdAfCqL1PvHm2nvDJO6Zd9UW8IK@gem.mutant.dev/
