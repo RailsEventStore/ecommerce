@@ -5,6 +5,11 @@ class ReadModelHandlerTest < InMemoryTestCase
   cover "CreateRecord*"
   cover "CopyEventAttribute*"
 
+  def setup
+    super
+    PublicOffer::Product.destroy_all
+  end
+
   def test_create_record
     event = product_registered
     event_store.append(event)
