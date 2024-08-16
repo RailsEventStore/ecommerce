@@ -1,7 +1,7 @@
 module Products
   class Product < ApplicationRecord
     self.table_name = "products"
-    serialize :current_prices_calendar, Array
+    serialize :current_prices_calendar, type: Array
 
     def current_prices_calendar
       return [] unless super
