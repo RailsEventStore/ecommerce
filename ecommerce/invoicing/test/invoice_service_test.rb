@@ -100,6 +100,27 @@ module Invoicing
       ) { issue_invoice(invoice_id, issue_date) }
     end
 
+    def test_issuing_invoice_before_setting_payment_date
+      invoice_id = SecureRandom.uuid
+      issue_date = Date.new(2021, 1, 1)
+      payment_date = Date.new(2021, 1, 5)
+      set_payment_date(invoice_id, payment_date)
+      set_billing_address(invoice_id)
+
+      stream = "Invoicing::Invoice$#{invoice_id}"
+      assert_events(
+        stream,
+        InvoiceIssued.new(
+          data: {
+            invoice_id: invoice_id,
+            issue_date: issue_date,
+            disposal_date: issue_date,
+            invoice_number: '1/01/2021'
+          }
+        )
+      ) { issue_invoice(invoice_id, issue_date) }
+    end
+
     def test_issuing_invoice_with_faked_race_condition
       invoice_id = SecureRandom.uuid
       another_invoice_id = SecureRandom.uuid

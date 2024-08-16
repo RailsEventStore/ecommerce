@@ -5,6 +5,7 @@ includes:
   - test
 integration:
   name: minitest
+usage: opensource
 coverage_criteria:
   timeout: true
   process_abort: true

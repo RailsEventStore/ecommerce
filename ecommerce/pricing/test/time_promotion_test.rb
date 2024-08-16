@@ -65,28 +65,21 @@ module Pricing
         first_time_promotion_id = SecureRandom.uuid
         start_time = timestamp - 1
         end_time = timestamp + 1
-        set_time_promotion_range(first_time_promotion_id, start_time, end_time, 49)
+        set_time_promotion_range(first_time_promotion_id, start_time, end_time, 40)
 
         time_promotion_id = SecureRandom.uuid
         start_time = timestamp
         end_time = timestamp + 1
         set_time_promotion_range(time_promotion_id, start_time, end_time, 1)
 
+
+        time_promotion_id = SecureRandom.uuid
+        start_time = timestamp
+        end_time = timestamp + 1
+        set_time_promotion_range(time_promotion_id, start_time, end_time, 50)
+
         # Not applicable promotions
-        time_promotion_id = SecureRandom.uuid
-        start_time = timestamp - 2
-        end_time = timestamp - 1
-        set_time_promotion_range(time_promotion_id, start_time, end_time, 10)
-
-        time_promotion_id = SecureRandom.uuid
-        start_time = timestamp + 1
-        end_time = timestamp + 2
-        set_time_promotion_range(time_promotion_id, start_time, end_time, 15)
-
-        time_promotion_id = SecureRandom.uuid
-        start_time = timestamp - 1
-        end_time = timestamp
-        set_time_promotion_range(time_promotion_id, start_time, end_time, 15)
+        set_not_applicable_promotions(timestamp)
 
         assert_events(
           stream,
@@ -171,17 +164,40 @@ module Pricing
       end
     end
 
-    def test_takes_last_values_for_time_promotion
+    def test_cant_create_twice
+      uid = SecureRandom.uuid
+      start_time = Time.utc(2022, 7, 1, 12, 15, 0)
+      end_time = Time.utc(2022, 7, 4, 14, 30, 30)
+      discount = 25
+      label = "Summer Sale"
+      data = {
+        time_promotion_id: uid,
+        discount: discount,
+        start_time: start_time,
+        end_time: end_time,
+        label: label
+      }
+
+      run_command(CreateTimePromotion.new(data))
+
+      assert_raises(Pricing::TimePromotion::AlreadyCreated) do
+        run_command(CreateTimePromotion.new(data))
+      end
+    end
+
+    def test_takes_bigger_value_for_time_promotion_if_more_than_one
       timestamp = Time.new(2022, 5, 30, 15, 33)
-      time_promotion_id = SecureRandom.uuid
+      time_promotion_id_1 = SecureRandom.uuid
+      time_promotion_id_2 = SecureRandom.uuid
+      time_promotion_id_3 = SecureRandom.uuid
       start_time = timestamp - 5
       end_time = timestamp - 2
-      set_time_promotion_range(time_promotion_id, start_time, end_time, 30)
+      set_time_promotion_range(time_promotion_id_1, start_time, end_time, 30)
 
       start_time = timestamp - 1
       end_time = timestamp + 1
-      set_time_promotion_range(time_promotion_id, start_time, end_time, 50)
-      set_time_promotion_range(time_promotion_id, start_time, end_time, 40)
+      set_time_promotion_range(time_promotion_id_2, start_time, end_time, 50)
+      set_time_promotion_range(time_promotion_id_3, start_time, end_time, 40)
 
       Timecop.freeze(timestamp) do
         product_1_id = SecureRandom.uuid
@@ -195,7 +211,7 @@ module Pricing
           OrderTotalValueCalculated.new(
             data: {
               order_id: order_id,
-              discounted_amount: 12,
+              discounted_amount: 10,
               total_amount: 20
             }
           )
@@ -204,6 +220,23 @@ module Pricing
     end
 
     private
+
+    def set_not_applicable_promotions(timestamp)
+      time_promotion_id = SecureRandom.uuid
+      start_time = timestamp - 2
+      end_time = timestamp - 1
+      set_time_promotion_range(time_promotion_id, start_time, end_time, 70)
+
+      time_promotion_id = SecureRandom.uuid
+      start_time = timestamp + 1
+      end_time = timestamp + 2
+      set_time_promotion_range(time_promotion_id, start_time, end_time, 80)
+
+      time_promotion_id = SecureRandom.uuid
+      start_time = timestamp - 1
+      end_time = timestamp
+      set_time_promotion_range(time_promotion_id, start_time, end_time, 90)
+    end
 
     def stream_name(order_id)
       "Pricing::Offer$#{order_id}"

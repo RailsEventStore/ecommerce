@@ -6,35 +6,48 @@ module Pricing
 
     def current_time_promotions_discount
       Discounts::Discount.build(
-        get_events(TimePromotionCreated)
-        .filter { |e| current_promotions.include?(e.data.fetch(:time_promotion_id)) }
-        .map { |e| e.data.fetch(:discount) }.sum
+        PromotionsStrategy.biggest_for_client(all_promotions)
       )
     end
 
     private
 
-    def current_promotions
-      get_events(TimePromotionCreated)
-        .filter { |e| is_promotion_running?(e) }
-        .map { |e| e.data.fetch(:time_promotion_id) }
-    end
-
-    def is_promotion_running?(event)
-      timestamp = Time.current
-      start_time = event.data.fetch(:start_time)
-      end_time = event.data.fetch(:end_time)
-
-      timestamp >= start_time && end_time > timestamp
-    end
-
-    def get_events(event_type)
+    def all_promotions
       @event_store
         .read
-        .of_type(event_type)
-        .to_a
-        .group_by { |e| e.data.fetch(:time_promotion_id) }
-        .map { |_, events| events.max_by(&:timestamp) }
+        .of_type(TimePromotionCreated)
+        .map { |e| Promotion.from_event(e) }
+    end
+
+    class PromotionsStrategy
+      def self.biggest_for_client(promotions)
+        promotions
+          .filter { |promotion| promotion.running?(Time.current) }
+          .map { |promotion| promotion.discount }.max || 0
+      end
+    end
+
+    class Promotion
+      attr_accessor :discount
+
+      def self.from_event(event)
+        new(
+          event.data.fetch(:start_time),
+          event.data.fetch(:end_time),
+          event.data.fetch(:discount)
+        )
+      end
+
+      def initialize(start_time, end_time, discount)
+        @start_time = start_time
+        @end_time = end_time
+        @discount = discount
+      end
+
+      def running?(timestamp)
+        (@start_time...@end_time).include?(timestamp)
+      end
+
     end
   end
 end
