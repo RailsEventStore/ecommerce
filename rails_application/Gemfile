@@ -6,7 +6,7 @@ gem "rails", "7.2.0"
 gem "pg", "~> 1.4"
 gem "puma", "~> 5.6"
 gem "bootsnap", ">= 1.9.2", require: false
-gem "honeybadger", "~> 4.0"
+gem "honeybadger", "5.15.6"
 gem "skylight"
 gem "tailwindcss-rails", "~> 2.6.0"
 gem "kaminari"
