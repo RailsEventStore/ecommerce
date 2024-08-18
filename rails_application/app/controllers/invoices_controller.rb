@@ -1,6 +1,7 @@
 class InvoicesController < ApplicationController
   def show
     @invoice = Invoices::Invoice.find_by_order_uid(params[:id])
+    not_found unless @invoice
   end
 
   def create

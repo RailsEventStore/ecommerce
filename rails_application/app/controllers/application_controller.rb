@@ -6,4 +6,8 @@ class ApplicationController < ActionController::Base
   def command_bus
     Rails.configuration.command_bus
   end
+
+  def not_found
+    render file: "#{Rails.root}/public/404.html", layout: false, status: :not_found
+  end
 end

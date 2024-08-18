@@ -132,7 +132,4 @@ class OrdersController < ApplicationController
     Payments::CapturePayment.new(order_id: order_id)
   end
 
-  def not_found
-    render file: "#{Rails.root}/public/404.html", layout: false, status: :not_found
-  end
 end
