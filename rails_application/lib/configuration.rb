@@ -16,14 +16,11 @@ class Configuration
     enable_shipments_read_model(event_store)
     enable_availability_read_model(event_store)
     enable_authentication_read_model(event_store)
+    enable_vat_rates_read_model(event_store)
 
     Ecommerce::Configuration.new(
       number_generator: Rails.configuration.number_generator,
-      payment_gateway: Rails.configuration.payment_gateway,
-      available_vat_rates: [
-        Infra::Types::VatRate.new(code: "10", rate: 10),
-        Infra::Types::VatRate.new(code: "20", rate: 20)
-    ]
+      payment_gateway: Rails.configuration.payment_gateway
     ).call(event_store, command_bus)
   end
 
@@ -79,5 +76,9 @@ class Configuration
 
   def enable_authentication_read_model(event_store)
     ClientAuthentication::Configuration.new.call(event_store)
+  end
+
+  def enable_vat_rates_read_model(event_store)
+    VatRates::Configuration.new.call(event_store)
   end
 end

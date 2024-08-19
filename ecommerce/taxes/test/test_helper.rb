@@ -9,13 +9,7 @@ module Taxes
 
     def before_setup
       super
-      Configuration.new([dummy_vat_rate]).call(event_store, command_bus)
-    end
-
-    private
-
-    def dummy_vat_rate
-      Infra::Types::VatRate.new(code: "20", rate: 20)
+      Configuration.new.call(event_store, command_bus)
     end
   end
 end

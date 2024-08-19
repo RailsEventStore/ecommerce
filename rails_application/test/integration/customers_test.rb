@@ -1,6 +1,11 @@
 require "test_helper"
 
 class CustomersTest < InMemoryRESIntegrationTestCase
+  def setup
+    super
+    add_available_vat_rate(10)
+  end
+
   def test_list_customers
     get "/customers"
     assert_response :success

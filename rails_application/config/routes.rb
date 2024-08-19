@@ -44,6 +44,9 @@ Rails.application.routes.draw do
       post :remove_item
     end
   end
+
+  resources :available_vat_rates, only: [:new, :create, :index]
+
   post :login, to: "client/clients#login"
   get :logout, to: "client/clients#logout"
   get "clients", to: "client/clients#index"
