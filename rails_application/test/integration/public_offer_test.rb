@@ -3,7 +3,6 @@ require "test_helper"
 class PublicOfferTest < InMemoryRESIntegrationTestCase
   def setup
     super
-    add_available_vat_rate(10)
   end
 
   def test_happy_path

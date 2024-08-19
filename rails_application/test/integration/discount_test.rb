@@ -4,7 +4,6 @@ class DiscountTest < InMemoryRESIntegrationTestCase
   def setup
     super
     Orders::Order.destroy_all
-    add_available_vat_rate(10)
   end
 
   def test_reset_discount
@@ -41,3 +40,4 @@ class DiscountTest < InMemoryRESIntegrationTestCase
     assert_select("td", "$123.30")
   end
 end
+

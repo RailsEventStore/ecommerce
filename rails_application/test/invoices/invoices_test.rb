@@ -29,28 +29,27 @@ module Invoices
       product_id = SecureRandom.uuid
       initial_product_name = "Initial Name"
       updated_product_name = "Updated Name"
-
-      add_available_vat_rate(20)
+      
       product_id = register_product(initial_product_name, 100, 20)
       customer_id = register_customer("Test Customer")
-
+      
       order_id = SecureRandom.uuid
       add_product_to_basket(order_id, product_id)
       submit_order(customer_id, order_id)
-
+      
       update_product_name(product_id, updated_product_name)
-
+      
       assert_invoice_product_name(order_id, initial_product_name)
 
       new_order_id = SecureRandom.uuid
       add_product_to_basket(new_order_id, product_id)
       submit_order(customer_id, new_order_id)
-
+  
       assert_invoice_product_name(new_order_id, updated_product_name)
     end
-
+    
     private
-
+    
     def update_product_name(product_id, new_name)
       patch "/products/#{product_id}",
             params: {
@@ -59,7 +58,7 @@ module Invoices
               name: new_name,
             }
     end
-
+    
     def assert_invoice_product_name(order_id, expected_name)
       get "/invoices/#{order_id}"
       assert_response :success
