@@ -11,7 +11,7 @@ class AvailableVatRatesController < ApplicationController
     end
 
     validates :code, presence: true
-    validates :rate, presence: true, numericality: { only_numeric: true, greater_than: 0 }
+    validates :rate, presence: true, numericality: { greater_than: 0 }
   end
 
   def new

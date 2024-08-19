@@ -9,7 +9,7 @@ class AvailableVatRatesTest < InMemoryRESIntegrationTestCase
          params: {
            "authenticity_token" => "[FILTERED]",
            "code" => "10.0",
-           "rate" => 10.0
+           "rate" => "10.0"
          }
     follow_redirect!
 
@@ -17,7 +17,7 @@ class AvailableVatRatesTest < InMemoryRESIntegrationTestCase
     assert_select "h1", "VAT Rates"
   end
 
-  def test_validation_errors
+  def test_validation_blank_errors
     post "/available_vat_rates",
          params: {
            "authenticity_token" => "[FILTERED]",
@@ -31,19 +31,30 @@ class AvailableVatRatesTest < InMemoryRESIntegrationTestCase
     assert_select "span", "Rate can't be blank"
   end
 
+  def test_validation_rate_must_be_numeric
+    post "/available_vat_rates",
+         params: {
+           "authenticity_token" => "[FILTERED]",
+           "code" => "test",
+           "rate" => "not a number"
+         }
+    assert_response :unprocessable_entity
+    assert_select "span", "Rate is not a number"
+  end
+
   def test_vat_rate_already_exists
     post "/available_vat_rates",
         params: {
           "authenticity_token" => "[FILTERED]",
           "code" => "10.0",
-          "rate" => 10.0
+          "rate" => "10.0"
         }
 
     post "/available_vat_rates",
         params: {
           "authenticity_token" => "[FILTERED]",
           "code" => "10.0",
-          "rate" => 10.0
+          "rate" => "10.0"
         }
 
     assert_response :unprocessable_entity
