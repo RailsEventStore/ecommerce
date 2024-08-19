@@ -71,6 +71,10 @@ class InMemoryRESIntegrationTestCase < ActionDispatch::IntegrationTest
     product_id
   end
 
+  def add_available_vat_rate(rate, code = rate.to_s)
+    post "/available_vat_rates", params: { code: code, rate: rate }
+  end
+
   def supply_product(product_id, quantity)
     post "/products/#{product_id}/supplies", params: { quantity: quantity }
   end
