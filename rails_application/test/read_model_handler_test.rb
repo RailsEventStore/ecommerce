@@ -106,7 +106,7 @@ class ReadModelHandlerTest < InMemoryTestCase
   end
 
   def available_vat_rate
-    Infra::Types::VatRate.new(code: "10", rate: 10)
+    Taxes::Configuration.available_vat_rates.first
   end
 
   def event_store

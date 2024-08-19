@@ -37,18 +37,6 @@ end
 end
 
 [
-  ["20", 20],
-  ["10", 10]
-].each do |vat_rate|
-  command_bus.call(
-    Taxes::AddAvailableVatRate.new(
-      available_vat_rate_id: SecureRandom.uuid,
-      vat_rate: Infra::Types::VatRate.new(code: vat_rate[0], rate: vat_rate[1])
-    )
-  )
-end
-
-[
   ["Fearless Refactoring: Rails controllers", 49],
   ["Rails meets React.js", 49],
   ["Developers Oriented Project Management", 39],
@@ -59,7 +47,7 @@ end
     ProductCatalog::RegisterProduct.new(product_id: product_id),
     ProductCatalog::NameProduct.new(product_id: product_id, name: name_price_tuple[0]),
     Pricing::SetPrice.new(product_id: product_id, price: name_price_tuple[1]),
-    Taxes::SetVatRate.new(product_id: product_id, vat_rate_code: "20")
+    Taxes::SetVatRate.new(product_id: product_id, vat_rate: Taxes::Configuration.available_vat_rates.first)
   ].each do |command|
     command_bus.call(command)
   end
