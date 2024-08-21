@@ -13,10 +13,9 @@ require_relative "processes/lib/processes"
 
 module Ecommerce
   class Configuration
-    def initialize(number_generator: nil, payment_gateway: nil, available_vat_rates: [])
+    def initialize(number_generator: nil, payment_gateway: nil)
       @number_generator = number_generator
       @payment_gateway = payment_gateway
-      @available_vat_rates = available_vat_rates
     end
 
     def call(event_store, command_bus)
@@ -37,7 +36,7 @@ module Ecommerce
         Payments::Configuration.new(@payment_gateway),
         Shipping::Configuration.new,
         Pricing::Configuration.new,
-        Taxes::Configuration.new(@available_vat_rates),
+        Taxes::Configuration.new,
         ProductCatalog::Configuration.new,
         Fulfillment::Configuration.new
       ].each { |c| c.call(event_store, command_bus) }
