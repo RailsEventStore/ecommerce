@@ -15,8 +15,11 @@ module ClientOrders
       customer_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
       order_number = Ordering::FakeNumberGenerator::FAKE_NUMBER
+      product_id = SecureRandom.uuid
 
       run_command(Crm::RegisterCustomer.new(customer_id: customer_id, name: "John Doe"))
+      create_product(product_id, "Async Remote", 30)
+      run_command(Ordering::AddItemToBasket.new(order_id: order_id, product_id: product_id))
 
       event_store.publish(
         Pricing::OrderTotalValueCalculated.new(
@@ -47,6 +50,14 @@ module ClientOrders
       assert_equal(1, orders.count)
       assert_equal(order_number, orders.first.number)
       assert_equal("Paid",  orders.first.state)
+    end
+
+    private
+
+    def create_product(product_id, name, price)
+      run_command(ProductCatalog::RegisterProduct.new(product_id: product_id))
+      run_command(ProductCatalog::NameProduct.new(product_id: product_id, name: name))
+      run_command(Pricing::SetPrice.new(product_id: product_id, price: price))
     end
   end
 end

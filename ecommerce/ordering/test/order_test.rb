@@ -11,12 +11,14 @@ module Ordering
       @customer_id = SecureRandom.uuid
     end
 
-    def test_order_lines_are_empty_after_adding_and_removing
+    def test_order_is_empty_after_adding_and_removing
       order = Order.new(@order_id)
       order.add_item(@product_id)
       order.remove_item(@product_id)
-      order.submit(NumberGenerator.new.call)
-      assert_equal({}, order.unpublished_events.to_a.last.data[:order_lines])
+
+      assert_raises(Order::IsEmpty) do
+        order.submit(NumberGenerator.new.call)
+      end
     end
 
     def test_order_lines_with_the_same_product_twice

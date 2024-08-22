@@ -9,21 +9,26 @@ module ClientOrders
       Client.destroy_all
     end
 
-    def test_update_orders_cummary
-      event_store = Rails.configuration.event_store
+    def test_update_orders_summary
       customer_id = SecureRandom.uuid
       other_customer_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
 
+      register_product(product_id)
+      name_product(product_id, "Async Remote")
+      set_price_to_product(product_id, 3)
       register_customer(other_customer_id)
       register_customer(customer_id)
+      add_item_to_basket(order_id, product_id)
       confirm_order(customer_id, order_id, 3)
 
       customer = Client.find_by(uid: customer_id)
       assert_equal 3.to_d, customer.paid_orders_summary
 
       order_id = SecureRandom.uuid
+      add_item_to_basket(order_id, product_id)
+      add_item_to_basket(order_id, product_id)
       confirm_order(customer_id, order_id, 6)
 
       customer = Client.find_by(uid: customer_id)
@@ -34,6 +39,27 @@ module ClientOrders
 
     def register_customer(customer_id)
       run_command(Crm::RegisterCustomer.new(customer_id: customer_id, name: "John Doe"))
+    end
+
+    def register_product(product_id)
+      run_command(ProductCatalog::RegisterProduct.new(product_id: product_id))
+    end
+
+    def name_product(product_id, name)
+      run_command(
+        ProductCatalog::NameProduct.new(
+          product_id: product_id,
+          name: name
+        )
+      )
+    end
+
+    def set_price_to_product(product_id, price)
+      run_command(Pricing::SetPrice.new(product_id: product_id, price: price))
+    end
+
+    def add_item_to_basket(order_id, product_id)
+      run_command(Ordering::AddItemToBasket.new(order_id: order_id, product_id: product_id))
     end
 
     def confirm_order(customer_id, order_id, total_amount)

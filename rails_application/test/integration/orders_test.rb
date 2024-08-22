@@ -8,23 +8,6 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     add_available_vat_rate(10)
   end
 
-  def test_submitting_empty_order
-    arkency_id = register_customer("Arkency")
-
-    get "/"
-    assert_select "h1", "Orders"
-    get "/orders/new"
-    follow_redirect!
-    assert_select "h1", "Order"
-    post "/orders",
-         params: {
-           "authenticity_token" => "[FILTERED]",
-           "order_id" => SecureRandom.uuid,
-           "customer_id" => arkency_id,
-           "commit" => "Submit order"
-         }
-  end
-
   def test_happy_path
     shopify_id = register_customer("Shopify")
 
@@ -200,6 +183,24 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     assert_select("td", "$79.20")
     assert_select("dd", "Submitted")
     assert_select("td", "10.0%")
+  end
+
+  def test_empty_order_cannot_be_submitted
+    order_id = SecureRandom.uuid
+    shopify_id = register_customer("Shopify")
+
+    assert_no_changes -> { Orders::Order.count } do
+      post "/orders",
+            params: {
+              "authenticity_token" => "[FILTERED]",
+              "order_id" => order_id,
+              "customer_id" => shopify_id,
+              "commit" => "Submit order"
+            }
+    end
+    follow_redirect!
+
+    assert_select "#alert", "You can't submit an empty order"
   end
 
   private

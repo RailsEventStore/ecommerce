@@ -154,6 +154,20 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
     assert_equal "Product not available in requested quantity!", flash[:alert]
   end
 
+  def test_empty_order_cannot_be_submitted
+    customer_id = register_customer("Customer Shop")
+
+    login(customer_id)
+    visit_client_orders
+
+    order_id = SecureRandom.uuid
+    assert_no_changes -> { ClientOrders::Order.count } do
+      as_client_submit_order_for_customer(order_id)
+    end
+
+    assert_select "#alert", "You can't submit an empty order"
+  end
+
   private
 
   def submit_order_for_customer(customer_id, order_id)

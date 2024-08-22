@@ -71,5 +71,13 @@ module Ordering
         act(SubmitOrder.new(order_id: aggregate_id))
       end
     end
+
+    def test_empty_order_cannot_be_submitted
+      aggregate_id = SecureRandom.uuid
+
+      assert_raises(Order::IsEmpty) do
+        act(SubmitOrder.new(order_id: aggregate_id))
+      end
+    end
   end
 end

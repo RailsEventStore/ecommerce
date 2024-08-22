@@ -6,6 +6,7 @@ module Ordering
     AlreadySubmitted = Class.new(InvalidState)
     NotPlaced = Class.new(InvalidState)
     OrderHasExpired = Class.new(InvalidState)
+    IsEmpty = Class.new(StandardError)
 
     def initialize(id)
       @id = id
@@ -16,6 +17,7 @@ module Ordering
     def submit(order_number)
       raise OrderHasExpired if @state.expired?
       raise AlreadySubmitted unless @state.draft?
+      raise IsEmpty if @basket.empty?
       apply OrderSubmitted.new(
         data: {
           order_id: @id,
@@ -110,6 +112,10 @@ module Ordering
 
       def quantity(product_id)
         order_lines[product_id]
+      end
+
+      def empty?
+        order_lines.empty?
       end
     end
 
