@@ -3,7 +3,7 @@ install: ## Installs dependencies, runs migrations, creates db & seeds if necess
 	@env RAILS_ENV=test bin/rails db:setup
 
 dev:
-	@$(MAKE) -j 10 web css worker
+	@$(MAKE) -j 10 web css
 
 mutate: ## Run mutation tests
 	@env RAILS_ENV=test bundle exec mutant run
