@@ -165,6 +165,10 @@ Please check that your bundler version is not ancient, and up to date. For more 
 `git show 6dc6e1c2ea833e1ea5821cc9bc9bd5dfadbfda9a` which explains the problem and proposes a solution.
 A sign that you have a problem will be unusual changes in `Gemfile.lock` i.e. changes in remote sources and placement of gems definitions.
 
+**Merging Pull Requests**
+
+When merging a pull request into the master branch, please use "Rebase and merge" option. 
+
 Things worth knowing about:
 
 - Zeitwerk is not used here - you need to be explicit with requires
