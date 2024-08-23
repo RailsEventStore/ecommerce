@@ -12,10 +12,13 @@ module Client
     end
 
     def create
-      command_bus.(Ordering::SubmitOrder.new(order_id: params[:order_id]))
-      command_bus.(Crm::AssignCustomerToOrder.new(customer_id: cookies[:client_id], order_id: params[:order_id]))
-      redirect_to client_order_path(params[:order_id]),
-                  notice: "Your order is being submitted"
+      ActiveRecord::Base.transaction do
+        command_bus.(Ordering::SubmitOrder.new(order_id: params[:order_id]))
+        command_bus.(Crm::AssignCustomerToOrder.new(customer_id: cookies[:client_id], order_id: params[:order_id]))
+      end
+      redirect_to client_order_path(params[:order_id]), notice: "Your order is being submitted"
+    rescue Ordering::Order::IsEmpty
+      redirect_to edit_client_order_path(params[:order_id]), alert: "You can't submit an empty order"
     end
 
     def show

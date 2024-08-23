@@ -76,6 +76,8 @@ class OrdersController < ApplicationController
   def create
     ApplicationRecord.transaction { submit_order(params[:order_id], params[:customer_id]) }
     redirect_to order_path(params[:order_id]), notice: "Your order is being submitted"
+  rescue Ordering::Order::IsEmpty
+    redirect_to edit_order_path(params[:order_id]), alert: "You can't submit an empty order"
   rescue Crm::Customer::NotExists
     redirect_to order_path(params[:order_id]), alert: "Order can not be submitted! Customer does not exist."
   end
