@@ -5,45 +5,43 @@ class ReadModelHandlerTest < InMemoryTestCase
   cover "CreateRecord*"
   cover "CopyEventAttribute*"
 
-  def setup
-    super
-    PublicOffer::Product.destroy_all
-  end
-
   def test_create_record
     event = product_registered
     event_store.append(event)
+    previous_count = PublicOffer::Product.count
     CreateRecord.new(event_store, PublicOffer::Product, :product_id).call(event)
-    assert_equal 1, PublicOffer::Product.count
+    assert_equal(previous_count + 1, PublicOffer::Product.count)
   end
 
   def test_dealing_with_at_least_once_delivery
     event = product_registered
     event_store.append(event)
+    previous_count = PublicOffer::Product.count
     2.times { CreateRecord.new(event_store, PublicOffer::Product, :product_id).call(event) }
-    assert_equal 1, PublicOffer::Product.count
+    assert_equal(previous_count + 1, PublicOffer::Product.count)
   end
 
   def test_copy
     event = product_named
     event_store.append(event)
     CopyEventAttribute.new(event_store, PublicOffer::Product, :product_id, :name, :name).call(event)
-    assert_equal product_name, PublicOffer::Product.first.name
+    assert_equal product_name, PublicOffer::Product.find_by(id: product_id).name
   end
 
   def test_copy_nested_attribute
     event = vat_rate_set
     event_store.append(event)
     CopyEventAttribute.new(event_store, Products::Product, :product_id, [:vat_rate, :code], :vat_rate_code).call(event)
-    assert_equal available_vat_rate.code, Products::Product.first.vat_rate_code
+    assert_equal available_vat_rate.code, Products::Product.find_by(id: product_id).vat_rate_code
   end
 
   def test_no_specific_order_expected
     event = product_registered
     event_store.append(event)
+    previous_count = PublicOffer::Product.count
     PublicOffer::Product.create(id: product_id)
     CreateRecord.new(event_store, PublicOffer::Product, :product_id).call(event)
-    assert_equal 1, PublicOffer::Product.count
+    assert_equal(previous_count + 1, PublicOffer::Product.count)
   end
 
   def test_updating_with_newest_data
@@ -54,7 +52,7 @@ class ReadModelHandlerTest < InMemoryTestCase
     handler.call(second_event)
     handler.call(first_event)
 
-    assert_equal 'New name', PublicOffer::Product.first.name
+    assert_equal 'New name', PublicOffer::Product.find_by(id: product_id).name
   end
 
   def test_updating_with_newest_data_concurrently
@@ -74,7 +72,7 @@ class ReadModelHandlerTest < InMemoryTestCase
     end
     wait_for_it = false
     threads.each(&:join)
-    assert_equal 'New name', PublicOffer::Product.first.name
+    assert_equal 'New name', PublicOffer::Product.find_by(id: product_id).name
   ensure
     ActiveRecord::Base.connection_pool.disconnect!
   end
