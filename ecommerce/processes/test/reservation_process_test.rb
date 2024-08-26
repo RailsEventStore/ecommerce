@@ -6,7 +6,9 @@ module Processes
 
     def test_happy_path
       process = ReservationProcess.new
-      given([order_submitted]).each { |event| process.call(event) }
+      assert_success_event do
+        given([order_submitted]).each { |event| process.call(event) }
+      end
       assert_all_commands(
         Inventory::Reserve.new(product_id: product_id, quantity: 1),
         Inventory::Reserve.new(product_id: another_product_id, quantity: 2),
@@ -26,28 +28,19 @@ module Processes
       end
     end
 
-    def test_reject_order_command_is_dispatched_when_sth_is_unavailable
+    def test_rejects_order_and_compensates_stock_when_sth_is_unavailable
       failing_command = Inventory::Reserve.new(product_id: product_id, quantity: 1)
       enhanced_command_bus = EnhancedFakeCommandBus.new(command_bus, failing_command => Inventory::InventoryEntry::InventoryNotAvailable)
       process = ReservationProcess.new
       process.command_bus = enhanced_command_bus
-      given([order_submitted]).each { |event| process.call(event) }
-      assert_all_commands(
-        failing_command,
-        Ordering::RejectOrder.new(order_id: order_id)
-      )
-    end
 
-    def test_compensation_when_sth_is_unavailable
-      failing_command = Inventory::Reserve.new(product_id: another_product_id, quantity: 2)
-      enhanced_command_bus = EnhancedFakeCommandBus.new(command_bus, failing_command => Inventory::InventoryEntry::InventoryNotAvailable)
-      process = ReservationProcess.new
-      process.command_bus = enhanced_command_bus
-      given([order_submitted]).each { |event| process.call(event) }
+      assert_failure_event do
+        given([order_submitted]).each { |event| process.call(event) }
+      end
       assert_all_commands(
-        Inventory::Reserve.new(product_id: product_id, quantity: 1),
         failing_command,
-        Inventory::Release.new(product_id: product_id, quantity: 1),
+        Inventory::Reserve.new(product_id: another_product_id, quantity: 2),
+        Inventory::Release.new(product_id: another_product_id, quantity: 2),
         Ordering::RejectOrder.new(order_id: order_id)
       )
     end
@@ -102,6 +95,22 @@ module Processes
         data: {
           order_id: order_id
         }
+      )
+    end
+
+    def assert_success_event(&block)
+      assert_events_contain(
+        "ReservationProcess$#{order_id}",
+        ReservationProcessSuceeded.new(data: { order_id: order_id }),
+        &block
+      )
+    end
+
+    def assert_failure_event(&block)
+      assert_events_contain(
+        "ReservationProcess$#{order_id}",
+        ReservationProcessFailed.new(data: { order_id: order_id, unavailable_products: [product_id] }),
+        &block
       )
     end
   end

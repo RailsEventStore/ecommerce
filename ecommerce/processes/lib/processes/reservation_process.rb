@@ -10,14 +10,7 @@ module Processes
       state = build_state(event)
       case event.event_type
       when 'Ordering::OrderSubmitted'
-        begin
-          reserve_stock(state)
-        rescue Inventory::InventoryEntry::InventoryNotAvailable
-          release_stock(state)
-          reject_order(state)
-        else
-          accept_order(state)
-        end
+        order_side_effects(state) { reserve_stock(state) }
       when 'Fulfillment::OrderCancelled'
         release_stock(state)
       when 'Fulfillment::OrderConfirmed'
@@ -28,10 +21,29 @@ module Processes
     private
 
     def reserve_stock(state)
+      unavailable_products = []
       state.order_lines.each do |product_id, quantity|
         command_bus.(Inventory::Reserve.new(product_id: product_id, quantity: quantity))
         state.product_reserved(product_id)
+      rescue Inventory::InventoryEntry::InventoryNotAvailable
+        unavailable_products << product_id
       end
+
+      if unavailable_products.empty?
+        event = ReservationProcessSuceeded.new(data: { order_id: state.order_id })
+      else
+        release_stock(state)
+        event = ReservationProcessFailed.new(data: { order_id: state.order_id, unavailable_products: unavailable_products })
+      end
+      event_store.publish(event, stream_name: stream_name(state.order_id))
+    end
+
+    def order_side_effects(state)
+      event_store
+      .within { yield }
+      .subscribe(to: ReservationProcessFailed) { reject_order(state) }
+      .subscribe(to: ReservationProcessSuceeded) { accept_order(state) }
+      .call
     end
 
     def release_stock(state)
@@ -54,8 +66,12 @@ module Processes
       command_bus.(Ordering::RejectOrder.new(order_id: state.order_id))
     end
 
+    def stream_name(order_id)
+      "ReservationProcess$#{order_id}"
+    end
+
     def build_state(event)
-      stream_name = "ReservationProcess$#{event.data.fetch(:order_id)}"
+      stream_name = stream_name(event.data.fetch(:order_id))
       begin
         past_events = event_store.read.stream(stream_name).to_a
         last_stored = past_events.size - 1
