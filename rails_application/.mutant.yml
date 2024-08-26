@@ -37,3 +37,4 @@ matcher:
     - Orders::UpdateOrderTotalValue*
     - Orders::SubmitOrder*
     - Orders::AssignCustomerToOrder*
+    - Orders::SubmitService#submit_order

@@ -203,6 +203,22 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     assert_select "#alert", "You can't submit an empty order"
   end
 
+  def test_order_cannot_be_submitted_with_out_of_stock_product
+    product_id = register_product("Fearless Refactoring", 4, 10)
+    shopify_id = register_customer("Shopify")
+
+    supply_product(product_id, 1)
+    order_1_id = SecureRandom.uuid
+    order_2_id = SecureRandom.uuid
+    post "/orders/#{order_1_id}/add_item?product_id=#{product_id}"
+    post "/orders/#{order_2_id}/add_item?product_id=#{product_id}"
+
+    post "/orders", params: { order_id: order_1_id, customer_id: shopify_id }
+    post "/orders", params: { order_id: order_2_id, customer_id: shopify_id }
+
+    assert_equal "Order can not be submitted! Fearless Refactoring not available in requested quantity!", flash[:alert]
+  end
+
   private
 
   def assert_remove_buttons_visible(async_remote_id, fearless_id, order_id)
