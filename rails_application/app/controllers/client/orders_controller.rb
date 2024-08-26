@@ -12,13 +12,12 @@ module Client
     end
 
     def create
-      ActiveRecord::Base.transaction do
-        command_bus.(Ordering::SubmitOrder.new(order_id: params[:order_id]))
-        command_bus.(Crm::AssignCustomerToOrder.new(customer_id: cookies[:client_id], order_id: params[:order_id]))
+      Orders::SubmitService.new(order_id: params[:order_id], customer_id: cookies[:client_id]).call.then do |result|
+        result.path(:success) { redirect_to client_order_path(params[:order_id]), notice: "Your order is being submitted" }
+        result.path(:products_out_of_stock) { |unavailable_products| redirect_to edit_client_order_path(params[:order_id]),
+            alert: "Order can not be submitted! #{unavailable_products.join(", ")} not available in requested quantity!"}
+        result.path(:order_is_empty) { redirect_to edit_client_order_path(params[:order_id]), alert: "You can't submit an empty order" }
       end
-      redirect_to client_order_path(params[:order_id]), notice: "Your order is being submitted"
-    rescue Ordering::Order::IsEmpty
-      redirect_to edit_client_order_path(params[:order_id]), alert: "You can't submit an empty order"
     end
 
     def show

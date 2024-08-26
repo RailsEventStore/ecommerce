@@ -74,12 +74,13 @@ class OrdersController < ApplicationController
   end
 
   def create
-    ApplicationRecord.transaction { submit_order(params[:order_id], params[:customer_id]) }
-    redirect_to order_path(params[:order_id]), notice: "Your order is being submitted"
-  rescue Ordering::Order::IsEmpty
-    redirect_to edit_order_path(params[:order_id]), alert: "You can't submit an empty order"
-  rescue Crm::Customer::NotExists
-    redirect_to order_path(params[:order_id]), alert: "Order can not be submitted! Customer does not exist."
+    Orders::SubmitService.new(order_id: params[:order_id], customer_id: params[:customer_id]).call.then do |result|
+      result.path(:success) { redirect_to order_path(params[:order_id]), notice: "Your order is being submitted" }
+      result.path(:products_out_of_stock) { |unavailable_products| redirect_to edit_order_path(params[:order_id]),
+          alert: "Order can not be submitted! #{unavailable_products.join(", ")} not available in requested quantity!"}
+      result.path(:order_is_empty) { redirect_to edit_order_path(params[:order_id]), alert: "You can't submit an empty order" }
+      result.path(:customer_not_exists) { redirect_to order_path(params[:order_id]), alert: "Order can not be submitted! Customer does not exist." }
+    end
   end
 
   def expire
@@ -112,11 +113,6 @@ class OrdersController < ApplicationController
   end
 
   private
-
-  def submit_order(order_id, customer_id)
-    command_bus.(Ordering::SubmitOrder.new(order_id: order_id))
-    command_bus.(Crm::AssignCustomerToOrder.new(order_id: order_id, customer_id: customer_id))
-  end
 
   def authorize_payment(order_id)
     command_bus.call(authorize_payment_cmd(order_id))
