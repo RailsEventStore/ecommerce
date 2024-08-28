@@ -168,6 +168,25 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
     assert_select "#alert", "You can't submit an empty order"
   end
 
+  def test_shows_out_of_stock_badge
+    shopify_id = register_customer("Shopify")
+    order_id = SecureRandom.uuid
+    async_remote_id = register_product("Async Remote", 39, 10)
+
+    supply_product(async_remote_id, 1)
+    login(shopify_id)
+    get "/client_orders/new"
+
+    assert_select "td span", text: "out of stock", count: 0
+
+    as_client_add_item_to_basket_for_order(async_remote_id, order_id)
+    as_client_submit_order_for_customer(order_id)
+
+    get "/client_orders/new"
+
+    assert_select "td span", "out of stock"
+  end
+
   private
 
   def submit_order_for_customer(customer_id, order_id)

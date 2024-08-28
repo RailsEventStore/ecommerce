@@ -2,6 +2,7 @@
   <thead>
     <tr class="border-b">
       <th class="text-left py-2">Product</th>
+      <th class="text-left py-2"></th>
       <th class="text-left py-2">Quantity</th>
       <th class="text-left py-2">Price</th>
       <th class="text-left py-2" colspan="3">Value</th>
@@ -14,6 +15,11 @@
     <tr class="border-b">
       <% order_line = @order_lines&.find{|order_line| order_line.product_id == product.uid} %>
       <td class="py-2"><%= product.name %></td>
+      <td class="py-2">
+        <% if product.unavailable? %>
+            <span class="rounded-lg bg-yellow-400 text-yellow-900 px-2 py-0.5">out of stock</span>
+        <% end %>
+      </td>
       <td class="py-2" id="<%= "client_orders_#{product.uid}_product_quantity" %>"><%= order_line.try(&:product_quantity) || 0 %></td>
       <td class="py-2"><%= number_to_currency(product.price) %></td>
       <td class="py-2"  id="<%= "client_orders_#{product.uid}_value" %>"><%= number_to_currency(order_line.try(&:value)) %></td>

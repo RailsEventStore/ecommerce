@@ -28,6 +28,14 @@ module ClientOrders
     end
   end
 
+  class Product < ApplicationRecord
+    self.table_name = "client_order_products"
+
+    def unavailable?
+      available && available <= 0
+    end
+  end
+
   class Configuration
     def call(event_store)
       event_store.subscribe(ExpireOrder, to: [Ordering::OrderExpired])
@@ -43,6 +51,7 @@ module ClientOrders
       event_store.subscribe(ChangeProductName, to: [ProductCatalog::ProductNamed])
       event_store.subscribe(ChangeProductPrice, to: [Pricing::PriceSet])
       event_store.subscribe(RegisterProduct, to: [ProductCatalog::ProductRegistered])
+      event_store.subscribe(UpdateProductAvailability, to: [Inventory::AvailabilityChanged])
       event_store.subscribe(UpdateDiscount, to: [Pricing::PercentageDiscountSet, Pricing::PercentageDiscountChanged])
       event_store.subscribe(ResetDiscount, to: [Pricing::PercentageDiscountReset])
       event_store.subscribe(UpdateOrderTotalValue, to: [Pricing::OrderTotalValueCalculated])
