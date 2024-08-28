@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_08_12_080357) do
+ActiveRecord::Schema[7.2].define(version: 2024_08_27_090619) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -46,6 +46,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_08_12_080357) do
     t.uuid "uid", null: false
     t.string "name"
     t.decimal "price", precision: 8, scale: 2
+    t.integer "available"
   end
 
   create_table "client_orders", force: :cascade do |t|
@@ -182,6 +183,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_08_12_080357) do
     t.datetime "registered_at", precision: nil
     t.string "vat_rate_code"
     t.text "current_prices_calendar"
+    t.integer "available"
   end
 
   create_table "public_offer_products", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|

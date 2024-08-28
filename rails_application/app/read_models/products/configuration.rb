@@ -16,6 +16,10 @@ module Products
       current_prices_calendar.select { |entry| entry[:valid_since] > Time.current }
     end
 
+    def unavailable?
+      available && available <= 0
+    end
+
     private
 
     def last_price_before(time)
@@ -49,6 +53,7 @@ module Products
       @read_model.subscribe_copy(ProductCatalog::ProductNamed, :name)
       @read_model.subscribe_copy(Inventory::StockLevelChanged, :stock_level)
       @read_model.subscribe_copy(Taxes::VatRateSet, [:vat_rate, :code])
+      @read_model.subscribe_copy(Inventory::AvailabilityChanged, :available)
       @event_store.subscribe(RefreshFuturePricesCalendar, to: [Pricing::PriceSet])
     end
   end

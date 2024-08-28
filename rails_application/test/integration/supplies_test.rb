@@ -1,6 +1,11 @@
 require "test_helper"
 
 class SuppliesTest < InMemoryRESIntegrationTestCase
+  def setup
+    super
+    add_available_vat_rate(10)
+  end
+
   def test_happy_path
     product_id = register_product("Async Remote", 100, 10)
 

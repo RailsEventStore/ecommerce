@@ -219,6 +219,33 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     assert_equal "Order can not be submitted! Fearless Refactoring not available in requested quantity!", flash[:alert]
   end
 
+  def test_shows_out_of_stock_badge
+    shopify_id = register_customer("Shopify")
+    order_id = SecureRandom.uuid
+    async_remote_id = register_product("Async Remote", 39, 10)
+
+    supply_product(async_remote_id, 1)
+
+    get "/orders/new"
+    follow_redirect!
+
+    assert_select "td span", text: "out of stock", count: 0
+
+    post "/orders/#{order_id}/add_item?product_id=#{async_remote_id}"
+    post "/orders",
+            params: {
+              "authenticity_token" => "[FILTERED]",
+              "order_id" => order_id,
+              "customer_id" => shopify_id,
+              "commit" => "Submit order"
+            }
+
+    get "/orders/new"
+    follow_redirect!
+
+    assert_select "td span", "out of stock"
+  end
+
   private
 
   def assert_remove_buttons_visible(async_remote_id, fearless_id, order_id)
