@@ -32,7 +32,7 @@
       <label for="vat_rate" class="block font-bold">
         VAT rate
       </label>
-      <%= select_tag :vat_rate, options_from_collection_for_select(VatRates::AvailableVatRate.all, :code, :code), class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-sm sm:text-sm border-gray-300 rounded-md", data: { turbo_permanent: true } %>
+      <%= select_tag :vat_rate_code, options_from_collection_for_select(VatRates::AvailableVatRate.all, :code, :code), class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-sm sm:text-sm border-gray-300 rounded-md", data: { turbo_permanent: true } %>
     </div>
 
     <% if defined?(errors) %>

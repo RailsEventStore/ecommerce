@@ -6,12 +6,12 @@ class ProductsController < ApplicationController
 
     attribute :name, :string
     attribute :price, :decimal
-    attribute :vat_rate, :string
+    attribute :vat_rate_code, :string
     attribute :product_id, :string
 
     validates :name, presence: true
     validates :price, presence: true, numericality: { greater_than: 0 }
-    validates :vat_rate, presence: true, numericality: { greater_than: 0 }
+    validates :vat_rate_code, presence: true
     validates :product_id, presence: true
   end
 
@@ -43,8 +43,8 @@ class ProductsController < ApplicationController
       if product_form.price.present?
         set_product_price(product_form.product_id, product_form.price)
       end
-      if product_form.vat_rate.present?
-        set_product_vat_rate(product_form.product_id, product_form.vat_rate)
+      if product_form.vat_rate_code.present?
+        set_product_vat_rate(product_form.product_id, product_form.vat_rate_code)
       end
     end
 
@@ -91,8 +91,8 @@ class ProductsController < ApplicationController
     command_bus.(set_product_future_price_cmd(product_id, price, valid_since))
   end
 
-  def set_product_vat_rate(product_id, vat_rate)
-    command_bus.(set_product_vat_rate_cmd(product_id, vat_rate))
+  def set_product_vat_rate(product_id, vat_rate_code)
+    command_bus.(set_product_vat_rate_cmd(product_id, vat_rate_code))
   end
 
   def set_product_name(product_id, name)
@@ -111,8 +111,8 @@ class ProductsController < ApplicationController
     Pricing::SetPrice.new(product_id: product_id, price: price)
   end
 
-  def set_product_vat_rate_cmd(product_id, vat_rate)
-    Taxes::SetVatRate.new(product_id: product_id, vat_rate_code: vat_rate)
+  def set_product_vat_rate_cmd(product_id, vat_rate_code)
+    Taxes::SetVatRate.new(product_id: product_id, vat_rate_code: vat_rate_code)
   end
 
   def set_product_future_price_cmd(product_id, price, valid_since)
@@ -124,6 +124,6 @@ class ProductsController < ApplicationController
   end
 
   def product_params
-    params.permit(:name, :price, :vat_rate, :product_id).to_h.symbolize_keys.slice(:price, :vat_rate, :product_id, :name)
+    params.permit(:name, :price, :vat_rate_code, :product_id).to_h.symbolize_keys.slice(:price, :vat_rate_code, :name, :product_id)
   end
 end
