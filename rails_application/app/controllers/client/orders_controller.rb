@@ -12,12 +12,14 @@ module Client
     end
 
     def create
-      Orders::SubmitService.new(order_id: params[:order_id], customer_id: cookies[:client_id]).call.then do |result|
-        result.path(:success) { redirect_to client_order_path(params[:order_id]), notice: "Your order is being submitted" }
-        result.path(:products_out_of_stock) { |unavailable_products| redirect_to edit_client_order_path(params[:order_id]),
-            alert: "Order can not be submitted! #{unavailable_products.join(", ")} not available in requested quantity!"}
-        result.path(:order_is_empty) { redirect_to edit_client_order_path(params[:order_id]), alert: "You can't submit an empty order" }
-      end
+      Orders::SubmitService.new(order_id: params[:order_id], customer_id: cookies[:client_id]).call
+    rescue Orders::OrderHasUnavailableProducts => e
+      unavailable_products = e.unavailable_products.join(", ")
+      redirect_to edit_client_order_path(params[:order_id]), alert: "Order can not be submitted! #{unavailable_products} not available in requested quantity!"
+    rescue Ordering::Order::IsEmpty
+      redirect_to edit_client_order_path(params[:order_id]), alert: "You can't submit an empty order"
+    else
+      redirect_to client_order_path(params[:order_id]), notice: "Your order is being submitted"
     end
 
     def show

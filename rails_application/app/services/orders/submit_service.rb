@@ -1,4 +1,12 @@
 module Orders
+  class OrderHasUnavailableProducts < StandardError
+    attr_reader :unavailable_products
+
+    def initialize(unavailable_products)
+      @unavailable_products = unavailable_products
+    end
+  end
+
   class SubmitService < ApplicationService
     def initialize(order_id:, customer_id:)
       @order_id = order_id
@@ -6,26 +14,18 @@ module Orders
     end
 
     def call
-      success = true
-      unavailable_products = nil
-
+      unavailable_products = []
       event_store
         .within { submit_order }
         .subscribe(to: Processes::ReservationProcessFailed) do |event|
-          success = false
           unavailable_products = Products::Product.where(id: event.data.fetch(:unavailable_products)).pluck(:name)
         end
         .call
 
-      if success
-        Result.new(:success)
-      else
-        Result.new(:products_out_of_stock, unavailable_products)
-      end
-      rescue Ordering::Order::IsEmpty
-        Result.new(:order_is_empty)
-      rescue Crm::Customer::NotExists
-        Result.new(:customer_not_exists)
+        if unavailable_products.any?
+          raise OrderHasUnavailableProducts.new(unavailable_products)
+        end
+      true
     end
 
     private
