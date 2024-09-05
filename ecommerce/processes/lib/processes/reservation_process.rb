@@ -10,7 +10,7 @@ module Processes
       state = build_state(event)
       case event.event_type
       when 'Ordering::OrderSubmitted'
-        order_side_effects(state) { reserve_stock(state) }
+        update_order_state(state) { reserve_stock(state) }
       when 'Fulfillment::OrderCancelled'
         release_stock(state)
       when 'Fulfillment::OrderConfirmed'
@@ -38,7 +38,7 @@ module Processes
       event_store.publish(event, stream_name: stream_name(state.order_id))
     end
 
-    def order_side_effects(state)
+    def update_order_state(state)
       event_store
       .within { yield }
       .subscribe(to: ReservationProcessFailed) { reject_order(state) }

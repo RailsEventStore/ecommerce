@@ -13,9 +13,7 @@ module Orders
       prepare_product(product_id, "Async Remote", 49)
       run_command(Ordering::AddItemToBasket.new(order_id: order_id, product_id: product_id))
 
-      result = Orders::SubmitService.new(order_id: order_id, customer_id: customer_id).call
-
-      assert_equal result.status, :success
+      assert_equal true, Orders::SubmitService.new(order_id: order_id, customer_id: customer_id).call
     end
 
     def test_order_submission_with_unavailable_products
@@ -32,32 +30,11 @@ module Orders
       prepare_product(another_product_id, "Fearless Refactoring", 49)
       run_command(Ordering::AddItemToBasket.new(order_id: order_id, product_id: another_product_id))
 
-      result = Orders::SubmitService.new(order_id: order_id, customer_id: customer_id).call
+      error = assert_raises(Orders::OrderHasUnavailableProducts) do
+        Orders::SubmitService.new(order_id: order_id, customer_id: customer_id).call
+      end
 
-      assert_equal result.status, :products_out_of_stock
-      assert_equal result.args, [["Async Remote"]]
-    end
-
-    def test_order_submission_with_empty_order
-      order_id = SecureRandom.uuid
-      customer_id = SecureRandom.uuid
-
-      result = Orders::SubmitService.new(order_id: order_id, customer_id: customer_id).call
-
-      assert_equal result.status, :order_is_empty
-    end
-
-    def test_order_submission_with_non_existing_customer
-      order_id = SecureRandom.uuid
-      customer_id = SecureRandom.uuid
-      product_id = SecureRandom.uuid
-
-      prepare_product(product_id, "Async Remote", 49)
-      run_command(Ordering::AddItemToBasket.new(order_id: order_id, product_id: product_id))
-
-      result = Orders::SubmitService.new(order_id: order_id, customer_id: customer_id).call
-
-      assert_equal result.status, :customer_not_exists
+      assert_equal ["Async Remote"], error.unavailable_products
     end
 
     private

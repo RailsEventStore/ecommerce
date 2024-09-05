@@ -74,13 +74,16 @@ class OrdersController < ApplicationController
   end
 
   def create
-    Orders::SubmitService.new(order_id: params[:order_id], customer_id: params[:customer_id]).call.then do |result|
-      result.path(:success) { redirect_to order_path(params[:order_id]), notice: "Your order is being submitted" }
-      result.path(:products_out_of_stock) { |unavailable_products| redirect_to edit_order_path(params[:order_id]),
-          alert: "Order can not be submitted! #{unavailable_products.join(", ")} not available in requested quantity!"}
-      result.path(:order_is_empty) { redirect_to edit_order_path(params[:order_id]), alert: "You can't submit an empty order" }
-      result.path(:customer_not_exists) { redirect_to order_path(params[:order_id]), alert: "Order can not be submitted! Customer does not exist." }
-    end
+    Orders::SubmitService.new(order_id: params[:order_id], customer_id: params[:customer_id]).call
+  rescue Orders::OrderHasUnavailableProducts => e
+    unavailable_products = e.unavailable_products.join(", ")
+    redirect_to edit_order_path(params[:order_id]), alert: "Order can not be submitted! #{unavailable_products} not available in requested quantity!"
+  rescue Ordering::Order::IsEmpty
+    redirect_to edit_order_path(params[:order_id]), alert: "You can't submit an empty order"
+  rescue Crm::Customer::NotExists
+    redirect_to order_path(params[:order_id]), alert: "Order can not be submitted! Customer does not exist."
+  else
+    redirect_to order_path(params[:order_id]), notice: "Your order is being submitted"
   end
 
   def expire
