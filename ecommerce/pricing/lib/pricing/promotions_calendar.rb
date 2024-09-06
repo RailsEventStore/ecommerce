@@ -45,9 +45,8 @@ module Pricing
       end
 
       def running?(timestamp)
-        (@start_time...@end_time).include?(timestamp)
+        (@start_time...@end_time).cover?(timestamp)
       end
-
     end
   end
 end
