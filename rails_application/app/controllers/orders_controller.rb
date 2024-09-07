@@ -8,7 +8,7 @@ class OrdersController < ApplicationController
 
     return not_found unless @order
 
-    @total = @order.total - ((@order.total * @order.discount) / 100)
+    @total = @order.total_after_discount
     @order_lines = @order.order_items
   end
 
@@ -30,7 +30,7 @@ class OrdersController < ApplicationController
     @products = Product.all
     @customers = Customer.all
     @time_promotions = TimePromotion.current
-    discounted_value = @order.total - ((@order.total * @order.discount) / 100)
+    discounted_value = @order.total_after_discount
 
     if @time_promotions.any?
       @time_promotions.sum(&:discount).tap do |discount|
@@ -76,13 +76,7 @@ class OrdersController < ApplicationController
     end
 
     @order = Order.find(params[:id])
-    if @order.order_items.any? { |order_item| order_item.product_id == params[:product_id].to_i }
-      @order.order_items.find_by(product_id: params[:product_id]).increment!(:quantity)
-      @order.total = @order.total + product.price
-    else
-      @order.order_items.create!(product_id: params[:product_id], quantity: 1)
-      @order.total = @order.total + product.price
-    end
+    @order.add_item(product)
     product.decrement!(:stock_level)
     @order.save!
 
@@ -92,13 +86,9 @@ class OrdersController < ApplicationController
   def remove_item
     product = Product.find(params[:product_id])
     @order = Order.find(params[:id])
-    order_item = @order.order_items.find_by(product_id: params[:product_id])
-    if order_item && order_item.quantity > 0
-      @order.order_items.find_by(product_id: params[:product_id]).decrement!(:quantity)
-      product.increment!(:stock_level)
-      @order.total = @order.total - product.price
-      @order.save!
-    end
+    @order.remove_item(product)
+    product.increment!(:stock_level)
+    @order.save!
 
     redirect_to edit_order_path(params[:id])
   end
