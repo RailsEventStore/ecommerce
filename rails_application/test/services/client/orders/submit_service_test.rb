@@ -14,7 +14,12 @@ module Client
         prepare_product(product_id, "Async Remote", 49)
         run_command(Ordering::AddItemToBasket.new(order_id: order_id, product_id: product_id))
 
-        assert_equal true, SubmitService.new(order_id: order_id, customer_id: customer_id).call
+        Client::Orders::SubmitService.new(order_id: order_id, customer_id: customer_id).call
+
+        order = ClientOrders::Order.find_by!(order_uid: order_id)
+
+        assert_equal "Submitted", order.state
+        assert_equal customer_id, order.client_uid
       end
 
       def test_order_submission_with_unavailable_products
