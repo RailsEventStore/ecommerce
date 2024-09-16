@@ -246,6 +246,27 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     assert_select "td span", "0"
   end
 
+  def test_current_time_promotion_is_applied
+    order_id = SecureRandom.uuid
+    async_remote_id = register_product("Async Remote", 39, 10)
+    shopify_id = register_customer("Shopify")
+
+    create_current_time_promotion
+    post "/orders/#{order_id}/add_item?product_id=#{async_remote_id}"
+
+    post "/orders",
+         params: {
+           "authenticity_token" => "[FILTERED]",
+           "order_id" => order_id,
+           "customer_id" => shopify_id,
+           "commit" => "Submit order"
+         }
+    follow_redirect!
+
+    assert_select("td", "$19.50")
+    assert_select("dd", "Submitted")
+  end
+
   private
 
   def assert_remove_buttons_visible(async_remote_id, fearless_id, order_id)
@@ -355,5 +376,14 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     get "/orders/#{order_id}/edit_discount"
 
     post "/orders/#{order_id}/update_discount?amount=10"
+  end
+
+  def create_current_time_promotion(discount: 50, start_time: Time.current - 1.day, end_time: Time.current + 1.day)
+    post "/time_promotions", params: {
+      label: "Last Minute",
+      discount: discount,
+      start_time: start_time,
+      end_time: end_time
+    }
   end
 end
