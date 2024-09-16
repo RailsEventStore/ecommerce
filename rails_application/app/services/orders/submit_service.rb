@@ -22,10 +22,9 @@ module Orders
         end
         .call
 
-        if unavailable_products.any?
-          raise OrderHasUnavailableProducts.new(unavailable_products)
-        end
-      true
+      if unavailable_products.any?
+        raise OrderHasUnavailableProducts.new(unavailable_products)
+      end
     end
 
     private
