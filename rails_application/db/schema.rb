@@ -46,7 +46,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_08_27_090619) do
     t.uuid "uid", null: false
     t.string "name"
     t.decimal "price", precision: 8, scale: 2
-    t.integer "available"
+    t.boolean "available", default: true
   end
 
   create_table "client_orders", force: :cascade do |t|

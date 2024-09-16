@@ -16,7 +16,7 @@
       <% order_line = @order_lines&.find{|order_line| order_line.product_id == product.uid} %>
       <td class="py-2"><%= product.name %></td>
       <td class="py-2">
-        <% if product.unavailable? %>
+        <% unless product.available? %>
             <span class="rounded-lg bg-yellow-400 text-yellow-900 px-2 py-0.5">out of stock</span>
         <% end %>
       </td>

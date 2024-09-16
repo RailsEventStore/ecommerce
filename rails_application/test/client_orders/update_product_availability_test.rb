@@ -8,10 +8,19 @@ module ClientOrders
       product_id = prepare_product
       other_product_id = prepare_product
 
-      supply_product(product_id, 5)
+      assert_changes("Product.find_by_uid(product_id).available?", from: true, to: false) do
+        UpdateProductAvailability.new.call(availability_changed_event(product_id, -1))
+      end
 
-      assert_equal 5, Product.find_by_uid(product_id).available
-      assert_nil Product.find_by_uid(other_product_id).available
+      assert_changes("Product.find_by_uid(product_id).available?", from: false, to: true) do
+        UpdateProductAvailability.new.call(availability_changed_event(product_id, 10))
+      end
+
+      assert_changes("Product.find_by_uid(product_id).available?", from: true, to: false) do
+        UpdateProductAvailability.new.call(availability_changed_event(product_id, 0))
+      end
+
+      assert Product.find_by_uid(other_product_id).available?
     end
 
     private
@@ -36,6 +45,10 @@ module ClientOrders
 
     def supply_product(product_id, quantity)
       run_command(Inventory::Supply.new(product_id: product_id, quantity: quantity))
+    end
+
+    def availability_changed_event(product_id, available)
+      Inventory::AvailabilityChanged.new(data: { product_id: product_id, available: available })
     end
   end
 end

@@ -229,7 +229,7 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     get "/orders/new"
     follow_redirect!
 
-    assert_select "td span", text: "out of stock", count: 0
+    assert_select "td span", "1"
 
     post "/orders/#{order_id}/add_item?product_id=#{async_remote_id}"
     post "/orders",
@@ -243,7 +243,7 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     get "/orders/new"
     follow_redirect!
 
-    assert_select "td span", "out of stock"
+    assert_select "td span", "0"
   end
 
   private
