@@ -187,6 +187,21 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
     assert_select "td span", "out of stock"
   end
 
+  def test_current_time_promotion_is_applied
+    customer_id = register_customer("Customer Shop")
+    product_id = register_product("Fearless Refactoring", 4, 10)
+    create_current_time_promotion
+
+    login(customer_id)
+    visit_client_orders
+
+    order_id = SecureRandom.uuid
+    as_client_add_item_to_basket_for_order(product_id, order_id)
+    as_client_submit_order_for_customer(order_id)
+
+    assert_select "tr td", "$2.00"
+  end
+
   private
 
   def submit_order_for_customer(customer_id, order_id)
@@ -247,5 +262,14 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
 
   def login_as(client_id)
     open_session { |sess| sess.post "/login", params: { client_id: client_id } }
+  end
+
+  def create_current_time_promotion(discount: 50, start_time: Time.current - 1.day, end_time: Time.current + 1.day)
+    post "/time_promotions", params: {
+      label: "Last Minute",
+      discount: discount,
+      start_time: start_time,
+      end_time: end_time
+    }
   end
 end
