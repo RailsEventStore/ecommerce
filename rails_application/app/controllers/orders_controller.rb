@@ -74,7 +74,7 @@ class OrdersController < ApplicationController
   end
 
   def create
-    Orders::SubmitService.new(order_id: params[:order_id], customer_id: params[:customer_id]).call
+    Orders::SubmitService.call(order_id: params[:order_id], customer_id: params[:customer_id])
   rescue Orders::OrderHasUnavailableProducts => e
     unavailable_products = e.unavailable_products.join(", ")
     redirect_to edit_order_path(params[:order_id]), alert: "Order can not be submitted! #{unavailable_products} not available in requested quantity!"
