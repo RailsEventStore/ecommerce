@@ -13,7 +13,7 @@ module Orders
       prepare_product(product_id, "Async Remote", 49)
       run_command(Ordering::AddItemToBasket.new(order_id: order_id, product_id: product_id))
 
-      Orders::SubmitService.new(order_id: order_id, customer_id: customer_id).call
+      Orders::SubmitService.call(order_id: order_id, customer_id: customer_id)
 
       order = Order.find_by!(uid: order_id)
 

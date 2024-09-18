@@ -11,7 +11,7 @@ module Client
     end
 
     def create
-      Client::Orders::SubmitService.new(order_id: params[:order_id], customer_id: cookies[:client_id]).call
+      Client::Orders::SubmitService.call(order_id: params[:order_id], customer_id: cookies[:client_id])
     rescue Orders::OrderHasUnavailableProducts => e
       unavailable_products = e.unavailable_products.join(", ")
       redirect_to edit_client_order_path(params[:order_id]), alert: "Order can not be submitted! #{unavailable_products} not available in requested quantity!"

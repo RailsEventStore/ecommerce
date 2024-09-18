@@ -8,7 +8,11 @@ module Client
       end
     end
 
-    class SubmitService < ApplicationService
+    class SubmitService
+      def self.call(...)
+        new(...).call
+      end
+
       def initialize(order_id:, customer_id:)
         @order_id = order_id
         @customer_id = customer_id
@@ -37,6 +41,14 @@ module Client
           command_bus.(Ordering::SubmitOrder.new(order_id: order_id))
           command_bus.(Crm::AssignCustomerToOrder.new(order_id: order_id, customer_id: customer_id))
         end
+      end
+
+      def event_store
+        Rails.configuration.event_store
+      end
+
+      def command_bus
+        Rails.configuration.command_bus
       end
     end
   end
