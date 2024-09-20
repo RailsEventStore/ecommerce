@@ -111,6 +111,16 @@ module Pricing
       end
     end
 
+    def use_coupon(coupon_id, discount)
+      apply CouponUsed.new(
+        data: {
+          order_id: @id,
+          coupon_id: coupon_id,
+          discount: discount
+        }
+      )
+    end
+
     private
 
     on PriceItemAdded do |event|
@@ -149,6 +159,9 @@ module Pricing
 
     def calculate_total_sub_discounts(pricing_catalog, time_promotions_discount)
       @list.sub_discounts(pricing_catalog, time_promotions_discount, @discount)
+    end
+
+    on CouponUsed do |event|
     end
 
     class List

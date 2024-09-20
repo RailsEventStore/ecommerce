@@ -203,6 +203,56 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
     assert_select "tr td", "$2.00"
   end
 
+  def test_using_coupon_applies_discount
+    customer_id = register_customer("Customer Shop")
+    product_id = register_product("Fearless Refactoring", 4, 10)
+    register_coupon("Coupon", "coupon10", 10)
+
+    login(customer_id)
+    visit_client_orders
+
+    order_id = SecureRandom.uuid
+    as_client_add_item_to_basket_for_order(product_id, order_id)
+    as_client_use_coupon(order_id, "COUPON10")
+
+    assert_select "#notice", "Coupon applied!"
+
+    as_client_submit_order_for_customer(order_id)
+
+    assert_select "tr td", "$3.60"
+  end
+
+  def test_using_coupon_with_wrong_code
+    customer_id = register_customer("Customer Shop")
+    product_id = register_product("Fearless Refactoring", 4, 10)
+    register_coupon("Coupon", "coupon10", 10)
+
+    login(customer_id)
+    visit_client_orders
+
+    order_id = SecureRandom.uuid
+    as_client_add_item_to_basket_for_order(product_id, order_id)
+    as_client_use_coupon(order_id, "WRONGCODE")
+
+    assert_select "#alert", "Coupon not found!"
+  end
+
+  def test_using_coupon_twice
+    customer_id = register_customer("Customer Shop")
+    product_id = register_product("Fearless Refactoring", 4, 10)
+    register_coupon("Coupon", "coupon10", 10)
+
+    login(customer_id)
+    visit_client_orders
+
+    order_id = SecureRandom.uuid
+    as_client_add_item_to_basket_for_order(product_id, order_id)
+    as_client_use_coupon(order_id, "COUPON10")
+    as_client_use_coupon(order_id, "COUPON10")
+
+    assert_select "#alert", "Coupon already used!"
+  end
+
   private
 
   def submit_order_for_customer(customer_id, order_id)
@@ -221,6 +271,11 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
 
   def as_client_add_item_to_basket_for_order(async_remote_id, order_id)
     post "/client_orders/#{order_id}/add_item?product_id=#{async_remote_id}"
+  end
+
+  def as_client_use_coupon(order_id, code)
+    post "/client_orders/#{order_id}/use_coupon", params: { coupon_code: code }
+    follow_redirect!
   end
 
   def cancel_order(order_id)

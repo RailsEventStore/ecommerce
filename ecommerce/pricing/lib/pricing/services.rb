@@ -180,4 +180,16 @@ module Pricing
       end
     end
   end
+
+  class UseCouponHandler
+    def initialize(event_store)
+      @repository = Infra::AggregateRootRepository.new(event_store)
+    end
+
+    def call(command)
+      @repository.with_aggregate(Offer, command.aggregate_id) do |order|
+        order.use_coupon(command.coupon_id, command.discount)
+      end
+    end
+  end
 end

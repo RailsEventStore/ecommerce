@@ -65,4 +65,10 @@ module Pricing
     attribute :order_id, Infra::Types::UUID
     attribute :product_id, Infra::Types::UUID
   end
+
+  class CouponUsed < Infra::Event
+    attribute :order_id, Infra::Types::UUID
+    attribute :coupon_id, Infra::Types::UUID
+    attribute :discount, Infra::Types::CouponDiscount
+  end
 end

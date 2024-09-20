@@ -34,7 +34,7 @@ module Pricing
     end
 
     def test_0_01_is_ok
-      register_coupon(@uid, fake_name, @code, 0.01)
+      register_coupon(@uid, fake_name, @code, "0.01")
     end
   end
 end

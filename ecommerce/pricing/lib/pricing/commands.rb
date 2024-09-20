@@ -80,4 +80,12 @@ module Pricing
 
     alias aggregate_id order_id
   end
+
+  class UseCoupon < Infra::Command
+    attribute :order_id, Infra::Types::UUID
+    attribute :coupon_id, Infra::Types::UUID
+    attribute :discount, Infra::Types::CouponDiscount
+
+    alias aggregate_id order_id
+  end
 end
