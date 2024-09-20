@@ -42,6 +42,7 @@ Rails.application.routes.draw do
     member do
       post :add_item
       post :remove_item
+      post :use_coupon
     end
   end
 

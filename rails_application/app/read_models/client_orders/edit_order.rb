@@ -12,6 +12,7 @@ module ClientOrders
       super(attributes)
       div do
         products_table(order_id, products, order_lines)
+        coupon_form(order_id)
         submit_form(order_id)
       end
     end
@@ -65,6 +66,19 @@ module ClientOrders
 
     def remove_item_button(order_id, product_id)
       button_to "Remove", remove_item_client_order_path(id: order_id, product_id: product_id), class: "hover:underline text-blue-500"
+    end
+
+    def coupon_form(order_id)
+      form(action: use_coupon_client_order_path(id: order_id), method: :post, class: "inline-flex gap-4 mt-8") do
+        input(
+          id: "coupon_code",
+          type: :text,
+          name: :coupon_code,
+          class: "focus:ring-blue-500 focus:border-blue-500 block shadow-sm sm:text-sm border-gray-300 rounded-md",
+          "data-turbo-permanent": true
+        )
+        input(type: :submit, value: "Use Coupon", class: "px-4 py-2 border rounded-md shadow-sm text-sm font-medium border-gray-300 text-gray-700 bg-white hover:bg-gray-50")
+      end
     end
 
     def submit_form(order_id)

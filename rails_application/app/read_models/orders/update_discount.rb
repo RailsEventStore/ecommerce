@@ -1,7 +1,7 @@
 module Orders
   class UpdateDiscount
     def call(event)
-      order = Order.find_by_uid(event.data.fetch(:order_id))
+      order = Order.find_or_create_by(uid: event.data.fetch(:order_id))
       if is_newest_value?(event, order)
         order.percentage_discount = event.data.fetch(:amount)
         order.discount_updated_at = event.metadata.fetch(:timestamp)
@@ -28,4 +28,3 @@ module Orders
     end
   end
 end
-

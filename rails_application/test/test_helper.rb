@@ -71,6 +71,10 @@ class InMemoryRESIntegrationTestCase < ActionDispatch::IntegrationTest
     product_id
   end
 
+  def register_coupon(name, code, discount)
+    post "/coupons", params: { coupon_id: SecureRandom.uuid, name: name, code: code, discount: discount }
+  end
+
   def add_available_vat_rate(rate, code = rate.to_s)
     post "/available_vat_rates", params: { code: code, rate: rate }
   end

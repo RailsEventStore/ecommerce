@@ -28,6 +28,7 @@ module Processes
     def call(event_store, command_bus)
       self.class.event_store = event_store
       self.class.command_bus = command_bus
+      enable_coupon_discount_process(event_store, command_bus)
       notify_payments_about_order_total_value(event_store, command_bus)
       enable_shipment_sync(event_store, command_bus)
       determine_vat_rates_on_order_placed(event_store, command_bus)
@@ -149,6 +150,12 @@ module Processes
         end,
         to: [Ordering::OrderPlaced]
       )
+    end
+
+    def enable_coupon_discount_process(event_store, command_bus)
+      Infra::Process.new(event_store, command_bus)
+                    .call(Pricing::CouponUsed, [:order_id, :discount],
+                          Pricing::SetPercentageDiscount, [:order_id, :amount])
     end
   end
 end

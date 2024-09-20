@@ -86,6 +86,10 @@ module Pricing
         RemoveFreeProductFromOrder,
         RemoveFreeProductFromOrderHandler.new(event_store)
       )
+      command_bus.register(
+        UseCoupon,
+        UseCouponHandler.new(event_store)
+      )
       event_store.subscribe(CalculateOrderTotalValue, to: [
         PriceItemAdded,
         PriceItemRemoved,

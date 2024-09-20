@@ -59,5 +59,25 @@ module Client
       )
     end
 
+    def use_coupon
+      coupon = Coupons::Coupon.find_by!("lower(code) = ?", params[:coupon_code].downcase)
+      ActiveRecord::Base.transaction do
+        command_bus.(use_coupon_cmd(params[:id], coupon.uid, coupon.discount))
+      end
+      flash[:notice] = "Coupon applied!"
+      redirect_to edit_client_order_path(params[:id])
+    rescue ActiveRecord::RecordNotFound
+      flash[:alert] = "Coupon not found!"
+      redirect_to edit_client_order_path(params[:id])
+    rescue Pricing::NotPossibleToAssignDiscountTwice
+      flash[:alert] = "Coupon already used!"
+      redirect_to edit_client_order_path(params[:id])
+    end
+
+    private
+
+    def use_coupon_cmd(order_id, coupon_id, discount)
+      Pricing::UseCoupon.new(order_id: order_id, coupon_id: coupon_id, discount: discount)
+    end
   end
 end
