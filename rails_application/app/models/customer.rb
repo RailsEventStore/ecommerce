@@ -10,3 +10,5 @@ class Customer < ApplicationRecord
     update!(vip: true)
   end
 end
+
+class AlreadyVip < StandardError; end

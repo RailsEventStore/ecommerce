@@ -52,6 +52,6 @@ class ProductsController < ApplicationController
   private
 
   def product_params
-    params.require(:product).permit(:name, :price, :vat_rate).to_h.symbolize_keys.slice(:price, :vat_rate, :name)
+    params.require(:product).permit(:name, :price, :vat_rate, :sku).to_h.symbolize_keys.slice(:price, :vat_rate, :name, :sku)
   end
 end

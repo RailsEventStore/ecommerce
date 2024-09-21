@@ -74,16 +74,16 @@ class InMemoryRESIntegrationTestCase < ActionDispatch::IntegrationTest
     result
   end
 
-  def register_customer(name)
-    customer_id = SecureRandom.uuid
-    post "/customers", params: { customer_id: customer_id, name: name }
-    customer_id
+  def register_customer(name, email = "user@example.com")
+    post "/customers", params: { customer: { first_name: name, last_name: "", email: } }
+    Customer.find_by(email:).id
   end
 
-  def register_product(name, price, vat_rate)
-    product_id = SecureRandom.uuid
-    post "/products", params: { product_id: product_id, name: name, price: price, vat_rate: vat_rate }
-    product_id
+  def register_product(name, price, vat_rate, sku = SecureRandom.uuid, stock_level: 10)
+    post "/products", params: { product: { name: name, price: price, vat_rate: vat_rate, sku: } }
+    product = Product.find_by(sku:)
+    post "/products/#{product.id}/supplies", params: { product_id: product.id, quantity: stock_level }
+    product.id
   end
 
   def supply_product(product_id, quantity)
@@ -111,7 +111,7 @@ class InMemoryRESIntegrationTestCase < ActionDispatch::IntegrationTest
            "order_id" => order_id,
            "customer_id" => customer_id,
            "commit" => "Submit order"
-         }
+           }
   end
 
   def visit_customers_index
@@ -132,6 +132,11 @@ class InMemoryRESIntegrationTestCase < ActionDispatch::IntegrationTest
 
   def add_product_to_basket(order_id, product_id)
     post "/orders/#{order_id}/add_item?product_id=#{product_id}"
+  end
+
+  def new_order
+    get "/orders/new"
+    Order.last
   end
 
   def run_command(command)

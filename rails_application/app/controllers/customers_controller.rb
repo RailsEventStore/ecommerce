@@ -14,7 +14,7 @@ class CustomersController < ApplicationController
 
   def update
     promote_to_vip(params[:id])
-  rescue Crm::Customer::AlreadyVip
+  rescue AlreadyVip
     redirect_to customers_path, notice: "Customer was marked as vip"
   else
     redirect_to customers_path, notice: "Customer was promoted to VIP"

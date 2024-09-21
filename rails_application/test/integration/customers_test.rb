@@ -24,13 +24,17 @@ class CustomersTest < InMemoryRESIntegrationTestCase
     assert_customer_summary("Customer Shop", "$0.00")
     assert_customer_summary("BigCorp Ltd", "$0.00")
 
-    order_and_pay(customer_id, SecureRandom.uuid, product_1_id, product_2_id)
+    order = new_order
+
+    order_and_pay(customer_id, new_order.id, product_1_id, product_2_id)
     visit_customers_index
 
     assert_customer_summary("Customer Shop", "$7.00")
     assert_customer_summary("BigCorp Ltd", "$0.00")
 
-    order_and_pay(customer_id, SecureRandom.uuid, product_1_id)
+    another_order = new_order
+
+    order_and_pay(customer_id, another_order.id, product_1_id)
     visit_customers_index
 
     assert_customer_summary("Customer Shop", "$11.00")
@@ -41,16 +45,16 @@ class CustomersTest < InMemoryRESIntegrationTestCase
     customer_id = register_customer("Customer Shop")
     product_id = register_product("Fearless Refactoring", 4, 10)
 
-    order_uid = SecureRandom.uuid
+    order_id = new_order.id
 
-    order_and_pay(customer_id, order_uid, product_id)
+    order_and_pay(customer_id, order_id, product_id)
     visit_customer_page(customer_id)
 
-    order = ClientOrders::Order.find_by(order_uid: order_uid)
+    order = Order.find(order_id)
 
-    assert_select "h1", "Customer Page"
-    assert_customer_details "Customer Shop", "No"
-    assert_customer_orders_table order.number, "Paid", "$4.00", "$4.00"
+    assert_select("h1", "Customer Page")
+    assert_customer_details("Customer Shop", "No")
+    assert_customer_orders_table(order.number, "Paid", "$4.00", "$4.00")
   end
 
   private
