@@ -27,8 +27,11 @@ class ProductsController < ApplicationController
       @product.future_price = params["future_price"]["price"]
       @product.future_price_start_time = params["future_price"]["start_time"]
       @product.save!
+    else
+      @product_with_new_price = @product.dup
+      @product_with_new_price.price = product_params[:price]
+      @product_with_new_price.save!
     end
-    @product.update!(product_params)
     redirect_to products_path, notice: "Product was successfully updated"
   end
 
