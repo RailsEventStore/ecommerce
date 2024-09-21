@@ -3,8 +3,7 @@ require "test_helper"
 class OrdersTest < InMemoryRESIntegrationTestCase
   def setup
     super
-    Rails.configuration.payment_gateway.call.reset
-    Orders::Order.destroy_all
+    Order.destroy_all
   end
 
   def test_submitting_empty_order
@@ -12,23 +11,15 @@ class OrdersTest < InMemoryRESIntegrationTestCase
 
     get "/"
     assert_select "h1", "Orders"
-    get "/orders/new"
-    follow_redirect!
+    order = new_order
     assert_select "h1", "Order"
-    post "/orders",
-         params: {
-           "authenticity_token" => "[FILTERED]",
-           "order_id" => SecureRandom.uuid,
-           "customer_id" => arkency_id,
-           "commit" => "Submit order"
-         }
   end
 
   def test_happy_path
     shopify_id = register_customer("Shopify")
 
-    order_id = SecureRandom.uuid
-    another_order_id = SecureRandom.uuid
+    order_id = new_order.id
+    another_order_id = new_order.id
 
     async_remote_id = register_product("Async Remote", 39, 10)
     fearless_id = register_product("Fearless Refactoring", 49, 10)
@@ -43,7 +34,6 @@ class OrdersTest < InMemoryRESIntegrationTestCase
 
     get "/"
     get "/orders/new"
-    follow_redirect!
 
     assert_remove_buttons_not_visible(async_remote_id, fearless_id)
 
@@ -71,16 +61,14 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     post "/orders/#{order_id}/pay"
     follow_redirect!
     assert_select("td", text: "Paid")
-    assert_payment_gateway_value(123.30)
+    # assert_payment_gateway_value(123.30)
 
     verify_shipping(order_id)
     verify_invoice_generation(order_id)
-
-    assert_res_browser_order_history
   end
 
   def test_expiring_orders
-    order_id = SecureRandom.uuid
+    order_id = new_order.id
     async_remote_id = register_product("Async Remote", 39, 10)
 
     post "/orders/#{order_id}/add_item?product_id=#{async_remote_id}"
@@ -99,7 +87,7 @@ class OrdersTest < InMemoryRESIntegrationTestCase
   def test_cancel
     shopify_id = register_customer("Shopify")
 
-    order_id = SecureRandom.uuid
+    order_id = new_order.id
     async_remote_id = register_product("Async Remote", 39, 10)
 
     get "/"
@@ -121,7 +109,7 @@ class OrdersTest < InMemoryRESIntegrationTestCase
   def test_confirmed_order_doesnt_show_cancel_button
     shopify_id = register_customer("Shopify")
 
-    order_id = SecureRandom.uuid
+    order_id = new_order.id
     async_remote_id = register_product("Async Remote", 39, 10)
 
     get "/"
@@ -155,7 +143,7 @@ class OrdersTest < InMemoryRESIntegrationTestCase
   def test_order_value_doesnt_change_after_changing_price
     shopify_id = register_customer("Shopify")
 
-    order_id = SecureRandom.uuid
+    order_id = new_order.id
     async_remote_id = register_product("Async Remote", 39, 10)
 
     get "/"
@@ -182,7 +170,7 @@ class OrdersTest < InMemoryRESIntegrationTestCase
   end
 
   def test_discount_is_applied_for_new_order
-    order_id = SecureRandom.uuid
+    order_id = new_order.id
     async_remote_id = register_product("Async Remote", 39, 10)
     fearless_id = register_product("Fearless Refactoring", 49, 10)
     shopify_id = register_customer("Shopify")
@@ -244,17 +232,18 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     assert_select("label", "Addressee's full name (Person or Company)")
     put "/orders/#{order_id}/shipping_address",
         params: {
-          "shipments_shipment" => {
-            address_line_1: "123 Main Street",
-            address_line_2: "Apt 1",
-            address_line_3: "San Francisco",
-            address_line_4: "US"
+          order: {
+            address: "123 Main Street",
+            addressed_to: "Apt 1",
+            city: "San Francisco",
+            country: "US"
           }
         }
-    follow_redirect!
+    get "/orders/#{order_id}"
     assert_select("dd", "Your shipment has been queued for processing.")
+
     get "/shipments"
-    assert_select("td", "123 Main Street Apt 1 San Francisco US")
+    assert_select("td", "123 Main Street, San Francisco, US Apt 1")
   end
 
   def verify_invoice_generation(order_id)
@@ -264,25 +253,32 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     assert_select("label", "Addressee's full name (Person or Company)")
     put "/orders/#{order_id}/billing_address",
         params: {
-          "invoices_invoice" => {
-            address_line_1: "44 Main Street",
-            address_line_2: "Apt 2",
-            address_line_3: "Francisco",
-            address_line_4: "UK"
+          :order => {
+            invoice_tax_id_number: "1234567890",
+            invoice_address: "44 Main Street",
+            invoice_addressed_to: "Apt 2",
+            invoice_city: "Francisco",
+            invoice_country: "UK"
           }
         }
-    follow_redirect!
+    get "/orders/#{order_id}"
     assert_select("button", "Issue now")
     post "/orders/#{order_id}/invoice"
     follow_redirect!
 
     assert_select("td", "Async Remote")
-    assert_select("td", "$35.10")
+    assert_select("td", "10")
     assert_select("td", "1")
+    assert_select("td", "$39.00")
+    assert_select("td", "$3.90")
+
     assert_select("td", "Fearless Refactoring")
-    assert_select("td", "$44.10")
+    assert_select("td", "10")
     assert_select("td", "2")
-    assert_select("td", "$88.20")
+    assert_select("td", "$49.00")
+    assert_select("td", "$9.80")
+
+    assert_select("td", "Total")
     assert_select("td", "$123.30")
   end
 

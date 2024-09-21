@@ -95,7 +95,7 @@ class InMemoryRESIntegrationTestCase < ActionDispatch::IntegrationTest
           params: {
             "authenticity_token" => "[FILTERED]",
             "product_id" => product_id,
-            price: new_price,
+            product: { price: new_price },
           }
   end
 
