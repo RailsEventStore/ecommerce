@@ -3,12 +3,11 @@ require "test_helper"
 class DiscountTest < InMemoryRESIntegrationTestCase
   def setup
     super
-    Orders::Order.destroy_all
   end
 
   def test_reset_discount
     register_customer("Shopify")
-    order_id = SecureRandom.uuid
+    order_id = new_order.id
 
     async_remote_id = register_product("Async Remote", 137, 10)
 
