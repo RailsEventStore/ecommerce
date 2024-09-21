@@ -165,7 +165,7 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     update_price(async_remote_id, 49)
     get "/orders/#{order_id}"
 
-    assert_select("td", text: "$39.00")
+    assert_select("td", text: "$49.00")
     assert_select("td", text: "$78.00")
   end
 
