@@ -28,9 +28,14 @@ class ProductsController < ApplicationController
       @product.future_price_start_time = params["future_price"]["start_time"]
       @product.save!
     else
-      @product_with_new_price = @product.dup
-      @product_with_new_price.price = product_params[:price]
-      @product_with_new_price.save!
+      ActiveRecord::Base.transaction do
+        @product_with_new_price = @product.dup
+        @product_with_new_price.price = product_params[:price]
+        @product_with_new_price.latest = true
+        @product.latest = false
+        @product_with_new_price.save!
+        @product.save!
+      end
     end
     redirect_to products_path, notice: "Product was successfully updated"
   end
