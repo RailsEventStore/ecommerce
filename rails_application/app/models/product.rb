@@ -28,7 +28,6 @@ class Product < ApplicationRecord
 
   def change_price!(params)
     if params["future_price"].present?
-      
       self.future_price = params["future_price"]["price"]
       self.future_price_start_time = params["future_price"]["start_time"]
       self.save!
