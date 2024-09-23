@@ -9,23 +9,15 @@ class ProductsTest < InMemoryRESIntegrationTestCase
 
   def test_happy_path
     register_customer("Arkency")
-    product_id = SecureRandom.uuid
 
     get "/products/new"
     assert_select "h1", "New Product"
-    post "/products",
-         params: {
-           "authenticity_token" => "[FILTERED]",
-           "product_id" => product_id,
-           "name" => "product name",
-           :price => "20.01",
-           "vat_rate" => "10"
-         }
+    product_id = register_product("product name", 20.01, 10)
     follow_redirect!
 
     assert_equal "20.01",
                  number_to_currency(
-                   Products::Product.find(product_id).price,
+                   Product.find(product_id).price,
                    unit: ""
                  )
 
@@ -35,31 +27,23 @@ class ProductsTest < InMemoryRESIntegrationTestCase
     patch "/products/#{product_id}",
           params: {
             "authenticity_token" => "[FILTERED]",
-            "product_id" => product_id,
-            :price => "20.02"
+            product: { price: "20.02" }
           }
 
     assert_equal "20.02",
                  number_to_currency(
-                   Products::Product.find(product_id).price,
+                   Product.last.price,
                    unit: ""
                  )
   end
 
   def test_does_not_crash_when_setting_products_price_to_0
     register_customer("Arkency")
-    product_id = SecureRandom.uuid
 
     get "/products/new"
     assert_select "h1", "New Product"
-    post "/products",
-         params: {
-           "authenticity_token" => "[FILTERED]",
-           "product_id" => product_id,
-           "name" => "product name",
-           "price" => "0",
-           "vat_rate" => "10"
-         }
+
+    post "/products", params: { product: { name: 'name', price: 0, vat_rate: 10, sku: 'test'} }
 
     assert_response :unprocessable_entity
     assert_select "span", "Price must be greater than 0"
@@ -67,36 +51,11 @@ class ProductsTest < InMemoryRESIntegrationTestCase
 
   def test_does_not_crash_when_vat_rate_is_absent
     register_customer("Arkency")
-    product_id = SecureRandom.uuid
 
     get "/products/new"
     assert_select "h1", "New Product"
-    post "/products",
-         params: {
-           "authenticity_token" => "[FILTERED]",
-           "product_id" => product_id,
-           "name" => "product name",
-           "price" => "100",
-         }
 
-    assert_response :unprocessable_entity
-    assert_select "span", "Vat rate can't be blank"
-  end
-
-  def test_does_not_crash_when_vat_rate_is_not_a_number
-    register_customer("Arkency")
-    product_id = SecureRandom.uuid
-
-    get "/products/new"
-    assert_select "h1", "New Product"
-    post "/products",
-         params: {
-           "authenticity_token" => "[FILTERED]",
-           "product_id" => product_id,
-           "name" => "product name",
-           "price" => "100",
-           "vat_rate" =>"abc"
-         }
+    post "/products", params: { product: { name: 'name', price: 10, vat_rate: nil, sku: 'test' } }
 
     assert_response :unprocessable_entity
     assert_select "span", "Vat rate is not a number"
@@ -104,17 +63,11 @@ class ProductsTest < InMemoryRESIntegrationTestCase
 
   def test_does_not_crash_when_name_is_not_present
     register_customer("Arkency")
-    product_id = SecureRandom.uuid
 
     get "/products/new"
     assert_select "h1", "New Product"
-    post "/products",
-         params: {
-           "authenticity_token" => "[FILTERED]",
-           "product_id" => product_id,
-           "price" => "100",
-           "vat_rate" =>"10"
-         }
+
+    post "/products", params: { product: { name: nil, price: 10, vat_rate: 23, sku: 'test' } }
 
     assert_response :unprocessable_entity
     assert_select "span", "Name can't be blank"

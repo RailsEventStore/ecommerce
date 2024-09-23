@@ -18,6 +18,8 @@ class ProductsController < ApplicationController
   def create
     Product.create!(product_params)
     redirect_to products_path, notice: "Product was successfully created"
+  rescue ActiveRecord::RecordInvalid => e
+    return render :new, status: :unprocessable_entity, locals: { errors: e.record.errors }
   end
 
   def update
