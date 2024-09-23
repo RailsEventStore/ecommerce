@@ -20,6 +20,12 @@
       </label>
       <%= form.text_field :name, required: true, class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-sm sm:text-sm border-gray-300 rounded-md", data: { turbo_permanent: true } %>
     </div>
+    <div>
+      <label for="name" class="block font-bold">
+        SKU
+      </label>
+      <%= form.text_field :sku, required: true, class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-sm sm:text-sm border-gray-300 rounded-md", data: { turbo_permanent: true } %>
+    </div>
     <div class="mt-2">
       <label for="price" class="block font-bold">
         Price

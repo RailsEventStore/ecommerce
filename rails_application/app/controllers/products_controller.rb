@@ -25,20 +25,9 @@ class ProductsController < ApplicationController
   def update
     @product = Product.find(params[:id])
 
-    if params["future_price"].present?
-      @product.future_price = params["future_price"]["price"]
-      @product.future_price_start_time = params["future_price"]["start_time"]
-      @product.save!
-    else
-      ApplicationRecord.transaction do
-        @product_with_new_price = @product.dup
-        @product_with_new_price.price = product_params[:price]
-        @product_with_new_price.latest = true
-        @product.latest = false
-        @product_with_new_price.save!
-        @product.save!
-      end
-    end
+    @product.change_name(params[:product][:name])
+    @product.change_price!(product_params)
+
     redirect_to products_path, notice: "Product was successfully updated"
   end
 
