@@ -28,7 +28,7 @@ class ProductsController < ApplicationController
       @product.future_price_start_time = params["future_price"]["start_time"]
       @product.save!
     else
-      ApplicationRecord::Base.transaction do
+      ApplicationRecord.transaction do
         @product_with_new_price = @product.dup
         @product_with_new_price.price = product_params[:price]
         @product_with_new_price.latest = true
