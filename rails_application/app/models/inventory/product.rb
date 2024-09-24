@@ -20,12 +20,20 @@ module Inventory
       apply(StockLevelDecreased.new(data: { id:, quantity: }))
     end
 
+    def migration_event(quantity)
+      apply(StockLevelMigrated.new(data: { id:, quantity: }))
+    end
+
     on StockLevelIncreased do |event|
       @stock_level += event.data[:quantity]
     end
 
     on StockLevelDecreased do |event|
       @stock_level -= event.data[:quantity]
+    end
+
+    on StockLevelMigrated do |event|
+      @stock_level = event.data[:quantity]
     end
   end
 end
