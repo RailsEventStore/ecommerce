@@ -74,7 +74,11 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     post "/orders/#{order_id}/add_item?product_id=#{async_remote_id}"
     get "/orders"
     assert_select("td", "Draft")
-    post "/orders/expire"
+
+    assert_changes -> { Product.find(async_remote_id).stock_level }, from: 9, to: 10 do
+      post "/orders/expire"
+    end
+
     follow_redirect!
     assert_select("td", "Expired")
   end
