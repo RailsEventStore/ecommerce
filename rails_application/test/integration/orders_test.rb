@@ -37,9 +37,14 @@ class OrdersTest < InMemoryRESIntegrationTestCase
 
     assert_remove_buttons_not_visible(async_remote_id, fearless_id)
 
-    post "/orders/#{order_id}/add_item?product_id=#{async_remote_id}"
-    post "/orders/#{order_id}/add_item?product_id=#{fearless_id}"
-    post "/orders/#{order_id}/add_item?product_id=#{fearless_id}"
+    assert_changes -> { Product.find(async_remote_id).stock_level }, from: 10, to: 9 do
+      post "/orders/#{order_id}/add_item?product_id=#{async_remote_id}"
+    end
+
+    assert_changes -> { Product.find(fearless_id).stock_level }, from: 10, to: 8 do
+      post "/orders/#{order_id}/add_item?product_id=#{fearless_id}"
+      post "/orders/#{order_id}/add_item?product_id=#{fearless_id}"
+    end
     get "/orders/#{order_id}/edit"
     assert_remove_buttons_visible(async_remote_id, fearless_id, order_id)
 
