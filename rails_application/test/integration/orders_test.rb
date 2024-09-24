@@ -40,6 +40,13 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     assert_changes -> { Product.find(async_remote_id).stock_level }, from: 10, to: 9 do
       post "/orders/#{order_id}/add_item?product_id=#{async_remote_id}"
     end
+    assert_expected_events_in_stream(
+      inventory_product_stream_name(async_remote_id),
+      [
+        Inventory::StockLevelMigrated.new(data: { id: async_remote_id, quantity: 10 }),
+        Inventory::StockLevelDecreased.new(data: { id: async_remote_id, quantity: 1 })
+      ]
+    )
 
     assert_changes -> { Product.find(fearless_id).stock_level }, from: 10, to: 8 do
       post "/orders/#{order_id}/add_item?product_id=#{fearless_id}"
@@ -47,6 +54,17 @@ class OrdersTest < InMemoryRESIntegrationTestCase
       post "/orders/#{order_id}/remove_item?product_id=#{fearless_id}"
       post "/orders/#{order_id}/add_item?product_id=#{fearless_id}"
     end
+    assert_expected_events_in_stream(
+      inventory_product_stream_name(fearless_id),
+      [
+        Inventory::StockLevelMigrated.new(data: { id: fearless_id, quantity: 10 }),
+        Inventory::StockLevelDecreased.new(data: { id: fearless_id, quantity: 1 }),
+        Inventory::StockLevelDecreased.new(data: { id: fearless_id, quantity: 1 }),
+        Inventory::StockLevelIncreased.new(data: { id: fearless_id, quantity: 1 }),
+        Inventory::StockLevelDecreased.new(data: { id: fearless_id, quantity: 1 })
+      ]
+    )
+
     get "/orders/#{order_id}/edit"
     assert_remove_buttons_visible(async_remote_id, fearless_id, order_id)
 
@@ -73,6 +91,56 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     verify_shipping(order_id)
     verify_invoice_generation(order_id)
   end
+
+  def test_cover_product_created_without_supply_is_migrated_through_add_item
+    order_id = new_order.id
+    post "/products", params: { product: { name: 'Async Remote', price: 39, vat_rate: 23, sku: sku = SecureRandom.uuid} }
+    async_remote = Product.find_by(sku:)
+    async_remote_id = async_remote.id
+
+    async_remote.stock_level = 10
+    async_remote.save!
+
+    post "/orders/#{order_id}/add_item?product_id=#{async_remote_id}"
+    post "/orders/#{order_id}/remove_item?product_id=#{async_remote_id}"
+
+    assert_expected_events_in_stream(
+      inventory_product_stream_name(async_remote_id),
+      [
+        Inventory::StockLevelMigrated.new(data: { id: async_remote_id, quantity: 10 }),
+        Inventory::StockLevelDecreased.new(data: { id: async_remote_id, quantity: 1 }),
+        Inventory::StockLevelIncreased.new(data: { id: async_remote_id, quantity: 1 }),
+      ]
+    )
+  end
+
+  def test_cover_product_created_without_supply_is_migrated_through_remove_item
+    order = new_order
+    order_id = order.id
+    post "/products", params: { product: { name: 'Async Remote', price: 39, vat_rate: 23, sku: sku = SecureRandom.uuid} }
+    async_remote = Product.find_by(sku:)
+    async_remote_id = async_remote.id
+
+    async_remote.stock_level = 10
+    async_remote.save!
+
+    order.add_item(async_remote)
+    order.save!
+
+    assert event_store.read.stream(inventory_product_stream_name(async_remote_id)).to_a.empty?
+
+    post "/orders/#{order_id}/remove_item?product_id=#{async_remote_id}"
+
+    assert_expected_events_in_stream(
+      inventory_product_stream_name(async_remote_id),
+      [
+        Inventory::StockLevelMigrated.new(data: { id: async_remote_id, quantity: 10 }),
+        Inventory::StockLevelIncreased.new(data: { id: async_remote_id, quantity: 1 }),
+      ]
+    )
+  end
+
+
 
   def test_expiring_orders
     order_id = new_order.id
@@ -322,5 +390,23 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     get "/orders/#{order_id}/edit_discount"
 
     post "/orders/#{order_id}/update_discount?amount=10"
+  end
+
+  def inventory_product_stream_name(product_id)
+    "Inventory::Product$#{product_id}"
+  end
+
+  def assert_expected_events_in_stream(stream_name, expected, event_store: Rails.configuration.event_store)
+    actual =
+      event_store
+        .read
+        .stream(stream_name)
+        .map { |event| { data: event.data, type: event.event_type } }
+    expected = expected.map { |event| { data: event.data, type: event.class.to_s } }
+    assert_equal(expected, actual)
+  end
+
+  def event_store
+    Rails.configuration.event_store
   end
 end
