@@ -77,7 +77,7 @@ class OrdersController < ApplicationController
 
     @order = Order.find(params[:id])
     @order.add_item(product)
-    product.decrement!(:stock_level)
+    Inventory::ProductService.new.decrement_stock_level(product.id)
     @order.save!
 
     redirect_to edit_order_path(params[:id])
@@ -87,7 +87,7 @@ class OrdersController < ApplicationController
     product = Product.find(params[:product_id])
     @order = Order.find(params[:id])
     @order.remove_item(product)
-    product.increment!(:stock_level)
+    Inventory::ProductService.new.increment_stock_level(product.id)
     @order.save!
 
     redirect_to edit_order_path(params[:id])
@@ -113,7 +113,7 @@ class OrdersController < ApplicationController
       .where(status: "Draft")
       .find_each do |order|
       order.order_items.each do |item|
-        item.product.increment!(:stock_level)
+        Inventory::ProductService.new.increment_stock_level(item.product.id)
       end
       order.status = "Expired"
       order.save!
