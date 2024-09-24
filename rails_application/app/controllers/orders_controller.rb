@@ -82,7 +82,7 @@ class OrdersController < ApplicationController
     @order = Order.find(params[:id])
     ApplicationRecord.transaction do
       @order.add_item(Product.find(params[:product_id]))
-      product.decrement!(:stock_level)
+      Inventory::ProductService.new.decrement_stock_level(product.id)
       @order.save!
       event_store.publish(Ordering::ItemAdded.new(data: { order_id: @order.id, product_id: params[:product_id] }), stream_name: "Ordering::Order$#{@order.id}")
     end
@@ -95,7 +95,7 @@ class OrdersController < ApplicationController
     @order = Order.find(params[:id])
     ApplicationRecord.transaction do
       @order.remove_item(product)
-      product.increment!(:stock_level)
+      Inventory::ProductService.new.increment_stock_level(product.id)
       @order.save!
       event_store.publish(Ordering::ItemRemoved.new(data: { order_id: @order.id, product_id: product.id }), stream_name: "Ordering::Order$#{@order.id}")
     end
@@ -123,7 +123,7 @@ class OrdersController < ApplicationController
       .where(status: "Draft")
       .find_each do |order|
       order.order_items.each do |item|
-        item.product.increment!(:stock_level)
+        Inventory::ProductService.new.increment_stock_level(item.product.id)
       end
       order.status = "Expired"
       ApplicationRecord.transaction do
