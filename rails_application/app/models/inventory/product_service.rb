@@ -7,7 +7,8 @@ module Inventory
       @repository = Infra::AggregateRootRepository.new(event_store)
     end
 
-    def decrement_stock_level(product_id)
+    def decrement_stock_level(command)
+      product_id = command.product_id
       ApplicationRecord.with_advisory_lock("change_stock_level_for_#{product_id}") do
         product = ::Product.find(product_id)
         product_stream = event_store.read.stream("Inventory::Product$#{product_id}").to_a
@@ -26,7 +27,8 @@ module Inventory
       end
     end
 
-    def increment_stock_level(product_id)
+    def increment_stock_level(command)
+      product_id = command.product_id
       ApplicationRecord.with_advisory_lock("change_stock_level_for_#{product_id}") do
         product = ::Product.find(product_id)
         product_stream = event_store.read.stream("Inventory::Product$#{product_id}").to_a
@@ -45,7 +47,10 @@ module Inventory
       end
     end
 
-    def supply(product_id, quantity)
+    def supply(command)
+      product_id = command.product_id
+      quantity = command.quantity
+
       ApplicationRecord.with_advisory_lock("change_stock_level_for_#{product_id}") do
         product = ::Product.find(product_id)
         product.stock_level == nil ? product.stock_level = quantity : product.stock_level += quantity
