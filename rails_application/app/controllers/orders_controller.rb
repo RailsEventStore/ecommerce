@@ -111,7 +111,13 @@ class OrdersController < ApplicationController
   def expire
     Order
       .where(status: "Draft")
-      .find_each { |order| order.status = "Expired"; order.save! }
+      .find_each do |order|
+      order.order_items.each do |item|
+        item.product.increment!(:stock_level)
+      end
+      order.status = "Expired"
+      order.save!
+    end
     redirect_to root_path
   end
 
