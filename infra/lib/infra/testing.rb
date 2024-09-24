@@ -60,6 +60,13 @@ module Infra
         after = event_store.read.to_a
         assert_equal before, after
       end
+
+      def assert_nothing_published_within
+        before = event_store.read.to_a
+        yield
+        after = event_store.read.to_a
+        assert_equal before, after
+      end
     end
   end
 
