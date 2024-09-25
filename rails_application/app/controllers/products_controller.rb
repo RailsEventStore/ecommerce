@@ -1,10 +1,14 @@
 class ProductsController < ApplicationController
   def index
-    @products = Product.all
+    @products = Product.joins(:product_catalog).select("products.id, products.name, products.price, products.vat_rate, products.sku, product_catalogs.stock_level")
   end
 
   def show
-    @product = Product.find(params[:id])
+    @product = Product
+                 .where(id: params[:id])
+                 .joins(:product_catalog)
+                 .select("products.id, products.name, products.price, products.vat_rate, products.sku, product_catalogs.stock_level")
+                 .first
   end
 
   def new
