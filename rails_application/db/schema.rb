@@ -127,6 +127,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_09_26_062058) do
     t.decimal "future_price", precision: 8, scale: 2
     t.datetime "future_price_start_time"
     t.boolean "latest", default: true
+    t.string "checkpoint"
   end
 
   create_table "time_promotions", force: :cascade do |t|
