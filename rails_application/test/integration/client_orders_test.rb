@@ -183,6 +183,7 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
     as_client_submit_order_for_customer(order_id)
 
     get "/client_orders/new"
+    follow_redirect!
 
     assert_select "td span", "out of stock"
   end

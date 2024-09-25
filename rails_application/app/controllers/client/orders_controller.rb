@@ -6,9 +6,8 @@ module Client
     end
 
     def new
-      @order_id = SecureRandom.uuid
-      @products = ClientOrders::Product.all
-      render 'edit'
+      order_id = SecureRandom.uuid
+      redirect_to edit_client_order_path(order_id)
     end
 
     def create
@@ -29,9 +28,10 @@ module Client
     end
 
     def edit
-      @order_id = params[:id]
-      @order_lines = ClientOrders::OrderLine.where(order_uid: params[:id])
-      @products = ClientOrders::Product.all
+      order_id = params[:id]
+      order_lines = ClientOrders::OrderLine.where(order_uid: params[:id])
+      products = ClientOrders::Product.all
+      render html: ClientOrders::EditOrder.build(view_context, order_id, order_lines, products), layout: true
     end
 
     def add_item
