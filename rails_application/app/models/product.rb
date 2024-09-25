@@ -8,6 +8,8 @@ class Product < ApplicationRecord
   validate :validate_vat_rate
   validates :sku, presence: true
 
+  has_one :product_catalog, class_name: "Inventory::ProductCatalog", foreign_key: :product_id
+
   default_scope { where(latest: true) }
 
   before_create :set_stock_level
