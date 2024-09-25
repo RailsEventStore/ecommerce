@@ -5,6 +5,7 @@ VatRate = Struct.new(:code, :rate)
 class Configuration
   def call(event_store, command_bus)
     enable_res_infra_event_linking(event_store)
+
     event_store.subscribe(
       BuildMostRecentProductsInUnfinishedOrders,
       to: [
@@ -16,13 +17,14 @@ class Configuration
         Ordering::OrderSubmitted
       ]
     )
+    event_store.subscribe(
+      UpdateProductStockLevel,
+      to: [Inventory::StockLevelIncreased, Inventory::StockLevelDecreased]
+    )
   end
 
   def self.available_vat_rates
-    [
-      VatRate.new("23", 23),
-      VatRate.new("10", 10),
-    ]
+    [VatRate.new("23", 23), VatRate.new("10", 10)]
   end
 
   private
