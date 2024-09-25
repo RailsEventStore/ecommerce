@@ -6,7 +6,7 @@ class Configuration
   def call(event_store, command_bus)
     enable_res_infra_event_linking(event_store)
 
-    event_store.subscribe(UpdateProductStockLevel, to: [Inventory::StockLevelIncreased, Inventory::StockLevelDecreased])
+    event_store.subscribe(Inventory::UpdateProductCatalog, to: [Inventory::StockLevelIncreased, Inventory::StockLevelDecreased])
   end
 
   def self.available_vat_rates
