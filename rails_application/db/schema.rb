@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_09_25_110446) do
+ActiveRecord::Schema[7.0].define(version: 2024_09_25_121716) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -96,7 +96,6 @@ ActiveRecord::Schema[7.0].define(version: 2024_09_25_110446) do
     t.string "category"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "stock_level"
     t.decimal "future_price", precision: 8, scale: 2
     t.datetime "future_price_start_time"
     t.boolean "latest", default: true
