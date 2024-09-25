@@ -141,6 +141,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_10_11_103428) do
     t.datetime "future_price_start_time"
     t.boolean "latest", default: true
     t.integer "version", default: 0
+    t.string "checkpoint"
   end
 
   create_table "time_promotions", force: :cascade do |t|
