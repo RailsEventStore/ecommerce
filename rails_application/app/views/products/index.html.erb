@@ -20,7 +20,7 @@
 
   <tbody>
   <% @products.each do |product| %>
-    <tr class="border-t">
+    <tr class="border-t" id=<%= dom_id(product) %>>
       <td class="py-2"><%= link_to product.name, product_path(product), class: "hover:underline text-blue-500" %></td>
       <td class="py-2"><%= number_to_currency product.price %></td>
       <td class="py-2"><%= product.vat_rate %></td>
