@@ -9,23 +9,15 @@ module Inventory
 
     def decrement_stock_level(command)
       product_id = command.product_id
-      ApplicationRecord.transaction do
-        product = ::Product.find(product_id)
-        with_inventory_product(product_id) do |aggregate|
-          aggregate.withdraw(1)
-        end
-        product.decrement!(:stock_level)
+      with_inventory_product(product_id) do |aggregate|
+        aggregate.withdraw(1)
       end
     end
 
     def increment_stock_level(command)
       product_id = command.product_id
-      ApplicationRecord.transaction do
-        product = ::Product.find(product_id)
-        with_inventory_product(product_id) do |aggregate|
-          aggregate.supply(1)
-        end
-        product.increment!(:stock_level)
+      with_inventory_product(product_id) do |aggregate|
+        aggregate.supply(1)
       end
     end
 
@@ -33,13 +25,8 @@ module Inventory
       product_id = command.product_id
       quantity = command.quantity
 
-      ApplicationRecord.transaction do
-        product = ::Product.find(product_id)
-        product.stock_level == nil ? product.stock_level = quantity : product.stock_level += quantity
-        with_inventory_product(product_id) do |aggregate|
-          aggregate.supply(product.stock_level)
-        end
-        product.save!
+      with_inventory_product(product_id) do |aggregate|
+        aggregate.supply(quantity)
       end
     end
 
