@@ -31,6 +31,7 @@ matcher:
     - ClientOrders::ChangeProductPrice*
     - ClientOrders::RegisterProduct*
     - ClientOrders::ShowOrder*
+    - ClientOrders::EditOrder*
     - Orders::Broadcaster*
     - Orders::AddItemToOrder*
     - Orders::RemoveItemFromOrder*
