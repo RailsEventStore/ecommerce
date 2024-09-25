@@ -37,7 +37,7 @@ class OrdersTest < InMemoryRESIntegrationTestCase
 
     assert_remove_buttons_not_visible(async_remote_id, fearless_id)
 
-    assert_changes -> { Product.find(async_remote_id).stock_level }, from: 10, to: 9 do
+    assert_changes -> { Inventory::ProductCatalog.find_by(product_id: async_remote_id).stock_level }, from: 10, to: 9 do
       post "/orders/#{order_id}/add_item?product_id=#{async_remote_id}"
     end
     assert_expected_events_in_stream(
@@ -48,7 +48,7 @@ class OrdersTest < InMemoryRESIntegrationTestCase
       ]
     )
 
-    assert_changes -> { Product.find(fearless_id).stock_level }, from: 10, to: 8 do
+    assert_changes -> { Inventory::ProductCatalog.find_by(product_id: fearless_id).stock_level }, from: 10, to: 8 do
       post "/orders/#{order_id}/add_item?product_id=#{fearless_id}"
       post "/orders/#{order_id}/add_item?product_id=#{fearless_id}"
       post "/orders/#{order_id}/remove_item?product_id=#{fearless_id}"
@@ -100,7 +100,7 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     get "/orders"
     assert_select("td", "Draft")
 
-    assert_changes -> { Product.find(async_remote_id).stock_level }, from: 9, to: 10 do
+    assert_changes -> { Inventory::ProductCatalog.find_by(product_id: async_remote_id).stock_level }, from: 9, to: 10 do
       post "/orders/expire"
     end
 

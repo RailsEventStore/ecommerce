@@ -69,15 +69,15 @@ class OrdersController < ApplicationController
   end
 
   def add_item
-    product = Product.find(params[:product_id])
-    if product.stock_level < 1
+    product_catalog = Inventory::ProductCatalog.find_by(product_id: params[:product_id])
+    if product_catalog.stock_level < 1
       redirect_to edit_order_path(params[:id]),
                   alert: "Product not available in requested quantity!" and return
     end
 
     @order = Order.find(params[:id])
-    @order.add_item(product)
-    Inventory::ProductService.new.decrement_stock_level(Inventory::DecreaseStockLevel.new(product_id: product.id))
+    @order.add_item(Product.find(params[:product_id]))
+    Inventory::ProductService.new.decrement_stock_level(Inventory::DecreaseStockLevel.new(product_id: product_catalog.product_id))
     @order.save!
 
     redirect_to edit_order_path(params[:id])

@@ -15,7 +15,8 @@ class SuppliesTest < InMemoryRESIntegrationTestCase
     assert_select "tr#product_#{product.id}" do
       assert_select "td", "10"
     end
-    assert_equal(10, product.reload.stock_level)
+    product_catalog = Inventory::ProductCatalog.find_by(product_id: product.id)
+    assert_equal(10, product_catalog.stock_level)
   end
 
   def test_supply_product_with_existing_stock
@@ -23,7 +24,7 @@ class SuppliesTest < InMemoryRESIntegrationTestCase
     product = Product.find_by(sku:)
     increase_stock_level_by_10(product.id)
 
-    assert_changes -> { Product.find(product.id).stock_level }, from: 10, to: 20 do
+    assert_changes -> { Inventory::ProductCatalog.find_by(product_id: product.id).stock_level }, from: 10, to: 20 do
       increase_stock_level_by_10(product.id)
     end
 
