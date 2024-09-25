@@ -9,19 +9,10 @@ module Inventory
 
     def decrement_stock_level(command)
       product_id = command.product_id
-      ApplicationRecord.with_advisory_lock("change_stock_level_for_#{product_id}") do
+      ApplicationRecord.transaction do
         product = ::Product.find(product_id)
-        product_stream = event_store.read.stream("Inventory::Product$#{product_id}").to_a
-
-        if product_stream.any? { |event| event.event_type == "Inventory::StockLevelMigrated" }
-          with_inventory_product(product_id) do |aggregate|
-            aggregate.withdraw(1)
-          end
-        else
-          with_inventory_product(product_id) do |aggregate|
-            aggregate.migration_event(product.stock_level)
-            aggregate.withdraw(1)
-          end
+        with_inventory_product(product_id) do |aggregate|
+          aggregate.withdraw(1)
         end
         product.decrement!(:stock_level)
       end
@@ -29,19 +20,10 @@ module Inventory
 
     def increment_stock_level(command)
       product_id = command.product_id
-      ApplicationRecord.with_advisory_lock("change_stock_level_for_#{product_id}") do
+      ApplicationRecord.transaction do
         product = ::Product.find(product_id)
-        product_stream = event_store.read.stream("Inventory::Product$#{product_id}").to_a
-
-        if product_stream.any? { |event| event.event_type == "Inventory::StockLevelMigrated" }
-          with_inventory_product(product_id) do |aggregate|
-            aggregate.supply(1)
-          end
-        else
-          with_inventory_product(product_id) do |aggregate|
-            aggregate.migration_event(product.stock_level)
-            aggregate.supply(1)
-          end
+        with_inventory_product(product_id) do |aggregate|
+          aggregate.supply(1)
         end
         product.increment!(:stock_level)
       end
@@ -51,19 +33,11 @@ module Inventory
       product_id = command.product_id
       quantity = command.quantity
 
-      ApplicationRecord.with_advisory_lock("change_stock_level_for_#{product_id}") do
+      ApplicationRecord.transaction do
         product = ::Product.find(product_id)
         product.stock_level == nil ? product.stock_level = quantity : product.stock_level += quantity
-        product_stream = event_store.read.stream("Inventory::Product$#{product_id}").to_a
-
-        if product_stream.any? { |event| event.event_type == "Inventory::StockLevelMigrated" }
-          with_inventory_product(product_id) do |aggregate|
-            aggregate.supply(quantity)
-          end
-        else
-          with_inventory_product(product_id) do |aggregate|
-            aggregate.migration_event(product.stock_level)
-          end
+        with_inventory_product(product_id) do |aggregate|
+          aggregate.supply(product.stock_level)
         end
         product.save!
       end
