@@ -18,7 +18,7 @@ class Configuration
       ]
     )
     event_store.subscribe(
-      UpdateProductStockLevel,
+      Inventory::UpdateProductCatalog,
       to: [Inventory::StockLevelIncreased, Inventory::StockLevelDecreased]
     )
   end
