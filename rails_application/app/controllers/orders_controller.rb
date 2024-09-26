@@ -17,7 +17,11 @@ class OrdersController < ApplicationController
     @order.status = "Draft"
     @order.total = 0
     @order.discount = 0
-    @order.save!
+
+    ApplicationRecord.transaction do
+      @order.save!
+      event_store.publish(Ordering::OrderCreated.new(data: { id: @order.id }), stream_name: "Ordering::Order$#{@order.id}")
+    end
     @order_id = @order.id
     @products = Product.all
     @customers = Customer.all
@@ -76,9 +80,12 @@ class OrdersController < ApplicationController
     end
 
     @order = Order.find(params[:id])
-    @order.add_item(product)
-    product.decrement!(:stock_level)
-    @order.save!
+    ApplicationRecord.transaction do
+      @order.add_item(Product.find(params[:product_id]))
+      product.decrement!(:stock_level)
+      @order.save!
+      event_store.publish(Ordering::ItemAdded.new(data: { order_id: @order.id, product_id: params[:product_id] }), stream_name: "Ordering::Order$#{@order.id}")
+    end
 
     redirect_to edit_order_path(params[:id])
   end
@@ -86,9 +93,12 @@ class OrdersController < ApplicationController
   def remove_item
     product = Product.find(params[:product_id])
     @order = Order.find(params[:id])
-    @order.remove_item(product)
-    product.increment!(:stock_level)
-    @order.save!
+    ApplicationRecord.transaction do
+      @order.remove_item(product)
+      product.increment!(:stock_level)
+      @order.save!
+      event_store.publish(Ordering::ItemRemoved.new(data: { order_id: @order.id, product_id: product.id }), stream_name: "Ordering::Order$#{@order.id}")
+    end
 
     redirect_to edit_order_path(params[:id])
   end
@@ -116,7 +126,10 @@ class OrdersController < ApplicationController
         item.product.increment!(:stock_level)
       end
       order.status = "Expired"
-      order.save!
+      ApplicationRecord.transaction do
+        order.save!
+        event_store.publish(Ordering::OrderExpired.new(data: { id: order.id }), stream_name: "Ordering::Order$#{order.id}")
+      end
     end
     redirect_to root_path
   end
@@ -132,6 +145,7 @@ class OrdersController < ApplicationController
     else
       ActiveRecord::Base.transaction do
         order.invoice_payment_status = "Authorized"
+        event_store.publish(Ordering::OrderPaid.new(data: { id: order.id }), stream_name: "Ordering::Order$#{order.id}")
         order.save!
 
         order.invoice_payment_status = "Captured"
@@ -164,6 +178,7 @@ class OrdersController < ApplicationController
       order.number = Time.now.strftime("%Y/%m/#{SecureRandom.random_number(100)}")
       order.customer_id = customer_id.to_i
       order.completed_at = Time.current
+      event_store.publish(Ordering::OrderSubmitted.new(data: { id: order.id }), stream_name: "Ordering::Order$#{order.id}")
       order.save!
     end
   end
