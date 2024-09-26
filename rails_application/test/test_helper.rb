@@ -50,6 +50,11 @@ class RealRESIntegrationTestCase < ActionDispatch::IntegrationTest
 end
 
 class InMemoryRESIntegrationTestCase < ActionDispatch::IntegrationTest
+  include Infra::TestPlumbing.with(
+    event_store: -> { Infra::EventStore.in_memory_rails },
+    command_bus: -> { Arkency::CommandBus.new }
+  )
+
 
   def setup
     super
