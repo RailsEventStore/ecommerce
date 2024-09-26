@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_09_21_091142) do
+ActiveRecord::Schema[7.0].define(version: 2024_09_26_062058) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -34,6 +34,17 @@ ActiveRecord::Schema[7.0].define(version: 2024_09_21_091142) do
     t.bigint "tax_id_number"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "most_recent_products_in_unfinished_orders", force: :cascade do |t|
+    t.string "product_name", null: false
+    t.integer "product_id", null: false
+    t.integer "number_of_unfinished_orders", default: 0, null: false
+    t.integer "number_of_items_in_unfinished_orders", default: 0, null: false
+    t.integer "order_ids", default: [], null: false, array: true
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["product_id"], name: "index_most_recent_products_in_unfinished_orders_on_product_id"
   end
 
   create_table "order_items", force: :cascade do |t|
