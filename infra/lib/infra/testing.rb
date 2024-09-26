@@ -54,9 +54,11 @@ module Infra
         end
       end
 
-      def assert_changes(actuals, expected)
-        expects = expected.map(&:data)
-        assert_equal(expects, actuals.map(&:data))
+      def assert_nothing_published_within
+        before = event_store.read.to_a
+        yield
+        after = event_store.read.to_a
+        assert_equal before, after
       end
     end
   end
