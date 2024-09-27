@@ -22,16 +22,12 @@ module Client
     end
 
     def show
-      @order = ClientOrders::Order.find_by_order_uid(params[:id])
-      @order_lines = ClientOrders::OrderLine.where(order_uid: params[:id])
-      render html: ClientOrders::ShowOrder.build(view_context, @order, @order_lines), layout: true
+      render html: ClientOrders::ShowOrder.build(view_context, params[:id]), layout: true
     end
 
     def edit
       order_id = params[:id]
-      order_lines = ClientOrders::OrderLine.where(order_uid: params[:id])
-      products = ClientOrders::Product.all
-      render html: ClientOrders::EditOrder.build(view_context, order_id, order_lines, products), layout: true
+      render html: ClientOrders::EditOrder.build(view_context, order_id), layout: true
     end
 
     def add_item

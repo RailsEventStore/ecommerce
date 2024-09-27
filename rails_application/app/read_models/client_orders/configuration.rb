@@ -1,3 +1,10 @@
+require_relative 'rendering/orders_list'
+require_relative 'rendering/show_order'
+require_relative 'rendering/edit_order'
+
+require_relative 'product_handlers'
+require_relative 'order_handlers'
+
 module ClientOrders
 
   class Client < ApplicationRecord

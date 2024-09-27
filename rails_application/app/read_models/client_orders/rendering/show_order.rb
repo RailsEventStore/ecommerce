@@ -2,7 +2,9 @@ module ClientOrders
   class ShowOrder < Arbre::Component
     include Rails.application.routes.url_helpers
 
-    def self.build(view_context, order, order_lines)
+    def self.build(view_context, order_id)
+      order = ClientOrders::Order.find_by_order_uid(order_id)
+      order_lines = ClientOrders::OrderLine.where(order_uid: order_id)
       new(Arbre::Context.new(nil, view_context)).build(order, order_lines)
     end
 

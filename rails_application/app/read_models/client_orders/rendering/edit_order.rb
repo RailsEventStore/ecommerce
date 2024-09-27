@@ -4,7 +4,9 @@ module ClientOrders
     include ActionView::Helpers::FormTagHelper
     include ActionView::Helpers::UrlHelper
 
-    def self.build(view_context, order_id, order_lines, products)
+    def self.build(view_context, order_id)
+      order_lines = ClientOrders::OrderLine.where(order_uid: order_id)
+      products = ClientOrders::Product.all
       new(Arbre::Context.new(nil, view_context)).build(order_id, order_lines, products)
     end
 
