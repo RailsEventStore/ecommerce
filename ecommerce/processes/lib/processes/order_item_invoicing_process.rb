@@ -1,5 +1,7 @@
 module Processes
   class OrderItemInvoicingProcess
+    include Infra::Retry
+
     def initialize(event_store, command_bus)
       @event_store = event_store
       @command_bus = command_bus
@@ -26,16 +28,16 @@ module Processes
     attr_reader :event_store, :command_bus
 
     def build_state(event)
-      stream_name = "OrderInvoicingProcess$#{event.data.fetch(:order_id)}$#{event.data.fetch(:product_id)}"
-      past = event_store.read.stream(stream_name).to_a
-      last_stored = past.size - 1
-      event_store.link(event.event_id, stream_name: stream_name, expected_version: last_stored)
-      ProcessState.new.tap do |state|
-        past.each { |ev| state.call(ev) }
-        state.call(event)
+      with_retry do
+        stream_name = "OrderInvoicingProcess$#{event.data.fetch(:order_id)}$#{event.data.fetch(:product_id)}"
+        past = event_store.read.stream(stream_name).to_a
+        last_stored = past.size - 1
+        event_store.link(event.event_id, stream_name: stream_name, expected_version: last_stored)
+        ProcessState.new.tap do |state|
+          past.each { |ev| state.call(ev) }
+          state.call(event)
+        end
       end
-    rescue RubyEventStore::WrongExpectedEventVersion
-      retry
     end
 
     class ProcessState
