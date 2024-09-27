@@ -1,5 +1,7 @@
 module Processes
   class ReservationProcess
+    include Infra::Retry
+
     def initialize
       @event_store = Configuration.event_store
       @command_bus = Configuration.command_bus
@@ -72,12 +74,13 @@ module Processes
 
     def build_state(event)
       stream_name = stream_name(event.data.fetch(:order_id))
+      past_events = nil
       begin
-        past_events = event_store.read.stream(stream_name).to_a
-        last_stored = past_events.size - 1
-        event_store.link(event.event_id, stream_name: stream_name, expected_version: last_stored)
-      rescue RubyEventStore::WrongExpectedEventVersion
-        retry
+        with_retry do
+          past_events = event_store.read.stream(stream_name).to_a
+          last_stored = past_events.size - 1
+          event_store.link(event.event_id, stream_name: stream_name, expected_version: last_stored)
+        end
       rescue RubyEventStore::EventDuplicatedInStream
         return
       end

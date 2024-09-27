@@ -1,5 +1,6 @@
 module Processes
   class ThreePlusOneFree
+    include Infra::Retry
 
     def initialize(event_store, command_bus)
       @event_store = event_store
@@ -25,16 +26,16 @@ module Processes
     private
 
     def build_state(event)
-      stream_name = "ThreePlusOneFreeProcess$#{event.data.fetch(:order_id)}"
-      past_events = @event_store.read.stream(stream_name).to_a
-      last_stored = past_events.size - 1
-      @event_store.link(event.event_id, stream_name: stream_name, expected_version: last_stored)
-      ProcessState.new(event.data.fetch(:order_id)).tap do |state|
-        past_events.each { |ev| state.call(ev) }
-        state.call(event)
+      with_retry do
+        stream_name = "ThreePlusOneFreeProcess$#{event.data.fetch(:order_id)}"
+        past_events = @event_store.read.stream(stream_name).to_a
+        last_stored = past_events.size - 1
+        @event_store.link(event.event_id, stream_name: stream_name, expected_version: last_stored)
+        ProcessState.new(event.data.fetch(:order_id)).tap do |state|
+          past_events.each { |ev| state.call(ev) }
+          state.call(event)
+        end
       end
-    rescue RubyEventStore::WrongExpectedEventVersion
-      retry
     end
 
     def make_or_remove_free_product(state)

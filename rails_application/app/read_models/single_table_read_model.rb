@@ -47,6 +47,8 @@ class SingleTableReadModel
 end
 
 class ReadModelHandler
+  include Infra::Retry
+
   def initialize(*args)
     if args.present?
       @event_store = args[0]
@@ -64,18 +66,18 @@ class ReadModelHandler
     stream_name = "#{active_record_name}$#{record_id(event)}$#{event.event_type}"
     read_scope = event_store.read.as_at.stream(stream_name)
     begin
-      last_event = read_scope.last
-      return if last_event && last_event.timestamp > event.timestamp
-      ApplicationRecord.with_advisory_lock(active_record_name, record_id(event)) do
-        yield
-        event_store.link(
-          event.event_id,
-          stream_name: stream_name,
-          expected_version: last_event ? read_scope.to(last_event.event_id).count : -1
-        )
+      with_retry do
+        last_event = read_scope.last
+        return if last_event && last_event.timestamp > event.timestamp
+        ApplicationRecord.with_advisory_lock(active_record_name, record_id(event)) do
+          yield
+          event_store.link(
+            event.event_id,
+            stream_name: stream_name,
+            expected_version: last_event ? read_scope.to(last_event.event_id).count : -1
+          )
+        end
       end
-    rescue RubyEventStore::WrongExpectedEventVersion
-      retry
     rescue RubyEventStore::EventDuplicatedInStream
     end
   end
