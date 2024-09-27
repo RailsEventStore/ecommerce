@@ -14,7 +14,7 @@ matcher:
     - Processes::ShipmentProcess*
     - Processes::ReleasePaymentProcess*
     - Processes::OrderItemInvoicingProcess*
-    - Processes::SyncShipmentFromOrdering*
+    - Processes::SyncShipmentFromPricing*
     - Processes::SyncInventoryFromOrdering*
     - Processes::NotifyPaymentsAboutOrderValue*
     - Processes::ThreePlusOneFree*
