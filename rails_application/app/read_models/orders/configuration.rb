@@ -32,8 +32,8 @@ module Orders
 
       Rails.configuration.broadcaster = Orders::Broadcaster.new
 
-      event_store.subscribe(AddItemToOrder.new, to: [Ordering::ItemAddedToBasket])
-      event_store.subscribe(RemoveItemFromOrder.new, to: [Ordering::ItemRemovedFromBasket])
+      event_store.subscribe(AddItemToOrder.new, to: [Pricing::PriceItemAdded])
+      event_store.subscribe(RemoveItemFromOrder.new, to: [Pricing::PriceItemRemoved])
       event_store.subscribe(UpdateDiscount.new, to: [Pricing::PercentageDiscountSet, Pricing::PercentageDiscountChanged])
       event_store.subscribe(ResetDiscount.new, to: [Pricing::PercentageDiscountReset])
       event_store.subscribe(UpdateOrderTotalValue.new, to: [Pricing::OrderTotalValueCalculated])

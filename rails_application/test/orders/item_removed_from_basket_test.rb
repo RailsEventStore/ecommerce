@@ -33,24 +33,22 @@ module Orders
       )
       order_id = SecureRandom.uuid
       event_store.publish(
-        Ordering::ItemAddedToBasket.new(
+        Pricing::PriceItemAdded.new(
           data: {
             order_id: order_id,
             product_id: product_id,
-            quantity_before: 0
           }
         )
       )
       event_store.publish(
-        Ordering::ItemAddedToBasket.new(
+        Pricing::PriceItemAdded.new(
           data: {
             order_id: order_id,
             product_id: product_id,
-            quantity_before: 1
           }
         )
       )
-      item_removed_from_basket = Ordering::ItemRemovedFromBasket.new(
+      item_removed_from_basket = Pricing::PriceItemRemoved.new(
         data: {
           order_id: order_id,
           product_id: product_id
@@ -82,16 +80,15 @@ module Orders
       )
       order_id = SecureRandom.uuid
       event_store.publish(
-        Ordering::ItemAddedToBasket.new(
+        Pricing::PriceItemAdded.new(
           data: {
             order_id: order_id,
             product_id: product_id,
-            quantity_before: 0
           }
         )
       )
       event_store.publish(
-        Ordering::ItemRemovedFromBasket.new(
+        Pricing::PriceItemRemoved.new(
           data: {
             order_id: order_id,
             product_id: product_id
@@ -140,34 +137,31 @@ module Orders
       )
       order_id = SecureRandom.uuid
       event_store.publish(
-        Ordering::ItemAddedToBasket.new(
+        Pricing::PriceItemAdded.new(
           data: {
             order_id: order_id,
             product_id: product_id,
-            quantity_before: 0
           }
         )
       )
       event_store.publish(
-        Ordering::ItemAddedToBasket.new(
+        Pricing::PriceItemAdded.new(
           data: {
             order_id: order_id,
             product_id: product_id,
-            quantity_before: 1
           }
         )
       )
       event_store.publish(
-        Ordering::ItemAddedToBasket.new(
+        Pricing::PriceItemAdded.new(
           data: {
             order_id: order_id,
             product_id: another_product_id,
-            quantity_before: 0
           }
         )
       )
       event_store.publish(
-        Ordering::ItemRemovedFromBasket.new(
+        Pricing::PriceItemRemoved.new(
           data: {
             order_id: order_id,
             product_id: another_product_id

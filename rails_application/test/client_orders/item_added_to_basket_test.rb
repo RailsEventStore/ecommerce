@@ -30,11 +30,10 @@ module ClientOrders
       order_id = SecureRandom.uuid
 
       event_store.publish(
-        Ordering::ItemAddedToBasket.new(
+        Pricing::PriceItemAdded.new(
           data: {
             order_id: order_id,
             product_id: product_id,
-            quantity_before: 0
           }
         )
       )
@@ -73,21 +72,19 @@ module ClientOrders
 
       order_id = SecureRandom.uuid
       event_store.publish(
-        Ordering::ItemAddedToBasket.new(
+        Pricing::PriceItemAdded.new(
           data: {
             order_id: order_id,
             product_id: product_id,
-            quantity_before: 0
           }
         )
       )
 
       event_store.publish(
-        Ordering::ItemAddedToBasket.new(
+        Pricing::PriceItemAdded.new(
           data: {
             order_id: order_id,
             product_id: product_id,
-            quantity_before: 1
           }
         )
       )
@@ -142,17 +139,16 @@ module ClientOrders
 
       order_id = SecureRandom.uuid
       event_store.publish(
-        Ordering::ItemAddedToBasket.new(
+        Pricing::PriceItemAdded.new(
           data: {
             order_id: order_id,
             product_id: product_id,
-            quantity_before: 0
           }
         )
       )
 
       event_store.publish(
-        Ordering::ItemAddedToBasket.new(
+        Pricing::PriceItemAdded.new(
           data: {
             order_id: order_id,
             product_id: another_product_id,

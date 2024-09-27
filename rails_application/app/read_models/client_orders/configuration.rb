@@ -45,8 +45,8 @@ module ClientOrders
       event_store.subscribe(OrderHandlers::CancelOrder, to: [Fulfillment::OrderCancelled])
       event_store.subscribe(OrderHandlers::SubmitOrder, to: [Ordering::OrderPlaced])
       event_store.subscribe(OrderHandlers::ConfirmOrder, to: [Fulfillment::OrderConfirmed])
-      event_store.subscribe(AddItemToOrder, to: [Ordering::ItemAddedToBasket])
-      event_store.subscribe(RemoveItemFromOrder, to: [Ordering::ItemRemovedFromBasket])
+      event_store.subscribe(AddItemToOrder, to: [Pricing::PriceItemAdded])
+      event_store.subscribe(RemoveItemFromOrder, to: [Pricing::PriceItemRemoved])
 
       event_store.subscribe(CreateCustomer.new, to: [Crm::CustomerRegistered])
       event_store.subscribe(OrderHandlers::AssignCustomerToOrder, to: [Crm::CustomerAssignedToOrder])
