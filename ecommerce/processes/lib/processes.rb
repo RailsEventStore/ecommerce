@@ -15,7 +15,7 @@ require_relative 'processes/shipment_process'
 require_relative 'processes/determine_vat_rates_on_order_placed'
 require_relative 'processes/order_item_invoicing_process'
 require_relative 'processes/notify_payments_about_order_value'
-require_relative 'processes/sync_shipment_from_ordering'
+require_relative 'processes/sync_shipment_from_pricing'
 require_relative 'processes/three_plus_one_free'
 require_relative 'processes/reservation_process'
 
@@ -60,7 +60,7 @@ module Processes
     end
 
     def enable_shipment_sync(event_store, command_bus)
-      SyncShipmentFromOrdering.new(event_store, command_bus)
+      SyncShipmentFromPricing.new(event_store, command_bus)
     end
 
     def notify_payments_about_order_total_value(event_store, command_bus)
