@@ -41,24 +41,24 @@ module ClientOrders
 
   class Configuration
     def call(event_store)
-      event_store.subscribe(ExpireOrder, to: [Ordering::OrderExpired])
-      event_store.subscribe(CancelOrder, to: [Fulfillment::OrderCancelled])
-      event_store.subscribe(SubmitOrder, to: [Ordering::OrderPlaced])
-      event_store.subscribe(ConfirmOrder, to: [Fulfillment::OrderConfirmed])
+      event_store.subscribe(OrderHandlers::ExpireOrder, to: [Ordering::OrderExpired])
+      event_store.subscribe(OrderHandlers::CancelOrder, to: [Fulfillment::OrderCancelled])
+      event_store.subscribe(OrderHandlers::SubmitOrder, to: [Ordering::OrderPlaced])
+      event_store.subscribe(OrderHandlers::ConfirmOrder, to: [Fulfillment::OrderConfirmed])
       event_store.subscribe(AddItemToOrder, to: [Ordering::ItemAddedToBasket])
       event_store.subscribe(RemoveItemFromOrder, to: [Ordering::ItemRemovedFromBasket])
 
       event_store.subscribe(CreateCustomer.new, to: [Crm::CustomerRegistered])
-      event_store.subscribe(AssignCustomerToOrder, to: [Crm::CustomerAssignedToOrder])
+      event_store.subscribe(OrderHandlers::AssignCustomerToOrder, to: [Crm::CustomerAssignedToOrder])
 
-      event_store.subscribe(ChangeProductName, to: [ProductCatalog::ProductNamed])
-      event_store.subscribe(ChangeProductPrice, to: [Pricing::PriceSet])
-      event_store.subscribe(RegisterProduct, to: [ProductCatalog::ProductRegistered])
-      event_store.subscribe(UpdateProductAvailability, to: [Inventory::AvailabilityChanged])
-      event_store.subscribe(UpdateDiscount, to: [Pricing::PercentageDiscountSet, Pricing::PercentageDiscountChanged])
-      event_store.subscribe(ResetDiscount, to: [Pricing::PercentageDiscountReset])
-      event_store.subscribe(UpdateOrderTotalValue, to: [Pricing::OrderTotalValueCalculated])
-      event_store.subscribe(UpdatePaidOrdersSummary, to: [Fulfillment::OrderConfirmed])
+      event_store.subscribe(ProductHandlers::ChangeProductName, to: [ProductCatalog::ProductNamed])
+      event_store.subscribe(ProductHandlers::ChangeProductPrice, to: [Pricing::PriceSet])
+      event_store.subscribe(ProductHandlers::RegisterProduct, to: [ProductCatalog::ProductRegistered])
+      event_store.subscribe(ProductHandlers::UpdateProductAvailability, to: [Inventory::AvailabilityChanged])
+      event_store.subscribe(OrderHandlers::UpdateDiscount, to: [Pricing::PercentageDiscountSet, Pricing::PercentageDiscountChanged])
+      event_store.subscribe(OrderHandlers::ResetDiscount, to: [Pricing::PercentageDiscountReset])
+      event_store.subscribe(OrderHandlers::UpdateOrderTotalValue, to: [Pricing::OrderTotalValueCalculated])
+      event_store.subscribe(OrderHandlers::UpdatePaidOrdersSummary, to: [Fulfillment::OrderConfirmed])
     end
   end
 end

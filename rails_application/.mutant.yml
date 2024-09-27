@@ -24,14 +24,14 @@ matcher:
     - ClientOrders::Configuration#subscribe_and_link_to_stream
     - ClientOrders::Configuration#link_to_stream
     - ClientOrders::Configuration#with_order
-    - ClientOrders::OrdersList*
+    - ClientOrders::Rendering::OrdersList*
     - ClientOrders::RemoveItemFromOrder*
     - ClientOrders::AddItemToOrder*
-    - ClientOrders::ChangeProductName*
-    - ClientOrders::ChangeProductPrice*
-    - ClientOrders::RegisterProduct*
-    - ClientOrders::ShowOrder*
-    - ClientOrders::EditOrder*
+    - ClientOrders::ProductHandlers::ChangeProductName*
+    - ClientOrders::ProductHandlers::ChangeProductPrice*
+    - ClientOrders::ProductHandlers::RegisterProduct*
+    - ClientOrders::Rendering::ShowOrder*
+    - ClientOrders::Rendering::EditOrder*
     - Orders::Broadcaster*
     - Orders::AddItemToOrder*
     - Orders::RemoveItemFromOrder*

@@ -87,7 +87,7 @@ module ClientOrders
 
     def assert_clickable_order_number(customer_id, order_id, order_number)
       view_context = OrdersController.new.view_context
-      orders_list = ClientOrders::OrdersList.build(view_context, customer_id)
+      orders_list = ClientOrders::Rendering::OrdersList.build(view_context, customer_id)
       links_to_orders = Nokogiri::HTML(orders_list).xpath('//table').xpath(".//a")
       assert_equal(1, links_to_orders.size)
       assert_equal("/client_orders/#{order_id}", links_to_orders.first.attributes["href"].value)

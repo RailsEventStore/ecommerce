@@ -2,7 +2,7 @@ module Client
   class OrdersController < BaseController
 
     def index
-      render html: ClientOrders::OrdersList.build(view_context, cookies[:client_id]), layout: true
+      render html: ClientOrders::Rendering::OrdersList.build(view_context, cookies[:client_id]), layout: true
     end
 
     def new
@@ -22,12 +22,12 @@ module Client
     end
 
     def show
-      render html: ClientOrders::ShowOrder.build(view_context, params[:id]), layout: true
+      render html: ClientOrders::Rendering::ShowOrder.build(view_context, params[:id]), layout: true
     end
 
     def edit
       order_id = params[:id]
-      render html: ClientOrders::EditOrder.build(view_context, order_id), layout: true
+      render html: ClientOrders::Rendering::EditOrder.build(view_context, order_id), layout: true
     end
 
     def add_item

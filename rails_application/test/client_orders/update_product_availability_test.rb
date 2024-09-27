@@ -9,15 +9,15 @@ module ClientOrders
       other_product_id = prepare_product
 
       assert_changes("Product.find_by_uid(product_id).available?", from: true, to: false) do
-        UpdateProductAvailability.new.call(availability_changed_event(product_id, -1))
+        ProductHandlers::UpdateProductAvailability.new.call(availability_changed_event(product_id, -1))
       end
 
       assert_changes("Product.find_by_uid(product_id).available?", from: false, to: true) do
-        UpdateProductAvailability.new.call(availability_changed_event(product_id, 10))
+        ProductHandlers::UpdateProductAvailability.new.call(availability_changed_event(product_id, 10))
       end
 
       assert_changes("Product.find_by_uid(product_id).available?", from: true, to: false) do
-        UpdateProductAvailability.new.call(availability_changed_event(product_id, 0))
+        ProductHandlers::UpdateProductAvailability.new.call(availability_changed_event(product_id, 0))
       end
 
       assert Product.find_by_uid(other_product_id).available?
