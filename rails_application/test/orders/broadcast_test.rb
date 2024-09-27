@@ -40,11 +40,10 @@ module Orders
       in_memory_broadcast.result.clear
 
       event_store.publish(
-        Ordering::ItemAddedToBasket.new(
+        Pricing::PriceItemAdded.new(
           data: {
             order_id: order_id,
             product_id: product_id,
-            quantity_before: 0
           }
         )
       )
@@ -68,18 +67,17 @@ module Orders
       order_id = SecureRandom.uuid
 
       event_store.publish(
-        Ordering::ItemAddedToBasket.new(
+        Pricing::PriceItemAdded.new(
           data: {
             order_id: order_id,
             product_id: product_id,
-            quantity_before: 0
           }
         )
       )
       in_memory_broadcast.result.clear
 
       event_store.publish(
-        Ordering::ItemRemovedFromBasket.new(
+        Pricing::PriceItemRemoved.new(
           data: {
             order_id: order_id,
             product_id: product_id,
@@ -108,20 +106,18 @@ module Orders
       )
       run_command(Pricing::SetPrice.new(product_id: product_id, price: 20))
       event_store.publish(
-        Ordering::ItemAddedToBasket.new(
+        Pricing::PriceItemAdded.new(
           data: {
             order_id: order_id,
             product_id: product_id,
-            quantity_before: 0
           }
         )
       )
       event_store.publish(
-        Ordering::ItemAddedToBasket.new(
+        Pricing::PriceItemAdded.new(
           data: {
             order_id: order_1_id,
             product_id: product_id,
-            quantity_before: 0
           }
         )
       )
@@ -170,20 +166,18 @@ module Orders
       )
       run_command(Pricing::SetPrice.new(product_id: product_id, price: 20))
       event_store.publish(
-        Ordering::ItemAddedToBasket.new(
+        Pricing::PriceItemAdded.new(
           data: {
             order_id: order_id,
             product_id: product_id,
-            quantity_before: 0
           }
         )
       )
       event_store.publish(
-        Ordering::ItemAddedToBasket.new(
+        Pricing::PriceItemAdded.new(
           data: {
             order_id: order_1_id,
             product_id: product_id,
-            quantity_before: 0
           }
         )
       )

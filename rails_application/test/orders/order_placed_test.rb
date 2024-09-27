@@ -25,11 +25,10 @@ module Orders
       order_number = Ordering::FakeNumberGenerator::FAKE_NUMBER
 
       event_store.publish(
-        Ordering::ItemAddedToBasket.new(
+        Pricing::PriceItemAdded.new(
           data: {
             order_id: order_id,
             product_id: product_id,
-            quantity_before: 0
           }
         )
       )

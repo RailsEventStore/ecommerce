@@ -152,7 +152,6 @@ module ClientOrders
           data: {
             order_id: order_id,
             product_id: another_product_id,
-            quantity_before: 0
           }
         )
       )
