@@ -2,9 +2,9 @@ module Processes
   class ReservationProcess
     include Infra::Retry
 
-    def initialize
-      @event_store = Configuration.event_store
-      @command_bus = Configuration.command_bus
+    def initialize(event_store, command_bus)
+      @event_store = event_store
+      @command_bus = command_bus
     end
     attr_accessor :event_store, :command_bus
 
