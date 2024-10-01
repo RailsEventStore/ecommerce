@@ -10,12 +10,12 @@ module Processes
 
     def call(event)
       state = build_state(event)
-      case event.event_type
-      when 'Ordering::OrderSubmitted'
+      case event
+      when Ordering::OrderSubmitted
         update_order_state(state) { reserve_stock(state) }
-      when 'Fulfillment::OrderCancelled'
+      when Fulfillment::OrderCancelled
         release_stock(state)
-      when 'Fulfillment::OrderConfirmed'
+      when Fulfillment::OrderConfirmed
         dispatch_stock(state)
       end
     end
