@@ -11,6 +11,7 @@ require_relative "pricing/time_promotion"
 require_relative "pricing/promotions_calendar"
 require_relative "pricing/calculate_order_sub_amounts_value"
 require_relative "pricing/calculate_order_total_value"
+require_relative "pricing/apply_time_promotion"
 
 module Pricing
   def self.command_bus=(value)
@@ -90,7 +91,15 @@ module Pricing
         UseCoupon,
         UseCouponHandler.new(event_store)
       )
-      event_store.subscribe(CalculateOrderTotalValue, to: [
+      command_bus.register(
+        SetTimePromotionDiscount,
+        SetTimePromotionDiscountHandler.new(event_store)
+      )
+      command_bus.register(
+        ResetTimePromotionDiscount,
+        ResetTimePromotionDiscountHandler.new(event_store)
+      )
+      event_store.subscribe(ApplyTimePromotion, to: [
         PriceItemAdded,
         PriceItemRemoved,
         PercentageDiscountSet,
@@ -99,6 +108,17 @@ module Pricing
         ProductMadeFreeForOrder,
         FreeProductRemovedFromOrder
       ])
+      event_store.subscribe(CalculateOrderTotalValue, to: [
+        PriceItemAdded,
+        PriceItemRemoved,
+        PercentageDiscountSet,
+        PercentageDiscountReset,
+        PercentageDiscountChanged,
+        ProductMadeFreeForOrder,
+        FreeProductRemovedFromOrder,
+        TimePromotionDiscountSet,
+        TimePromotionDiscountReset
+      ])
       event_store.subscribe(CalculateOrderTotalSubAmountsValue, to: [
         PriceItemAdded,
         PriceItemRemoved,
@@ -106,7 +126,9 @@ module Pricing
         PercentageDiscountReset,
         PercentageDiscountChanged,
         ProductMadeFreeForOrder,
-        FreeProductRemovedFromOrder
+        FreeProductRemovedFromOrder,
+        TimePromotionDiscountSet,
+        TimePromotionDiscountReset
       ])
     end
   end

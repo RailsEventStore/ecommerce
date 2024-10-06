@@ -50,6 +50,30 @@ module Pricing
     end
   end
 
+  class SetTimePromotionDiscountHandler
+    def initialize(event_store)
+      @repository = Infra::AggregateRootRepository.new(event_store)
+    end
+
+    def call(cmd)
+      @repository.with_aggregate(Offer, cmd.aggregate_id) do |order|
+        order.apply_time_promotion_discount(Discounts::PercentageDiscount.new(cmd.amount))
+      end
+    end
+  end
+
+  class ResetTimePromotionDiscountHandler
+    def initialize(event_store)
+      @repository = Infra::AggregateRootRepository.new(event_store)
+    end
+
+    def call(cmd)
+      @repository.with_aggregate(Offer, cmd.aggregate_id) do |order|
+        order.reset_time_promotion_discount
+      end
+    end
+  end
+
   class SetPriceHandler
     def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)
@@ -124,27 +148,18 @@ module Pricing
     def call(command)
       with_retry do
         @repository.with_aggregate(Offer, command.aggregate_id) do |order|
-          order.calculate_total_value(PricingCatalog.new(@event_store), time_promotions_discount)
+          order.calculate_total_value(PricingCatalog.new(@event_store))
         end
       end
     end
-
-
 
     def calculate_sub_amounts(command)
       with_retry do
         @repository.with_aggregate(Offer, command.aggregate_id) do |order|
-          order.calculate_sub_amounts(PricingCatalog.new(@event_store), time_promotions_discount)
+          order.calculate_sub_amounts(PricingCatalog.new(@event_store))
         end
       end
     end
-
-    private
-
-    def time_promotions_discount
-      PromotionsCalendar.new(@event_store).current_time_promotions_discount
-    end
-
   end
 
   class OnCouponRegister
