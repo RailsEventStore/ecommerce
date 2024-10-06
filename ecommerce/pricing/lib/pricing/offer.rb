@@ -6,6 +6,7 @@ module Pricing
       @id = id
       @list = List.new
       @discount = Discounts::NoPercentageDiscount.new
+      @time_promotion_discount = Discounts::NoPercentageDiscount.new
     end
 
     def add_item(product_id)
@@ -32,6 +33,25 @@ module Pricing
         data: {
           order_id: @id,
           amount: discount.value
+        }
+      )
+    end
+
+    def apply_time_promotion_discount(time_promotion)
+      return if time_promotion == @time_promotion_discount
+      apply TimePromotionDiscountSet.new(
+        data: {
+          order_id: @id,
+          amount: time_promotion.value
+        }
+      )
+    end
+
+    def reset_time_promotion_discount
+      return unless @time_promotion_discount.exists?
+      apply TimePromotionDiscountReset.new(
+        data: {
+          order_id: @id
         }
       )
     end
@@ -75,10 +95,10 @@ module Pricing
       )
     end
 
-    def calculate_total_value(pricing_catalog, time_promotion_discount)
+    def calculate_total_value(pricing_catalog)
       total_value = @list.base_sum(pricing_catalog)
 
-      discounted_value = @discount.add(time_promotion_discount).apply(total_value)
+      discounted_value = @discount.add(@time_promotion_discount).apply(total_value)
       apply(
         OrderTotalValueCalculated.new(
           data: {
@@ -90,9 +110,9 @@ module Pricing
       )
     end
 
-    def calculate_sub_amounts(pricing_catalog, time_promotions_discount)
+    def calculate_sub_amounts(pricing_catalog)
       sub_amounts_total = @list.sub_amounts_total(pricing_catalog)
-      sub_discounts = calculate_total_sub_discounts(pricing_catalog, time_promotions_discount)
+      sub_discounts = calculate_total_sub_discounts(pricing_catalog, @time_promotion_discount)
 
       products = @list.products
       quantities = @list.quantities
@@ -143,6 +163,14 @@ module Pricing
 
     on PercentageDiscountChanged do |event|
       @discount = Discounts::PercentageDiscount.new(event.data.fetch(:amount))
+    end
+
+    on TimePromotionDiscountSet do |event|
+      @time_promotion_discount = Discounts::PercentageDiscount.new(event.data.fetch(:amount))
+    end
+
+    on TimePromotionDiscountReset do |event|
+      @time_promotion_discount = Discounts::NoPercentageDiscount.new
     end
 
     on PercentageDiscountReset do |event|

@@ -33,6 +33,10 @@ module Pricing
         PercentageDiscount.new(new_value)
       end
 
+      def ==(other)
+        value == other.value
+      end
+
       def exists?
         true
       end
@@ -57,7 +61,12 @@ module Pricing
         0
       end
 
+      def ==(other)
+        value == other.value
+      end
+
       def exists?
+        false
       end
     end
   end

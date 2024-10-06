@@ -45,6 +45,19 @@ module Pricing
     alias aggregate_id order_id
   end
 
+  class SetTimePromotionDiscount < Infra::Command
+    attribute :order_id, Infra::Types::UUID
+    attribute :amount, Infra::Types::PercentageDiscount
+
+    alias aggregate_id order_id
+  end
+
+  class ResetTimePromotionDiscount < Infra::Command
+    attribute :order_id, Infra::Types::UUID
+
+    alias aggregate_id order_id
+  end
+
   class RegisterCoupon < Infra::Command
     attribute :coupon_id, Infra::Types::UUID
     attribute :name, Infra::Types::String

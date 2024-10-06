@@ -104,6 +104,12 @@
       <td class="py-2 text-right"><%= @order.percentage_discount %>%</td>
     </tr>
     <% end %>
+    <% if @order.time_promotion_discount_value %>
+    <tr class="border-t">
+      <td class="py-2" colspan="3">Time Promotion discount</td>
+      <td class="py-2 text-right"><%= @order.time_promotion_discount_value %>%</td>
+    </tr>
+    <% end %>
 
     <tr class="border-t">
       <td class="py-2" colspan="3">Total</td>

@@ -160,7 +160,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_18_113912) do
     t.decimal "percentage_discount", precision: 8, scale: 2
     t.decimal "total_value", precision: 8, scale: 2
     t.decimal "discounted_value", precision: 8, scale: 2
-    t.decimal "happy_hour_value", precision: 8, scale: 2
+    t.decimal "time_promotion_discount_value", precision: 8, scale: 2
     t.datetime "total_value_updated_at"
     t.datetime "discount_updated_at"
     t.index ["uid"], name: "index_orders_on_uid", unique: true
