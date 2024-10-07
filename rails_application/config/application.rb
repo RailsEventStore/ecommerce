@@ -11,8 +11,10 @@ require "rails/test_unit/railtie"
 
 Bundler.require(*Rails.groups)
 
-class Application < Rails::Application
+class RailsApplication
+  class Application < Rails::Application
 
-  config.load_defaults 7.0
-  config.generators.system_tests = nil
+    config.load_defaults 7.0
+    config.generators.system_tests = nil
+  end
 end
