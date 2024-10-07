@@ -159,6 +159,67 @@ As for the local dev setup:
 - there's docker-compose in the rails_application, if you're into Docker
 - Ruby version, it's best to use the same, which we use for CI/production: [as defined in this file](https://github.com/RailsEventStore/ecommerce/blob/master/.github/workflows/rails_application.yml#L31)
 
+**Windows setup**
+
+If you're a Windows user, there are some additional steps thay are needed to comfortably work with this code.
+A very convenient way is to use WSL (Linux subsystem) for working with Rails and this application. It allows to avoid many issues you'd meet working directly on Windows.
+
+The following steps are based on VS Code, but you can use any editor you like.
+
+Follow these steps to set up this application in WSL on Windows 11 with VS Code:
+- install VS Code and [WSL extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-wsl) in your Windows environment
+- install WSL, Rails and PostgreSQL following this tutorial: https://gorails.com/setup/windows/11 (create a postgres user with password)
+- install and start Redis with the following commands:
+
+```console
+# Install Redis
+sudo apt-get update
+sudo apt-get install redis-server
+
+# Check Redis version to make sure it has been installed correctly
+redis-server --version
+
+# Start the Redis server
+sudo service redis-server start
+
+# To start Redis automatically when your WSL instance starts:
+sudo systemctl enable redis-server
+```
+
+- clone this repository into your Ubuntu WSL (it is advised to use a path under `/home/your_username/`)
+- `cd` into the main repository folder and execute `code .` It should open the repo in VS Code on Windows
+- configure environment variables for your postgres database connection (username and password) in `.env.development` and `.env.test` files
+- in the main repository folder, run `make install`. It should install all necessary dependencies and set up a database
+- `cd` into `rails_application` folder and execute `rails tailwindcss:install`
+- `cd` back into the main repository folder and execute `make dev`. It should start the eCommerce Rails web app and you should be able to access it
+
+*OPTIONAL: debugging the app from VS Code*
+
+If you are used to debugging using breakpoints, it can be done from VS Code:
+* install the [VSCode rdbg Ruby Debugger](https://marketplace.visualstudio.com/items?itemName=KoichiSasada.vscode-rdbg) extension
+* stop the Rails app
+* add `gem 'debug'` to `rails_application/Gemfile`
+* `cd` into `rails_application` folder and open VS Code from there (`code .`)
+* add `launch.json` file by going to "Run and Debug" section, clicking "Create a launch.json file" and choosing "Ruby (rdbg)" and add the following configuration entry:
+
+```json
+    {
+      "type": "rdbg",
+      "name": "Debug Rails Integrated with VSCode",
+      "rdbgPath": "bundle exec rdbg",   
+      "request": "launch",
+      "command": "bin/rails",      
+      "script": "s",
+      "args": [],
+      "askParameters": false,
+    }
+```
+* run the app with debugger attached using "Debug Rails Integrated with VSCode" configuration in "Run and Debug" section
+* from now on, the app should be running and you should be able to place breakpoints in the code (e.g. in controllers) and debug them
+
+A good alternative to VS Code for integrated debugging experience on Windows is RubyMine IDE.
+
+
 **Bundler note**
 
 Please check that your bundler version is not ancient, and up to date. For more details check:
