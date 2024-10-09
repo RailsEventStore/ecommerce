@@ -13,6 +13,7 @@
     <tr>
       <th class="text-left py-2">Code</th>
       <th class="text-right py-2">Rate</th>
+      <th class="text-right py-2"></th>
     </tr>
   </thead>
 
@@ -20,7 +21,12 @@
   <% @available_vat_rates.each do |available_vat_rate| %>
     <tr class="border-t">
       <td class="py-2"><%= available_vat_rate.code %></td>
-      <td class="py-2 text-right"><%= available_vat_rate.rate %></td>
+      <td class="text-right py-2"><%= available_vat_rate.rate %></td>
+      <td class="text-right py-2">
+        <%= form_with url: available_vat_rates_path, method: :delete do |f| %>
+          <%= f.hidden_field :vat_rate_code, value: available_vat_rate.code %>
+          <%= f.submit 'Delete' %>
+        <% end %>
     </tr>
   <% end %>
   </tbody>

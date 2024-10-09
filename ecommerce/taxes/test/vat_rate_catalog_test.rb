@@ -15,6 +15,12 @@ module Taxes
       def test_returns_nil_when_vat_rate_is_not_available
         assert_nil catalog.vat_rate_by_code("60")
       end
+
+      def test_returns_nil_when_vat_rate_was_removed
+        run_command(RemoveAvailableVatRate.new(vat_rate_code: "50"))
+
+        assert_nil catalog.vat_rate_by_code("50")
+      end
     end
 
     private

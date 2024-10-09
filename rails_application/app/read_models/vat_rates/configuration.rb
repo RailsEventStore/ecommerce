@@ -6,6 +6,7 @@ module VatRates
   class Configuration
     def call(event_store)
       event_store.subscribe(AddAvailableVatRate, to: [Taxes::AvailableVatRateAdded])
+      event_store.subscribe(RemoveAvailableVatRate, to: [Taxes::AvailableVatRateRemoved])
     end
   end
 end

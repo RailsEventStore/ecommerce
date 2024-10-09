@@ -1,6 +1,7 @@
 module Taxes
   VatRateAlreadyExists = Class.new(StandardError)
   VatRateNotApplicable = Class.new(StandardError)
+  VatRateNotExists = Class.new(StandardError)
   class SetVatRateHandler
     def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)
@@ -67,6 +68,31 @@ module Taxes
 
     def stream_name(cmd)
       "Taxes::AvailableVatRate$#{cmd.vat_rate.code}"
+    end
+  end
+
+  class RemoveAvailableVatRateHandler
+    def initialize(event_store)
+      @catalog = VatRateCatalog.new(event_store)
+      @event_store = event_store
+    end
+
+    def call(cmd)
+      raise VatRateNotExists unless catalog.vat_rate_by_code(cmd.vat_rate_code)
+
+      event_store.publish(available_vat_rate_removed_event(cmd), stream_name: stream_name(cmd))
+    end
+
+    private
+
+    attr_reader :event_store, :catalog
+
+    def available_vat_rate_removed_event(cmd)
+      AvailableVatRateRemoved.new(data: { vat_rate_code: cmd.vat_rate_code })
+    end
+
+    def stream_name(cmd)
+      "Taxes::AvailableVatRate$#{cmd.vat_rate_code}"
     end
   end
 end
