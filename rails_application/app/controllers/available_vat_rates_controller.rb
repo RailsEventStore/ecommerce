@@ -26,15 +26,22 @@ class AvailableVatRatesController < ApplicationController
     end
 
     add_available_vat_rate(available_vat_rate_form.code, available_vat_rate_form.rate, available_vat_rate_id)
-    rescue Taxes::VatRateAlreadyExists
-      flash.now[:notice] = "VAT rate already exists"
-      render "new", status: :unprocessable_entity
-    else
+  rescue Taxes::VatRateAlreadyExists
+    flash.now[:alert] = "VAT rate already exists"
+    render "new", status: :unprocessable_entity
+  else
     redirect_to available_vat_rates_path, notice: "VAT rate was successfully created"
   end
 
   def index
     @available_vat_rates = VatRates::AvailableVatRate.all
+  end
+
+  def destroy
+    remove_available_vat_rate(params[:vat_rate_code])
+    redirect_to available_vat_rates_path, notice: "VAT rate was successfully removed"
+  rescue Taxes::VatRateNotExists
+    redirect_to available_vat_rates_path, alert: "VAT rate does not exist"
   end
 
   private
@@ -48,6 +55,14 @@ class AvailableVatRatesController < ApplicationController
       available_vat_rate_id: available_vat_rate_id,
       vat_rate: Infra::Types::VatRate.new(code: code, rate: rate)
     )
+  end
+
+  def remove_available_vat_rate(vat_rate_code)
+    command_bus.(remove_available_vat_rate_cmd(vat_rate_code))
+  end
+
+  def remove_available_vat_rate_cmd(vat_rate_code)
+    Taxes::RemoveAvailableVatRate.new(vat_rate_code: vat_rate_code)
   end
 
   def available_vat_rate_params
