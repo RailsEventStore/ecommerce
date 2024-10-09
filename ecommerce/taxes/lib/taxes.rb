@@ -11,6 +11,7 @@ module Taxes
       command_bus.register(SetVatRate, SetVatRateHandler.new(event_store))
       command_bus.register(DetermineVatRate, DetermineVatRateHandler.new(event_store))
       command_bus.register(AddAvailableVatRate, AddAvailableVatRateHandler.new(event_store))
+      command_bus.register(RemoveAvailableVatRate, RemoveAvailableVatRateHandler.new(event_store))
     end
   end
 end
