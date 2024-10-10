@@ -16,7 +16,10 @@ class ProductsController < ApplicationController
   end
 
   def create
-    Product.create!(product_params)
+    ApplicationRecord.transaction do
+      product = Product.create!(product_params)
+      event_store.publish(ProductCatalog::ProductCreated.new(data: product_params.merge(id: product.id)), stream_name: "ProductCatalog::Product$#{product.id}")
+    end
     redirect_to products_path, notice: "Product was successfully created"
   rescue ActiveRecord::RecordInvalid => e
     return render :new, status: :unprocessable_entity, locals: { errors: e.record.errors }
@@ -25,12 +28,19 @@ class ProductsController < ApplicationController
   def update
     @product = Product.find(params[:id])
     begin
-      if params["future_price"].present?
-        @product.future_price = params["future_price"]["price"]
-        @product.future_price_start_time = params["future_price"]["start_time"]
-        @product.save!
+      ApplicationRecord.transaction do
+        if params["future_price"].present?
+          @product.future_price = params["future_price"]["price"]
+          @product.future_price_start_time = params["future_price"]["start_time"]
+          @product.save!
+        end
+        if !!product_params[:name] && @product.name != product_params[:name]
+          event_store.publish(ProductCatalog::ProductNameChanged.new(data: { id: @product.id, name: product_params[:name] }), stream_name: "ProductCatalog::Product$#{@product.id}")
+        elsif !!product_params[:price] && @product.price != product_params[:price]
+          event_store.publish(ProductCatalog::ProductPriceChanged.new(data: { id: @product.id, price: product_params[:price].to_d }), stream_name: "ProductCatalog::Product$#{@product.id}")
+        end
+        @product.update!(product_params)
       end
-      @product.update!(product_params)
       redirect_to products_path, notice: "Product was successfully updated"
     rescue ActiveRecord::StaleObjectError
       head :conflict
@@ -58,5 +68,9 @@ class ProductsController < ApplicationController
 
   def product_params
     params.require(:product).permit(:name, :price, :vat_rate, :sku, :version).to_h.symbolize_keys.slice(:price, :vat_rate, :name, :sku, :version)
+  end
+
+  def event_store
+    Rails.configuration.event_store
   end
 end
