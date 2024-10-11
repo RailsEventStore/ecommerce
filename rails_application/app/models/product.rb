@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 class Product < ApplicationRecord
+  self.locking_column = :version
+
   validates :name, presence: true
   validates :price, numericality: { greater_than: 0 }
   validate :validate_vat_rate

@@ -24,14 +24,17 @@ class ProductsController < ApplicationController
 
   def update
     @product = Product.find(params[:id])
-
-    if params["future_price"].present?
-      @product.future_price = params["future_price"]["price"]
-      @product.future_price_start_time = params["future_price"]["start_time"]
-      @product.save!
+    begin
+      if params["future_price"].present?
+        @product.future_price = params["future_price"]["price"]
+        @product.future_price_start_time = params["future_price"]["start_time"]
+        @product.save!
+      end
+      @product.update!(product_params)
+      redirect_to products_path, notice: "Product was successfully updated"
+    rescue ActiveRecord::StaleObjectError
+      head :conflict
     end
-    @product.update!(product_params)
-    redirect_to products_path, notice: "Product was successfully updated"
   end
 
   def add_future_price
@@ -54,6 +57,6 @@ class ProductsController < ApplicationController
   private
 
   def product_params
-    params.require(:product).permit(:name, :price, :vat_rate, :sku).to_h.symbolize_keys.slice(:price, :vat_rate, :name, :sku)
+    params.require(:product).permit(:name, :price, :vat_rate, :sku, :version).to_h.symbolize_keys.slice(:price, :vat_rate, :name, :sku, :version)
   end
 end
