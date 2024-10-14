@@ -4,13 +4,6 @@ module Invoices
   class InvoicesTest < InMemoryRESIntegrationTestCase
     cover "Invoices*"
 
-    def setup
-      super
-      Invoice.destroy_all
-      InvoiceItem.destroy_all
-      Order.destroy_all
-    end
-
     def test_create_draft_order_when_not_exists
       event_store = Rails.configuration.event_store
       order_id = SecureRandom.uuid

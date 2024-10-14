@@ -4,11 +4,6 @@ module ClientAuthentication
   class CreateTest < InMemoryTestCase
     cover "Authentication*"
 
-    def setup
-      super
-      Account.destroy_all
-    end
-
     def test_set_create
       customer_id = SecureRandom.uuid
       product_id = SecureRandom.uuid

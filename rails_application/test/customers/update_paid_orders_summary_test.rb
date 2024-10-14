@@ -4,11 +4,6 @@ module Customers
   class UpdatePaidOrdersSummaryTest < InMemoryTestCase
     cover "Customers"
 
-    def setup
-      super
-      Customer.destroy_all
-    end
-
     def test_update_orders_summary
       customer_id = SecureRandom.uuid
       other_customer_id = SecureRandom.uuid

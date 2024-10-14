@@ -1,11 +1,6 @@
 require "test_helper"
 
 class LoginTest < InMemoryRESIntegrationTestCase
-  def setup
-    super
-    Customers::Customer.destroy_all
-  end
-
   def test_login
     password = "1234qwer"
     customer_id = register_customer("Arkency")

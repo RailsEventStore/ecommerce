@@ -4,11 +4,6 @@ module Customers
   class CustomerPromotedToVipTest < InMemoryTestCase
     cover "Customers"
 
-    def setup
-      super
-      Customer.destroy_all
-    end
-
     def test_promote_customer_to_vip
       event_store = Rails.configuration.event_store
 

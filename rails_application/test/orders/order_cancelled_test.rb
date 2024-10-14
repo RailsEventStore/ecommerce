@@ -4,12 +4,6 @@ module Orders
   class OrderCancelledTest < InMemoryTestCase
     cover "Orders*"
 
-    def setup
-      super
-      Customer.destroy_all
-      Order.destroy_all
-    end
-
     def test_cancel_confirmed_order
       event_store = Rails.configuration.event_store
       customer_id = SecureRandom.uuid

@@ -4,12 +4,6 @@ module ClientOrders
   class ItemAddedToBasketTest < InMemoryTestCase
     cover "ClientOrders*"
 
-    def setup
-      super
-      Order.destroy_all
-      OrderLine.destroy_all
-    end
-
     def test_add_new_item
       event_store = Rails.configuration.event_store
 
