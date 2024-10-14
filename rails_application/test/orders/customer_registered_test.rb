@@ -4,11 +4,6 @@ module Orders
   class CustomerRegisteredTest < InMemoryTestCase
     cover "Orders*"
 
-    def setup
-      super
-      Customer.destroy_all
-    end
-
     def test_customer_registered
       event_store = Rails.configuration.event_store
 

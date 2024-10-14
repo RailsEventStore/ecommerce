@@ -4,11 +4,6 @@ module Orders
   class OrderExpiredTest < InMemoryTestCase
     cover "Orders*"
 
-    def setup
-      super
-      Order.destroy_all
-    end
-
     def test_expire_created_order
       event_store = Rails.configuration.event_store
 

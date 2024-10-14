@@ -4,11 +4,6 @@ module Customers
   class ConnectAccountTest < InMemoryTestCase
     cover "Customers"
 
-    def setup
-      super
-      Customer.destroy_all
-    end
-
     def test_first_register_then_connect
       customer_id = SecureRandom.uuid
       account_id = SecureRandom.uuid

@@ -5,12 +5,6 @@ module Orders
     include ActiveJob::TestHelper
     cover "Orders"
 
-    def setup
-      super
-      Order.destroy_all
-      OrderLine.destroy_all
-    end
-
     def test_create_when_not_exists
       event_store = Rails.configuration.event_store
 

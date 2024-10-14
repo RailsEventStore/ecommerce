@@ -4,12 +4,6 @@ module ClientOrders
   class OrderExpiredTest < InMemoryTestCase
     cover "ClientOrders*"
 
-    def setup
-      super
-      Client.destroy_all
-      Order.destroy_all
-    end
-
     def test_order_expired
       event_store = Rails.configuration.event_store
       customer_id = SecureRandom.uuid

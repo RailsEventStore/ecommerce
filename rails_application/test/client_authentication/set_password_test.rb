@@ -4,11 +4,6 @@ module ClientAuthentication
   class SetPasswordTest < InMemoryTestCase
     cover "Authentication*"
 
-    def setup
-      super
-      Account.destroy_all
-    end
-
     def test_set_password
       customer_id = SecureRandom.uuid
       account_id = SecureRandom.uuid

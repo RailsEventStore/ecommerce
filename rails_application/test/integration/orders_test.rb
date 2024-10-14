@@ -4,7 +4,6 @@ class OrdersTest < InMemoryRESIntegrationTestCase
   def setup
     super
     Rails.configuration.payment_gateway.call.reset
-    Orders::Order.destroy_all
     add_available_vat_rate(10)
   end
 
