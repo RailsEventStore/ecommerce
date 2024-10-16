@@ -46,6 +46,7 @@ module Orders
       event_store.subscribe(ExpireOrder.new, to: [Ordering::OrderExpired])
       event_store.subscribe(ConfirmOrder.new, to: [Fulfillment::OrderConfirmed])
       event_store.subscribe(CancelOrder.new, to: [Fulfillment::OrderCancelled])
+      event_store.subscribe(UpdateTimePromotionDiscountValue.new, to: [Pricing::TimePromotionDiscountSet])
 
 
       subscribe(

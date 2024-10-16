@@ -93,6 +93,52 @@ module Pricing
       ) { calculate_sub_amounts(order_id) }
     end
 
+    def test_sets_time_promotion_discount
+      order_id = SecureRandom.uuid
+      stream = stream_name(order_id)
+
+      assert_events_contain(
+        stream,
+        TimePromotionDiscountSet.new(
+          data: {
+            order_id: order_id,
+            amount: 25
+          }
+        )
+      ) { set_time_promotion_discount(order_id, 25) }
+    end
+
+    def test_does_not_set_the_same_time_promotion_discount_twice
+      order_id = SecureRandom.uuid
+      stream = stream_name(order_id)
+      set_time_promotion_discount(order_id, 25)
+
+      assert_events(stream) { set_time_promotion_discount(order_id, 25) }
+    end
+
+    def test_resets_time_promotion_discount
+      order_id = SecureRandom.uuid
+      stream = stream_name(order_id)
+      set_time_promotion_discount(order_id, 25)
+
+
+      assert_events_contain(
+        stream,
+        TimePromotionDiscountReset.new(
+          data: {
+            order_id: order_id
+          }
+        )
+      ) { reset_time_promotion_discount(order_id) }
+    end
+
+    def test_does_not_reset_time_promotion_discount_if_there_is_none
+      order_id = SecureRandom.uuid
+      stream = stream_name(order_id)
+
+      assert_events(stream) { reset_time_promotion_discount(order_id) }
+    end
+
     def test_calculates_total_value_with_discount
       product_1_id = SecureRandom.uuid
       set_price(product_1_id, 20)
