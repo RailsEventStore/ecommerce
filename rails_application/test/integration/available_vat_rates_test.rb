@@ -15,6 +15,14 @@ class AvailableVatRatesTest < InMemoryRESIntegrationTestCase
 
     assert_equal "VAT rate was successfully created", flash[:notice]
     assert_select "h1", "VAT Rates"
+
+    delete "/available_vat_rates",
+            params: {
+              "vat_rate_code" => "10.0"
+            }
+    follow_redirect!
+
+    assert_equal "VAT rate was successfully removed", flash[:notice]
   end
 
   def test_validation_blank_errors
@@ -58,6 +66,6 @@ class AvailableVatRatesTest < InMemoryRESIntegrationTestCase
         }
 
     assert_response :unprocessable_entity
-    assert_select "#notice", "VAT rate already exists"
+    assert_select "#alert", "VAT rate already exists"
   end
 end

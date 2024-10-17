@@ -59,6 +59,22 @@ module Taxes
       end
     end
 
+    def test_removing_available_vat_rate
+      vat_rate = Infra::Types::VatRate.new(code: "50", rate: 50)
+      add_available_vat_rate(vat_rate)
+      available_vat_rate_removed = AvailableVatRateRemoved.new(data: { vat_rate_code: vat_rate.code })
+
+      assert_events("Taxes::AvailableVatRate$#{vat_rate.code}", available_vat_rate_removed) do
+        remove_available_vat_rate(vat_rate.code)
+      end
+    end
+
+    def test_cannot_remove_non_existing_vat_rate
+      assert_raises(VatRateNotExists) do
+        remove_available_vat_rate("50")
+      end
+    end
+
     private
 
     def set_vat_rate(product_id, vat_rate_code)
@@ -71,6 +87,10 @@ module Taxes
 
     def add_available_vat_rate(vat_rate, available_vat_rate_id = SecureRandom.uuid)
       run_command(AddAvailableVatRate.new(available_vat_rate_id: available_vat_rate_id, vat_rate: vat_rate))
+    end
+
+    def remove_available_vat_rate(vat_rate_code)
+      run_command(RemoveAvailableVatRate.new(vat_rate_code: vat_rate_code))
     end
   end
 end

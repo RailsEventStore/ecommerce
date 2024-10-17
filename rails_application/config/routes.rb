@@ -47,6 +47,7 @@ Rails.application.routes.draw do
   end
 
   resources :available_vat_rates, only: [:new, :create, :index]
+  delete "/available_vat_rates", to: "available_vat_rates#destroy"
 
   post :login, to: "client/clients#login"
   get :logout, to: "client/clients#logout"
