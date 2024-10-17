@@ -63,7 +63,7 @@ module Taxes
     attr_reader :event_store
 
     def last_available_vat_rate_event(vat_rate_code)
-      @event_store
+      event_store
         .read
         .stream("Taxes::AvailableVatRate$#{vat_rate_code}")
         .last
@@ -93,7 +93,7 @@ module Taxes
     def call(cmd)
       with_retry do
         event = last_available_vat_rate_event(cmd.vat_rate_code)
-        raise VatRateNotExists if event.nil?
+        raise VatRateNotExists unless event.instance_of?(AvailableVatRateAdded)
 
         event_store.publish(
           available_vat_rate_removed_event(cmd),
@@ -108,12 +108,10 @@ module Taxes
     attr_reader :event_store
 
     def last_available_vat_rate_event(vat_rate_code)
-      event = event_store
+      event_store
         .read
         .stream("Taxes::AvailableVatRate$#{vat_rate_code}")
         .last
-
-      event if event.instance_of?(AvailableVatRateAdded)
     end
 
     def available_vat_rate_removed_event(cmd)
