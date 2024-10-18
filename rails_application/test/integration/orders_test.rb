@@ -250,7 +250,7 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     async_remote_id = register_product("Async Remote", 39, 10)
     shopify_id = register_customer("Shopify")
 
-    create_current_time_promotion
+    create_active_time_promotion(50)
     post "/orders/#{order_id}/add_item?product_id=#{async_remote_id}"
 
     post "/orders",
@@ -264,6 +264,7 @@ class OrdersTest < InMemoryRESIntegrationTestCase
 
     assert_select("td", "$19.50")
     assert_select("dd", "Submitted")
+    assert_select("td", "50.0%")
   end
 
   private
@@ -377,12 +378,12 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     post "/orders/#{order_id}/update_discount?amount=10"
   end
 
-  def create_current_time_promotion(discount: 50, start_time: Time.current - 1.day, end_time: Time.current + 1.day)
+  def create_active_time_promotion(discount)
     post "/time_promotions", params: {
       label: "Last Minute",
       discount: discount,
-      start_time: start_time,
-      end_time: end_time
+      start_time: Time.current - 1,
+      end_time: Time.current + 1
     }
   end
 end

@@ -42,6 +42,14 @@ module Pricing
       run_command(RegisterCoupon.new(coupon_id: uid, name: name, code: code, discount: discount))
     end
 
+    def set_time_promotion_discount(order_id, amount)
+      run_command(SetTimePromotionDiscount.new(order_id: order_id, amount: amount))
+    end
+
+    def reset_time_promotion_discount(order_id)
+      run_command(ResetTimePromotionDiscount.new(order_id: order_id))
+    end
+
     def fake_name
       "Fake name"
     end
