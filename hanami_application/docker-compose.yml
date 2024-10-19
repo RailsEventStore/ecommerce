@@ -1,0 +1,31 @@
+version: "3"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+      - bundle_path:/usr/local/bundle
+    command: script/puma
+    env_file: ".env"
+    ports:
+      - 2300:2300
+    depends_on:
+      - assets
+    links:
+      - assets
+  assets:
+    image: node:alpine
+    env_file: ".env"
+    working_dir: /app
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules
+    expose:
+      - "8080"
+    command: "npm start"
+volumes:
+  bundle_path:
+  node_modules:
