@@ -35,6 +35,12 @@ module Orders
           product_id: product_id
         )
       )
+      run_command(
+        ProductCatalog::NameProduct.new(
+          product_id: product_id,
+          name: "Async Remote"
+        )
+      )
       run_command(Pricing::SetPrice.new(product_id: product_id, price: 20))
 
       in_memory_broadcast.result.clear
@@ -61,6 +67,12 @@ module Orders
       run_command(
         ProductCatalog::RegisterProduct.new(
           product_id: product_id
+        )
+      )
+      run_command(
+        ProductCatalog::NameProduct.new(
+          product_id: product_id,
+          name: "Async Remote"
         )
       )
       run_command(Pricing::SetPrice.new(product_id: product_id, price: 20))
@@ -102,6 +114,12 @@ module Orders
       run_command(
         ProductCatalog::RegisterProduct.new(
           product_id: product_id
+        )
+      )
+      run_command(
+        ProductCatalog::NameProduct.new(
+          product_id: product_id,
+          name: "Async Remote"
         )
       )
       run_command(Pricing::SetPrice.new(product_id: product_id, price: 20))
@@ -162,6 +180,12 @@ module Orders
       run_command(
         ProductCatalog::RegisterProduct.new(
           product_id: product_id
+        )
+      )
+      run_command(
+        ProductCatalog::NameProduct.new(
+          product_id: product_id,
+          name: "Async Remote"
         )
       )
       run_command(Pricing::SetPrice.new(product_id: product_id, price: 20))

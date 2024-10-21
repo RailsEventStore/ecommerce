@@ -19,7 +19,7 @@ Rails.application.routes.draw do
     resource :invoice, only: [:create]
   end
 
-  resources :shipments, only: [:index]
+  resources :shipments, only: [:index, :show]
 
   resources :events_catalog, only: [:index]
 
