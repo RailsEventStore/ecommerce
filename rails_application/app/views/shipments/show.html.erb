@@ -1,0 +1,30 @@
+<% content_for(:header) do %>
+    Shipment
+  <% end %>
+
+  <dl class="mb-8">
+    <dt class="font-bold">Order Number</dt>
+    <dd class="mb-2"><%= link_to @shipment.order.number, order_path(@shipment.order.uid), class: "text-blue-500 hover:underline" %></dd>
+    <dt class="font-bold">Address</dt>
+    <dd class="mb-2">
+      <%= @shipment&.full_address %>
+    </dd>
+  </dl>
+
+  <table class="w-full">
+    <thead>
+      <tr>
+        <th class="text-left py-2">Product Name</th>
+        <th class="text-left py-2">Quantity</th>
+      </tr>
+    </thead>
+
+    <tbody>
+    <% @shipment_items.each do |item| %>
+      <tr class="border-t">
+        <td class="py-2"><%= item.product_name %></td>
+        <td class="py-2"><%= item.quantity %></td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
