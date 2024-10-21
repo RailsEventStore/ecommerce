@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_08_27_090619) do
+ActiveRecord::Schema[7.2].define(version: 2024_10_18_113912) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -194,8 +194,18 @@ ActiveRecord::Schema[7.2].define(version: 2024_08_27_090619) do
     t.decimal "lowest_recent_price", precision: 8, scale: 2
   end
 
+  create_table "shipment_items", force: :cascade do |t|
+    t.bigint "shipment_id", null: false
+    t.string "product_name", null: false
+    t.integer "quantity", null: false
+    t.uuid "product_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["shipment_id"], name: "index_shipment_items_on_shipment_id"
+  end
+
   create_table "shipments", force: :cascade do |t|
-    t.string "order_uid", null: false
+    t.uuid "order_uid", null: false
     t.string "address_line_1"
     t.string "address_line_2"
     t.string "address_line_3"

@@ -1,26 +1,27 @@
 <% content_for(:header) do %>
     Shipments
   <% end %>
-  
+
   <table class="w-full">
     <thead>
       <tr>
         <th class="text-left py-2">Order Number</th>
         <th class="text-left py-2">Address</th>
+        <th class="text-left py-2"></th>
       </tr>
     </thead>
-  
+
     <tbody>
     <% @shipments.each do |shipment| %>
       <tr class="border-t">
         <td class="py-2"><%= link_to shipment.order.number, order_path(shipment.order.uid), class: "text-blue-500 hover:underline" %></td>
         <td class="py-2"><%= shipment.full_address %></td>
+        <td class="py-2"><%= link_to "Show Shipment", shipment_path(shipment), class: "text-blue-500 hover:underline" %>
       </tr>
     <% end %>
     </tbody>
   </table>
-  
-  
+
   <div class="mt-8 hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
     <div>
       <%= page_entries_info @shipments %>
