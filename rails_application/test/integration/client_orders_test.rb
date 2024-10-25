@@ -250,6 +250,23 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
     assert_select "#alert", "Coupon already used!"
   end
 
+  def test_shows_estimated_final_price_including_discounts
+    customer_id = register_customer("Customer Shop")
+    product_id = register_product("Fearless Refactoring", 4, 10)
+    register_coupon("Coupon", "coupon10", 10)
+    time_promotion_end_time = Time.current + 1.day
+    create_current_time_promotion(discount: 50, end_time: time_promotion_end_time)
+
+    login(customer_id)
+    visit_client_orders
+
+    order_id = SecureRandom.uuid
+    as_client_add_item_to_basket_for_order(product_id, order_id)
+    as_client_use_coupon(order_id, "COUPON10")
+
+    assert_order_final_price_with_discounts("$4.00", "10.0%", "50%", "$1.60", time_promotion_end_time)
+  end
+
   private
 
   def submit_order_for_customer(customer_id, order_id)
@@ -301,6 +318,19 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
     assert_select "tr" do
       assert_select "td:nth-child(1)", "Total paid orders"
       assert_select "td:nth-child(2)", summary
+    end
+  end
+
+  def assert_order_final_price_with_discounts(before_discounts, coupon, time_promotion, after_discounts, time_promotion_end_time)
+    assert_select "tr" do
+      assert_select "td", "Before discounts"
+      assert_select "td", before_discounts
+      assert_select "td", "Coupon discount"
+      assert_select "td", coupon
+      assert_select "td", "Promotion: Last Minute (if you buy before #{time_promotion_end_time})"
+      assert_select "td", time_promotion
+      assert_select "td", "Total"
+      assert_select "td", after_discounts
     end
   end
 

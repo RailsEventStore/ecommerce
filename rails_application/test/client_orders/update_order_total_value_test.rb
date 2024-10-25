@@ -2,6 +2,7 @@ require "test_helper"
 
 module ClientOrders
   class UpdateOrderTotalValueTest < InMemoryTestCase
+    include ActionCable::TestHelper
     cover "ClientOrders*"
 
     def test_order_created_has_draft_state
@@ -15,6 +16,28 @@ module ClientOrders
 
       order = ClientOrders::Order.find_by(order_uid: order_id)
       assert_equal "Draft", order.state
+    end
+
+    def test_broadcasts
+      order_id = SecureRandom.uuid
+      event_store.publish(Pricing::OrderTotalValueCalculated.new(data: { order_id: order_id, discounted_amount: 0, total_amount: 10 }))
+
+      assert_broadcast_on(
+        "client_orders_#{order_id}",
+        turbo_stream_action_tag(
+          action: "update",
+          target: "client_orders_#{order_id}_total_value",
+          template: "$10.00"
+        )
+      )
+       assert_broadcast_on(
+        "client_orders_#{order_id}",
+        turbo_stream_action_tag(
+          action: "update",
+          target: "client_orders_#{order_id}_discounted_value",
+          template: "$0.00"
+        )
+      )
     end
 
     private
@@ -45,6 +68,9 @@ module ClientOrders
     def event_store
       Rails.configuration.event_store
     end
+
+    def turbo_stream_action_tag(action:, target:, template:)
+      "<turbo-stream action=\"#{action}\" target=\"#{target}\"><template>#{template}</template></turbo-stream>"
+    end
   end
 end
-
