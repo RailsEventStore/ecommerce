@@ -31,6 +31,22 @@ module ClientOrders
         order.discounted_value = event.data.fetch(:discounted_amount)
         order.total_value = event.data.fetch(:total_amount)
         order.save!
+
+        broadcast_update(order.order_uid, "total_value", number_to_currency(order.total_value))
+        broadcast_update(order.order_uid, "discounted_value", number_to_currency(order.discounted_value))
+      end
+
+      private
+
+      def broadcast_update(order_id, target, content)
+        Turbo::StreamsChannel.broadcast_update_to(
+          "client_orders_#{order_id}",
+          target: "client_orders_#{order_id}_#{target}",
+          html: content)
+      end
+
+      def number_to_currency(number)
+        ActiveSupport::NumberHelper.number_to_currency(number)
       end
     end
 
