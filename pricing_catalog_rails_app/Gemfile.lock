@@ -251,7 +251,7 @@ GEM
     regexp_parser (2.9.0)
     reline (0.4.2)
       io-console (~> 0.5)
-    rexml (3.2.6)
+    rexml (3.3.9)
     ruby2_keywords (0.0.5)
     ruby_event_store (2.15.0)
       concurrent-ruby (~> 1.0, >= 1.1.6)
