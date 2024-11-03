@@ -8,5 +8,5 @@ test:
 
 production:
   adapter: redis
-  url: <%= ENV.fetch("REDIS_URL") %>
+  url: <%= ENV.fetch("REDIS_TLS_URL") %>
   channel_prefix: ecommerce_production
