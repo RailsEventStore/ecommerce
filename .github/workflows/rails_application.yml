@@ -10,7 +10,7 @@ jobs:
       fail-fast: false
     env:
       WORKING_DIRECTORY: rails_application
-      REDIS_URL: redis://localhost:6379/0
+      REDIS_TLS_URL: redis://localhost:6379/0
     services:
       postgres_11:
         image: postgres:11
@@ -57,7 +57,7 @@ jobs:
     strategy:
       fail-fast: false
     env:
-      REDIS_URL: redis://localhost:6379/0
+      REDIS_TLS_URL: redis://localhost:6379/0
       WORKING_DIRECTORY: rails_application
     services:
       postgres_11:
