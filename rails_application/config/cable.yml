@@ -5,6 +5,4 @@ test:
   adapter: async
 
 production:
-  adapter: redis
-  url: <%= ENV.fetch("REDIS_URL") %>
-  channel_prefix: ecommerce_production
+  adapter: postgresql
