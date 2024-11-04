@@ -263,10 +263,6 @@ GEM
       ffi (~> 1.0)
     rdoc (6.7.0)
       psych (>= 4.0.0)
-    redis (5.3.0)
-      redis-client (>= 0.22.0)
-    redis-client (0.22.2)
-      connection_pool
     regexp_parser (2.9.2)
     reline (0.5.9)
       io-console (~> 0.5)
@@ -346,7 +342,6 @@ DEPENDENCIES
   puma (~> 5.6)
   rails (= 7.2.0)
   rails_event_store (>= 2.15.0, < 3.0)
-  redis (~> 5.0)
   skylight
   sprockets-rails
   stimulus-rails

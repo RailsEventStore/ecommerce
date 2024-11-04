@@ -10,7 +10,6 @@ jobs:
       fail-fast: false
     env:
       WORKING_DIRECTORY: rails_application
-      REDIS_TLS_URL: redis://localhost:6379/0
     services:
       postgres_11:
         image: postgres:11
@@ -20,10 +19,6 @@ jobs:
         ports:
           - 5432:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-      redis:
-        image: redis
-        ports: [ "6379:6379" ]
-        options: --entrypoint redis-server
     steps:
       - uses: actions/checkout@v3
       - uses: ruby/setup-ruby@v1
@@ -57,7 +52,6 @@ jobs:
     strategy:
       fail-fast: false
     env:
-      REDIS_TLS_URL: redis://localhost:6379/0
       WORKING_DIRECTORY: rails_application
     services:
       postgres_11:
@@ -68,10 +62,6 @@ jobs:
         ports:
           - 5432:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-      redis:
-        image: redis
-        ports: [ "6379:6379" ]
-        options: --entrypoint redis-server
     steps:
       - uses: actions/checkout@v3
       - uses: ruby/setup-ruby@v1

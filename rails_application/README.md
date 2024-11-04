@@ -4,35 +4,33 @@
 
 ## Setup
 
-### Postgresql and Redis
+### Postgresql
 
 #### Docker
 
-If you would like to use Docker image with PostgreSQL and Redis provided by us,
+If you would like to use Docker image with PostgreSQL provided by us,
 run `docker-compose up -d`. You're done for this step.
 
 #### Installed in the system
 
-If you have PostgreSQL or Redis installed directly in your system and prefer
-to use them, create
+If you have PostgreSQL installed directly in your system and prefer
+to use it, create
 
 - `.env.development.local`
   containing:
 
   ```
   DATABASE_URL=postgresql:///ecommerce_development
-  REDIS_URL=redis://localhost:6379/1
   ```
 
 * `.env.test.local` containing:
 
   ```
   DATABASE_URL=postgresql:///ecommerce_test
-  REDIS_URL=redis://localhost:6379/1
   ```
 
 It should would work for most of the cases. If you have more sophisticated setup,
-you need to update `DATABASE_URL` and `REDIS_URL` accordingly.
+you need to update `DATABASE_URL`.
 
 ### Kickstart
 

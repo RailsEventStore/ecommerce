@@ -16,7 +16,6 @@ gem "stimulus-rails"
 gem "importmap-rails", "~> 1.1"
 gem "rails_event_store",  ">= 2.15.0", "< 3.0"
 gem 'arbre'
-gem 'redis', '~> 5.0'
 
 group :development do
   gem "listen", "~> 3.3"
