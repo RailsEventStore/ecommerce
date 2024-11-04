@@ -1,12 +1,10 @@
 development:
-  adapter: redis
-  url: <%= ENV.fetch("REDIS_URL") %>
-  channel_prefix: ecommerce_development
+  adapter: postgresql
 
 test:
   adapter: async
 
 production:
   adapter: redis
-  url: <%= ENV.fetch("REDIS_TLS_URL") %>
+  url: <%= ENV.fetch("REDIS_URL") %>
   channel_prefix: ecommerce_production
