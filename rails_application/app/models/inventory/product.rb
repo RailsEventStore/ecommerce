@@ -15,8 +15,15 @@ module Inventory
       apply(StockLevelIncreased.new(data: { id:, quantity: }))
     end
 
-    def withdraw(quantity)
-      raise "Not enough stock" if @stock_level < quantity
+    def withdraw(quantity, can_oversell: nil)
+      enough_stock =
+        if can_oversell
+          can_oversell.can_fulfill?(@stock_level)
+        else
+          @stock_level > quantity
+        end
+
+      raise "Not enough stock" unless enough_stock
       apply(StockLevelDecreased.new(data: { id:, quantity: }))
     end
 

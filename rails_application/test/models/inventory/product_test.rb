@@ -40,6 +40,37 @@ module Inventory
       end
     end
 
+    def test_withdraw_when_not_enough_stock_is_possible_when_stock_is_ordered
+      product_id = 1024
+
+      stock_level_ordered_for_tomorrow = 10
+
+      assert_events(stream_name(product_id),
+                    StockLevelIncreased.new(data: { id: product_id, quantity: 2 }),
+                    StockLevelDecreased.new(data: { id: product_id, quantity: 5 })
+      ) do
+        with_aggregate(product_id) do |product|
+          product.supply(2)
+          product.withdraw(5, can_oversell: StockLevelWillBeFulfilledWithin2BusinessDays.new(stock_level_ordered_for_tomorrow))
+        end
+      end
+    end
+
+    def test_withdraw_when_not_enough_stock_is_possible_when_not_enough_stock_is_ordered
+      product_id = 1024
+
+      stock_level_ordered_for_tomorrow = 1
+
+      assert_nothing_published_within do
+        assert_raises("Not enough stock") do
+          with_aggregate(product_id) do |product|
+            product.supply(2)
+            product.withdraw(5, can_oversell: StockLevelWillBeFulfilledWithin2BusinessDays.new(stock_level_ordered_for_tomorrow))
+          end
+        end
+      end
+    end
+
     private
 
     def stream_name(product_id)
