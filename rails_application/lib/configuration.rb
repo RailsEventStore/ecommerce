@@ -21,6 +21,11 @@ class Configuration
       Inventory::UpdateProductCatalog,
       to: [Inventory::StockLevelIncreased, Inventory::StockLevelDecreased]
     )
+
+    event_store.subscribe(
+      SendEmail,
+      to: [Ordering::OrderPaid, Invoicing::InvoiceGenerated]
+    )
   end
 
   def self.available_vat_rates
