@@ -1,5 +1,8 @@
 module Pricing
   module Discounts
+    GENERAL_DISCOUNT = "general_discount"
+    TIME_PROMOTION_DISCOUNT = "time_promotion_discount"
+
     class UnacceptableDiscountRange < StandardError
     end
 
@@ -33,10 +36,6 @@ module Pricing
         PercentageDiscount.new(new_value)
       end
 
-      def ==(other)
-        value == other.value
-      end
-
       def exists?
         true
       end
@@ -57,16 +56,7 @@ module Pricing
         other_discount
       end
 
-      def value
-        0
-      end
-
-      def ==(other)
-        value == other.value
-      end
-
       def exists?
-        false
       end
     end
   end

@@ -46,6 +46,10 @@ module Pricing
       set_price(product_1_id, 20)
       add_item(order_id, product_1_id)
       stream = stream_name(order_id)
+      time_promotion_id = SecureRandom.uuid
+      start_time = Time.current - 1
+      end_time = Time.current + 1
+      set_time_promotion_range(time_promotion_id, start_time, end_time, 50)
 
       run_command(SetTimePromotionDiscount.new(order_id: order_id, amount: 50))
 
@@ -81,7 +85,6 @@ module Pricing
       add_item(order_id, product_1_id)
       add_item(order_id, product_2_id)
       add_item(order_id, product_2_id)
-      run_command(SetTimePromotionDiscount.new(order_id: order_id, amount: 50))
 
       run_command(
         Pricing::SetPercentageDiscount.new(order_id: order_id, amount: 10)

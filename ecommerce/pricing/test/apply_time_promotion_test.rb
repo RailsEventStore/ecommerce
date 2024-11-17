@@ -12,18 +12,21 @@ module Pricing
       create_active_time_promotion(50)
       create_active_time_promotion(30)
 
-      assert_events_contain(stream_name(order_id), time_promotion_discount_set_event(order_id, 50)) do
-          Pricing::ApplyTimePromotion.new.call(item_added_to_basket_event(order_id, product_id))
+      assert_events_contain(stream_name(order_id), percentage_discount_set_event(order_id, 50)) do
+        Pricing::ApplyTimePromotion.new.call(item_added_to_basket_event(order_id, product_id))
       end
     end
 
     def test_resets_time_promotion_discount
       order_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
+      create_active_time_promotion(50)
       set_time_promotion_discount(order_id, 50)
 
-      assert_events_contain(stream_name(order_id), time_promotion_discount_reset_event(order_id)) do
+      Timecop.travel(1.minute.from_now) do
+        assert_events_contain(stream_name(order_id), percentage_discount_reset_event(order_id)) do
           Pricing::ApplyTimePromotion.new.call(item_added_to_basket_event(order_id, product_id))
+        end
       end
     end
 
@@ -63,22 +66,24 @@ module Pricing
     end
 
     def set_time_promotion_discount(order_id, discount)
-      run_command(SetTimePromotionDiscount.new(order_id: order_id, amount: 50))
+      run_command(SetTimePromotionDiscount.new(order_id: order_id, amount: discount))
     end
 
-    def time_promotion_discount_set_event(order_id, amount)
-      TimePromotionDiscountSet.new(
+    def percentage_discount_set_event(order_id, amount)
+      PercentageDiscountSet.new(
         data: {
           order_id: order_id,
+          type: Pricing::Discounts::TIME_PROMOTION_DISCOUNT,
           amount: amount
         }
       )
     end
 
-    def time_promotion_discount_reset_event(order_id)
-      TimePromotionDiscountReset.new(
+    def percentage_discount_reset_event(order_id)
+      PercentageDiscountReset.new(
         data: {
-          order_id: order_id
+          order_id: order_id,
+          type: Pricing::Discounts::TIME_PROMOTION_DISCOUNT
         }
       )
     end

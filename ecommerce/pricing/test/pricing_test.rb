@@ -99,9 +99,10 @@ module Pricing
 
       assert_events_contain(
         stream,
-        TimePromotionDiscountSet.new(
+        Pricing::PercentageDiscountSet.new(
           data: {
             order_id: order_id,
+            type: Discounts::TIME_PROMOTION_DISCOUNT,
             amount: 25
           }
         )
@@ -110,23 +111,24 @@ module Pricing
 
     def test_does_not_set_the_same_time_promotion_discount_twice
       order_id = SecureRandom.uuid
-      stream = stream_name(order_id)
+      create_active_time_promotion(25)
       set_time_promotion_discount(order_id, 25)
 
-      assert_events(stream) { set_time_promotion_discount(order_id, 25) }
+      assert_raises(NotPossibleToAssignDiscountTwice) { set_time_promotion_discount(order_id, 25) }
     end
 
     def test_resets_time_promotion_discount
       order_id = SecureRandom.uuid
       stream = stream_name(order_id)
+      create_active_time_promotion(25)
       set_time_promotion_discount(order_id, 25)
-
 
       assert_events_contain(
         stream,
-        TimePromotionDiscountReset.new(
+        PercentageDiscountReset.new(
           data: {
-            order_id: order_id
+            order_id: order_id,
+            type: Discounts::TIME_PROMOTION_DISCOUNT
           }
         )
       ) { reset_time_promotion_discount(order_id) }
@@ -134,9 +136,8 @@ module Pricing
 
     def test_does_not_reset_time_promotion_discount_if_there_is_none
       order_id = SecureRandom.uuid
-      stream = stream_name(order_id)
 
-      assert_events(stream) { reset_time_promotion_discount(order_id) }
+      assert_raises(NotPossibleToResetWithoutDiscount) { reset_time_promotion_discount(order_id) }
     end
 
     def test_calculates_total_value_with_discount
@@ -160,6 +161,7 @@ module Pricing
         PercentageDiscountSet.new(
           data: {
             order_id: order_id,
+            type: Pricing::Discounts::GENERAL_DISCOUNT,
             amount: 10
           }
         ),
@@ -172,7 +174,7 @@ module Pricing
         )
       ) do
         run_command(
-          Pricing::SetPercentageDiscount.new(order_id: order_id, amount: 10)
+          Pricing::SetPercentageDiscount.new(order_id: order_id, type: Pricing::Discounts::GENERAL_DISCOUNT, amount: 10)
         )
       end
       assert_events_contain(
@@ -180,6 +182,7 @@ module Pricing
         PercentageDiscountChanged.new(
           data: {
             order_id: order_id,
+            type: Pricing::Discounts::GENERAL_DISCOUNT,
             amount: 50
           }
         ),
@@ -200,6 +203,7 @@ module Pricing
         PercentageDiscountReset.new(
           data: {
             order_id: order_id,
+            type: Pricing::Discounts::GENERAL_DISCOUNT
           }
         ),
         OrderTotalValueCalculated.new(
@@ -211,7 +215,7 @@ module Pricing
         )
       ) do
         run_command(
-          Pricing::ResetPercentageDiscount.new(order_id: order_id)
+          Pricing::ResetPercentageDiscount.new(order_id: order_id, type: Pricing::Discounts::GENERAL_DISCOUNT)
         )
       end
     end
@@ -227,6 +231,7 @@ module Pricing
         PercentageDiscountSet.new(
           data: {
             order_id: order_id,
+            type: Pricing::Discounts::GENERAL_DISCOUNT,
             amount: 100
           }
         ),
@@ -325,6 +330,7 @@ module Pricing
         PercentageDiscountChanged.new(
           data: {
             order_id: order_id,
+            type: Pricing::Discounts::GENERAL_DISCOUNT,
             amount: 100
           }
         ),
@@ -360,6 +366,7 @@ module Pricing
         PercentageDiscountChanged.new(
           data: {
             order_id: order_id,
+            type: Pricing::Discounts::GENERAL_DISCOUNT,
             amount: 100
           }
         ),
@@ -384,17 +391,18 @@ module Pricing
       add_item(order_id, product_1_id)
       stream = stream_name(order_id)
       run_command(
-        Pricing::SetPercentageDiscount.new(order_id: order_id, amount: 10)
+        Pricing::SetPercentageDiscount.new(order_id: order_id, type: Discounts::GENERAL_DISCOUNT,amount: 10)
       )
       run_command(
-        Pricing::ChangePercentageDiscount.new(order_id: order_id, amount: 20)
+        Pricing::ChangePercentageDiscount.new(order_id: order_id, type: Discounts::GENERAL_DISCOUNT, amount: 20)
       )
 
       assert_events_contain(
         stream,
         PercentageDiscountReset.new(
           data: {
-            order_id: order_id
+            order_id: order_id,
+            type: Discounts::GENERAL_DISCOUNT
           }
         ),
         OrderTotalValueCalculated.new(
@@ -406,7 +414,7 @@ module Pricing
         )
       ) do
         run_command(
-          Pricing::ResetPercentageDiscount.new(order_id: order_id)
+          Pricing::ResetPercentageDiscount.new(order_id: order_id, type: Discounts::GENERAL_DISCOUNT)
         )
       end
     end
@@ -442,6 +450,18 @@ module Pricing
 
     def calculate_sub_amounts(order_id)
       run_command(CalculateSubAmounts.new(order_id: order_id))
+    end
+
+    def create_active_time_promotion(discount)
+      run_command(
+        Pricing::CreateTimePromotion.new(
+          time_promotion_id: SecureRandom.uuid,
+          discount: discount,
+          start_time: Time.current - 1.minute,
+          end_time: Time.current + 1.minute,
+          label: "Last Minute"
+        )
+      )
     end
   end
 end

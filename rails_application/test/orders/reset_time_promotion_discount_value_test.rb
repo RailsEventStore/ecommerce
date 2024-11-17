@@ -1,10 +1,10 @@
 require "test_helper"
 
 module Orders
-  class UpdateTimePromotionDiscountValueTest < InMemoryTestCase
+  class ResetTimePromotionDiscountValueTest < InMemoryTestCase
     cover "Orders*"
 
-    def test_updates_time_promotion_discount_value
+    def test_resets_time_promotion_discount_value
       customer_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
@@ -13,9 +13,26 @@ module Orders
       prepare_product(product_id)
       item_added_to_basket(order_id, product_id)
 
-      order = Orders::Order.find_by(uid: order_id)
-      assert_equal 50, order.time_promotion_discount_value
-      assert_nil order.percentage_discount
+      travel_to(1.minute.from_now) do
+        item_added_to_basket(order_id, product_id)
+        order = Orders::Order.find_by(uid: order_id)
+        assert_nil order.time_promotion_discount_value
+      end
+    end
+
+    def test_does_not_reset_time_promotion_when_general_discount_reset
+      customer_id = SecureRandom.uuid
+      product_id = SecureRandom.uuid
+      order_id = SecureRandom.uuid
+      create_active_time_promotion
+      customer_registered(customer_id)
+      prepare_product(product_id)
+      item_added_to_basket(order_id, product_id)
+      set_percentage_discount(order_id)
+
+      assert_no_changes -> { Orders::Order.find_by(uid: order_id).time_promotion_discount_value } do
+        reset_percentage_discount(order_id)
+      end
     end
 
     private
@@ -57,6 +74,18 @@ module Orders
 
     def event_store
       Rails.configuration.event_store
+    end
+
+    def set_percentage_discount(order_id)
+      run_command(
+        Pricing::SetPercentageDiscount.new(order_id: order_id, amount: 10)
+      )
+    end
+
+    def reset_percentage_discount(order_id)
+      run_command(
+        Pricing::ResetPercentageDiscount.new(order_id: order_id, type: Pricing::Discounts::GENERAL_DISCOUNT)
+      )
     end
   end
 end

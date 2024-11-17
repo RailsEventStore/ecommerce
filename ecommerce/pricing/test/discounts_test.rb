@@ -55,20 +55,6 @@ module Pricing
 
         assert_equal(0, combined.apply(100))
       end
-
-      def test_is_equal_to_another_discount
-        first_discount = PercentageDiscount.new(50)
-        second_discount = PercentageDiscount.new(50)
-
-        assert_equal(first_discount, second_discount)
-      end
-
-      def test_is_not_equal_to_another_discount
-        first_discount = PercentageDiscount.new(50)
-        second_discount = PercentageDiscount.new(60)
-
-        refute_equal(first_discount, second_discount)
-      end
     end
 
     class NoPercentageDiscountTest < Test
@@ -76,24 +62,6 @@ module Pricing
 
       def test_doesnt_change_total
         assert_equal(100, NoPercentageDiscount.new.apply(100))
-      end
-
-      def test_is_equal_to_another_discount
-        first_discount = NoPercentageDiscount.new
-        second_discount = NoPercentageDiscount.new
-
-        assert_equal(first_discount, second_discount)
-      end
-
-      def test_is_not_equal_to_another_discount
-        first_discount = NoPercentageDiscount.new
-        second_discount = PercentageDiscount.new(50)
-
-        refute_equal(first_discount, second_discount)
-      end
-
-      def test_exists_returns_false
-        assert_equal false, NoPercentageDiscount.new.exists?
       end
     end
   end

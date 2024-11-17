@@ -8,6 +8,8 @@ module Pricing
       else
         command_bus.(ResetTimePromotionDiscount.new(order_id: event.data.fetch(:order_id)))
       end
+
+    rescue NotPossibleToAssignDiscountTwice, NotPossibleToResetWithoutDiscount
     end
 
     private
