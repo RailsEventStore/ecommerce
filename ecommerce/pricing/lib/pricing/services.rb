@@ -21,7 +21,7 @@ module Pricing
 
     def call(cmd)
       @repository.with_aggregate(Offer, cmd.aggregate_id) do |order|
-        order.apply_discount(Discounts::PercentageDiscount.new(cmd.amount))
+        order.apply_discount(Discounts::GENERAL_DISCOUNT, Discounts::PercentageDiscount.new(cmd.amount))
       end
     end
   end
@@ -33,7 +33,7 @@ module Pricing
 
     def call(cmd)
       @repository.with_aggregate(Offer, cmd.aggregate_id) do |order|
-        order.reset_discount
+        order.reset_discount(Discounts::GENERAL_DISCOUNT)
       end
     end
   end
@@ -45,7 +45,7 @@ module Pricing
 
     def call(cmd)
       @repository.with_aggregate(Offer, cmd.aggregate_id) do |order|
-        order.change_discount(Discounts::PercentageDiscount.new(cmd.amount))
+        order.change_discount(Discounts::GENERAL_DISCOUNT, Discounts::PercentageDiscount.new(cmd.amount))
       end
     end
   end
@@ -57,7 +57,7 @@ module Pricing
 
     def call(cmd)
       @repository.with_aggregate(Offer, cmd.aggregate_id) do |order|
-        order.apply_time_promotion_discount(Discounts::PercentageDiscount.new(cmd.amount))
+        order.apply_discount(Discounts::TIME_PROMOTION_DISCOUNT, Discounts::PercentageDiscount.new(cmd.amount))
       end
     end
   end
@@ -69,7 +69,7 @@ module Pricing
 
     def call(cmd)
       @repository.with_aggregate(Offer, cmd.aggregate_id) do |order|
-        order.reset_time_promotion_discount
+        order.reset_discount(Discounts::TIME_PROMOTION_DISCOUNT)
       end
     end
   end

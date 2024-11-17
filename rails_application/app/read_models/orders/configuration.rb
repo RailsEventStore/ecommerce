@@ -46,8 +46,8 @@ module Orders
       event_store.subscribe(ExpireOrder.new, to: [Ordering::OrderExpired])
       event_store.subscribe(ConfirmOrder.new, to: [Fulfillment::OrderConfirmed])
       event_store.subscribe(CancelOrder.new, to: [Fulfillment::OrderCancelled])
-      event_store.subscribe(UpdateTimePromotionDiscountValue.new, to: [Pricing::TimePromotionDiscountSet])
-
+      event_store.subscribe(UpdateTimePromotionDiscountValue.new, to: [Pricing::PercentageDiscountSet])
+      event_store.subscribe(ResetTimePromotionDiscountValue.new, to: [Pricing::PercentageDiscountReset])
 
       subscribe(
         ->(event) { broadcast_order_state_change(event.data.fetch(:order_id), 'Submitted') },

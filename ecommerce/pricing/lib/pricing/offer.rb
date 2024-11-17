@@ -5,8 +5,7 @@ module Pricing
     def initialize(id)
       @id = id
       @list = List.new
-      @discount = Discounts::NoPercentageDiscount.new
-      @time_promotion_discount = Discounts::NoPercentageDiscount.new
+      @discounts = {}
     end
 
     def add_item(product_id)
@@ -27,50 +26,34 @@ module Pricing
       )
     end
 
-    def apply_discount(discount)
-      raise NotPossibleToAssignDiscountTwice if @discount.exists?
+    def apply_discount(type, discount)
+      raise NotPossibleToAssignDiscountTwice if @discounts.include?(type)
       apply PercentageDiscountSet.new(
         data: {
           order_id: @id,
+          type: type,
           amount: discount.value
         }
       )
     end
 
-    def apply_time_promotion_discount(time_promotion)
-      return if time_promotion == @time_promotion_discount
-      apply TimePromotionDiscountSet.new(
-        data: {
-          order_id: @id,
-          amount: time_promotion.value
-        }
-      )
-    end
-
-    def reset_time_promotion_discount
-      return unless @time_promotion_discount.exists?
-      apply TimePromotionDiscountReset.new(
-        data: {
-          order_id: @id
-        }
-      )
-    end
-
-    def change_discount(discount)
-      raise NotPossibleToChangeDiscount unless @discount.exists?
+    def change_discount(type, discount)
+      raise NotPossibleToChangeDiscount unless @discounts.include?(type)
       apply PercentageDiscountChanged.new(
         data: {
           order_id: @id,
+          type: type,
           amount: discount.value
         }
       )
     end
 
-    def reset_discount
-      raise NotPossibleToResetWithoutDiscount unless @discount.exists?
+    def reset_discount(type)
+      raise NotPossibleToResetWithoutDiscount unless @discounts.include?(type)
       apply PercentageDiscountReset.new(
         data: {
-          order_id: @id
+          order_id: @id,
+          type: type
         }
       )
     end
@@ -97,8 +80,8 @@ module Pricing
 
     def calculate_total_value(pricing_catalog)
       total_value = @list.base_sum(pricing_catalog)
+      discounted_value = @discounts.values.inject(Discounts::NoPercentageDiscount.new, :add).apply(total_value)
 
-      discounted_value = @discount.add(@time_promotion_discount).apply(total_value)
       apply(
         OrderTotalValueCalculated.new(
           data: {
@@ -112,7 +95,7 @@ module Pricing
 
     def calculate_sub_amounts(pricing_catalog)
       sub_amounts_total = @list.sub_amounts_total(pricing_catalog)
-      sub_discounts = calculate_total_sub_discounts(pricing_catalog, @time_promotion_discount)
+      sub_discounts = calculate_total_sub_discounts(pricing_catalog)
 
       products = @list.products
       quantities = @list.quantities
@@ -158,23 +141,15 @@ module Pricing
     end
 
     on PercentageDiscountSet do |event|
-      @discount = Discounts::PercentageDiscount.new(event.data.fetch(:amount))
+      @discounts[event.data.fetch(:type)] = Discounts::PercentageDiscount.new(event.data.fetch(:amount))
     end
 
     on PercentageDiscountChanged do |event|
-      @discount = Discounts::PercentageDiscount.new(event.data.fetch(:amount))
-    end
-
-    on TimePromotionDiscountSet do |event|
-      @time_promotion_discount = Discounts::PercentageDiscount.new(event.data.fetch(:amount))
-    end
-
-    on TimePromotionDiscountReset do |event|
-      @time_promotion_discount = Discounts::NoPercentageDiscount.new
+      @discounts[event.data.fetch(:type)] = Discounts::PercentageDiscount.new(event.data.fetch(:amount))
     end
 
     on PercentageDiscountReset do |event|
-      @discount = Discounts::NoPercentageDiscount.new
+      @discounts.delete(event.data.fetch(:type))
     end
 
     on ProductMadeFreeForOrder do |event|
@@ -185,8 +160,8 @@ module Pricing
       @list.replace(FreeProduct, Product, event.data.fetch(:product_id))
     end
 
-    def calculate_total_sub_discounts(pricing_catalog, time_promotions_discount)
-      @list.sub_discounts(pricing_catalog, time_promotions_discount, @discount)
+    def calculate_total_sub_discounts(pricing_catalog)
+      @list.sub_discounts(pricing_catalog, @discounts)
     end
 
     on CouponUsed do |event|
@@ -237,10 +212,10 @@ module Pricing
         @products_quantities.map { |product, quantity| quantity * pricing_catalog.price_for(product) }
       end
 
-      def sub_discounts(pricing_catalog, time_promotions_discount, discount)
+      def sub_discounts(pricing_catalog, discounts)
         @products_quantities.map do |product, quantity|
           catalog_price_for_single = pricing_catalog.price_for(product)
-          with_total_discount_single = discount.add(time_promotions_discount).apply(catalog_price_for_single)
+          with_total_discount_single = discounts.values.inject(Discounts::NoPercentageDiscount.new, :add).apply(catalog_price_for_single)
           quantity * (catalog_price_for_single - with_total_discount_single)
         end
       end

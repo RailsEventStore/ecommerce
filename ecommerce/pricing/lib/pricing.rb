@@ -115,9 +115,7 @@ module Pricing
         PercentageDiscountReset,
         PercentageDiscountChanged,
         ProductMadeFreeForOrder,
-        FreeProductRemovedFromOrder,
-        TimePromotionDiscountSet,
-        TimePromotionDiscountReset
+        FreeProductRemovedFromOrder
       ])
       event_store.subscribe(CalculateOrderTotalSubAmountsValue, to: [
         PriceItemAdded,
@@ -126,9 +124,7 @@ module Pricing
         PercentageDiscountReset,
         PercentageDiscountChanged,
         ProductMadeFreeForOrder,
-        FreeProductRemovedFromOrder,
-        TimePromotionDiscountSet,
-        TimePromotionDiscountReset
+        FreeProductRemovedFromOrder
       ])
     end
   end

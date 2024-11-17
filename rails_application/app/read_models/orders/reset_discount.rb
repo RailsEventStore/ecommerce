@@ -1,6 +1,8 @@
 module Orders
   class ResetDiscount
     def call(event)
+      return unless event.data.fetch(:type) == Pricing::Discounts::GENERAL_DISCOUNT
+
       order = Order.find_by_uid(event.data.fetch(:order_id))
       order.percentage_discount = nil
       order.save!

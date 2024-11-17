@@ -1,6 +1,8 @@
 module Orders
   class UpdateDiscount
     def call(event)
+      return unless event.data.fetch(:type) == Pricing::Discounts::GENERAL_DISCOUNT
+
       order = Order.find_or_create_by(uid: event.data.fetch(:order_id))
       if is_newest_value?(event, order)
         order.percentage_discount = event.data.fetch(:amount)

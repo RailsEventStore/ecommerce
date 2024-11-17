@@ -18,6 +18,7 @@ module Orders
       assert_equal 50, order.total_value
       assert_equal 45, order.discounted_value
       assert_equal 10, order.percentage_discount
+      assert_nil order.time_promotion_discount_value
       assert event_store.event_in_stream?(event_store.read.of_type([Pricing::PercentageDiscountSet]).last.event_id, "Orders$all")
     end
 
@@ -36,6 +37,7 @@ module Orders
       assert_equal 50, order.total_value
       assert_equal 49.5, order.discounted_value
       assert_equal 1, order.percentage_discount
+      assert_nil order.time_promotion_discount_value
       assert event_store.event_in_stream?(event_store.read.of_type([Pricing::PercentageDiscountChanged]).last.event_id, "Orders$all")
     end
 
@@ -57,6 +59,21 @@ module Orders
       assert event_store.event_in_stream?(event_store.read.of_type([Pricing::PercentageDiscountReset]).last.event_id, "Orders$all")
     end
 
+    def test_does_not_reset_percentage_discount_when_time_promotion_reset
+      customer_id = SecureRandom.uuid
+      product_id = SecureRandom.uuid
+      order_id = SecureRandom.uuid
+      create_active_time_promotion
+      customer_registered(customer_id)
+      prepare_product(product_id)
+      item_added_to_basket(order_id, product_id)
+      set_percentage_discount(order_id)
+
+      assert_no_changes -> { Orders::Order.find_by(uid: order_id).percentage_discount } do
+        travel_to(1.minute.from_now) { item_added_to_basket(order_id, product_id) }
+      end
+    end
+
     def test_newest_event_is_always_applied
       customer_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
@@ -65,8 +82,26 @@ module Orders
       prepare_product(product_id)
       item_added_to_basket(order_id, product_id)
 
-      event_store.publish(Pricing::PercentageDiscountSet.new(data: { order_id: order_id, amount: 30 }, metadata: { timestamp: Time.current }))
-      event_store.publish(Pricing::PercentageDiscountSet.new(data: { order_id: order_id, amount: 20 }, metadata: { timestamp: 1.minute.ago }))
+      event_store.publish(Pricing::PercentageDiscountSet.new(
+        data: {
+          order_id: order_id,
+          type: Pricing::Discounts::GENERAL_DISCOUNT,
+          amount: 30
+        },
+        metadata: {
+          timestamp: Time.current
+        })
+      )
+      event_store.publish(Pricing::PercentageDiscountSet.new(
+        data: {
+          order_id: order_id,
+          type: Pricing::Discounts::GENERAL_DISCOUNT,
+          amount: 20
+        },
+        metadata: {
+          timestamp: 1.minute.ago
+        })
+      )
 
       assert_equal 30, Orders::Order.find_by(uid: order_id).percentage_discount
     end
@@ -111,6 +146,17 @@ module Orders
     def event_store
       Rails.configuration.event_store
     end
+
+    def create_active_time_promotion
+      run_command(
+        Pricing::CreateTimePromotion.new(
+          time_promotion_id: SecureRandom.uuid,
+          discount: 50,
+          start_time: Time.current - 1,
+          end_time: Time.current + 1,
+          label: "Last Minute"
+        )
+      )
+    end
   end
 end
-

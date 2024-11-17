@@ -383,7 +383,7 @@ class OrdersTest < InMemoryRESIntegrationTestCase
       label: "Last Minute",
       discount: discount,
       start_time: Time.current - 1,
-      end_time: Time.current + 1
+      end_time: Time.current + 1.minute
     }
   end
 end

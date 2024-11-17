@@ -210,6 +210,7 @@ module Orders
         Pricing::PercentageDiscountSet.new(
           data: {
             order_id: order_1_id,
+            type: Pricing::Discounts::GENERAL_DISCOUNT,
             amount: 30
           }
         )
@@ -221,6 +222,7 @@ module Orders
         Pricing::PercentageDiscountSet.new(
           data: {
             order_id: order_id,
+            type: Pricing::Discounts::GENERAL_DISCOUNT,
             amount: 30
           }
         )
