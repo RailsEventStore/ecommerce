@@ -12,7 +12,7 @@ Rails.application.routes.draw do
       post :cancel
       get :edit_discount
       post :update_discount
-      post :reset_discount
+      post :remove_discount
     end
     resource :shipping_address, only: [:edit, :update]
     resource :billing_address, only: [:edit, :update]

@@ -17,12 +17,13 @@ module Pricing
     end
 
     class PercentageDiscount
-      attr_reader :value
+      attr_reader :value, :type
 
-      def initialize(value)
+      def initialize(type = GENERAL_DISCOUNT, value)
         raise UnacceptableDiscountRange if value <= 0
         raise UnacceptableDiscountRange if value > 100
 
+        @type = type
         @value = value
       end
 

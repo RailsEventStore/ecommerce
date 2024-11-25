@@ -37,7 +37,7 @@ module ClientOrders
       assert_equal 1, order.percentage_discount
     end
 
-    def test_reset_discount
+    def test_remove_discount
       customer_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
@@ -46,7 +46,7 @@ module ClientOrders
       item_added_to_basket(order_id, product_id)
       set_percentage_discount(order_id)
 
-      reset_percentage_discount(order_id)
+      remove_percentage_discount(order_id)
 
       order = Order.find_by(order_uid: order_id)
       assert_equal(50, order.total_value)
@@ -56,8 +56,8 @@ module ClientOrders
 
     private
 
-    def reset_percentage_discount(order_id)
-      run_command(Pricing::ResetPercentageDiscount.new(order_id: order_id))
+    def remove_percentage_discount(order_id)
+      run_command(Pricing::RemovePercentageDiscount.new(order_id: order_id))
     end
 
     def set_percentage_discount(order_id)
@@ -96,4 +96,3 @@ module ClientOrders
     end
   end
 end
-

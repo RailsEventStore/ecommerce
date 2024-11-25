@@ -125,19 +125,19 @@ module Pricing
 
       assert_events_contain(
         stream,
-        PercentageDiscountReset.new(
+        PercentageDiscountRemoved.new(
           data: {
             order_id: order_id,
             type: Discounts::TIME_PROMOTION_DISCOUNT
           }
         )
-      ) { reset_time_promotion_discount(order_id) }
+      ) { remove_time_promotion_discount(order_id) }
     end
 
-    def test_does_not_reset_time_promotion_discount_if_there_is_none
+    def test_does_not_remove_time_promotion_discount_if_there_is_none
       order_id = SecureRandom.uuid
 
-      assert_raises(NotPossibleToResetWithoutDiscount) { reset_time_promotion_discount(order_id) }
+      assert_raises(NotPossibleToRemoveWithoutDiscount) { remove_time_promotion_discount(order_id) }
     end
 
     def test_calculates_total_value_with_discount
@@ -200,7 +200,7 @@ module Pricing
       end
       assert_events_contain(
         stream,
-        PercentageDiscountReset.new(
+        PercentageDiscountRemoved.new(
           data: {
             order_id: order_id,
             type: Pricing::Discounts::GENERAL_DISCOUNT
@@ -215,7 +215,7 @@ module Pricing
         )
       ) do
         run_command(
-          Pricing::ResetPercentageDiscount.new(order_id: order_id, type: Pricing::Discounts::GENERAL_DISCOUNT)
+          Pricing::RemovePercentageDiscount.new(order_id: order_id, type: Pricing::Discounts::GENERAL_DISCOUNT)
         )
       end
     end
@@ -305,7 +305,7 @@ module Pricing
         Pricing::SetPercentageDiscount.new(order_id: order_id, amount: 10)
       )
       run_command(
-        Pricing::ResetPercentageDiscount.new(order_id: order_id)
+        Pricing::RemovePercentageDiscount.new(order_id: order_id)
       )
 
       assert_raises NotPossibleToChangeDiscount do
@@ -399,7 +399,7 @@ module Pricing
 
       assert_events_contain(
         stream,
-        PercentageDiscountReset.new(
+        PercentageDiscountRemoved.new(
           data: {
             order_id: order_id,
             type: Discounts::GENERAL_DISCOUNT
@@ -414,7 +414,7 @@ module Pricing
         )
       ) do
         run_command(
-          Pricing::ResetPercentageDiscount.new(order_id: order_id, type: Discounts::GENERAL_DISCOUNT)
+          Pricing::RemovePercentageDiscount.new(order_id: order_id, type: Discounts::GENERAL_DISCOUNT)
         )
       end
     end
@@ -424,20 +424,20 @@ module Pricing
       set_price(product_1_id, 20)
       order_id = SecureRandom.uuid
       add_item(order_id, product_1_id)
-      assert_raises NotPossibleToResetWithoutDiscount do
+      assert_raises NotPossibleToRemoveWithoutDiscount do
         run_command(
-          Pricing::ResetPercentageDiscount.new(order_id: order_id)
+          Pricing::RemovePercentageDiscount.new(order_id: order_id)
         )
       end
       run_command(
         Pricing::SetPercentageDiscount.new(order_id: order_id, amount: 10)
       )
       run_command(
-        Pricing::ResetPercentageDiscount.new(order_id: order_id)
+        Pricing::RemovePercentageDiscount.new(order_id: order_id)
       )
-      assert_raises NotPossibleToResetWithoutDiscount do
+      assert_raises NotPossibleToRemoveWithoutDiscount do
         run_command(
-          Pricing::ResetPercentageDiscount.new(order_id: order_id)
+          Pricing::RemovePercentageDiscount.new(order_id: order_id)
         )
       end
     end
