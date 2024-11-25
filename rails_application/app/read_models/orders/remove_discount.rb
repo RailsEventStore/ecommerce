@@ -1,5 +1,5 @@
 module Orders
-  class ResetDiscount
+  class RemoveDiscount
     def call(event)
       return unless event.data.fetch(:type) == Pricing::Discounts::GENERAL_DISCOUNT
 

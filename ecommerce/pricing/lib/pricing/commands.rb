@@ -40,7 +40,7 @@ module Pricing
     alias aggregate_id order_id
   end
 
-  class ResetPercentageDiscount < Infra::Command
+  class RemovePercentageDiscount < Infra::Command
     attribute :order_id, Infra::Types::UUID
     alias aggregate_id order_id
   end
@@ -52,7 +52,7 @@ module Pricing
     alias aggregate_id order_id
   end
 
-  class ResetTimePromotionDiscount < Infra::Command
+  class RemoveTimePromotionDiscount < Infra::Command
     attribute :order_id, Infra::Types::UUID
 
     alias aggregate_id order_id

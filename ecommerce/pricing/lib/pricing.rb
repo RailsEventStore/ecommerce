@@ -64,8 +64,8 @@ module Pricing
         SetPercentageDiscountHandler.new(event_store)
       )
       command_bus.register(
-        ResetPercentageDiscount,
-        ResetPercentageDiscountHandler.new(event_store)
+        RemovePercentageDiscount,
+        RemovePercentageDiscountHandler.new(event_store)
       )
       command_bus.register(
         ChangePercentageDiscount,
@@ -96,14 +96,14 @@ module Pricing
         SetTimePromotionDiscountHandler.new(event_store)
       )
       command_bus.register(
-        ResetTimePromotionDiscount,
-        ResetTimePromotionDiscountHandler.new(event_store)
+        RemoveTimePromotionDiscount,
+        RemoveTimePromotionDiscountHandler.new(event_store)
       )
       event_store.subscribe(ApplyTimePromotion, to: [
         PriceItemAdded,
         PriceItemRemoved,
         PercentageDiscountSet,
-        PercentageDiscountReset,
+        PercentageDiscountRemoved,
         PercentageDiscountChanged,
         ProductMadeFreeForOrder,
         FreeProductRemovedFromOrder
@@ -112,7 +112,7 @@ module Pricing
         PriceItemAdded,
         PriceItemRemoved,
         PercentageDiscountSet,
-        PercentageDiscountReset,
+        PercentageDiscountRemoved,
         PercentageDiscountChanged,
         ProductMadeFreeForOrder,
         FreeProductRemovedFromOrder
@@ -121,7 +121,7 @@ module Pricing
         PriceItemAdded,
         PriceItemRemoved,
         PercentageDiscountSet,
-        PercentageDiscountReset,
+        PercentageDiscountRemoved,
         PercentageDiscountChanged,
         ProductMadeFreeForOrder,
         FreeProductRemovedFromOrder

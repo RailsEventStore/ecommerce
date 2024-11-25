@@ -80,7 +80,7 @@ module Pricing
     end
 
     def percentage_discount_reset_event(order_id)
-      PercentageDiscountReset.new(
+      PercentageDiscountRemoved.new(
         data: {
           order_id: order_id,
           type: Pricing::Discounts::TIME_PROMOTION_DISCOUNT

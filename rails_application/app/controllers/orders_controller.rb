@@ -49,9 +49,9 @@ class OrdersController < ApplicationController
     redirect_to edit_order_path(@order_id)
   end
 
-  def reset_discount
+  def remove_discount
     @order_id = params[:id]
-    command_bus.(Pricing::ResetPercentageDiscount.new(order_id: @order_id))
+    command_bus.(Pricing::RemovePercentageDiscount.new(order_id: @order_id))
 
     redirect_to edit_order_path(@order_id)
   end

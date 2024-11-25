@@ -2,7 +2,7 @@ module Pricing
   class NotPossibleToAssignDiscountTwice < StandardError
   end
 
-  class NotPossibleToResetWithoutDiscount < StandardError
+  class NotPossibleToRemoveWithoutDiscount < StandardError
   end
 
   class NotPossibleToChangeDiscount < StandardError
@@ -21,19 +21,19 @@ module Pricing
 
     def call(cmd)
       @repository.with_aggregate(Offer, cmd.aggregate_id) do |order|
-        order.apply_discount(Discounts::GENERAL_DISCOUNT, Discounts::PercentageDiscount.new(cmd.amount))
+        order.apply_discount(Discounts::PercentageDiscount.new(cmd.amount))
       end
     end
   end
 
-  class ResetPercentageDiscountHandler
+  class RemovePercentageDiscountHandler
     def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)
     end
 
     def call(cmd)
       @repository.with_aggregate(Offer, cmd.aggregate_id) do |order|
-        order.reset_discount(Discounts::GENERAL_DISCOUNT)
+        order.remove_discount(Discounts::GENERAL_DISCOUNT)
       end
     end
   end
@@ -45,7 +45,7 @@ module Pricing
 
     def call(cmd)
       @repository.with_aggregate(Offer, cmd.aggregate_id) do |order|
-        order.change_discount(Discounts::GENERAL_DISCOUNT, Discounts::PercentageDiscount.new(cmd.amount))
+        order.change_discount(Discounts::PercentageDiscount.new(cmd.amount))
       end
     end
   end
@@ -57,19 +57,19 @@ module Pricing
 
     def call(cmd)
       @repository.with_aggregate(Offer, cmd.aggregate_id) do |order|
-        order.apply_discount(Discounts::TIME_PROMOTION_DISCOUNT, Discounts::PercentageDiscount.new(cmd.amount))
+        order.apply_discount(Discounts::PercentageDiscount.new(Discounts::TIME_PROMOTION_DISCOUNT, cmd.amount))
       end
     end
   end
 
-  class ResetTimePromotionDiscountHandler
+  class RemoveTimePromotionDiscountHandler
     def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)
     end
 
     def call(cmd)
       @repository.with_aggregate(Offer, cmd.aggregate_id) do |order|
-        order.reset_discount(Discounts::TIME_PROMOTION_DISCOUNT)
+        order.remove_discount(Discounts::TIME_PROMOTION_DISCOUNT)
       end
     end
   end

@@ -88,7 +88,7 @@ module ClientOrders
       end
     end
 
-    class ResetDiscount
+    class RemoveDiscount
       def call(event)
         order = Order.find_by(order_uid: event.data.fetch(:order_id))
         order.percentage_discount = nil

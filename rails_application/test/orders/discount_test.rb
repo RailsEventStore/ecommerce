@@ -41,7 +41,7 @@ module Orders
       assert event_store.event_in_stream?(event_store.read.of_type([Pricing::PercentageDiscountChanged]).last.event_id, "Orders$all")
     end
 
-    def test_reset_discount
+    def test_remove_discount
       customer_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
@@ -50,16 +50,16 @@ module Orders
       item_added_to_basket(order_id, product_id)
       set_percentage_discount(order_id)
 
-      reset_percentage_discount(order_id)
+      remove_percentage_discount(order_id)
 
       order = Order.find_by(uid: order_id)
       assert_equal(50, order.total_value)
       assert_equal(50, order.discounted_value)
       assert_nil(order.percentage_discount)
-      assert event_store.event_in_stream?(event_store.read.of_type([Pricing::PercentageDiscountReset]).last.event_id, "Orders$all")
+      assert event_store.event_in_stream?(event_store.read.of_type([Pricing::PercentageDiscountRemoved]).last.event_id, "Orders$all")
     end
 
-    def test_does_not_reset_percentage_discount_when_time_promotion_reset
+    def test_does_not_remove_percentage_discount_when_time_promotion_reset
       customer_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
@@ -108,8 +108,8 @@ module Orders
 
     private
 
-    def reset_percentage_discount(order_id)
-      run_command(Pricing::ResetPercentageDiscount.new(order_id: order_id))
+    def remove_percentage_discount(order_id)
+      run_command(Pricing::RemovePercentageDiscount.new(order_id: order_id))
     end
 
     def set_percentage_discount(order_id)

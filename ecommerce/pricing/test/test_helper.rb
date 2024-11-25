@@ -46,8 +46,8 @@ module Pricing
       run_command(SetTimePromotionDiscount.new(order_id: order_id, amount: amount))
     end
 
-    def reset_time_promotion_discount(order_id)
-      run_command(ResetTimePromotionDiscount.new(order_id: order_id))
+    def remove_time_promotion_discount(order_id)
+      run_command(RemoveTimePromotionDiscount.new(order_id: order_id))
     end
 
     def fake_name

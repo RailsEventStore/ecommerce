@@ -1,7 +1,7 @@
 require "test_helper"
 
 module Orders
-  class ResetTimePromotionDiscountValueTest < InMemoryTestCase
+  class RemoveTimePromotionDiscountTest < InMemoryTestCase
     cover "Orders*"
 
     def test_resets_time_promotion_discount_value
@@ -31,7 +31,7 @@ module Orders
       set_percentage_discount(order_id)
 
       assert_no_changes -> { Orders::Order.find_by(uid: order_id).time_promotion_discount_value } do
-        reset_percentage_discount(order_id)
+        remove_percentage_discount(order_id)
       end
     end
 
@@ -82,9 +82,9 @@ module Orders
       )
     end
 
-    def reset_percentage_discount(order_id)
+    def remove_percentage_discount(order_id)
       run_command(
-        Pricing::ResetPercentageDiscount.new(order_id: order_id, type: Pricing::Discounts::GENERAL_DISCOUNT)
+        Pricing::RemovePercentageDiscount.new(order_id: order_id, type: Pricing::Discounts::GENERAL_DISCOUNT)
       )
     end
   end

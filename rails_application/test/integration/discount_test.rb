@@ -6,7 +6,7 @@ class DiscountTest < InMemoryRESIntegrationTestCase
     add_available_vat_rate(10)
   end
 
-  def test_reset_discount
+  def test_remove_discount
     register_customer("Shopify")
     order_id = SecureRandom.uuid
 
@@ -17,15 +17,15 @@ class DiscountTest < InMemoryRESIntegrationTestCase
     post "/orders/#{order_id}/add_item?product_id=#{async_remote_id}"
     get "/orders/#{order_id}/edit"
     assert_select("td", "$137.00")
-    assert_select("a", count: 0, text: "Reset")
+    assert_select("a", count: 0, text: "Remove")
 
     apply_discount_10_percent(order_id)
 
-    assert_select("button", "Reset")
-    post "/orders/#{order_id}/reset_discount"
+    assert_select("button", "Remove")
+    post "/orders/#{order_id}/remove_discount"
     follow_redirect!
     assert_select("td", "$137.00")
-    assert_select("a", count: 0, text: "Reset")
+    assert_select("a", count: 0, text: "Remove")
   end
 
   private

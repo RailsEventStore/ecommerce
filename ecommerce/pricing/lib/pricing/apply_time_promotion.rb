@@ -6,10 +6,10 @@ module Pricing
       if discount.exists?
         command_bus.(SetTimePromotionDiscount.new(order_id: event.data.fetch(:order_id), amount: discount.value))
       else
-        command_bus.(ResetTimePromotionDiscount.new(order_id: event.data.fetch(:order_id)))
+        command_bus.(RemoveTimePromotionDiscount.new(order_id: event.data.fetch(:order_id)))
       end
 
-    rescue NotPossibleToAssignDiscountTwice, NotPossibleToResetWithoutDiscount
+    rescue NotPossibleToAssignDiscountTwice, NotPossibleToRemoveWithoutDiscount
     end
 
     private
