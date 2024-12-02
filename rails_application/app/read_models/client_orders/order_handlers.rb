@@ -19,8 +19,20 @@ module ClientOrders
 
     class UpdateDiscount
       def call(event)
+        return unless event.data.fetch(:type) == Pricing::Discounts::GENERAL_DISCOUNT
+
         order = Order.find_or_create_by!(order_uid: event.data.fetch(:order_id))
         order.percentage_discount = event.data.fetch(:amount)
+        order.save!
+      end
+    end
+
+    class UpdateTimePromotionDiscount
+      def call(event)
+        return unless event.data.fetch(:type) == Pricing::Discounts::TIME_PROMOTION_DISCOUNT
+
+        order = Order.find_or_create_by!(order_uid: event.data.fetch(:order_id))
+        order.time_promotion_discount = event.data.fetch(:amount)
         order.save!
       end
     end
@@ -90,8 +102,20 @@ module ClientOrders
 
     class RemoveDiscount
       def call(event)
+        return unless event.data.fetch(:type) == Pricing::Discounts::GENERAL_DISCOUNT
+
         order = Order.find_by(order_uid: event.data.fetch(:order_id))
         order.percentage_discount = nil
+        order.save!
+      end
+    end
+
+    class RemoveTimePromotionDiscount
+      def call(event)
+        return unless event.data.fetch(:type) == Pricing::Discounts::TIME_PROMOTION_DISCOUNT
+
+        order = Order.find_by(order_uid: event.data.fetch(:order_id))
+        order.time_promotion_discount = nil
         order.save!
       end
     end

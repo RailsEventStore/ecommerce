@@ -1,45 +1,10 @@
 require "test_helper"
 
 module ClientOrders
-  class DiscountTest < InMemoryTestCase
+  class TimePromotionDiscountTest < InMemoryTestCase
     cover "ClientOrders*"
 
-    def test_discount_set
-      customer_id = SecureRandom.uuid
-      product_id = SecureRandom.uuid
-      order_id = SecureRandom.uuid
-      customer_registered(customer_id)
-      prepare_product(product_id)
-      item_added_to_basket(order_id, product_id)
-
-      set_percentage_discount(order_id)
-
-      order = Order.find_by(order_uid: order_id)
-      assert_equal 50, order.total_value
-      assert_equal 45, order.discounted_value
-      assert_equal 10, order.percentage_discount
-      assert_nil order.time_promotion_discount
-    end
-
-    def test_discount_changed
-      customer_id = SecureRandom.uuid
-      product_id = SecureRandom.uuid
-      order_id = SecureRandom.uuid
-      customer_registered(customer_id)
-      prepare_product(product_id)
-      item_added_to_basket(order_id, product_id)
-      set_percentage_discount(order_id)
-
-      change_percentage_discount(order_id)
-
-      order = Order.find_by(order_uid: order_id)
-      assert_equal 50, order.total_value
-      assert_equal 49.5, order.discounted_value
-      assert_equal 1, order.percentage_discount
-      assert_nil order.time_promotion_discount
-    end
-
-    def test_does_not_remove_time_promotion_when_removing_percentage_discount
+    def test_time_promotion_set
       customer_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
@@ -47,15 +12,32 @@ module ClientOrders
       prepare_product(product_id)
       create_active_time_promotion(50)
       item_added_to_basket(order_id, product_id)
+
+      order = ClientOrders::Order.find_by(order_uid: order_id)
+      assert_equal 50, order.total_value
+      assert_equal 25, order.discounted_value
+      assert_equal 50, order.time_promotion_discount
+      assert_nil order.percentage_discount
+    end
+
+    def test_does_not_remove_percentage_discount_when_removing_time_promotion
+      customer_id = SecureRandom.uuid
+      product_id = SecureRandom.uuid
+      order_id = SecureRandom.uuid
+      customer_registered(customer_id)
+      prepare_product(product_id)
+      create_active_time_promotion(50)
       set_percentage_discount(order_id)
 
-      remove_percentage_discount(order_id)
+      travel_to Time.current + 1.day do
+        item_added_to_basket(order_id, product_id)
+      end
 
-      order = Order.find_by(order_uid: order_id)
+      order = ClientOrders::Order.find_by(order_uid: order_id)
       assert_equal(50, order.total_value)
-      assert_equal(25, order.discounted_value)
-      assert_nil(order.percentage_discount)
-      assert_equal(50, order.time_promotion_discount)
+      assert_equal(45, order.discounted_value)
+      assert_equal(10, order.percentage_discount)
+      assert_nil(order.time_promotion_discount)
     end
 
     private
@@ -72,16 +54,8 @@ module ClientOrders
       )
     end
 
-    def remove_percentage_discount(order_id)
-      run_command(Pricing::RemovePercentageDiscount.new(order_id: order_id))
-    end
-
     def set_percentage_discount(order_id)
       run_command(Pricing::SetPercentageDiscount.new(order_id: order_id, amount: 10))
-    end
-
-    def change_percentage_discount(order_id)
-      run_command(Pricing::ChangePercentageDiscount.new(order_id: order_id, amount: 1))
     end
 
     def item_added_to_basket(order_id, product_id)
@@ -97,7 +71,7 @@ module ClientOrders
       run_command(
         ProductCatalog::NameProduct.new(
           product_id: product_id,
-          name: "test"
+          name: "Async Remote"
         )
       )
       run_command(Pricing::SetPrice.new(product_id: product_id, price: 50))
