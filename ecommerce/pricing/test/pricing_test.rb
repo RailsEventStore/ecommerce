@@ -117,7 +117,7 @@ module Pricing
       assert_raises(NotPossibleToAssignDiscountTwice) { set_time_promotion_discount(order_id, 25) }
     end
 
-    def test_resets_time_promotion_discount
+    def test_removes_time_promotion_discount
       order_id = SecureRandom.uuid
       stream = stream_name(order_id)
       create_active_time_promotion(25)
@@ -296,7 +296,7 @@ module Pricing
       end
     end
 
-    def test_changing_discount_not_possible_when_discount_is_reset
+    def test_changing_discount_not_possible_when_discount_is_removed
       product_1_id = SecureRandom.uuid
       set_price(product_1_id, 20)
       order_id = SecureRandom.uuid
@@ -384,7 +384,7 @@ module Pricing
       end
     end
 
-    def test_resetting_discount_possible_when_discount_has_been_set_and_then_changed
+    def test_removing_discount_possible_when_discount_has_been_set_and_then_changed
       product_1_id = SecureRandom.uuid
       set_price(product_1_id, 20)
       order_id = SecureRandom.uuid
@@ -419,7 +419,7 @@ module Pricing
       end
     end
 
-    def test_resetting_with_missing_discount_not_possible
+    def test_removing_with_missing_discount_not_possible
       product_1_id = SecureRandom.uuid
       set_price(product_1_id, 20)
       order_id = SecureRandom.uuid

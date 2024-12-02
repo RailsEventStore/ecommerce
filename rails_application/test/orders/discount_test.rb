@@ -59,7 +59,7 @@ module Orders
       assert event_store.event_in_stream?(event_store.read.of_type([Pricing::PercentageDiscountRemoved]).last.event_id, "Orders$all")
     end
 
-    def test_does_not_remove_percentage_discount_when_time_promotion_reset
+    def test_does_not_remove_percentage_discount_when_removing_time_promotion
       customer_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
