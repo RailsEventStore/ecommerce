@@ -4,7 +4,7 @@ module Orders
   class RemoveTimePromotionDiscountTest < InMemoryTestCase
     cover "Orders*"
 
-    def test_resets_time_promotion_discount_value
+    def test_removes_time_promotion_discount_value
       customer_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
@@ -20,7 +20,7 @@ module Orders
       end
     end
 
-    def test_does_not_reset_time_promotion_when_general_discount_reset
+    def test_does_not_removes_time_promotion_when_removing_general_discount
       customer_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid

@@ -77,6 +77,7 @@ module ClientOrders
         tfoot class: "border-t-4" do
           before_discounts_row(order) if order.discounted_value != order.total_value
           general_discount_row(order) if order.percentage_discount
+          time_promotion_row(order) if order.time_promotion_discount
           total_row(order)
         end
       end
@@ -92,6 +93,13 @@ module ClientOrders
         tr class: "border-t" do
           td(class: "py-2", colspan: 3) { "General discount" }
           td(class: "py-2 text-right") { "#{order.percentage_discount}%" }
+        end
+      end
+
+      def time_promotion_row(order)
+        tr class: "border-t" do
+          td(class: "py-2", colspan: 3) { "Time promotion discount" }
+          td(class: "py-2 text-right") { "#{order.time_promotion_discount}%" }
         end
       end
 

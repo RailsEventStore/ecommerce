@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_10_18_113912) do
+ActiveRecord::Schema[7.2].define(version: 2024_11_29_122521) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -60,6 +60,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_18_113912) do
     t.decimal "percentage_discount", precision: 8, scale: 2
     t.decimal "total_value", precision: 8, scale: 2
     t.decimal "discounted_value", precision: 8, scale: 2
+    t.decimal "time_promotion_discount", precision: 8, scale: 2
   end
 
   create_table "clients", force: :cascade do |t|

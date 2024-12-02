@@ -55,6 +55,8 @@ module ClientOrders
       event_store.subscribe(ProductHandlers::ChangeProductPrice, to: [Pricing::PriceSet])
       event_store.subscribe(ProductHandlers::RegisterProduct, to: [ProductCatalog::ProductRegistered])
       event_store.subscribe(ProductHandlers::UpdateProductAvailability, to: [Inventory::AvailabilityChanged])
+      event_store.subscribe(OrderHandlers::UpdateTimePromotionDiscount, to: [Pricing::PercentageDiscountSet])
+      event_store.subscribe(OrderHandlers::RemoveTimePromotionDiscount, to: [Pricing::PercentageDiscountRemoved])
       event_store.subscribe(OrderHandlers::UpdateDiscount, to: [Pricing::PercentageDiscountSet, Pricing::PercentageDiscountChanged])
       event_store.subscribe(OrderHandlers::RemoveDiscount, to: [Pricing::PercentageDiscountRemoved])
       event_store.subscribe(OrderHandlers::UpdateOrderTotalValue, to: [Pricing::OrderTotalValueCalculated])

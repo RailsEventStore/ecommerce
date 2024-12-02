@@ -197,6 +197,7 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
     as_client_add_item_to_basket_for_order(product_id, order_id)
     as_client_submit_order_for_customer(order_id)
 
+    assert_select "tr td", "50.0%"
     assert_select "tr td", "$2.00"
   end
 
