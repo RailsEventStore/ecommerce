@@ -17,6 +17,7 @@ Rails.application.routes.draw do
     resource :shipping_address, only: [:edit, :update]
     resource :billing_address, only: [:edit, :update]
     resource :invoice, only: [:create]
+    resources :refunds, only: [:new]
   end
 
   resources :shipments, only: [:index, :show]
