@@ -17,6 +17,7 @@ class Configuration
     enable_availability_read_model(event_store)
     enable_authentication_read_model(event_store)
     enable_vat_rates_read_model(event_store)
+    enable_refunds_read_model(event_store)
 
     Ecommerce::Configuration.new(
       number_generator: Rails.configuration.number_generator,
@@ -80,5 +81,9 @@ class Configuration
 
   def enable_vat_rates_read_model(event_store)
     VatRates::Configuration.new.call(event_store)
+  end
+
+  def enable_refunds_read_model(event_store)
+    Refunds::Configuration.new.call(event_store)
   end
 end
