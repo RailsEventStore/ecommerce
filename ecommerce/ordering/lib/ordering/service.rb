@@ -72,4 +72,16 @@ module Ordering
       end
     end
   end
+
+  class OnCreateDraftRefund
+    def initialize(event_store)
+      @repository = Infra::AggregateRootRepository.new(event_store)
+    end
+
+    def call(command)
+      @repository.with_aggregate(Refund, command.aggregate_id) do |refund|
+        refund.create_draft(command.order_id)
+      end
+    end
+  end
 end
