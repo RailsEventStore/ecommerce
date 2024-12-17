@@ -4,7 +4,7 @@ module Refunds
 
     has_many :refund_items,
              class_name: "Refunds::RefundItem",
-             foreign_key: :order_uid,
+             foreign_key: :refund_uid,
              primary_key: :uid
   end
 
@@ -15,6 +15,8 @@ module Refunds
   class Configuration
     def call(event_store)
       event_store.subscribe(CreateDraftRefund.new, to: [Ordering::DraftRefundCreated])
+      event_store.subscribe(AddItemToRefund.new, to: [Ordering::ItemAddedToRefund])
+      event_store.subscribe(RemoveItemFromRefund.new, to: [Ordering::ItemRemovedFromRefund])
     end
   end
 end

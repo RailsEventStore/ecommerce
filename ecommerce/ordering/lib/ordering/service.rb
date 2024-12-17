@@ -84,4 +84,28 @@ module Ordering
       end
     end
   end
+
+  class OnAddItemToRefund
+    def initialize(event_store)
+      @repository = Infra::AggregateRootRepository.new(event_store)
+    end
+
+    def call(command)
+      @repository.with_aggregate(Refund, command.aggregate_id) do |refund|
+        refund.add_item(command.product_id)
+      end
+    end
+  end
+
+  class OnRemoveItemFromRefund
+    def initialize(event_store)
+      @repository = Infra::AggregateRootRepository.new(event_store)
+    end
+
+    def call(command)
+      @repository.with_aggregate(Refund, command.aggregate_id) do |refund|
+        refund.remove_item(command.product_id)
+      end
+    end
+  end
 end

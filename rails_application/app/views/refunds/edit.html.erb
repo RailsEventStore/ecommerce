@@ -23,16 +23,16 @@
   </thead>
 
   <tbody>
-  <% @order_lines.each do |order_line| %>
-    <tr class="border-b" id="order_line_product_<%= order_line.product_id %>">
-      <td class="py-2"><%= order_line.product_name %></td>
-      <td class="py-2">0 / <%= order_line.quantity %></td>
-      <td class="py-2"><%= number_to_currency(order_line.price) %></td>
-      <td class="py-2"><%= number_to_currency(order_line.value) %></td>
-      <td class="py-2"><%= button_to "Add", "#", class: "hover:underline text-blue-500" %></td>
-      <td class="py-2 text-right"><%= button_to "Remove", "#", class: "hover:underline text-blue-500" %></td>
-    </tr>
-  <% end %>
+    <% @order_lines.each do |order_line| %>
+      <tr class="border-b" id="order_line_product_<%= order_line.product_id %>">
+        <td class="py-2"><%= order_line.product_name %></td>
+        <td class="py-2">0 / <%= order_line.quantity %></td>
+        <td class="py-2"><%= number_to_currency(order_line.price) %></td>
+        <td class="py-2"><%= number_to_currency(order_line.value) %></td>
+        <td class="py-2"><%= button_to "Add", add_item_order_refund_path(order_id: order_line.order_uid, id: @refund.uid, product_id: order_line.product_id), class: "hover:underline text-blue-500" %></td>
+        <td class="py-2 text-right"><%= button_to "Remove", remove_item_order_refund_path(order_id: order_line.order_uid, id: @refund.uid, product_id: order_line.product_id), class: "hover:underline text-blue-500" %></td>
+      </tr>
+    <% end %>
   </tbody>
   <tfoot class="border-t-4">
     <tr class="border-t">
