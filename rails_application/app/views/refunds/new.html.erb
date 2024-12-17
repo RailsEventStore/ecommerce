@@ -1,0 +1,43 @@
+<% content_for(:header) do %>
+  Refund for Order <%= @order.number %>
+<% end %>
+
+<% content_for(:actions) do %>
+  <%= secondary_action_button do %>
+    <%= link_to 'Back', orders_path %>
+  <% end %>
+
+  <%= primary_form_action_button do %>
+    Submit Refund
+  <% end %>
+<% end %>
+
+<table class="w-full">
+  <thead>
+    <tr class="border-b">
+      <th class="text-left py-2">Product</th>
+      <th class="text-left py-2">Quantity</th>
+      <th class="text-left py-2">Price</th>
+      <th class="text-left py-2" colspan="3">Value</th>
+    </tr>
+  </thead>
+
+  <tbody>
+  <% @order_lines.each do |order_line| %>
+    <tr class="border-b" id="order_line_product_<%= order_line.product_id %>">
+      <td class="py-2"><%= order_line.product_name %></td>
+      <td class="py-2">0 / <%= order_line.quantity %></td>
+      <td class="py-2"><%= number_to_currency(order_line.price) %></td>
+      <td class="py-2"><%= number_to_currency(order_line.value) %></td>
+      <td class="py-2"><%= button_to "Add", "#", class: "hover:underline text-blue-500" %></td>
+      <td class="py-2 text-right"><%= button_to("Remove", "#", class: "hover:underline text-blue-500") %></td>
+    </tr>
+  <% end %>
+  </tbody>
+  <tfoot class="border-t-4">
+    <tr class="border-t">
+      <td class="py-2" colspan="3">Total</td>
+      <td class="py-2 font-bold"></td></td>
+    </tr>
+  </tfoot>
+</table>
