@@ -14,7 +14,7 @@ module Refunds
 
   class Configuration
     def call(event_store)
-      @event_store = event_store
+      event_store.subscribe(CreateDraftRefund.new, to: [Ordering::DraftRefundCreated])
     end
   end
 end

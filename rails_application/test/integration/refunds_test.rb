@@ -16,12 +16,14 @@ class RefundsTest < InMemoryRESIntegrationTestCase
     add_product_to_basket(order_id, fearless_id)
     add_product_to_basket(order_id, fearless_id)
     submit_order(shopify_id, order_id)
+    pay_order(order_id)
 
     get "/orders/#{order_id}"
 
-    assert_select("a", "Refund")
+    assert_select("button", "Refund")
 
-    get "/orders/#{order_id}/refunds/new"
+    post "/orders/#{order_id}/refunds"
+    follow_redirect!
 
     assert_order_line_row(async_remote_id, "Async Remote", 1)
     assert_order_line_row(fearless_id, "Fearless Refactoring", 2)
