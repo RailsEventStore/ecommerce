@@ -11,6 +11,7 @@ module Ordering
       stream = "Ordering::Refund$#{aggregate_id}"
 
       arrange(
+        AddItemToBasket.new(order_id: order_id, product_id: product_id),
         CreateDraftRefund.new(
           refund_id: aggregate_id,
           order_id: order_id
@@ -35,6 +36,26 @@ module Ordering
             product_id: product_id
           )
         )
+      end
+    end
+
+    def test_add_item_raises_exceeds_order_quantity_error
+      aggregate_id = SecureRandom.uuid
+      order_id = SecureRandom.uuid
+      product_id = SecureRandom.uuid
+
+      arrange(
+        AddItemToBasket.new(order_id: order_id, product_id: product_id),
+        CreateDraftRefund.new(refund_id: aggregate_id, order_id: order_id),
+        AddItemToRefund.new(
+          refund_id: aggregate_id,
+          order_id: order_id,
+          product_id: product_id
+        )
+      )
+
+      assert_raises(Ordering::Refund::ExceedsOrderQuantityError) do
+        act(AddItemToRefund.new(refund_id: aggregate_id, order_id: order_id, product_id: product_id))
       end
     end
   end

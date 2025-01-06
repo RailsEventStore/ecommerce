@@ -1,40 +1,21 @@
 module Refunds
   class AddItemToRefund
     def call(event)
-      refund_id = event.data.fetch(:refund_id)
-      Refund.find_or_create_by!(uid: refund_id)
-      product_id = event.data.fetch(:product_id)
-      item =
-        find(refund_id, product_id) ||
-          create(refund_id, product_id)
+      refund = Refund.find_by!(uid: event.data.fetch(:refund_id))
+      product = Orders::Product.find_by!(uid: event.data.fetch(:product_id))
+
+      item = refund.refund_items.find_or_create_by(product_uid: product.uid) do |item|
+        item.price = product.price
+        item.quantity = 0
+      end
+
+      refund.total_value += item.price
       item.quantity += 1
-      item.save!
-    end
 
-    private
-
-    def event_store
-      Rails.configuration.event_store
-    end
-
-    def find(refund_id, product_id)
-      Refund
-        .find_by_uid(refund_id)
-        .refund_items
-        .where(product_uid: product_id)
-        .first
-    end
-
-    def create(refund_id, product_id)
-      product = Orders::Product.find_by_uid(product_id)
-      Refund
-        .find_by(uid: refund_id)
-        .refund_items
-        .create(
-          product_uid: product_id,
-          price: product.price,
-          quantity: 0
-        )
+      ActiveRecord::Base.transaction do
+        refund.save!
+        item.save!
+      end
     end
   end
 end

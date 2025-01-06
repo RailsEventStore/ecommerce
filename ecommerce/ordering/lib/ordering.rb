@@ -22,6 +22,7 @@ require_relative "ordering/number_generator"
 require_relative "ordering/service"
 require_relative "ordering/order"
 require_relative "ordering/refund"
+require_relative "ordering/projections"
 
 module Ordering
   class Configuration
