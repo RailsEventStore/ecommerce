@@ -1,24 +1,16 @@
 module Refunds
   class RemoveItemFromRefund
     def call(event)
-      refund_id = event.data.fetch(:refund_id)
-      product_id = event.data.fetch(:product_id)
-      item = find(refund_id, product_id)
+      refund = Refund.find_by!(uid: event.data.fetch(:refund_id))
+      item = refund.refund_items.find_by!(product_uid: event.data.fetch(:product_id))
+
+      refund.total_value -= item.price
       item.quantity -= 1
-      item.quantity > 0 ? item.save! : item.destroy!
-    end
 
-    private
-    def find(order_uid, product_id)
-      Refund
-        .find_by_uid(order_uid)
-        .refund_items
-        .where(product_uid: product_id)
-        .first
-    end
-
-    def event_store
-      Rails.configuration.event_store
+      ActiveRecord::Base.transaction do
+        refund.save!
+        item.quantity > 0 ? item.save! : item.destroy!
+      end
     end
   end
 end

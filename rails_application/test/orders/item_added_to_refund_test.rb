@@ -4,34 +4,20 @@ module Refunds
   class ItemAddedToRefundTest < InMemoryTestCase
     cover "Orders*"
 
-    def test_add_new_item_to_refund
-      customer_id = SecureRandom.uuid
-      product_id = SecureRandom.uuid
-      another_product_id = SecureRandom.uuid
-      order_id = SecureRandom.uuid
+    def test_add_item_to_refund
       refund_id = SecureRandom.uuid
-      register_customer(customer_id)
+      product_id = SecureRandom.uuid
+      order_id = SecureRandom.uuid
       prepare_product(product_id, 50)
-      prepare_product(another_product_id, 30)
-      run_command(Ordering::AddItemToBasket.new(order_id: order_id, product_id: product_id))
-      run_command(Ordering::AddItemToBasket.new(order_id: order_id, product_id: another_product_id))
-      assign_customer_to_order(customer_id, order_id)
-      submit_order(order_id, customer_id)
-      confirm_order(order_id)
       create_draft_refund(refund_id, order_id)
-      add_item_to_refund(refund_id, order_id, product_id)
-      add_item_to_refund(refund_id, order_id, product_id)
-      add_item_to_refund(refund_id, order_id, another_product_id)
 
-      assert_equal(Refunds::RefundItem.count, 2)
+      AddItemToRefund.new.call(item_added_to_refund(refund_id, order_id, product_id))
+
+      assert_equal(Refunds::RefundItem.count, 1)
       refund_item = Refunds::RefundItem.find_by(refund_uid: refund_id, product_uid: product_id)
-      assert_equal(refund_item.product_uid, product_id)
-      assert_equal(refund_item.quantity, 2)
-      assert_equal(refund_item.price, 50)
-      second_refund_item = Refunds::RefundItem.find_by(refund_uid: refund_id, product_uid: another_product_id)
-      assert_equal(second_refund_item.product_uid, another_product_id)
-      assert_equal(second_refund_item.quantity, 1)
-      assert_equal(second_refund_item.price, 30)
+      assert_equal(product_id, refund_item.product_uid)
+      assert_equal(1, refund_item.quantity)
+      assert_equal(50, refund_item.price)
 
       assert_equal(Refunds::Refund.count, 1)
       refund = Refunds::Refund.find_by(uid: refund_id)
@@ -39,10 +25,6 @@ module Refunds
     end
 
     private
-
-    def item_added_to_basket(order_id, product_id)
-      event_store.publish(Pricing::PriceItemAdded.new(data: { product_id: product_id, order_id: order_id }))
-    end
 
     def prepare_product(product_id, price)
       run_command(
@@ -59,33 +41,14 @@ module Refunds
       run_command(Pricing::SetPrice.new(product_id: product_id, price: price))
     end
 
-    def register_customer(customer_id)
-      run_command(Crm::RegisterCustomer.new(customer_id: customer_id, name: "Arkency"))
-    end
-
-    def assign_customer_to_order(customer_id, order_id)
-      run_command(Crm::AssignCustomerToOrder.new(customer_id: customer_id, order_id: order_id))
-    end
-
-    def submit_order(order_id, customer_id)
-      order_number = Ordering::FakeNumberGenerator::FAKE_NUMBER
-      run_command(Ordering::SubmitOrder.new(order_id: order_id, order_number: order_number, customer_id: customer_id))
-    end
-
-    def confirm_order(order_id)
-      run_command(Fulfillment::ConfirmOrder.new(order_id: order_id))
-    end
-
     def create_draft_refund(refund_id, order_id)
-      run_command(Ordering::CreateDraftRefund.new(refund_id: refund_id, order_id: order_id))
+      run_command(
+        Ordering::CreateDraftRefund.new(refund_id: refund_id, order_id: order_id)
+      )
     end
 
-    def add_item_to_refund(refund_id, order_id, product_id)
-      run_command(Ordering::AddItemToRefund.new(refund_id: refund_id, order_id: order_id, product_id: product_id))
-    end
-
-    def event_store
-      Rails.configuration.event_store
+    def item_added_to_refund(refund_id, order_id, product_id)
+      Ordering::ItemAddedToRefund.new(data: { refund_id: refund_id, order_id: order_id, product_id: product_id })
     end
   end
 end

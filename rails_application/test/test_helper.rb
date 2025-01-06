@@ -127,6 +127,14 @@ class InMemoryRESIntegrationTestCase < ActionDispatch::IntegrationTest
     post "/orders/#{order_id}/add_item?product_id=#{product_id}"
   end
 
+  def add_item_to_refund(order_id, refund_id, product_id)
+    post "/orders/#{order_id}/refunds/#{refund_id}/add_item?product_id=#{product_id}"
+  end
+
+  def remove_item_from_refund(order_id, refund_id, product_id)
+    post "/orders/#{order_id}/refunds/#{refund_id}/remove_item?product_id=#{product_id}"
+  end
+
   def run_command(command)
     Rails.configuration.command_bus.call(command)
   end

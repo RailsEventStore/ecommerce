@@ -2,6 +2,7 @@ module Ordering
   class Refund
     include AggregateRoot
 
+    ExceedsOrderQuantityError = Class.new(StandardError)
     ProductNotFoundError = Class.new(StandardError)
 
     def initialize(id)
@@ -13,7 +14,8 @@ module Ordering
       apply DraftRefundCreated.new(data: { refund_id: @id, order_id: order_id })
     end
 
-    def add_item(product_id)
+    def add_item(product_id, available_quantity_to_refund)
+      raise ExceedsOrderQuantityError unless enough_items?(available_quantity_to_refund, product_id)
       apply ItemAddedToRefund.new(data: { refund_id: @id, order_id: @order_id, product_id: product_id })
     end
 
@@ -33,6 +35,12 @@ module Ordering
     on ItemRemovedFromRefund do |event|
       @refund_items.decrease_quantity(event.data[:product_id])
     end
+
+    private
+
+    def enough_items?(available_quantity_to_refund, product_id)
+      @refund_items.quantity(product_id) < available_quantity_to_refund
+    end
   end
 
   class ItemsList
@@ -48,7 +56,7 @@ module Ordering
 
     def decrease_quantity(product_id)
       refund_items[product_id] -= 1
-      refund_items.delete(product_id) if refund_items.fetch(product_id).equal?(0)
+      refund_items.delete(product_id) if quantity(product_id).equal?(0)
     end
 
     def quantity(product_id)

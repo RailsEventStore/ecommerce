@@ -88,12 +88,25 @@ module Ordering
   class OnAddItemToRefund
     def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)
+      @event_store = event_store
     end
 
     def call(command)
       @repository.with_aggregate(Refund, command.aggregate_id) do |refund|
-        refund.add_item(command.product_id)
+        refund.add_item(
+          command.product_id,
+          available_quantity_to_refund(command.order_id, command.product_id)
+        )
       end
+    end
+
+    private
+
+    def available_quantity_to_refund(order_id, product_id)
+      Projections
+        .product_quantity_available_to_refund(order_id, product_id)
+        .run(@event_store)
+        .fetch(:available)
     end
   end
 
