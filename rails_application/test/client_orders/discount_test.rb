@@ -55,7 +55,8 @@ module ClientOrders
       assert_equal(50, order.total_value)
       assert_equal(25, order.discounted_value)
       assert_nil(order.percentage_discount)
-      assert_equal(50, order.time_promotion_discount)
+      assert_equal(50, order.time_promotion_discount["discount_value"])
+      assert_equal("time_promotion_discount", order.time_promotion_discount["type"])
     end
 
     private

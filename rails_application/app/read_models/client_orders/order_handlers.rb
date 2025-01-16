@@ -32,7 +32,7 @@ module ClientOrders
         return unless event.data.fetch(:type) == Pricing::Discounts::TIME_PROMOTION_DISCOUNT
 
         order = Order.find_or_create_by!(order_uid: event.data.fetch(:order_id))
-        order.time_promotion_discount = event.data.fetch(:amount)
+        order.time_promotion_discount = { discount_value: event.data.fetch(:amount).to_f, type: Pricing::Discounts::TIME_PROMOTION_DISCOUNT }
         order.save!
       end
     end

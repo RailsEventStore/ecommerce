@@ -60,7 +60,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_11_29_122521) do
     t.decimal "percentage_discount", precision: 8, scale: 2
     t.decimal "total_value", precision: 8, scale: 2
     t.decimal "discounted_value", precision: 8, scale: 2
-    t.decimal "time_promotion_discount", precision: 8, scale: 2
+    t.jsonb "time_promotion_discount"
   end
 
   create_table "clients", force: :cascade do |t|

@@ -16,7 +16,8 @@ module ClientOrders
       order = ClientOrders::Order.find_by(order_uid: order_id)
       assert_equal 50, order.total_value
       assert_equal 25, order.discounted_value
-      assert_equal 50, order.time_promotion_discount
+      assert_equal 50, order.time_promotion_discount["discount_value"]
+      assert_equal "time_promotion_discount", order.time_promotion_discount["type"]
       assert_nil order.percentage_discount
     end
 
