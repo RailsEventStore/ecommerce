@@ -99,7 +99,7 @@ module ClientOrders
       def time_promotion_row(order)
         tr class: "border-t" do
           td(class: "py-2", colspan: 3) { "Time promotion discount" }
-          td(class: "py-2 text-right") { "#{order.time_promotion_discount}%" }
+          td(class: "py-2 text-right") { "#{order.time_promotion_discount["discount_value"]}%" }
         end
       end
 
