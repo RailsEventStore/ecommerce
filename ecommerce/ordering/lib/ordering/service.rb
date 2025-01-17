@@ -103,8 +103,8 @@ module Ordering
     private
 
     def available_quantity_to_refund(order_id, product_id)
-      Projections
-        .product_quantity_available_to_refund(order_id, product_id)
+      ProductQuantityAvailableToRefund
+        .call(order_id, product_id)
         .run(@event_store)
         .fetch(:available)
     end

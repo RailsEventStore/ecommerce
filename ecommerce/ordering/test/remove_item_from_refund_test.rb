@@ -67,7 +67,7 @@ module Ordering
         )
       )
 
-      assert_raises(Refund::ProductNotFoundError) do
+      assert_raises(Refund::RefundHaveNotBeenRequestedForThisProductError) do
         act(
           RemoveItemFromRefund.new(
             refund_id: aggregate_id,

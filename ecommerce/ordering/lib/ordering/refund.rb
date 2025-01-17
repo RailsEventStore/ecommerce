@@ -3,7 +3,7 @@ module Ordering
     include AggregateRoot
 
     ExceedsOrderQuantityError = Class.new(StandardError)
-    ProductNotFoundError = Class.new(StandardError)
+    RefundHaveNotBeenRequestedForThisProductError = Class.new(StandardError)
 
     def initialize(id)
       @id = id
@@ -20,7 +20,7 @@ module Ordering
     end
 
     def remove_item(product_id)
-      raise ProductNotFoundError unless @refund_items.quantity(product_id).positive?
+      raise RefundHaveNotBeenRequestedForThisProductError unless @refund_items.quantity(product_id).positive?
       apply ItemRemovedFromRefund.new(data: { refund_id: @id, order_id: @order_id, product_id: product_id })
     end
 
