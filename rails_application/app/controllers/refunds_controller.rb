@@ -23,7 +23,7 @@ class RefundsController < ApplicationController
   def remove_item
     remove_item_from_refund
     redirect_to edit_order_refund_path(params[:id], order_id: params[:order_id])
-  rescue Ordering::Refund::ProductNotFoundError
+  rescue Ordering::Refund::RefundHaveNotBeenRequestedForThisProductError
     flash[:alert] = "This product is not added to the refund."
     redirect_to edit_order_refund_path(params[:id], order_id: params[:order_id])
   end

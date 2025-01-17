@@ -1,15 +1,15 @@
 require_relative "test_helper"
 
 module Ordering
-  class ProjectionsTest < Test
-    cover "Ordering::Projections"
+  class ProductQuantityAvailableToRefundTest < Test
+    cover "Ordering::ProductQuantityAvailableToRefund"
 
     def test_product_quantity_available_to_refund
       order_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
       another_product_id = SecureRandom.uuid
       stream_name = "Ordering::Order$#{order_id}"
-      projection = Projections.product_quantity_available_to_refund(order_id, product_id)
+      projection = ProductQuantityAvailableToRefund.call(order_id, product_id)
 
       event_store = RubyEventStore::Client.new(repository: RubyEventStore::InMemoryRepository.new)
 
