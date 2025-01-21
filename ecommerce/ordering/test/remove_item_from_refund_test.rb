@@ -7,11 +7,16 @@ module Ordering
     def test_removing_items_from_refund
       order_id = SecureRandom.uuid
       aggregate_id = SecureRandom.uuid
-      product_id = SecureRandom.uuid
+      product_1_id = SecureRandom.uuid
+      product_2_id = SecureRandom.uuid
+      product_3_id = SecureRandom.uuid
       stream = "Ordering::Refund$#{aggregate_id}"
 
       arrange(
-        AddItemToBasket.new(order_id: order_id, product_id: product_id),
+        AddItemToBasket.new(order_id: order_id, product_id: product_1_id),
+        AddItemToBasket.new(order_id: order_id, product_id: product_2_id),
+        AddItemToBasket.new(order_id: order_id, product_id: product_2_id),
+        AddItemToBasket.new(order_id: order_id, product_id: product_3_id),
         CreateDraftRefund.new(
           refund_id: aggregate_id,
           order_id: order_id
@@ -19,7 +24,7 @@ module Ordering
         AddItemToRefund.new(
           refund_id: aggregate_id,
           order_id: order_id,
-          product_id: product_id
+          product_id: product_1_id
         )
       )
 
@@ -28,7 +33,7 @@ module Ordering
           data: {
             refund_id: aggregate_id,
             order_id: order_id,
-            product_id: product_id
+            product_id: product_1_id
           }
         )
       ]
@@ -38,7 +43,7 @@ module Ordering
           RemoveItemFromRefund.new(
             refund_id: aggregate_id,
             order_id: order_id,
-            product_id: product_id
+            product_id: product_1_id
           )
         )
       end

@@ -9,7 +9,8 @@ module Refunds
       product_id = SecureRandom.uuid
       another_product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
-      create_draft_refund(refund_id, order_id)
+      refundable_products = [{product_id: product_id, quantity: 1}, {product_id: another_product_id, quantity: 1}]
+      create_draft_refund(refund_id, order_id, refundable_products)
       prepare_product(product_id, 50)
       prepare_product(another_product_id, 30)
       AddItemToRefund.new.call(item_added_to_refund(refund_id, order_id, product_id))
@@ -30,8 +31,8 @@ module Refunds
 
     private
 
-    def create_draft_refund(refund_id, order_id)
-      draft_refund_created = Ordering::DraftRefundCreated.new(data: { refund_id: refund_id, order_id: order_id })
+    def create_draft_refund(refund_id, order_id, refundable_products)
+      draft_refund_created = Ordering::DraftRefundCreated.new(data: { refund_id: refund_id, order_id: order_id, refundable_products: refundable_products })
       CreateDraftRefund.new.call(draft_refund_created)
     end
 
