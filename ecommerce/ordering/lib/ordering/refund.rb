@@ -10,12 +10,12 @@ module Ordering
       @refund_items = ItemsList.new
     end
 
-    def create_draft(order_id)
-      apply DraftRefundCreated.new(data: { refund_id: @id, order_id: order_id })
+    def create_draft(order_id, refundable_products)
+      apply DraftRefundCreated.new(data: { refund_id: @id, order_id: order_id, refundable_products: refundable_products })
     end
 
-    def add_item(product_id, available_quantity_to_refund)
-      raise ExceedsOrderQuantityError unless enough_items?(available_quantity_to_refund, product_id)
+    def add_item(product_id)
+      raise ExceedsOrderQuantityError unless enough_items?(product_id)
       apply ItemAddedToRefund.new(data: { refund_id: @id, order_id: @order_id, product_id: product_id })
     end
 
@@ -26,6 +26,7 @@ module Ordering
 
     on DraftRefundCreated do |event|
       @order_id = event.data[:order_id]
+      @refundable_products = event.data[:refundable_products]
     end
 
     on ItemAddedToRefund do |event|
@@ -38,8 +39,13 @@ module Ordering
 
     private
 
-    def enough_items?(available_quantity_to_refund, product_id)
-      @refund_items.quantity(product_id) < available_quantity_to_refund
+    def enough_items?(product_id)
+      @refund_items.quantity(product_id) < refundable_quantity(product_id)
+    end
+
+    def refundable_quantity(product_id)
+      product = @refundable_products.find { |product| product.fetch(:product_id) == product_id }
+      product.fetch(:quantity)
     end
   end
 

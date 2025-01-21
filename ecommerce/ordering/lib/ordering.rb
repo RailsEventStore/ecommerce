@@ -22,7 +22,7 @@ require_relative "ordering/number_generator"
 require_relative "ordering/service"
 require_relative "ordering/order"
 require_relative "ordering/refund"
-require_relative "ordering/product_quantity_available_to_refund"
+require_relative "ordering/refundable_products"
 
 module Ordering
   class Configuration

@@ -13,7 +13,8 @@ module Ordering
         DraftRefundCreated.new(
           data: {
             refund_id: aggregate_id,
-            order_id: order_id
+            order_id: order_id,
+            refundable_products: []
           }
         )
       ]
