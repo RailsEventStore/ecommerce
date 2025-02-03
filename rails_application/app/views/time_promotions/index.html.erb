@@ -24,8 +24,8 @@
     <tr class="border-t">
       <td class="py-2"><%= time_promotion.label %></td>
       <td class="py-2"><%= time_promotion.discount %></td>
-      <td class="py-2"><%= time_promotion.start_time %></td>
-      <td class="py-2"><%= time_promotion.end_time %></td>
+      <td class="py-2"><%= time_promotion.start_time.strftime("%Y-%m-%d %H:%M") %></td>
+      <td class="py-2"><%= time_promotion.end_time.strftime("%Y-%m-%d %H:%M") %></td>
     </tr>
   <% end %>
   </tbody>
