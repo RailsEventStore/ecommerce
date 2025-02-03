@@ -40,12 +40,12 @@ class TimePromotionsTest < InMemoryRESIntegrationTestCase
     get "/time_promotions"
     assert_select("td", "Last Minute June 2022")
     assert_select("td", "50")
-    assert_select("td", "2022-06-30 15:00:00 +0200")
-    assert_select("td", "2022-07-01 00:00:00 +0200")
+    assert_select("td", "2022-06-30 15:00")
+    assert_select("td", "2022-07-01 00:00")
 
     assert_select("td", "Black Monday July 2022")
     assert_select("td", "40")
-    assert_select("td", "2022-07-04 01:00:00 +0200")
-    assert_select("td", "2022-07-05 00:00:00 +0200")
+    assert_select("td", "2022-07-04 01:00")
+    assert_select("td", "2022-07-05 00:00")
   end
 end
