@@ -13,15 +13,15 @@ module Refunds
 
       AddItemToRefund.new.call(item_added_to_refund(refund_id, order_id, product_id))
 
-      assert_equal(Refunds::RefundItem.count, 1)
+      assert_equal(1, Refunds::RefundItem.count)
       refund_item = Refunds::RefundItem.find_by(refund_uid: refund_id, product_uid: product_id)
       assert_equal(product_id, refund_item.product_uid)
       assert_equal(1, refund_item.quantity)
       assert_equal(50, refund_item.price)
 
-      assert_equal(Refunds::Refund.count, 1)
+      assert_equal(1, Refunds::Refund.count)
       refund = Refunds::Refund.find_by(uid: refund_id)
-      assert_equal(refund.status, "Draft")
+      assert_equal("Draft", refund.status)
     end
 
     private
