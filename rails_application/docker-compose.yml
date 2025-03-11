@@ -3,7 +3,7 @@ volumes:
   gems:
 services:
   postgres:
-    image: postgres:11
+    image: postgres:17-alpine
     restart: always
     environment:
       - POSTGRES_DB=cqrs-es-sample-with-res

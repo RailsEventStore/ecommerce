@@ -11,8 +11,8 @@ jobs:
     env:
       WORKING_DIRECTORY: rails_application
     services:
-      postgres_11:
-        image: postgres:11
+      postgres:
+        image: postgres:17-alpine
         env:
           POSTGRES_DB: cqrs-es-sample-with-res_test
           POSTGRES_PASSWORD: secret
@@ -54,8 +54,8 @@ jobs:
     env:
       WORKING_DIRECTORY: rails_application
     services:
-      postgres_11:
-        image: postgres:11
+      postgres:
+        image: postgres:17-alpine
         env:
           POSTGRES_DB: cqrs-es-sample-with-res_test
           POSTGRES_PASSWORD: secret
