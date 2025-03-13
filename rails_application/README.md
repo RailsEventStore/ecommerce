@@ -34,8 +34,8 @@ you need to update `DATABASE_URL`.
 
 ### Kickstart
 
-- run `make dev` to install dependencies, create db, setup schema and seed data
-- run `bin/dev` to start the web server with Tailwind in "watch" mode
+- run `make install` to install dependencies, create db, setup schema and seed data
+- run `make dev` to start the rails server and tailwindcss watcher
 
 ## Testing
 
