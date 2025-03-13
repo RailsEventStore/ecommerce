@@ -1,6 +1,6 @@
 install: ## Installs dependencies, runs migrations, creates db & seeds if necessary
 	@bin/setup
-	@env RAILS_ENV=test bin/rails db:setup
+	@env RAILS_ENV=test bin/rails db:create
 
 dev:
 	@$(MAKE) -j 10 web css
