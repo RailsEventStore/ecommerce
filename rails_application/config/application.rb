@@ -14,7 +14,7 @@ Bundler.require(*Rails.groups)
 class RailsApplication
   class Application < Rails::Application
 
-    config.load_defaults 7.1
+    config.load_defaults 7.2
     config.generators.system_tests = nil
   end
 end
