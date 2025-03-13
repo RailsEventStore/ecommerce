@@ -20,7 +20,7 @@ help:
 .DEFAULT_GOAL := help
 
 css:
-	bin/rails tailwindcss:watch
+	bin/rails tailwindcss:watch[always]
 
 web:
 	bin/rails server -p 3000
