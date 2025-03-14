@@ -107,4 +107,4 @@ DEPENDENCIES
   mutant-minitest (= 0.12.4)!
 
 BUNDLED WITH
-   2.5.9
+   2.5.23
