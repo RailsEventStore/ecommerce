@@ -11,11 +11,6 @@ PATH
       ruby_event_store-transformations
 
 GEM
-  remote: https://oss:7AXfeZdAfCqL1PvHm2nvDJO6Zd9UW8IK@gem.mutant.dev/
-  specs:
-    mutant-license (0.1.1.2.1627430819213747598431630701693729869473.6)
-
-GEM
   remote: https://rubygems.org/
   specs:
     activesupport (7.1.3.2)
@@ -99,7 +94,6 @@ PLATFORMS
 DEPENDENCIES
   infra!
   minitest (= 5.25.0)!
-  mutant-license!
   mutant-minitest (= 0.12.4)!
 
 BUNDLED WITH
