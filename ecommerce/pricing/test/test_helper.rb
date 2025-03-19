@@ -32,9 +32,9 @@ module Pricing
       )
     end
 
-    def remove_item(order_id, product_id)
+    def remove_item(order_id, product_id, catalog_price)
       run_command(
-        RemovePriceItem.new(order_id: order_id, product_id: product_id)
+        RemovePriceItem.new(order_id: order_id, product_id: product_id, catalog_price: catalog_price)
       )
     end
 

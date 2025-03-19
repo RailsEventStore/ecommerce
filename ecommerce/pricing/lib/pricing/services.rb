@@ -17,11 +17,15 @@ module Pricing
   class SetPercentageDiscountHandler
     def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)
+      @event_store = event_store
     end
 
     def call(cmd)
       @repository.with_aggregate(Offer, cmd.aggregate_id) do |order|
-        order.apply_discount(Discounts::PercentageDiscount.new(cmd.amount))
+        order.apply_discount(
+          Discounts::PercentageDiscount.new(cmd.amount),
+          DefaultPricingPolicy.new(PricingCatalog.new(@event_store))
+        )
       end
     end
   end
@@ -29,11 +33,12 @@ module Pricing
   class RemovePercentageDiscountHandler
     def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)
+      @event_store = event_store
     end
 
     def call(cmd)
       @repository.with_aggregate(Offer, cmd.aggregate_id) do |order|
-        order.remove_discount(Discounts::GENERAL_DISCOUNT)
+        order.remove_discount(Discounts::GENERAL_DISCOUNT, DefaultPricingPolicy.new(PricingCatalog.new(@event_store)))
       end
     end
   end
@@ -41,11 +46,15 @@ module Pricing
   class ChangePercentageDiscountHandler
     def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)
+      @event_store = event_store
     end
 
     def call(cmd)
       @repository.with_aggregate(Offer, cmd.aggregate_id) do |order|
-        order.change_discount(Discounts::PercentageDiscount.new(cmd.amount))
+        order.change_discount(
+          Discounts::PercentageDiscount.new(cmd.amount),
+          DefaultPricingPolicy.new(PricingCatalog.new(@event_store))
+        )
       end
     end
   end
@@ -53,11 +62,15 @@ module Pricing
   class SetTimePromotionDiscountHandler
     def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)
+      @event_store = event_store
     end
 
     def call(cmd)
       @repository.with_aggregate(Offer, cmd.aggregate_id) do |order|
-        order.apply_discount(Discounts::PercentageDiscount.new(Discounts::TIME_PROMOTION_DISCOUNT, cmd.amount))
+        order.apply_discount(
+          Discounts::PercentageDiscount.new(Discounts::TIME_PROMOTION_DISCOUNT, cmd.amount),
+          DefaultPricingPolicy.new(PricingCatalog.new(@event_store))
+        )
       end
     end
   end
@@ -65,11 +78,15 @@ module Pricing
   class RemoveTimePromotionDiscountHandler
     def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)
+      @event_store = event_store
     end
 
     def call(cmd)
       @repository.with_aggregate(Offer, cmd.aggregate_id) do |order|
-        order.remove_discount(Discounts::TIME_PROMOTION_DISCOUNT)
+        order.remove_discount(
+          Discounts::TIME_PROMOTION_DISCOUNT,
+          DefaultPricingPolicy.new(PricingCatalog.new(@event_store))
+        )
       end
     end
   end
@@ -116,11 +133,12 @@ module Pricing
   class OnAddItemToBasket
     def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)
+      @event_store = event_store
     end
 
     def call(command)
       @repository.with_aggregate(Offer, command.aggregate_id) do |order|
-        order.add_item(command.product_id)
+        order.add_item(command.product_id, DefaultPricingPolicy.new(PricingCatalog.new(@event_store)))
       end
     end
   end
@@ -132,7 +150,7 @@ module Pricing
 
     def call(command)
       @repository.with_aggregate(Offer, command.aggregate_id) do |order|
-        order.remove_item(command.product_id)
+        order.remove_item(command.product_id, command.catalog_price)
       end
     end
   end

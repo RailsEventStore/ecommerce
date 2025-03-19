@@ -9,17 +9,8 @@ module Pricing
   class RemovePriceItem < Infra::Command
     attribute :order_id, Infra::Types::UUID
     attribute :product_id, Infra::Types::UUID
+    attribute :catalog_price, Infra::Types::Value
 
-    alias aggregate_id order_id
-  end
-
-  class CalculateTotalValue < Infra::Command
-    attribute :order_id, Infra::Types::UUID
-    alias aggregate_id order_id
-  end
-
-  class CalculateSubAmounts < Infra::Command
-    attribute :order_id, Infra::Types::UUID
     alias aggregate_id order_id
   end
 

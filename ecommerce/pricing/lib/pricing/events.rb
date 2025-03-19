@@ -18,20 +18,6 @@ module Pricing
     attribute? :end_time, Infra::Types::Time
   end
 
-  class OrderTotalValueCalculated < Infra::Event
-    attribute :order_id, Infra::Types::UUID
-    attribute :discounted_amount, Infra::Types::Value
-    attribute :total_amount, Infra::Types::Value
-  end
-
-  class PriceItemValueCalculated < Infra::Event
-    attribute :order_id, Infra::Types::UUID
-    attribute :product_id, Infra::Types::UUID
-    attribute :quantity, Infra::Types::Quantity
-    attribute :discounted_amount, Infra::Types::Value
-    attribute :amount, Infra::Types::Value
-  end
-
   class PercentageDiscountSet < Infra::Event
     attribute :order_id, Infra::Types::UUID
     attribute :type, Infra::Types::String
@@ -46,6 +32,15 @@ module Pricing
   class PriceItemRemoved < Infra::Event
     attribute :order_id, Infra::Types::UUID
     attribute :product_id, Infra::Types::UUID
+  end
+
+  class OfferItemsPricesRecalculated < Infra::Event
+    attribute :order_id, Infra::Types::UUID
+    attribute :order_items, Infra::Types::Array do
+      attribute :product_id, Infra::Types::UUID
+      attribute :catalog_price, Infra::Types::Value
+      attribute :price, Infra::Types::Value
+    end
   end
 
   class PercentageDiscountRemoved < Infra::Event
