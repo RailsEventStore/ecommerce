@@ -19,6 +19,7 @@ gem 'arbre'
 
 group :development do
   gem "listen", "~> 3.3"
+  gem "web-console"
 end
 
 group :development, :test do
