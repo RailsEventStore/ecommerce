@@ -27,11 +27,15 @@ module Pricing
   class PriceItemAdded < Infra::Event
     attribute :order_id, Infra::Types::UUID
     attribute :product_id, Infra::Types::UUID
+    attribute :price, Infra::Types::Value
+    attribute :catalog_price, Infra::Types::Value
   end
 
   class PriceItemRemoved < Infra::Event
     attribute :order_id, Infra::Types::UUID
     attribute :product_id, Infra::Types::UUID
+    attribute :price, Infra::Types::Value
+    attribute :catalog_price, Infra::Types::Value
   end
 
   class OfferItemsPricesRecalculated < Infra::Event
