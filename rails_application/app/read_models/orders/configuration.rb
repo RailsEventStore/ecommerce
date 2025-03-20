@@ -7,6 +7,31 @@ module Orders
              class_name: "Orders::OrderLine",
              foreign_key: :order_uid,
              primary_key: :uid
+
+    def total_value
+      order_lines.sum(:catalog_price)
+    end
+
+    def discounted_value
+      order_lines.sum(:price)
+    end
+
+    def lines
+      lines_query.to_a
+    end
+
+    def line(product_id, price)
+      lines_query.where(product_id: product_id, price: price).first
+    end
+
+    private
+
+    def lines_query
+      order_lines
+        .reorder(product_name: :asc)
+        .group(:product_id, :product_name, :catalog_price, :price)
+        .select("product_id, product_name, catalog_price, price, sum(quantity) as quantity, sum(price) as value")
+    end
   end
 
   class Product < ApplicationRecord
@@ -36,6 +61,7 @@ module Orders
       event_store.subscribe(RemoveItemFromOrder.new, to: [Pricing::PriceItemRemoved])
       event_store.subscribe(UpdateDiscount.new, to: [Pricing::PercentageDiscountSet, Pricing::PercentageDiscountChanged])
       event_store.subscribe(RemoveDiscount.new, to: [Pricing::PercentageDiscountRemoved])
+      event_store.subscribe(ReplaceOrderLines.new, to: [Pricing::OfferItemsPricesRecalculated])
       event_store.subscribe(RegisterProduct.new, to: [ProductCatalog::ProductRegistered])
       event_store.subscribe(ChangeProductName.new, to: [ProductCatalog::ProductNamed])
       event_store.subscribe(ChangeProductPrice.new, to: [Pricing::PriceSet])

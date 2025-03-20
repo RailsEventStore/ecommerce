@@ -6,17 +6,19 @@ module Orders
 
     def call(event)
       order_id = event.data.fetch(:order_id)
-      Order.find_or_create_by!(uid: order_id) { |order| order.state = "Draft" }
+      order = Order.find_or_create_by!(uid: order_id) { |order| order.state = "Draft" }
       product_id = event.data.fetch(:product_id)
-      item =
-        find(order_id, product_id) ||
-          create(order_id, product_id)
-      item.quantity += 1
-      item.save!
+      create(order_id, event.data.fetch(:product_id), event.data.fetch(:catalog_price), event.data.fetch(:price))
 
+      item = order.line(product_id, event.data.fetch(:price))
       broadcaster.call(order_id, product_id, "quantity", item.quantity)
-      broadcaster.call(order_id, product_id, "value", ActiveSupport::NumberHelper.number_to_currency(item.value))
+      broadcaster.call(order_id, product_id, "price", number_to_currency(item.price))
+      broadcaster.call(order_id, product_id, "value", number_to_currency(item.value))
       broadcaster.call(order_id, product_id, "remove_item_button", button_to("Remove", remove_item_order_path(id: order_id, product_id: product_id), class: "hover:underline text-blue-500"))
+
+      order.order_lines.reset
+      broadcaster.call(order.uid, order.uid, "total_value", number_to_currency(order.total_value))
+      broadcaster.call(order.uid, order.uid, "discounted_value", number_to_currency(order.discounted_value))
 
       event_store.link_event_to_stream(event, "Orders$all")
     end
@@ -31,6 +33,10 @@ module Orders
       Rails.configuration.broadcaster
     end
 
+    def number_to_currency(number)
+      ActiveSupport::NumberHelper.number_to_currency(number)
+    end
+
     def find(order_uid, product_id)
       Order
         .find_by_uid(order_uid)
@@ -39,16 +45,17 @@ module Orders
         .first
     end
 
-    def create(order_uid, product_id)
+    def create(order_uid, product_id, catalog_price, price)
       product = Product.find_by_uid(product_id)
       Order
         .find_by(uid: order_uid)
         .order_lines
-        .create(
+        .create!(
           product_id: product_id,
           product_name: product.name,
-          price: product.price,
-          quantity: 0
+          price: price,
+          catalog_price: catalog_price,
+          quantity: 1
         )
     end
   end

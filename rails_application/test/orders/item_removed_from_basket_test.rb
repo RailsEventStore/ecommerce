@@ -30,6 +30,8 @@ module Orders
           data: {
             order_id: order_id,
             product_id: product_id,
+            price: 20,
+            catalog_price: 20
           }
         )
       )
@@ -38,13 +40,17 @@ module Orders
           data: {
             order_id: order_id,
             product_id: product_id,
+            price: 20,
+            catalog_price: 20
           }
         )
       )
       item_removed_from_basket = Pricing::PriceItemRemoved.new(
         data: {
           order_id: order_id,
-          product_id: product_id
+          product_id: product_id,
+          price: 20,
+          catalog_price: 20
         }
       )
       event_store.publish(item_removed_from_basket)
@@ -83,6 +89,8 @@ module Orders
           data: {
             order_id: order_id,
             product_id: product_id,
+            price: 20,
+            catalog_price: 20
           }
         )
       )
@@ -90,7 +98,9 @@ module Orders
         Pricing::PriceItemRemoved.new(
           data: {
             order_id: order_id,
-            product_id: product_id
+            product_id: product_id,
+            price: 20,
+            catalog_price: 20
           }
         )
       )
@@ -140,6 +150,8 @@ module Orders
           data: {
             order_id: order_id,
             product_id: product_id,
+            price: 20,
+            catalog_price: 20
           }
         )
       )
@@ -148,6 +160,8 @@ module Orders
           data: {
             order_id: order_id,
             product_id: product_id,
+            price: 20,
+            catalog_price: 20
           }
         )
       )
@@ -156,6 +170,8 @@ module Orders
           data: {
             order_id: order_id,
             product_id: another_product_id,
+            price: 20,
+            catalog_price: 20
           }
         )
       )
@@ -163,13 +179,16 @@ module Orders
         Pricing::PriceItemRemoved.new(
           data: {
             order_id: order_id,
-            product_id: another_product_id
+            product_id: another_product_id,
+            price: 20,
+            catalog_price: 20
           }
         )
       )
 
-      assert_equal(1, OrderLine.count,)
-      order_lines = OrderLine.where(order_uid: order_id)
+      order = Order.find_by(uid: order_id)
+      assert_equal(1, order.lines.count,)
+      order_lines = order.lines
       assert_equal(product_id, order_lines[0].product_id)
       assert_equal("test", order_lines[0].product_name)
       assert_equal(2, order_lines[0].quantity)

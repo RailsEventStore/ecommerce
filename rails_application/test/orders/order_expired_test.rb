@@ -32,6 +32,8 @@ module Orders
           data: {
             order_id: order_id,
             product_id: product_id,
+            price: 39,
+            catalog_price: 39
           }
         )
       )

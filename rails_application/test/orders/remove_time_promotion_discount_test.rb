@@ -37,11 +37,16 @@ module Orders
 
     private
 
-    def item_added_to_basket(order_id, product_id)
-      event_store.publish(Pricing::PriceItemAdded.new(data: { product_id: product_id, order_id: order_id }))
+    def item_added_to_basket(order_id, product_id, price: 50)
+      event_store.publish(Pricing::PriceItemAdded.new(data: {
+        product_id: product_id,
+        order_id: order_id,
+        price: price,
+        catalog_price: price
+      }))
     end
 
-    def prepare_product(product_id)
+    def prepare_product(product_id, price: 50, name: "test")
       run_command(
         ProductCatalog::RegisterProduct.new(
           product_id: product_id,
@@ -50,10 +55,10 @@ module Orders
       run_command(
         ProductCatalog::NameProduct.new(
           product_id: product_id,
-          name: "test"
+          name: name
         )
       )
-      run_command(Pricing::SetPrice.new(product_id: product_id, price: 50))
+      run_command(Pricing::SetPrice.new(product_id: product_id, price: price))
     end
 
     def customer_registered(customer_id)

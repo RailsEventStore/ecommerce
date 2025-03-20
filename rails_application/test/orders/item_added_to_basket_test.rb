@@ -27,6 +27,8 @@ module Orders
         data: {
           order_id: order_id,
           product_id: product_id,
+          price: 49,
+          catalog_price: 49
         }
       )
       event_store.publish(item_added_to_basket)
@@ -70,6 +72,8 @@ module Orders
           data: {
             order_id: order_id,
             product_id: product_id,
+            price: 49,
+            catalog_price: 49
           }
         )
       )
@@ -79,12 +83,16 @@ module Orders
           data: {
             order_id: order_id,
             product_id: product_id,
+            price: 49,
+            catalog_price: 49
           }
         )
       )
 
-      assert_equal(OrderLine.count, 1)
-      order_line = OrderLine.find_by(order_uid: order_id)
+      order = Order.find_by(uid: order_id)
+      assert_equal(OrderLine.count, 2)
+      assert_equal(order.lines.count, 1)
+      order_line = order.lines.first
       assert_equal(order_line.product_id, product_id)
       assert_equal(order_line.product_name, "test")
       assert_equal(order_line.quantity, 2)
@@ -92,7 +100,6 @@ module Orders
       assert_equal(order_line.value, 98)
 
       assert_equal(Order.count, 1)
-      order = Order.find_by(uid: order_id)
       assert_equal(order.state, "Draft")
       assert_nil(order.customer)
       assert_nil(order.number)
@@ -137,6 +144,8 @@ module Orders
           data: {
             order_id: order_id,
             product_id: product_id,
+            price: 20,
+            catalog_price: 20
           }
         )
       )
@@ -146,24 +155,22 @@ module Orders
           data: {
             order_id: order_id,
             product_id: another_product_id,
+            price: 20,
+            catalog_price: 20
           }
         )
       )
 
       order = Orders::Order.find_by(uid: order_id)
       assert_equal(order.order_lines.count, 2)
-      order_lines = order.order_lines
-      assert_equal(
-        [product_id, another_product_id],
-        order_lines.map(&:product_id)
-      )
-      assert_equal(order_lines[0].product_id, product_id)
-      assert_equal(order_lines[0].product_name, "test")
-      assert_equal(order_lines[0].quantity, 1)
-
-      assert_equal(order_lines[1].product_id, another_product_id)
-      assert_equal(order_lines[1].product_name, "2nd one")
+      order_lines = order.lines
+      assert_equal(order_lines[1].product_id, product_id)
+      assert_equal(order_lines[1].product_name, "test")
       assert_equal(order_lines[1].quantity, 1)
+
+      assert_equal(order_lines[0].product_id, another_product_id)
+      assert_equal(order_lines[0].product_name, "2nd one")
+      assert_equal(order_lines[0].quantity, 1)
 
       assert_equal(Order.count, 1)
       order = Order.find_by(uid: order_id)
