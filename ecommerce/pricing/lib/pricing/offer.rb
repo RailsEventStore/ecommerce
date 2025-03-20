@@ -68,7 +68,7 @@ module Pricing
           type: type
         }
       )
-      apply_discounts_to_pricing_policy(pricing_policy, except_type: type)
+      apply_discounts_to_pricing_policy(pricing_policy)
       recalculate_prices(pricing_policy)
     end
 
@@ -120,11 +120,8 @@ module Pricing
 
     private
 
-    def apply_discounts_to_pricing_policy(pricing_policy, discount = nil, except_type: nil)
-      @discounts.each do |discount|
-        pricing_policy.add_discount(discount) unless discount.type == except_type
-      end
-      pricing_policy.add_discount(discount) if discount
+    def apply_discounts_to_pricing_policy(pricing_policy)
+      @discounts.each {|discount| pricing_policy.add_discount(discount) }
     end
 
     on PriceItemAdded do |event|
@@ -161,10 +158,6 @@ module Pricing
 
     on FreeProductRemovedFromOrder do |event|
       @list.replace(FreeProduct, Product, event.data.fetch(:product_id))
-    end
-
-    def calculate_total_sub_discounts(pricing_catalog)
-      @list.sub_discounts(pricing_catalog, @discounts)
     end
 
     on CouponUsed do |event|

@@ -46,14 +46,13 @@ module Pricing
   class ChangePercentageDiscountHandler
     def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)
-      @event_store = event_store
     end
 
     def call(cmd)
       @repository.with_aggregate(Offer, cmd.aggregate_id) do |order|
         order.change_discount(
           Discounts::PercentageDiscount.new(cmd.amount),
-          DefaultPricingPolicy.new(PricingCatalog.new(@event_store))
+          DefaultPricingPolicy.new(nil)
         )
       end
     end
