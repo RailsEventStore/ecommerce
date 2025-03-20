@@ -98,22 +98,6 @@ module Pricing
       )
     end
 
-    def recalculate_prices(pricing_policy)
-      new_items = pricing_policy.apply(@items)
-      apply OfferItemsPricesRecalculated.new(
-        data: {
-          order_id: @id,
-          order_items: new_items.map do |item|
-            {
-              product_id: item.product_id,
-              catalog_price: item.catalog_price,
-              price: item.price
-            }
-          end
-        }
-      )
-    end
-
     def use_coupon(coupon_id, discount)
       fail_if_accepted
       apply CouponUsed.new(
@@ -149,6 +133,22 @@ module Pricing
 
     def apply_discounts_to_pricing_policy(pricing_policy)
       @discounts.each {|discount| pricing_policy.add_discount(discount) }
+    end
+
+    def recalculate_prices(pricing_policy)
+      new_items = pricing_policy.apply(@items)
+      apply OfferItemsPricesRecalculated.new(
+        data: {
+          order_id: @id,
+          order_items: new_items.map do |item|
+            {
+              product_id: item.product_id,
+              catalog_price: item.catalog_price,
+              price: item.price
+            }
+          end
+        }
+      )
     end
 
     on PriceItemAdded do |event|
