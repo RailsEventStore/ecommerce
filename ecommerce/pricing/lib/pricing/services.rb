@@ -14,6 +14,9 @@ module Pricing
   class FreeProductNotExists < StandardError
   end
 
+  class CantModifyAcceptedOffer < StandardError
+  end
+
   class SetPercentageDiscountHandler
     def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)
@@ -223,6 +226,18 @@ module Pricing
     def call(command)
       @repository.with_aggregate(Offer, command.aggregate_id) do |order|
         order.use_coupon(command.coupon_id, command.discount)
+      end
+    end
+  end
+
+  class OnAcceptOffer
+    def initialize(event_store)
+      @repository = Infra::AggregateRootRepository.new(event_store)
+    end
+
+    def call(command)
+      @repository.with_aggregate(Offer, command.aggregate_id) do |order|
+        order.accept
       end
     end
   end

@@ -42,12 +42,24 @@ module Pricing
       run_command(RegisterCoupon.new(coupon_id: uid, name: name, code: code, discount: discount))
     end
 
+    def use_coupon(order_id, coupon_id, discount)
+      run_command(UseCoupon.new(order_id: order_id, coupon_id: coupon_id, discount: discount))
+    end
+
     def set_time_promotion_discount(order_id, amount)
       run_command(SetTimePromotionDiscount.new(order_id: order_id, amount: amount))
     end
 
     def remove_time_promotion_discount(order_id)
       run_command(RemoveTimePromotionDiscount.new(order_id: order_id))
+    end
+
+    def set_percentage_discount(order_id, amount)
+      run_command(SetPercentageDiscount.new(order_id: order_id, amount: amount))
+    end
+
+    def remove_percentage_discount(order_id)
+      run_command(RemovePercentageDiscount.new(order_id: order_id))
     end
 
     def fake_name

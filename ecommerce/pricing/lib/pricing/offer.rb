@@ -6,9 +6,11 @@ module Pricing
       @id = id
       @items = []
       @discounts = []
+      @accepted = false
     end
 
     def add_item(product_id, pricing_policy)
+      fail_if_accepted
       apply_discounts_to_pricing_policy(pricing_policy)
       items = pricing_policy.apply(@items, product_id)
       apply PriceItemAdded.new(
@@ -22,6 +24,7 @@ module Pricing
     end
 
     def remove_item(product_id, catalog_price)
+      fail_if_accepted
       item = @items.find { |item| item.product_id == product_id && item.catalog_price == catalog_price }
       return unless item
       apply PriceItemRemoved.new(
@@ -35,6 +38,7 @@ module Pricing
     end
 
     def apply_discount(discount, pricing_policy)
+      fail_if_accepted
       raise NotPossibleToAssignDiscountTwice if discount_exists?(discount.type)
       apply PercentageDiscountSet.new(
         data: {
@@ -48,6 +52,7 @@ module Pricing
     end
 
     def change_discount(discount, pricing_policy)
+      fail_if_accepted
       raise NotPossibleToChangeDiscount unless discount_exists?(discount.type)
       apply PercentageDiscountChanged.new(
         data: {
@@ -61,6 +66,7 @@ module Pricing
     end
 
     def remove_discount(type, pricing_policy)
+      fail_if_accepted
       raise NotPossibleToRemoveWithoutDiscount unless discount_exists?(type)
       apply PercentageDiscountRemoved.new(
         data: {
@@ -109,6 +115,7 @@ module Pricing
     end
 
     def use_coupon(coupon_id, discount)
+      fail_if_accepted
       apply CouponUsed.new(
         data: {
           order_id: @id,
@@ -118,7 +125,27 @@ module Pricing
       )
     end
 
+    def accept
+      apply OfferAccepted.new(
+        data: {
+          order_id: @id,
+          amount: @items.sum(&:price),
+          order_items: @items.map do |item|
+            {
+              product_id: item.product_id,
+              catalog_price: item.catalog_price,
+              price: item.price
+            }
+          end
+        }
+      )
+    end
+
     private
+
+    def fail_if_accepted
+      raise CantModifyAcceptedOffer if @accepted
+    end
 
     def apply_discounts_to_pricing_policy(pricing_policy)
       @discounts.each {|discount| pricing_policy.add_discount(discount) }
@@ -161,6 +188,10 @@ module Pricing
     end
 
     on CouponUsed do |event|
+    end
+
+    on OfferAccepted do |event|
+      @accepted = true
     end
 
     def discount_exists?(type)
