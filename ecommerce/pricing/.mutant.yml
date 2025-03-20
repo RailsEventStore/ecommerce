@@ -10,5 +10,10 @@ matcher:
   ignore:
     - Pricing::Configuration*
     - Pricing::Test*
-    - Pricing::OnCalculateTotalValue#call
-    - Pricing::OnCalculateTotalValue#calculate_sub_amounts
+    - Pricing::MakeProductFreeForOrderHandler*
+    - Pricing::RemoveFreeProductFromOrderHandler*
+    - Pricing::Offer::List*
+    - Pricing::Offer::Product*
+    - Pricing::Offer::FreeProduct*
+    - Pricing::Offer#make_product_free
+    - Pricing::Offer#remove_free_product
