@@ -32,6 +32,7 @@
       <th class="text-left py-2">Product</th>
       <th class="text-left py-2">Stock</th>
       <th class="text-left py-2">Quantity</th>
+      <th class="text-left py-2">Catalog Price</th>
       <th class="text-left py-2">Price</th>
       <th class="text-left py-2" colspan="3">Value</th>
     </tr>
@@ -40,14 +41,15 @@
   <tbody>
   <% @products.each do |product| %>
     <tr class="border-b">
-      <% order_line = @order_lines.find{|order_line| order_line.product_id == product.id} %>
+      <% order_line = @order_lines&.find{|order_line| order_line.product_id == product.id} %>
       <td class="py-2"><%= product.name %></td>
       <td class="py-2">
         <span><%= product.available || "-" %></span>
       </td>
-      <td class="py-2" id="<%= "orders_order_#{product.id}_quantity" %>"><%= order_line.try(&:quantity) || 0 %></td>
+      <td class="py-2" id="<%= "orders_order_#{product.id}_quantity" %>"><%= order_line&.quantity || 0 %></td>
       <td class="py-2"><%= number_to_currency(product.price) %></td>
-      <td class="py-2" id="<%= "orders_order_#{product.id}_value" %>"><%= number_to_currency(order_line.try(&:value)) %></td>
+      <td class="py-2" id="<%= "orders_order_#{product.id}_price" %>"><%= number_to_currency(order_line&.price) %></td>
+      <td class="py-2" id="<%= "orders_order_#{product.id}_value" %>"><%= number_to_currency(order_line&.value) %></td>
       <td class="py-2"><%= button_to "Add", add_item_order_path(id: @order_id, product_id: product.id), class: "hover:underline text-blue-500" %></td>
       <% if order_line.nil? %>
         <td class="py-2 text-right" id="<%= "orders_order_#{product.id}_remove_item_button" %>"></td>
