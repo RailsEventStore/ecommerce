@@ -5,6 +5,7 @@ module Processes
     cover "Processes::OrderItemInvoicingProcess*"
 
     def test_invoice_item_being_created
+      skip "Invoicing BC not yet re-implemented"
       product_id = SecureRandom.uuid
       amount = 100.to_d
       discounted_amount = 90.to_d

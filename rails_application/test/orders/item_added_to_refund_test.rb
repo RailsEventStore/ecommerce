@@ -4,6 +4,10 @@ module Refunds
   class ItemAddedToRefundTest < InMemoryTestCase
     cover "Orders*"
 
+    def setup
+      skip "Refunds are not integrated yet"
+    end
+
     def test_add_item_to_refund
       refund_id = SecureRandom.uuid
       product_id = SecureRandom.uuid

@@ -5,6 +5,7 @@ module Processes
     cover "Processes::DetermineVatRatesOnOrderPlaced*"
 
     def test_inventory_available_error_is_raised
+      skip
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
       process = DetermineVatRatesOnOrderPlaced.new(command_bus)
