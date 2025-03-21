@@ -1,6 +1,6 @@
 require_relative "test_helper"
 
-module Ordering
+module Fulfillment
   class NumberGeneratorTest < Test
     def test_includes_year
       assert_includes(NumberGenerator.new.call, "#{Time.now.year}")

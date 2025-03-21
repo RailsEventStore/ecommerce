@@ -10,9 +10,9 @@ module Fulfillment
       @id = id
     end
 
-    def register
+    def register(order_number)
       raise InvalidState if @state
-      apply OrderRegistered.new(data: { order_id: @id })
+      apply OrderRegistered.new(data: { order_id: @id, order_number: order_number })
     end
 
     def confirm

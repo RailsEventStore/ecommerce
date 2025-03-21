@@ -38,7 +38,7 @@ module Ecommerce
         Pricing::Configuration.new,
         Taxes::Configuration.new,
         ProductCatalog::Configuration.new,
-        Fulfillment::Configuration.new
+        Fulfillment::Configuration.new(@number_generator),
       ].each { |c| c.call(event_store, command_bus) }
     end
 

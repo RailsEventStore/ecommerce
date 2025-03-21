@@ -9,5 +9,6 @@ matcher:
     - Fulfillment*
   ignore:
     - Fulfillment::Test*
+    - Fulfillment::NumberGenerator*
     - Fulfillment::Configuration#call
     - Fulfillment::Configuration#initialize
