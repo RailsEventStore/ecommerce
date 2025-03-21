@@ -1,7 +1,7 @@
 module Orders
   class ExpireOrder
     def call(event)
-      order = Order.find_by_uid(event.data.fetch(:order_id))
+      order = Order.find_or_create_by!(uid: event.data.fetch(:order_id))
       order.state = "Expired"
       order.save!
 
@@ -15,4 +15,3 @@ module Orders
     end
   end
 end
-

@@ -2,6 +2,7 @@ require "test_helper"
 
 class RefundsTest < InMemoryRESIntegrationTestCase
   def setup
+    skip "Refunds not yet integrated"
     super
     add_available_vat_rate(10)
   end

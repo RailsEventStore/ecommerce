@@ -39,9 +39,24 @@ module ClientOrders
 
     class UpdateOrderTotalValue
       def call(event)
-        order = Order.find_or_create_by!(order_uid: event.data.fetch(:order_id)) { |order| order.state = "Draft" }
-        order.discounted_value = event.data.fetch(:discounted_amount)
-        order.total_value = event.data.fetch(:total_amount)
+        order = Order.find_or_create_by!(order_uid: event.data.fetch(:order_id)) do |order|
+          order.state = "Draft"
+          order.total_value = 0
+          order.discounted_value = 0
+        end
+
+        case event
+          when Pricing::PriceItemAdded
+            order.total_value += event.data.fetch(:catalog_price)
+            order.discounted_value += event.data.fetch(:price)
+          when Pricing::PriceItemRemoved
+            order.total_value -= event.data.fetch(:catalog_price)
+            order.discounted_value -= event.data.fetch(:price)
+          when Pricing::OfferItemsPricesRecalculated
+            order.total_value = event.data.fetch(:order_items).map { _1.fetch(:catalog_price) }.sum
+            order.discounted_value = event.data.fetch(:order_items).map { _1.fetch(:price) }.sum
+        end
+
         order.save!
 
         broadcast_update(order.order_uid, "total_value", number_to_currency(order.total_value))
@@ -72,7 +87,7 @@ module ClientOrders
 
     class ExpireOrder
       def call(event)
-        order = Order.find_by(order_uid: event.data.fetch(:order_id))
+        order = Order.find_or_create_by!(order_uid: event.data.fetch(:order_id))
         order.state = "Expired"
         order.save!
       end

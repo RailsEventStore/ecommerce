@@ -60,6 +60,12 @@ module ClientOrders
       event_store.subscribe(OrderHandlers::UpdateDiscount, to: [Pricing::PercentageDiscountSet, Pricing::PercentageDiscountChanged])
       event_store.subscribe(OrderHandlers::RemoveDiscount, to: [Pricing::PercentageDiscountRemoved])
       event_store.subscribe(OrderHandlers::UpdatePaidOrdersSummary, to: [Fulfillment::OrderConfirmed])
+
+      event_store.subscribe(OrderHandlers::UpdateOrderTotalValue, to: [
+        Pricing::PriceItemAdded,
+        Pricing::PriceItemRemoved,
+        Pricing::OfferItemsPricesRecalculated
+      ])
     end
   end
 end
