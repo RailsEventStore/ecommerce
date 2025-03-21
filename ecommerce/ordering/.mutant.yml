@@ -8,7 +8,6 @@ matcher:
   subjects:
     - Ordering*
   ignore:
-    - Ordering::NumberGenerator*
     - Ordering::Test*
     - Ordering::Configuration#call
     - Ordering::Configuration#initialize

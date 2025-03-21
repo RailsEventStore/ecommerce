@@ -1,4 +1,4 @@
-module Ordering
+module Fulfillment
   class NumberGenerator
     def call
       Time.now.strftime("%Y/%m/#{random_number}")

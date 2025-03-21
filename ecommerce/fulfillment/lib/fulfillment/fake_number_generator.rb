@@ -1,4 +1,4 @@
-module Ordering
+module Fulfillment
   class FakeNumberGenerator
     FAKE_NUMBER = "2019/01/60".freeze
     def call
