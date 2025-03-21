@@ -29,9 +29,9 @@ module Refunds
 
   class Configuration
     def call(event_store)
-      event_store.subscribe(CreateDraftRefund.new, to: [Ordering::DraftRefundCreated])
-      event_store.subscribe(AddItemToRefund.new, to: [Ordering::ItemAddedToRefund])
-      event_store.subscribe(RemoveItemFromRefund.new, to: [Ordering::ItemRemovedFromRefund])
+      # event_store.subscribe(CreateDraftRefund.new, to: [Ordering::DraftRefundCreated])
+      # event_store.subscribe(AddItemToRefund.new, to: [Ordering::ItemAddedToRefund])
+      # event_store.subscribe(RemoveItemFromRefund.new, to: [Ordering::ItemRemovedFromRefund])
     end
   end
 end

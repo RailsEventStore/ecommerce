@@ -1,4 +1,3 @@
-require_relative "../../ordering/lib/ordering"
 require_relative "../../pricing/lib/pricing"
 require_relative "../../product_catalog/lib/product_catalog"
 require_relative "../../crm/lib/crm"
@@ -31,31 +30,21 @@ module Processes
       enable_coupon_discount_process(event_store, command_bus)
       # notify_payments_about_order_total_value(event_store, command_bus)
       enable_shipment_sync(event_store, command_bus)
-      determine_vat_rates_on_order_placed(event_store, command_bus)
+      # determine_vat_rates_on_order_placed(event_store, command_bus)
       set_invoice_payment_date_when_order_confirmed(event_store, command_bus)
       enable_product_name_sync(event_store, command_bus)
       confirm_order_on_payment_captured(event_store, command_bus)
 
-      enable_release_payment_process(event_store, command_bus)
-      enable_shipment_process(event_store, command_bus)
+      # enable_release_payment_process(event_store, command_bus)
+      # enable_shipment_process(event_store, command_bus)
       # enable_order_item_invoicing_process(event_store, command_bus)
       enable_reservation_process(event_store, command_bus)
-      build_pricing_offer_from_ordering_items(event_store, command_bus)
     end
 
     private
 
     def enable_shipment_process(event_store, command_bus)
       ShipmentProcess.new(event_store, command_bus)
-    end
-
-    def build_pricing_offer_from_ordering_items(event_store, command_bus)
-      Infra::Process.new(event_store, command_bus)
-                    .call(Ordering::ItemAddedToBasket, [:order_id, :product_id],
-                          Pricing::AddPriceItem, [:order_id, :product_id])
-      Infra::Process.new(event_store, command_bus)
-                    .call(Ordering::ItemRemovedFromBasket, [:order_id, :product_id],
-                          Pricing::RemovePriceItem, [:order_id, :product_id])
     end
 
     def enable_shipment_sync(event_store, command_bus)
