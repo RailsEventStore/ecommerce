@@ -38,7 +38,7 @@ module Client
       end
       ActiveRecord::Base.transaction do
         command_bus.(
-          Ordering::AddItemToBasket.new(
+          Pricing::AddPriceItem.new(
             order_id: params[:id],
             product_id: params[:product_id]
           )

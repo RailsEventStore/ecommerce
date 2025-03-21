@@ -63,7 +63,7 @@ class OrdersController < ApplicationController
                   alert: "Product not available in requested quantity!" and return
     end
     ActiveRecord::Base.transaction do
-      command_bus.(Ordering::AddItemToBasket.new(order_id: params[:id], product_id: params[:product_id]))
+      command_bus.(Pricing::AddPriceItem.new(order_id: params[:id], product_id: params[:product_id]))
     end
     head :ok
   end
@@ -71,7 +71,7 @@ class OrdersController < ApplicationController
   def remove_item
     item = Orders::OrderLine.where(order_uid: params[:id], product_id: params[:product_id]).first
     command_bus.(Pricing::RemovePriceItem.new(
-      order_id: params[:id], product_id: params[:product_id], price: item.price, catalog_price: item.catalog_price)
+      order_id: params[:id], product_id: params[:product_id], catalog_price: item.catalog_price)
     )
     head :ok
   end
