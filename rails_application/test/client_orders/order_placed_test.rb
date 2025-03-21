@@ -8,7 +8,7 @@ module ClientOrders
       event_store = Rails.configuration.event_store
       customer_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
-      order_number = Ordering::FakeNumberGenerator::FAKE_NUMBER
+      order_number = Fulfillment::FakeNumberGenerator::FAKE_NUMBER
 
       event_store.publish(Crm::CustomerRegistered.new(
         data: {
@@ -18,11 +18,10 @@ module ClientOrders
       ))
 
       event_store.publish(
-        Ordering::OrderPlaced.new(
+        Fulfillment::OrderRegistered.new(
           data: {
             order_id: order_id,
             order_number: order_number,
-            order_lines: { }
           }
         )
       )
@@ -48,7 +47,7 @@ module ClientOrders
       event_store = Rails.configuration.event_store
       customer_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
-      order_number = Ordering::FakeNumberGenerator::FAKE_NUMBER
+      order_number = Fulfillment::FakeNumberGenerator::FAKE_NUMBER
 
       event_store.publish(
         Crm::CustomerRegistered.new(data: {customer_id: customer_id, name: "John Doe"})
@@ -62,11 +61,10 @@ module ClientOrders
       ))
 
       event_store.publish(
-        Ordering::OrderPlaced.new(
+        Fulfillment::OrderRegistered.new(
           data: {
             order_id: order_id,
             order_number: order_number,
-            order_lines: { }
           }
         )
       )

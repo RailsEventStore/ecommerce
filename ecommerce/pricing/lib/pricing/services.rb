@@ -14,14 +14,33 @@ module Pricing
   class FreeProductNotExists < StandardError
   end
 
+  class CantAcceptEmptyOffer < StandardError
+  end
+
+  class CantModifyAcceptedOffer < StandardError
+  end
+
+  class CantModifyExpiredOffer < StandardError
+  end
+
+  class OnlyAcceptedOfferCanBeRejected < StandardError
+  end
+
+  class OnlyDraftOfferCanBeExpired < StandardError
+  end
+
   class SetPercentageDiscountHandler
     def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)
+      @event_store = event_store
     end
 
     def call(cmd)
       @repository.with_aggregate(Offer, cmd.aggregate_id) do |order|
-        order.apply_discount(Discounts::PercentageDiscount.new(cmd.amount))
+        order.apply_discount(
+          Discounts::PercentageDiscount.new(cmd.amount),
+          DefaultPricingPolicy.new(PricingCatalog.new(@event_store))
+        )
       end
     end
   end
@@ -29,11 +48,12 @@ module Pricing
   class RemovePercentageDiscountHandler
     def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)
+      @event_store = event_store
     end
 
     def call(cmd)
       @repository.with_aggregate(Offer, cmd.aggregate_id) do |order|
-        order.remove_discount(Discounts::GENERAL_DISCOUNT)
+        order.remove_discount(Discounts::GENERAL_DISCOUNT, DefaultPricingPolicy.new(PricingCatalog.new(@event_store)))
       end
     end
   end
@@ -45,7 +65,10 @@ module Pricing
 
     def call(cmd)
       @repository.with_aggregate(Offer, cmd.aggregate_id) do |order|
-        order.change_discount(Discounts::PercentageDiscount.new(cmd.amount))
+        order.change_discount(
+          Discounts::PercentageDiscount.new(cmd.amount),
+          DefaultPricingPolicy.new(nil)
+        )
       end
     end
   end
@@ -53,11 +76,15 @@ module Pricing
   class SetTimePromotionDiscountHandler
     def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)
+      @event_store = event_store
     end
 
     def call(cmd)
       @repository.with_aggregate(Offer, cmd.aggregate_id) do |order|
-        order.apply_discount(Discounts::PercentageDiscount.new(Discounts::TIME_PROMOTION_DISCOUNT, cmd.amount))
+        order.apply_discount(
+          Discounts::PercentageDiscount.new(Discounts::TIME_PROMOTION_DISCOUNT, cmd.amount),
+          DefaultPricingPolicy.new(PricingCatalog.new(@event_store))
+        )
       end
     end
   end
@@ -65,11 +92,15 @@ module Pricing
   class RemoveTimePromotionDiscountHandler
     def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)
+      @event_store = event_store
     end
 
     def call(cmd)
       @repository.with_aggregate(Offer, cmd.aggregate_id) do |order|
-        order.remove_discount(Discounts::TIME_PROMOTION_DISCOUNT)
+        order.remove_discount(
+          Discounts::TIME_PROMOTION_DISCOUNT,
+          DefaultPricingPolicy.new(PricingCatalog.new(@event_store))
+        )
       end
     end
   end
@@ -116,11 +147,12 @@ module Pricing
   class OnAddItemToBasket
     def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)
+      @event_store = event_store
     end
 
     def call(command)
       @repository.with_aggregate(Offer, command.aggregate_id) do |order|
-        order.add_item(command.product_id)
+        order.add_item(command.product_id, DefaultPricingPolicy.new(PricingCatalog.new(@event_store)))
       end
     end
   end
@@ -132,32 +164,7 @@ module Pricing
 
     def call(command)
       @repository.with_aggregate(Offer, command.aggregate_id) do |order|
-        order.remove_item(command.product_id)
-      end
-    end
-  end
-
-  class OnCalculateTotalValue
-    include Infra::Retry
-
-    def initialize(event_store)
-      @repository = Infra::AggregateRootRepository.new(event_store)
-      @event_store = event_store
-    end
-
-    def call(command)
-      with_retry do
-        @repository.with_aggregate(Offer, command.aggregate_id) do |order|
-          order.calculate_total_value(PricingCatalog.new(@event_store))
-        end
-      end
-    end
-
-    def calculate_sub_amounts(command)
-      with_retry do
-        @repository.with_aggregate(Offer, command.aggregate_id) do |order|
-          order.calculate_sub_amounts(PricingCatalog.new(@event_store))
-        end
+        order.remove_item(command.product_id, command.catalog_price)
       end
     end
   end
@@ -206,6 +213,42 @@ module Pricing
     def call(command)
       @repository.with_aggregate(Offer, command.aggregate_id) do |order|
         order.use_coupon(command.coupon_id, command.discount)
+      end
+    end
+  end
+
+  class OnAcceptOffer
+    def initialize(event_store)
+      @repository = Infra::AggregateRootRepository.new(event_store)
+    end
+
+    def call(command)
+      @repository.with_aggregate(Offer, command.aggregate_id) do |order|
+        order.accept
+      end
+    end
+  end
+
+  class OnRejectOffer
+    def initialize(event_store)
+      @repository = Infra::AggregateRootRepository.new(event_store)
+    end
+
+    def call(command)
+      @repository.with_aggregate(Offer, command.aggregate_id) do |order|
+        order.reject
+      end
+    end
+  end
+
+  class OnExpireOffer
+    def initialize(event_store)
+      @repository = Infra::AggregateRootRepository.new(event_store)
+    end
+
+    def call(command)
+      @repository.with_aggregate(Offer, command.aggregate_id) do |order|
+        order.expire
       end
     end
   end

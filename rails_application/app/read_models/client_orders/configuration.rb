@@ -41,9 +41,9 @@ module ClientOrders
 
   class Configuration
     def call(event_store)
-      event_store.subscribe(OrderHandlers::ExpireOrder, to: [Ordering::OrderExpired])
+      event_store.subscribe(OrderHandlers::ExpireOrder, to: [Pricing::OfferExpired])
       event_store.subscribe(OrderHandlers::CancelOrder, to: [Fulfillment::OrderCancelled])
-      event_store.subscribe(OrderHandlers::SubmitOrder, to: [Ordering::OrderPlaced])
+      event_store.subscribe(OrderHandlers::SubmitOrder, to: [Fulfillment::OrderRegistered])
       event_store.subscribe(OrderHandlers::ConfirmOrder, to: [Fulfillment::OrderConfirmed])
       event_store.subscribe(AddItemToOrder, to: [Pricing::PriceItemAdded])
       event_store.subscribe(RemoveItemFromOrder, to: [Pricing::PriceItemRemoved])
@@ -59,8 +59,13 @@ module ClientOrders
       event_store.subscribe(OrderHandlers::RemoveTimePromotionDiscount, to: [Pricing::PercentageDiscountRemoved])
       event_store.subscribe(OrderHandlers::UpdateDiscount, to: [Pricing::PercentageDiscountSet, Pricing::PercentageDiscountChanged])
       event_store.subscribe(OrderHandlers::RemoveDiscount, to: [Pricing::PercentageDiscountRemoved])
-      event_store.subscribe(OrderHandlers::UpdateOrderTotalValue, to: [Pricing::OrderTotalValueCalculated])
       event_store.subscribe(OrderHandlers::UpdatePaidOrdersSummary, to: [Fulfillment::OrderConfirmed])
+
+      event_store.subscribe(OrderHandlers::UpdateOrderTotalValue, to: [
+        Pricing::PriceItemAdded,
+        Pricing::PriceItemRemoved,
+        Pricing::OfferItemsPricesRecalculated
+      ])
     end
   end
 end

@@ -8,7 +8,7 @@ class OrdersController < ApplicationController
 
     return not_found unless @order
 
-    @order_lines = Orders::OrderLine.where(order_uid: @order.uid)
+    @order_lines = @order.lines
     @shipment = Shipments::Shipment.find_by(order_uid: @order.uid)
     @invoice = Invoices::Invoice.find_or_initialize_by(order_uid: @order.uid)
   end
@@ -20,7 +20,7 @@ class OrdersController < ApplicationController
   def edit
     @order_id = params[:id]
     @order = Orders::Order.find_by_uid(params[:id])
-    @order_lines = Orders::OrderLine.where(order_uid: params[:id])
+    @order_lines = @order&.lines
     @products = Products::Product.all
     @customers = Customers::Customer.all
     @time_promotions = TimePromotions::TimePromotion.current
@@ -63,13 +63,16 @@ class OrdersController < ApplicationController
                   alert: "Product not available in requested quantity!" and return
     end
     ActiveRecord::Base.transaction do
-      command_bus.(Ordering::AddItemToBasket.new(order_id: params[:id], product_id: params[:product_id]))
+      command_bus.(Pricing::AddPriceItem.new(order_id: params[:id], product_id: params[:product_id]))
     end
     head :ok
   end
 
   def remove_item
-    command_bus.(Ordering::RemoveItemFromBasket.new(order_id: params[:id], product_id: params[:product_id]))
+    item = Orders::OrderLine.where(order_uid: params[:id], product_id: params[:product_id]).first
+    command_bus.(Pricing::RemovePriceItem.new(
+      order_id: params[:id], product_id: params[:product_id], catalog_price: item.catalog_price)
+    )
     head :ok
   end
 
@@ -78,7 +81,7 @@ class OrdersController < ApplicationController
   rescue Orders::OrderHasUnavailableProducts => e
     unavailable_products = e.unavailable_products.join(", ")
     redirect_to edit_order_path(params[:order_id]), alert: "Order can not be submitted! #{unavailable_products} not available in requested quantity!"
-  rescue Ordering::Order::IsEmpty
+  rescue Pricing::CantAcceptEmptyOffer
     redirect_to edit_order_path(params[:order_id]), alert: "You can't submit an empty order"
   rescue Crm::Customer::NotExists
     redirect_to order_path(params[:order_id]), alert: "Order can not be submitted! Customer does not exist."
@@ -89,7 +92,7 @@ class OrdersController < ApplicationController
   def expire
     Orders::Order
       .where(state: "Draft")
-      .find_each { |order| command_bus.(Ordering::SetOrderAsExpired.new(order_id: order.uid)) }
+      .find_each { |order| command_bus.(Pricing::ExpireOffer.new(order_id: order.uid)) }
     redirect_to root_path
   end
 

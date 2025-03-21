@@ -12,87 +12,6 @@ module Pricing
       assert Pricing.command_bus, Infra::CommandBus
     end
 
-    def test_calculates_total_value
-      product_1_id = SecureRandom.uuid
-      product_2_id = SecureRandom.uuid
-      set_price(product_1_id, 20)
-      set_price(product_2_id, 30)
-      order_id = SecureRandom.uuid
-      add_item(order_id, product_1_id)
-      add_item(order_id, product_2_id)
-      stream = stream_name(order_id)
-      assert_events(
-        stream,
-        OrderTotalValueCalculated.new(
-          data: {
-            order_id: order_id,
-            discounted_amount: 50,
-            total_amount: 50
-          }
-        )
-      ) { calculate_total_value(order_id) }
-    end
-
-    def test_calculates_sub_amounts
-      product_1_id = SecureRandom.uuid
-      product_2_id = SecureRandom.uuid
-      set_price(product_1_id, 20)
-      set_price(product_2_id, 30)
-      order_id = SecureRandom.uuid
-      stream = stream_name(order_id)
-
-      assert_events(stream) { calculate_sub_amounts(order_id) }
-
-      add_item(order_id, product_1_id)
-      add_item(order_id, product_2_id)
-      add_item(order_id, product_2_id)
-      assert_events(
-        stream,
-        PriceItemValueCalculated.new(
-          data: {
-            order_id: order_id,
-            product_id: product_1_id,
-            quantity: 1,
-            amount: 20,
-            discounted_amount: 20
-          }
-        ),
-        PriceItemValueCalculated.new(
-          data: {
-            order_id: order_id,
-            product_id: product_2_id,
-            quantity: 2,
-            amount: 60,
-            discounted_amount: 60
-          }
-        )
-      ) { calculate_sub_amounts(order_id) }
-      run_command(
-        Pricing::SetPercentageDiscount.new(order_id: order_id, amount: 10)
-      )
-      assert_events(
-        stream,
-        PriceItemValueCalculated.new(
-          data: {
-            order_id: order_id,
-            product_id: product_1_id,
-            quantity: 1,
-            amount: 20,
-            discounted_amount: 18
-          }
-        ),
-        PriceItemValueCalculated.new(
-          data: {
-            order_id: order_id,
-            product_id: product_2_id,
-            quantity: 2,
-            amount: 60,
-            discounted_amount: 54
-          }
-        )
-      ) { calculate_sub_amounts(order_id) }
-    end
-
     def test_sets_time_promotion_discount
       order_id = SecureRandom.uuid
       stream = stream_name(order_id)
@@ -140,22 +59,13 @@ module Pricing
       assert_raises(NotPossibleToRemoveWithoutDiscount) { remove_time_promotion_discount(order_id) }
     end
 
-    def test_calculates_total_value_with_discount
+    def test_adding_discount_causes_recalculation_of_item_prices
       product_1_id = SecureRandom.uuid
       set_price(product_1_id, 20)
       order_id = SecureRandom.uuid
       add_item(order_id, product_1_id)
       stream = stream_name(order_id)
-      assert_events(
-        stream,
-        OrderTotalValueCalculated.new(
-          data: {
-            order_id: order_id,
-            discounted_amount: 20,
-            total_amount: 20
-          }
-        )
-      ) { run_command(CalculateTotalValue.new(order_id: order_id)) }
+
       assert_events_contain(
         stream,
         PercentageDiscountSet.new(
@@ -165,11 +75,12 @@ module Pricing
             amount: 10
           }
         ),
-        OrderTotalValueCalculated.new(
+        OfferItemsPricesRecalculated.new(
           data: {
             order_id: order_id,
-            discounted_amount: 18,
-            total_amount: 20
+            order_items: [
+              { product_id: product_1_id, price: 18, catalog_price: 20 }
+            ]
           }
         )
       ) do
@@ -186,11 +97,12 @@ module Pricing
             amount: 50
           }
         ),
-        OrderTotalValueCalculated.new(
+        OfferItemsPricesRecalculated.new(
           data: {
             order_id: order_id,
-            discounted_amount: 10,
-            total_amount: 20
+            order_items: [
+              { product_id: product_1_id, price: 10, catalog_price: 20 }
+            ]
           }
         )
       ) do
@@ -206,45 +118,17 @@ module Pricing
             type: Pricing::Discounts::GENERAL_DISCOUNT
           }
         ),
-        OrderTotalValueCalculated.new(
+        OfferItemsPricesRecalculated.new(
           data: {
             order_id: order_id,
-            discounted_amount: 20,
-            total_amount: 20
+            order_items: [
+              { product_id: product_1_id, price: 20, catalog_price: 20 }
+            ]
           }
         )
       ) do
         run_command(
           Pricing::RemovePercentageDiscount.new(order_id: order_id, type: Pricing::Discounts::GENERAL_DISCOUNT)
-        )
-      end
-    end
-
-    def test_calculates_total_value_with_100_discount
-      product_1_id = SecureRandom.uuid
-      set_price(product_1_id, 20)
-      order_id = SecureRandom.uuid
-      add_item(order_id, product_1_id)
-      stream = stream_name(order_id)
-      assert_events_contain(
-        stream,
-        PercentageDiscountSet.new(
-          data: {
-            order_id: order_id,
-            type: Pricing::Discounts::GENERAL_DISCOUNT,
-            amount: 100
-          }
-        ),
-        OrderTotalValueCalculated.new(
-          data: {
-            order_id: order_id,
-            discounted_amount: 0,
-            total_amount: 20
-          }
-        )
-      ) do
-        run_command(
-          Pricing::SetPercentageDiscount.new(order_id: order_id, amount: 100)
         )
       end
     end
@@ -334,11 +218,12 @@ module Pricing
             amount: 100
           }
         ),
-        OrderTotalValueCalculated.new(
+        OfferItemsPricesRecalculated.new(
           data: {
             order_id: order_id,
-            discounted_amount: 0,
-            total_amount: 20
+            order_items: [
+              { product_id: product_1_id, price: 0, catalog_price: 20 }
+            ]
           }
         )
       ) do
@@ -370,11 +255,12 @@ module Pricing
             amount: 100
           }
         ),
-        OrderTotalValueCalculated.new(
+        OfferItemsPricesRecalculated.new(
           data: {
             order_id: order_id,
-            discounted_amount: 0,
-            total_amount: 20
+            order_items: [
+              { product_id: product_1_id, price: 0, catalog_price: 20 }
+            ]
           }
         )
       ) do
@@ -391,7 +277,7 @@ module Pricing
       add_item(order_id, product_1_id)
       stream = stream_name(order_id)
       run_command(
-        Pricing::SetPercentageDiscount.new(order_id: order_id, type: Discounts::GENERAL_DISCOUNT,amount: 10)
+        Pricing::SetPercentageDiscount.new(order_id: order_id, type: Discounts::GENERAL_DISCOUNT, amount: 10)
       )
       run_command(
         Pricing::ChangePercentageDiscount.new(order_id: order_id, type: Discounts::GENERAL_DISCOUNT, amount: 20)
@@ -405,11 +291,12 @@ module Pricing
             type: Discounts::GENERAL_DISCOUNT
           }
         ),
-        OrderTotalValueCalculated.new(
+        OfferItemsPricesRecalculated.new(
           data: {
             order_id: order_id,
-            discounted_amount: 20,
-            total_amount: 20
+            order_items: [
+              { product_id: product_1_id, price: 20, catalog_price: 20 }
+            ]
           }
         )
       ) do

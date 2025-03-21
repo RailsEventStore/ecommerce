@@ -11,7 +11,7 @@ module Processes
     def call(event)
       state = build_state(event)
       case event
-      when Ordering::OrderSubmitted
+      when Pricing::OfferAccepted
         update_order_state(state) { reserve_stock(state) }
       when Fulfillment::OrderCancelled
         release_stock(state)
@@ -61,11 +61,11 @@ module Processes
     end
 
     def accept_order(state)
-      command_bus.(Ordering::AcceptOrder.new(order_id: state.order_id))
+      command_bus.(Fulfillment::RegisterOrder.new(order_id: state.order_id))
     end
 
     def reject_order(state)
-      command_bus.(Ordering::RejectOrder.new(order_id: state.order_id))
+      command_bus.(Pricing::RejectOffer.new(order_id: state.order_id))
     end
 
     def stream_name(order_id)
@@ -91,7 +91,7 @@ module Processes
     end
 
     class ProcessState
-      def initialize()
+      def initialize
         @reserved_product_ids = []
       end
 
@@ -99,8 +99,8 @@ module Processes
 
       def call(event)
         case event
-        when Ordering::OrderSubmitted
-          @order_lines = event.data.fetch(:order_lines)
+        when Pricing::OfferAccepted
+          @order_lines = event.data.fetch(:order_items).map {|i| i[:product_id]}.tally
           @order_id = event.data.fetch(:order_id)
         when Fulfillment::OrderCancelled, Fulfillment::OrderConfirmed
           @reserved_product_ids = order_lines.keys

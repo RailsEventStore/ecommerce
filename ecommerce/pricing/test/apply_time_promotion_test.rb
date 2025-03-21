@@ -1,4 +1,5 @@
 require_relative "test_helper"
+require "timecop"
 
 module Pricing
   class ApplyTimePromotionTest < Test
@@ -60,7 +61,9 @@ module Pricing
       Pricing::PriceItemAdded.new(
         data: {
           product_id: product_id,
-          order_id: order_id
+          order_id: order_id,
+          price: 100,
+          catalog_price: 100
           }
         )
     end

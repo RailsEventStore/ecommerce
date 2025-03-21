@@ -4,33 +4,48 @@ module Pricing
   class SimpleOfferTest < Test
     cover "Pricing*"
 
-    def test_removing
-      product_1_id = SecureRandom.uuid
-      set_price(product_1_id, 20)
+    def test_adding_offer_item
+      product_id = SecureRandom.uuid
+      set_price(product_id, 20)
       order_id = SecureRandom.uuid
-      add_item(order_id, product_1_id)
-      stream = "Pricing::Offer$#{order_id}"
-      assert_events(
+      stream = stream_name(order_id)
+      assert_events_contain(
         stream,
-        OrderTotalValueCalculated.new(
+        PriceItemAdded.new(
           data: {
             order_id: order_id,
-            discounted_amount: 20,
-            total_amount: 20
+            product_id: product_id,
+            catalog_price: 20,
+            price: 20
           }
         )
-      ) { calculate_total_value(order_id) }
-      remove_item(order_id, product_1_id)
-      assert_events(
+      ) { add_item(order_id, product_id) }
+    end
+
+    def test_removing_offer_item
+      product_id = SecureRandom.uuid
+      set_price(product_id, 30)
+      order_id = SecureRandom.uuid
+      stream = stream_name(order_id)
+      add_item(order_id, product_id)
+
+      assert_events_contain(
         stream,
-        OrderTotalValueCalculated.new(
+        PriceItemRemoved.new(
           data: {
             order_id: order_id,
-            discounted_amount: 0,
-            total_amount: 0
+            product_id: product_id,
+            catalog_price: 30,
+            price: 30
           }
         )
-      ) { calculate_total_value(order_id) }
+      ) { remove_item(order_id, product_id, 30) }
+    end
+
+    private
+
+    def stream_name(order_id)
+      "Pricing::Offer$#{order_id}"
     end
   end
 end

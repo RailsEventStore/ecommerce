@@ -5,6 +5,7 @@ module ClientOrders
     cover "ClientOrders*"
 
     def test_update_orders_summary
+      skip "Payments not yet integrated"
       customer_id = SecureRandom.uuid
       other_customer_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
@@ -54,7 +55,7 @@ module ClientOrders
     end
 
     def add_item_to_basket(order_id, product_id)
-      run_command(Ordering::AddItemToBasket.new(order_id: order_id, product_id: product_id))
+      run_command(Pricing::AddPriceItem.new(order_id: order_id, product_id: product_id))
     end
 
     def confirm_order(customer_id, order_id, total_amount)

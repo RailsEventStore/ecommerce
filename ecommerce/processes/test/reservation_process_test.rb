@@ -7,12 +7,12 @@ module Processes
     def test_happy_path
       process = ReservationProcess.new(event_store, command_bus)
       assert_success_event do
-        given([order_submitted]).each { |event| process.call(event) }
+        given([offer_accepted]).each { |event| process.call(event) }
       end
       assert_all_commands(
         Inventory::Reserve.new(product_id: product_id, quantity: 1),
         Inventory::Reserve.new(product_id: another_product_id, quantity: 2),
-        Ordering::AcceptOrder.new(order_id: order_id)
+        Fulfillment::RegisterOrder.new(order_id: order_id)
       )
     end
 
@@ -34,19 +34,19 @@ module Processes
       process = ReservationProcess.new(event_store, enhanced_command_bus)
 
       assert_failure_event do
-        given([order_submitted]).each { |event| process.call(event) }
+        given([offer_accepted]).each { |event| process.call(event) }
       end
       assert_all_commands(
         failing_command,
         Inventory::Reserve.new(product_id: another_product_id, quantity: 2),
         Inventory::Release.new(product_id: another_product_id, quantity: 2),
-        Ordering::RejectOrder.new(order_id: order_id)
+        Pricing::RejectOffer.new(order_id: order_id)
       )
     end
 
     def test_release_stock_when_order_is_cancelled
       process = ReservationProcess.new(event_store, command_bus)
-      given([order_submitted]).each { |event| process.call(event) }
+      given([offer_accepted]).each { |event| process.call(event) }
 
       command_bus.clear_all_received
       given([order_cancelled]).each { |event| process.call(event) }
@@ -58,7 +58,7 @@ module Processes
 
     def test_dispatch_stock_when_order_is_confirmed
       process = ReservationProcess.new(event_store, command_bus)
-      given([order_submitted]).each { |event| process.call(event) }
+      given([offer_accepted]).each { |event| process.call(event) }
 
       command_bus.clear_all_received
       given([order_confirmed]).each { |event| process.call(event) }
@@ -78,13 +78,16 @@ module Processes
       @another_product_id ||= SecureRandom.uuid
     end
 
-    def order_submitted
-      Ordering::OrderSubmitted.new(
+    def offer_accepted
+      Pricing::OfferAccepted.new(
         data: {
           order_id: order_id,
-          order_number: order_number,
-          customer_id: customer_id,
-          order_lines: { product_id => 1, another_product_id => 2 }
+          amount: 55 + 2 * 101,
+          order_items: [
+            { product_id: product_id, catalog_price: 100, price: 55 },
+            { product_id: another_product_id, catalog_price: 159, price: 101 },
+            { product_id: another_product_id, catalog_price: 159, price: 101 },
+          ]
         }
       )
     end

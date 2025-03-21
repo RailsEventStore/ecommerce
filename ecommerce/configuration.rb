@@ -1,5 +1,4 @@
 require_relative "authentication/lib/authentication"
-require_relative "ordering/lib/ordering"
 require_relative "pricing/lib/pricing"
 require_relative "product_catalog/lib/product_catalog"
 require_relative "crm/lib/crm"
@@ -29,7 +28,6 @@ module Ecommerce
       ) if @number_generator.nil? || @payment_gateway.nil?
       [
         Authentication::Configuration.new,
-        Ordering::Configuration.new(@number_generator),
         Crm::Configuration.new,
         Inventory::Configuration.new,
         Invoicing::Configuration.new,
@@ -38,7 +36,7 @@ module Ecommerce
         Pricing::Configuration.new,
         Taxes::Configuration.new,
         ProductCatalog::Configuration.new,
-        Fulfillment::Configuration.new
+        Fulfillment::Configuration.new(@number_generator),
       ].each { |c| c.call(event_store, command_bus) }
     end
 

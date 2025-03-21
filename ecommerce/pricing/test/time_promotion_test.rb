@@ -40,11 +40,10 @@ module Pricing
   class DiscountWithTimePromotionTest < Test
     cover "Pricing*"
 
-    def test_calculates_total_value_with_time_promotion
+    def test_takes_time_pormotion_into_account_when_adding_an_item
       order_id = SecureRandom.uuid
       product_1_id = SecureRandom.uuid
       set_price(product_1_id, 20)
-      add_item(order_id, product_1_id)
       stream = stream_name(order_id)
       time_promotion_id = SecureRandom.uuid
       start_time = Time.current - 1
@@ -55,14 +54,15 @@ module Pricing
 
       assert_events_contain(
         stream,
-        OrderTotalValueCalculated.new(
+        PriceItemAdded.new(
           data: {
             order_id: order_id,
-            total_amount: 20,
-            discounted_amount: 10
+            product_id: product_1_id,
+            catalog_price: 20,
+            price: 10
           }
         )
-      ) { calculate_total_value(order_id) }
+      ) { add_item(order_id, product_1_id) }
     end
 
     def test_calculates_sub_amounts_with_combined_discounts
@@ -76,7 +76,7 @@ module Pricing
         time_promotion_id: SecureRandom.uuid,
         discount: 50,
         start_time: Time.current - 1,
-        end_time: Time.current + 1,
+        end_time: Time.current + 1.day,
         label: "Last Minute"
       }
 
@@ -86,31 +86,36 @@ module Pricing
       add_item(order_id, product_2_id)
       add_item(order_id, product_2_id)
 
-      run_command(
-        Pricing::SetPercentageDiscount.new(order_id: order_id, amount: 10)
-      )
 
       assert_events_contain(
         stream,
-        PriceItemValueCalculated.new(
+        OfferItemsPricesRecalculated.new(
           data: {
             order_id: order_id,
-            product_id: product_1_id,
-            quantity: 1,
-            amount: 20,
-            discounted_amount: 8
-          }
-        ),
-        PriceItemValueCalculated.new(
-          data: {
-            order_id: order_id,
-            product_id: product_2_id,
-            quantity: 2,
-            amount: 60,
-            discounted_amount: 24
+            order_items: [
+              {
+                product_id: product_1_id,
+                catalog_price: 20,
+                price: 8
+              },
+              {
+                product_id: product_2_id,
+                catalog_price: 30,
+                price: 12
+              },
+              {
+                product_id: product_2_id,
+                catalog_price: 30,
+                price: 12
+              }
+            ]
           }
         )
-      ) { calculate_sub_amounts(order_id) }
+      ) do
+        run_command(
+          Pricing::SetPercentageDiscount.new(order_id: order_id, amount: 10)
+        )
+      end
     end
 
     def test_cant_create_twice
@@ -152,19 +157,18 @@ module Pricing
         product_1_id = SecureRandom.uuid
         set_price(product_1_id, 20)
         order_id = SecureRandom.uuid
-        add_item(order_id, product_1_id)
         stream = stream_name(order_id)
 
-        assert_events(
+        assert_events_contain(
           stream,
-          OrderTotalValueCalculated.new(
+          PercentageDiscountSet.new(
             data: {
               order_id: order_id,
-              discounted_amount: 10,
-              total_amount: 20
+              type: Discounts::TIME_PROMOTION_DISCOUNT,
+              amount: 50
             }
           )
-        ) { calculate_total_value(order_id) }
+        ) { add_item(order_id, product_1_id) }
       end
     end
 

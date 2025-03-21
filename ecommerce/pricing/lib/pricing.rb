@@ -7,10 +7,9 @@ require_relative "pricing/services"
 require_relative "pricing/offer"
 require_relative "pricing/price_change"
 require_relative "pricing/pricing_catalog"
+require_relative "pricing/default_pricing_policy"
 require_relative "pricing/time_promotion"
 require_relative "pricing/promotions_calendar"
-require_relative "pricing/calculate_order_sub_amounts_value"
-require_relative "pricing/calculate_order_total_value"
 require_relative "pricing/apply_time_promotion"
 
 module Pricing
@@ -52,14 +51,6 @@ module Pricing
         SetFuturePriceHandler.new(event_store)
       )
       command_bus.register(
-        CalculateTotalValue,
-        OnCalculateTotalValue.new(event_store)
-      )
-      command_bus.register(
-        CalculateSubAmounts,
-        OnCalculateTotalValue.new(event_store).public_method(:calculate_sub_amounts)
-      )
-      command_bus.register(
         SetPercentageDiscount,
         SetPercentageDiscountHandler.new(event_store)
       )
@@ -92,6 +83,18 @@ module Pricing
         UseCouponHandler.new(event_store)
       )
       command_bus.register(
+        AcceptOffer,
+        OnAcceptOffer.new(event_store)
+      )
+      command_bus.register(
+        RejectOffer,
+        OnRejectOffer.new(event_store)
+      )
+      command_bus.register(
+        ExpireOffer,
+        OnExpireOffer.new(event_store)
+      )
+      command_bus.register(
         SetTimePromotionDiscount,
         SetTimePromotionDiscountHandler.new(event_store)
       )
@@ -100,24 +103,6 @@ module Pricing
         RemoveTimePromotionDiscountHandler.new(event_store)
       )
       event_store.subscribe(ApplyTimePromotion, to: [
-        PriceItemAdded,
-        PriceItemRemoved,
-        PercentageDiscountSet,
-        PercentageDiscountRemoved,
-        PercentageDiscountChanged,
-        ProductMadeFreeForOrder,
-        FreeProductRemovedFromOrder
-      ])
-      event_store.subscribe(CalculateOrderTotalValue, to: [
-        PriceItemAdded,
-        PriceItemRemoved,
-        PercentageDiscountSet,
-        PercentageDiscountRemoved,
-        PercentageDiscountChanged,
-        ProductMadeFreeForOrder,
-        FreeProductRemovedFromOrder
-      ])
-      event_store.subscribe(CalculateOrderTotalSubAmountsValue, to: [
         PriceItemAdded,
         PriceItemRemoved,
         PercentageDiscountSet,

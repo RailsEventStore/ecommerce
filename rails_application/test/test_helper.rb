@@ -27,8 +27,12 @@ class InMemoryTestCase < ActiveSupport::TestCase
     result
   end
 
-  def run_command(command)
-    Rails.configuration.command_bus.call(command)
+  def run_command(*commands)
+    commands.each { |command| Rails.configuration.command_bus.call(command) }
+  end
+
+  def publish_event(*events)
+    Rails.configuration.event_store.publish(events)
   end
 end
 

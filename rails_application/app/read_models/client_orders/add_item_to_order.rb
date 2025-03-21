@@ -38,7 +38,7 @@ module ClientOrders
 
     def create_draft_order(uid)
       return if Order.where(order_uid: uid).exists?
-      Order.create!(order_uid: uid, state: "Draft")
+      Order.create!(order_uid: uid, state: "Draft", total_value: 0, discounted_value: 0)
     end
 
     def find(order_uid, product_id)

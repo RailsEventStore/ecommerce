@@ -48,6 +48,6 @@ Rails.application.configure do
   # config.action_view.annotate_rendered_view_with_filenames = true
 
   # --- Ecommerce ---
-  config.number_generator = ->{ Ordering::FakeNumberGenerator.new }
+  config.number_generator = ->{ Fulfillment::FakeNumberGenerator.new }
   config.payment_gateway = -> { @gateway ||= Payments::FakeGateway.new }
 end

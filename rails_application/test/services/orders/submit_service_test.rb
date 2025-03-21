@@ -11,7 +11,7 @@ module Orders
 
       run_command(Crm::RegisterCustomer.new(customer_id: customer_id, name: "John Doe"))
       prepare_product(product_id, "Async Remote", 49)
-      run_command(Ordering::AddItemToBasket.new(order_id: order_id, product_id: product_id))
+      run_command(Pricing::AddPriceItem.new(order_id: order_id, product_id: product_id))
 
       Orders::SubmitService.call(order_id: order_id, customer_id: customer_id)
 
@@ -31,9 +31,9 @@ module Orders
       prepare_product(product_id, "Async Remote", 49)
       run_command(Inventory::Supply.new(product_id: product_id, quantity: 1))
       run_command(Inventory::Reserve.new(product_id: product_id, quantity: 1))
-      run_command(Ordering::AddItemToBasket.new(order_id: order_id, product_id: product_id))
+      run_command(Pricing::AddPriceItem.new(order_id: order_id, product_id: product_id))
       prepare_product(another_product_id, "Fearless Refactoring", 49)
-      run_command(Ordering::AddItemToBasket.new(order_id: order_id, product_id: another_product_id))
+      run_command(Pricing::AddPriceItem.new(order_id: order_id, product_id: another_product_id))
 
       error = assert_raises(Orders::OrderHasUnavailableProducts) do
         Orders::SubmitService.new(order_id: order_id, customer_id: customer_id).call

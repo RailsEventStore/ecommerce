@@ -99,6 +99,6 @@ Rails.application.configure do
   # config.active_record.database_resolver_context = ActiveRecord::Middleware::DatabaseSelector::Resolver::Session
 
   # --- Ecommerce ---
-  config.number_generator = ->{ Ordering::NumberGenerator.new }
+  config.number_generator = ->{ Fulfillment::NumberGenerator.new }
   config.payment_gateway = -> { @gateway ||= Payments::FakeGateway.new }
 end

@@ -4,29 +4,41 @@ module Pricing
 
     def initialize(id)
       @id = id
-      @list = List.new
+      @items = []
       @discounts = []
+      @state = :draft
     end
 
-    def add_item(product_id)
+    def add_item(product_id, pricing_policy)
+      fail_unless_draft
+      apply_discounts_to_pricing_policy(pricing_policy)
+      items = pricing_policy.apply(@items, product_id)
       apply PriceItemAdded.new(
         data: {
           order_id: @id,
-          product_id: product_id
+          product_id: product_id,
+          catalog_price: items.last.catalog_price,
+          price: items.last.price,
         }
       )
     end
 
-    def remove_item(product_id)
+    def remove_item(product_id, catalog_price)
+      fail_unless_draft
+      item = @items.find { |item| item.product_id == product_id && item.catalog_price == catalog_price }
+      return unless item
       apply PriceItemRemoved.new(
         data: {
           order_id: @id,
-          product_id: product_id
+          product_id: product_id,
+          catalog_price: item.catalog_price,
+          price: item.price,
         }
       )
     end
 
-    def apply_discount(discount)
+    def apply_discount(discount, pricing_policy)
+      fail_unless_draft
       raise NotPossibleToAssignDiscountTwice if discount_exists?(discount.type)
       apply PercentageDiscountSet.new(
         data: {
@@ -35,9 +47,12 @@ module Pricing
           amount: discount.value
         }
       )
+      apply_discounts_to_pricing_policy(pricing_policy)
+      recalculate_prices(pricing_policy)
     end
 
-    def change_discount(discount)
+    def change_discount(discount, pricing_policy)
+      fail_unless_draft
       raise NotPossibleToChangeDiscount unless discount_exists?(discount.type)
       apply PercentageDiscountChanged.new(
         data: {
@@ -46,9 +61,12 @@ module Pricing
           amount: discount.value
         }
       )
+      apply_discounts_to_pricing_policy(pricing_policy)
+      recalculate_prices(pricing_policy)
     end
 
-    def remove_discount(type)
+    def remove_discount(type, pricing_policy)
+      fail_unless_draft
       raise NotPossibleToRemoveWithoutDiscount unless discount_exists?(type)
       apply PercentageDiscountRemoved.new(
         data: {
@@ -56,6 +74,8 @@ module Pricing
           type: type
         }
       )
+      apply_discounts_to_pricing_policy(pricing_policy)
+      recalculate_prices(pricing_policy)
     end
 
     def make_product_free(order_id, product_id)
@@ -78,43 +98,8 @@ module Pricing
       )
     end
 
-    def calculate_total_value(pricing_catalog)
-      total_value = @list.base_sum(pricing_catalog)
-      discounted_value = @discounts.inject(Discounts::NoPercentageDiscount.new, :add).apply(total_value)
-
-      apply(
-        OrderTotalValueCalculated.new(
-          data: {
-            order_id: @id,
-            total_amount: total_value,
-            discounted_amount: discounted_value
-          }
-        )
-      )
-    end
-
-    def calculate_sub_amounts(pricing_catalog)
-      sub_amounts_total = @list.sub_amounts_total(pricing_catalog)
-      sub_discounts = calculate_total_sub_discounts(pricing_catalog)
-
-      products = @list.products
-      quantities = @list.quantities
-      products.zip(quantities, sub_amounts_total, sub_discounts) do |product, quantity, sub_amount, sub_discount|
-        apply(
-          PriceItemValueCalculated.new(
-            data: {
-              order_id: @id,
-              product_id: product.id,
-              quantity: quantity,
-              amount: sub_amount,
-              discounted_amount: sub_amount - sub_discount
-            }
-          )
-        )
-      end
-    end
-
     def use_coupon(coupon_id, discount)
+      fail_unless_draft
       apply CouponUsed.new(
         data: {
           order_id: @id,
@@ -124,20 +109,73 @@ module Pricing
       )
     end
 
+    def accept
+      raise CantAcceptEmptyOffer if @items.empty?
+      apply OfferAccepted.new(
+        data: {
+          order_id: @id,
+          amount: @items.sum(&:price),
+          order_items: @items.map do |item|
+            {
+              product_id: item.product_id,
+              catalog_price: item.catalog_price,
+              price: item.price
+            }
+          end
+        }
+      )
+    end
+
+    def reject
+      raise OnlyAcceptedOfferCanBeRejected unless accepted?
+      apply OfferRejected.new(data: { order_id: @id })
+    end
+
+    def expire
+      raise OnlyDraftOfferCanBeExpired unless draft?
+      apply OfferExpired.new(data: { order_id: @id })
+    end
+
     private
 
+    def fail_unless_draft
+      raise CantModifyAcceptedOffer if accepted?
+      raise CantModifyExpiredOffer if expired?
+    end
+
+    def apply_discounts_to_pricing_policy(pricing_policy)
+      @discounts.each {|discount| pricing_policy.add_discount(discount) }
+    end
+
+    def recalculate_prices(pricing_policy)
+      new_items = pricing_policy.apply(@items)
+      apply OfferItemsPricesRecalculated.new(
+        data: {
+          order_id: @id,
+          order_items: new_items.map do |item|
+            {
+              product_id: item.product_id,
+              catalog_price: item.catalog_price,
+              price: item.price
+            }
+          end
+        }
+      )
+    end
+
     on PriceItemAdded do |event|
-      @list.add_item(Product.new(event.data.fetch(:product_id)))
+      @items << ItemPrice.new(event.data.fetch(:product_id), event.data.fetch(:catalog_price), event.data.fetch(:price))
     end
 
     on PriceItemRemoved do |event|
-      @list.remove_item(event.data.fetch(:product_id))
+      i = @items.index(ItemPrice.new(event.data.fetch(:product_id), event.data.fetch(:catalog_price), event.data.fetch(:price)))
+      @items.delete_at(i)
     end
 
-    on PriceItemValueCalculated do |event|
-    end
-
-    on OrderTotalValueCalculated do |event|
+    on OfferItemsPricesRecalculated do |event|
+      @items = event.data.fetch(:order_items).map do |item|
+        ItemPrice.new(item.fetch(:product_id), item.fetch(:catalog_price), item.fetch(:price))
+      end
     end
 
     on PercentageDiscountSet do |event|
@@ -161,16 +199,30 @@ module Pricing
       @list.replace(FreeProduct, Product, event.data.fetch(:product_id))
     end
 
-    def calculate_total_sub_discounts(pricing_catalog)
-      @list.sub_discounts(pricing_catalog, @discounts)
+    on CouponUsed do |event|
     end
 
-    on CouponUsed do |event|
+    on OfferAccepted do |_|
+      @state = :accepted
+    end
+
+    on OfferRejected do |_|
+      @state = :draft
+    end
+
+    on OfferExpired do |_|
+      @state = :expired
     end
 
     def discount_exists?(type)
       @discounts.find { |discount| discount.type == type }
     end
+
+    def draft? = @state == :draft
+    def accepted? = @state == :accepted
+    def expired? = @state == :expired
+
+    ItemPrice = Data.define(:product_id, :catalog_price, :price)
 
     class List
 

@@ -8,7 +8,7 @@ module Orders
       event_store = Rails.configuration.event_store
       customer_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
-      order_number = Ordering::FakeNumberGenerator::FAKE_NUMBER
+      order_number = Fulfillment::FakeNumberGenerator::FAKE_NUMBER
       product_id = SecureRandom.uuid
 
       event_store.publish(Crm::CustomerRegistered.new(
@@ -19,8 +19,8 @@ module Orders
       ))
 
       create_product(product_id, "Async Remote", 30)
-      run_command(Ordering::AddItemToBasket.new(order_id: order_id, product_id: product_id))
-      run_command(Ordering::SubmitOrder.new(order_id: order_id, order_number: order_number))
+      run_command(Pricing::AddPriceItem.new(order_id: order_id, product_id: product_id))
+      run_command(Pricing::AcceptOffer.new(order_id: order_id))
 
       order_cancelled = Fulfillment::OrderCancelled.new(
         data: {
