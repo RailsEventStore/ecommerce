@@ -26,7 +26,7 @@ module Customers
       add_item_to_basket(order_id, product_id)
       confirm_order(customer_id, order_id, 6)
 
-      customer = Customer.find(customer_id)
+      customer.reload
       assert_equal 9.to_d, customer.paid_orders_summary
     end
 
@@ -49,20 +49,11 @@ module Customers
     end
 
     def add_item_to_basket(order_id, product_id)
-      run_command(Ordering::AddItemToBasket.new(order_id: order_id, product_id: product_id))
+      run_command(Pricing::AddPriceItem.new(order_id: order_id, product_id: product_id))
     end
 
     def confirm_order(customer_id, order_id, total_amount)
       order_number = Ordering::FakeNumberGenerator::FAKE_NUMBER
-      event_store.publish(
-        Pricing::OrderTotalValueCalculated.new(
-          data: {
-            order_id: order_id,
-            discounted_amount: total_amount,
-            total_amount: total_amount
-          }
-        )
-      )
       run_command(
         Crm::AssignCustomerToOrder.new(customer_id: customer_id, order_id: order_id)
       )

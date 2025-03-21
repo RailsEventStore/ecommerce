@@ -81,7 +81,7 @@ class OrdersController < ApplicationController
   rescue Orders::OrderHasUnavailableProducts => e
     unavailable_products = e.unavailable_products.join(", ")
     redirect_to edit_order_path(params[:order_id]), alert: "Order can not be submitted! #{unavailable_products} not available in requested quantity!"
-  rescue Ordering::Order::IsEmpty
+  rescue Pricing::CantAcceptEmptyOffer
     redirect_to edit_order_path(params[:order_id]), alert: "You can't submit an empty order"
   rescue Crm::Customer::NotExists
     redirect_to order_path(params[:order_id]), alert: "Order can not be submitted! Customer does not exist."

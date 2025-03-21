@@ -15,7 +15,7 @@ module Client
     rescue Orders::OrderHasUnavailableProducts => e
       unavailable_products = e.unavailable_products.join(", ")
       redirect_to edit_client_order_path(params[:order_id]), alert: "Order can not be submitted! #{unavailable_products} not available in requested quantity!"
-    rescue Ordering::Order::IsEmpty
+    rescue Pricing::CantAcceptEmptyOffer
       redirect_to edit_client_order_path(params[:order_id]), alert: "You can't submit an empty order"
     else
       redirect_to client_order_path(params[:order_id]), notice: "Your order is being submitted"
