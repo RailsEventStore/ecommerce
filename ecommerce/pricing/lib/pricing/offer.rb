@@ -125,6 +125,11 @@ module Pricing
       )
     end
 
+    def reject
+      raise OnlyAcceptedOfferCanBeRejected unless @accepted
+      apply OfferRejected.new(data: { order_id: @id })
+    end
+
     private
 
     def fail_if_accepted
@@ -190,8 +195,12 @@ module Pricing
     on CouponUsed do |event|
     end
 
-    on OfferAccepted do |event|
+    on OfferAccepted do |_|
       @accepted = true
+    end
+
+    on OfferRejected do |_|
+      @accepted = false
     end
 
     def discount_exists?(type)

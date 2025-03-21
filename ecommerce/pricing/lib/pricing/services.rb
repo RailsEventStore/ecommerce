@@ -17,6 +17,9 @@ module Pricing
   class CantModifyAcceptedOffer < StandardError
   end
 
+  class OnlyAcceptedOfferCanBeRejected < StandardError
+  end
+
   class SetPercentageDiscountHandler
     def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)
@@ -213,6 +216,18 @@ module Pricing
     def call(command)
       @repository.with_aggregate(Offer, command.aggregate_id) do |order|
         order.accept
+      end
+    end
+  end
+
+  class OnRejectOffer
+    def initialize(event_store)
+      @repository = Infra::AggregateRootRepository.new(event_store)
+    end
+
+    def call(command)
+      @repository.with_aggregate(Offer, command.aggregate_id) do |order|
+        order.reject
       end
     end
   end

@@ -83,4 +83,8 @@ module Pricing
       attribute :price, Infra::Types::Value
     end
   end
+
+  class OfferRejected < Infra::Event
+    attribute :order_id, Infra::Types::UUID
+  end
 end
