@@ -29,7 +29,7 @@ module Processes
       self.class.event_store = event_store
       self.class.command_bus = command_bus
       enable_coupon_discount_process(event_store, command_bus)
-      notify_payments_about_order_total_value(event_store, command_bus)
+      # notify_payments_about_order_total_value(event_store, command_bus)
       enable_shipment_sync(event_store, command_bus)
       determine_vat_rates_on_order_placed(event_store, command_bus)
       set_invoice_payment_date_when_order_confirmed(event_store, command_bus)
@@ -38,7 +38,7 @@ module Processes
 
       enable_release_payment_process(event_store, command_bus)
       enable_shipment_process(event_store, command_bus)
-      enable_order_item_invoicing_process(event_store, command_bus)
+      # enable_order_item_invoicing_process(event_store, command_bus)
       enable_reservation_process(event_store, command_bus)
       build_pricing_offer_from_ordering_items(event_store, command_bus)
     end
