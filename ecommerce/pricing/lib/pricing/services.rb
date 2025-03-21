@@ -14,10 +14,19 @@ module Pricing
   class FreeProductNotExists < StandardError
   end
 
+  class CantAcceptEmptyOffer < StandardError
+  end
+
   class CantModifyAcceptedOffer < StandardError
   end
 
+  class CantModifyExpiredOffer < StandardError
+  end
+
   class OnlyAcceptedOfferCanBeRejected < StandardError
+  end
+
+  class OnlyDraftOfferCanBeExpired < StandardError
   end
 
   class SetPercentageDiscountHandler
@@ -228,6 +237,18 @@ module Pricing
     def call(command)
       @repository.with_aggregate(Offer, command.aggregate_id) do |order|
         order.reject
+      end
+    end
+  end
+
+  class OnExpireOffer
+    def initialize(event_store)
+      @repository = Infra::AggregateRootRepository.new(event_store)
+    end
+
+    def call(command)
+      @repository.with_aggregate(Offer, command.aggregate_id) do |order|
+        order.expire
       end
     end
   end

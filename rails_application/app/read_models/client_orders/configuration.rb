@@ -41,7 +41,7 @@ module ClientOrders
 
   class Configuration
     def call(event_store)
-      event_store.subscribe(OrderHandlers::ExpireOrder, to: [Ordering::OrderExpired])
+      event_store.subscribe(OrderHandlers::ExpireOrder, to: [Pricing::OfferExpired])
       event_store.subscribe(OrderHandlers::CancelOrder, to: [Fulfillment::OrderCancelled])
       event_store.subscribe(OrderHandlers::SubmitOrder, to: [Fulfillment::OrderRegistered])
       event_store.subscribe(OrderHandlers::ConfirmOrder, to: [Fulfillment::OrderConfirmed])

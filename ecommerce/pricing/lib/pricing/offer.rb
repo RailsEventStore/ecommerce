@@ -6,11 +6,11 @@ module Pricing
       @id = id
       @items = []
       @discounts = []
-      @accepted = false
+      @state = :draft
     end
 
     def add_item(product_id, pricing_policy)
-      fail_if_accepted
+      fail_unless_draft
       apply_discounts_to_pricing_policy(pricing_policy)
       items = pricing_policy.apply(@items, product_id)
       apply PriceItemAdded.new(
@@ -24,7 +24,7 @@ module Pricing
     end
 
     def remove_item(product_id, catalog_price)
-      fail_if_accepted
+      fail_unless_draft
       item = @items.find { |item| item.product_id == product_id && item.catalog_price == catalog_price }
       return unless item
       apply PriceItemRemoved.new(
@@ -38,7 +38,7 @@ module Pricing
     end
 
     def apply_discount(discount, pricing_policy)
-      fail_if_accepted
+      fail_unless_draft
       raise NotPossibleToAssignDiscountTwice if discount_exists?(discount.type)
       apply PercentageDiscountSet.new(
         data: {
@@ -52,7 +52,7 @@ module Pricing
     end
 
     def change_discount(discount, pricing_policy)
-      fail_if_accepted
+      fail_unless_draft
       raise NotPossibleToChangeDiscount unless discount_exists?(discount.type)
       apply PercentageDiscountChanged.new(
         data: {
@@ -66,7 +66,7 @@ module Pricing
     end
 
     def remove_discount(type, pricing_policy)
-      fail_if_accepted
+      fail_unless_draft
       raise NotPossibleToRemoveWithoutDiscount unless discount_exists?(type)
       apply PercentageDiscountRemoved.new(
         data: {
@@ -99,7 +99,7 @@ module Pricing
     end
 
     def use_coupon(coupon_id, discount)
-      fail_if_accepted
+      fail_unless_draft
       apply CouponUsed.new(
         data: {
           order_id: @id,
@@ -110,6 +110,7 @@ module Pricing
     end
 
     def accept
+      raise CantAcceptEmptyOffer if @items.empty?
       apply OfferAccepted.new(
         data: {
           order_id: @id,
@@ -126,14 +127,20 @@ module Pricing
     end
 
     def reject
-      raise OnlyAcceptedOfferCanBeRejected unless @accepted
+      raise OnlyAcceptedOfferCanBeRejected unless accepted?
       apply OfferRejected.new(data: { order_id: @id })
+    end
+
+    def expire
+      raise OnlyDraftOfferCanBeExpired unless draft?
+      apply OfferExpired.new(data: { order_id: @id })
     end
 
     private
 
-    def fail_if_accepted
-      raise CantModifyAcceptedOffer if @accepted
+    def fail_unless_draft
+      raise CantModifyAcceptedOffer if accepted?
+      raise CantModifyExpiredOffer if expired?
     end
 
     def apply_discounts_to_pricing_policy(pricing_policy)
@@ -196,16 +203,24 @@ module Pricing
     end
 
     on OfferAccepted do |_|
-      @accepted = true
+      @state = :accepted
     end
 
     on OfferRejected do |_|
-      @accepted = false
+      @state = :draft
+    end
+
+    on OfferExpired do |_|
+      @state = :expired
     end
 
     def discount_exists?(type)
       @discounts.find { |discount| discount.type == type }
     end
+
+    def draft? = @state == :draft
+    def accepted? = @state == :accepted
+    def expired? = @state == :expired
 
     ItemPrice = Data.define(:product_id, :catalog_price, :price)
 
