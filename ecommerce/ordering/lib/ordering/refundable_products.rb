@@ -6,7 +6,8 @@ module Ordering
         .stream("Pricing::Offer$#{order_id}")
         .of_type(Pricing::OfferAccepted)
         .first
-        .data.fetch(:order_lines)
+        &.data
+        &.fetch(:order_lines) || []
     end
   end
 end
