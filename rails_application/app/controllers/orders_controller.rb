@@ -63,13 +63,13 @@ class OrdersController < ApplicationController
                   alert: "Product not available in requested quantity!" and return
     end
     ActiveRecord::Base.transaction do
-      command_bus.(Ordering::AddItemToBasket.new(order_id: params[:id], product_id: params[:product_id]))
+      command_bus.(Pricing::AddPriceItem.new(order_id: params[:id], product_id: params[:product_id]))
     end
     head :ok
   end
 
   def remove_item
-    command_bus.(Ordering::RemoveItemFromBasket.new(order_id: params[:id], product_id: params[:product_id]))
+    command_bus.(Pricing::RemovePriceItem.new(order_id: params[:id], product_id: params[:product_id]))
     head :ok
   end
 
@@ -78,7 +78,7 @@ class OrdersController < ApplicationController
   rescue Orders::OrderHasUnavailableProducts => e
     unavailable_products = e.unavailable_products.join(", ")
     redirect_to edit_order_path(params[:order_id]), alert: "Order can not be submitted! #{unavailable_products} not available in requested quantity!"
-  rescue Ordering::Order::IsEmpty
+  rescue Pricing::Offer::IsEmpty
     redirect_to edit_order_path(params[:order_id]), alert: "You can't submit an empty order"
   rescue Crm::Customer::NotExists
     redirect_to order_path(params[:order_id]), alert: "Order can not be submitted! Customer does not exist."
