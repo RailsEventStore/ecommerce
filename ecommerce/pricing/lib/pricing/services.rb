@@ -209,4 +209,16 @@ module Pricing
       end
     end
   end
+
+  class OnAcceptOffer
+    def initialize(event_store)
+      @repository = Infra::AggregateRootRepository.new(event_store)
+    end
+
+    def call(command)
+      @repository.with_aggregate(Offer, command.aggregate_id) do |order|
+        order.accept
+      end
+    end
+  end
 end
