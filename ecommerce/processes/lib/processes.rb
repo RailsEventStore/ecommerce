@@ -92,6 +92,7 @@ module Processes
         DetermineVatRatesOnOrderPlaced.new(event_store, command_bus),
         to: [
           Pricing::OfferAccepted,
+          Fulfillment::OrderRegistered
         ]
       )
     end
