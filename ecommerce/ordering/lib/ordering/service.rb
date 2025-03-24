@@ -91,9 +91,7 @@ module Ordering
     private
 
     def refundable_products(order_id)
-      RefundableProducts
-        .call(order_id)
-        .run(@event_store)
+      RefundableProducts.new.call(@event_store, order_id)
     end
   end
 
