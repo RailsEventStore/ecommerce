@@ -8,7 +8,6 @@ module ClientOrders
       event_store = Rails.configuration.event_store
       customer_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
-      order_number = Ordering::FakeNumberGenerator::FAKE_NUMBER
       product_id = SecureRandom.uuid
 
       run_command(Crm::RegisterCustomer.new(customer_id: customer_id, name: "John Doe"))
@@ -25,7 +24,7 @@ module ClientOrders
         )
       )
 
-      run_command(Ordering::SubmitOrder.new(order_id: order_id, order_number: order_number))
+      run_command(Pricing::AcceptOffer.new(order_id: order_id))
 
       run_command(
         Crm::AssignCustomerToOrder.new(customer_id: customer_id, order_id: order_id)
@@ -42,7 +41,6 @@ module ClientOrders
       orders = Order.all
       assert_not_empty(orders)
       assert_equal(1, orders.count)
-      assert_equal(order_number, orders.first.number)
       assert_equal("Paid",  orders.first.state)
     end
 

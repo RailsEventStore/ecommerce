@@ -58,7 +58,6 @@ module ClientOrders
     end
 
     def confirm_order(customer_id, order_id, total_amount)
-      order_number = Ordering::FakeNumberGenerator::FAKE_NUMBER
       event_store.publish(
         Pricing::OrderTotalValueCalculated.new(
           data: {
@@ -71,7 +70,7 @@ module ClientOrders
       run_command(
         Crm::AssignCustomerToOrder.new(customer_id: customer_id, order_id: order_id)
       )
-      run_command(Ordering::SubmitOrder.new(order_id: order_id, order_number: order_number))
+      run_command(Pricing::AcceptOffer.new(order_id: order_id))
       event_store.publish(
         order_confirmed = Fulfillment::OrderConfirmed.new(
           data: {

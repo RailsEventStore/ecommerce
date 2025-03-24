@@ -2,6 +2,8 @@ module Pricing
   class Offer
     include AggregateRoot
 
+    IsEmpty = Class.new(StandardError)
+
     def initialize(id)
       @id = id
       @list = List.new
@@ -124,6 +126,16 @@ module Pricing
       )
     end
 
+    def accept
+      raise IsEmpty if @list.products.empty?
+      apply OfferAccepted.new(
+        data: {
+          order_id: @id,
+          order_lines: @list.items
+        }
+      )
+    end
+
     private
 
     on PriceItemAdded do |event|
@@ -168,6 +180,10 @@ module Pricing
     on CouponUsed do |event|
     end
 
+    on OfferAccepted do |event|
+      @state = :accepted
+    end
+
     def discount_exists?(type)
       @discounts.find { |discount| discount.type == type }
     end
@@ -203,6 +219,12 @@ module Pricing
 
       def quantities
         @products_quantities.values
+      end
+
+      def items
+        @products_quantities.map do |product, quantity|
+          { product_id: product.id, quantity: quantity }
+        end
       end
 
       def contains_free_products?

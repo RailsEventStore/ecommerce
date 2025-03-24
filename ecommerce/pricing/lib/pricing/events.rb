@@ -74,4 +74,12 @@ module Pricing
     attribute :coupon_id, Infra::Types::UUID
     attribute :discount, Infra::Types::CouponDiscount
   end
+
+  class OfferAccepted < Infra::Event
+    attribute :order_id, Infra::Types::UUID
+    attribute :order_lines, Infra::Types::Array do
+      attribute :product_id, Infra::Types::UUID
+      attribute :quantity, Infra::Types::Quantity
+    end
+  end
 end

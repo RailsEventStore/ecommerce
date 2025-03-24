@@ -99,8 +99,10 @@ module Processes
 
     def determine_vat_rates_on_order_placed(event_store, command_bus)
       event_store.subscribe(
-        DetermineVatRatesOnOrderPlaced.new(command_bus),
-        to: [Ordering::OrderPlaced]
+        DetermineVatRatesOnOrderPlaced.new(event_store, command_bus),
+        to: [
+          Pricing::OfferAccepted,
+        ]
       )
     end
 
@@ -132,7 +134,7 @@ module Processes
       event_store.subscribe(
         ReservationProcess.new(event_store, command_bus),
         to: [
-          Ordering::OrderSubmitted,
+          Pricing::OfferAccepted,
           Fulfillment::OrderCancelled,
           Fulfillment::OrderConfirmed
         ]

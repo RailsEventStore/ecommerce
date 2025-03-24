@@ -8,13 +8,13 @@ module Orders
       event_store = Rails.configuration.event_store
       customer_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
-      order_number = Ordering::FakeNumberGenerator::FAKE_NUMBER
+      order_number = Fulfillment::FakeNumberGenerator::FAKE_NUMBER
       product_id = SecureRandom.uuid
 
       create_product(product_id, "Async Remote", 10)
       run_command(Crm::RegisterCustomer.new(customer_id: customer_id, name: "John Doe"))
       run_command(Ordering::AddItemToBasket.new(order_id: order_id, product_id: product_id))
-      run_command(Ordering::SubmitOrder.new(order_id: order_id, order_number: order_number))
+      run_command(Pricing::AcceptOffer.new(order_id: order_id))
       run_command(
         Crm::AssignCustomerToOrder.new(customer_id: customer_id, order_id: order_id)
       )
