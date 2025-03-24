@@ -18,7 +18,7 @@ module ClientOrders
       ))
 
       create_product(product_id, "Async Remote", 30)
-      run_command(Ordering::AddItemToBasket.new(order_id: order_id, product_id: product_id))
+      run_command(Pricing::AddPriceItem.new(order_id: order_id, product_id: product_id))
       run_command(Pricing::AcceptOffer.new(order_id: order_id))
 
       event_store.publish(

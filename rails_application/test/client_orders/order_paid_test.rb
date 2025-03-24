@@ -12,7 +12,7 @@ module ClientOrders
 
       run_command(Crm::RegisterCustomer.new(customer_id: customer_id, name: "John Doe"))
       create_product(product_id, "Async Remote", 30)
-      run_command(Ordering::AddItemToBasket.new(order_id: order_id, product_id: product_id))
+      run_command(Pricing::AddPriceItem.new(order_id: order_id, product_id: product_id))
 
       event_store.publish(
         Pricing::OrderTotalValueCalculated.new(
