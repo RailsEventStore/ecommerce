@@ -29,7 +29,7 @@ module Ecommerce
       ) if @number_generator.nil? || @payment_gateway.nil?
       [
         Authentication::Configuration.new,
-        Ordering::Configuration.new(@number_generator),
+        Ordering::Configuration.new,
         Crm::Configuration.new,
         Inventory::Configuration.new,
         Invoicing::Configuration.new,
