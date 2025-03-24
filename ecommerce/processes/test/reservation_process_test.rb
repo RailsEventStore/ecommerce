@@ -41,7 +41,7 @@ module Processes
         failing_command,
         Inventory::Reserve.new(product_id: another_product_id, quantity: 2),
         Inventory::Release.new(product_id: another_product_id, quantity: 2),
-        Ordering::RejectOrder.new(order_id: order_id)
+        Pricing::RejectOffer.new(order_id: order_id),
       )
     end
 

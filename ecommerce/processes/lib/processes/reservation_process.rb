@@ -65,7 +65,7 @@ module Processes
     end
 
     def reject_order(state)
-      command_bus.(Ordering::RejectOrder.new(order_id: state.order_id))
+      command_bus.(Pricing::RejectOffer.new(order_id: state.order_id))
     end
 
     def stream_name(order_id)

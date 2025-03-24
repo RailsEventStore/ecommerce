@@ -8,6 +8,7 @@ module Pricing
       @id = id
       @list = List.new
       @discounts = []
+      @state = :draft
     end
 
     def add_item(product_id)
@@ -136,6 +137,10 @@ module Pricing
       )
     end
 
+    def reject
+      apply OfferRejected.new(data: { order_id: @id })
+    end
+
     private
 
     on PriceItemAdded do |event|
@@ -182,6 +187,10 @@ module Pricing
 
     on OfferAccepted do |event|
       @state = :accepted
+    end
+
+    on OfferRejected do |event|
+      @state = :draft
     end
 
     def discount_exists?(type)
