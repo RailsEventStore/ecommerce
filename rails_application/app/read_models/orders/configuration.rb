@@ -42,8 +42,8 @@ module Orders
       event_store.subscribe(ChangeProductPrice.new, to: [Pricing::PriceSet])
       event_store.subscribe(CreateCustomer.new, to: [Crm::CustomerRegistered])
       event_store.subscribe(AssignCustomerToOrder.new, to: [Crm::CustomerAssignedToOrder])
-      event_store.subscribe(SubmitOrder.new, to: [Ordering::OrderPlaced])
       event_store.subscribe(ExpireOrder.new, to: [Ordering::OrderExpired])
+      event_store.subscribe(SubmitOrder.new, to: [Fulfillment::OrderRegistered])
       event_store.subscribe(ConfirmOrder.new, to: [Fulfillment::OrderConfirmed])
       event_store.subscribe(CancelOrder.new, to: [Fulfillment::OrderCancelled])
       event_store.subscribe(UpdateTimePromotionDiscountValue.new, to: [Pricing::PercentageDiscountSet])
@@ -51,7 +51,7 @@ module Orders
 
       subscribe(
         ->(event) { broadcast_order_state_change(event.data.fetch(:order_id), 'Submitted') },
-        [Ordering::OrderPlaced]
+        [Fulfillment::OrderRegistered]
       )
       subscribe(
         ->(event) { broadcast_order_state_change(event.data.fetch(:order_id), "Expired") },

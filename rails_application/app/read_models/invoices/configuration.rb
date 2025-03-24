@@ -19,7 +19,7 @@ module Invoices
       event_store.subscribe(SetBillingAddress.new, to: [Invoicing::BillingAddressSet])
       event_store.subscribe(SetPaymentDate.new, to: [Invoicing::InvoicePaymentDateSet])
       event_store.subscribe(MarkAsIssued.new, to: [Invoicing::InvoiceIssued])
-      event_store.subscribe(MarkOrderPlaced.new, to: [Ordering::OrderPlaced])
+      event_store.subscribe(MarkOrderPlaced.new, to: [Fulfillment::OrderRegistered])
     end
   end
 end
