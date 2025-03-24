@@ -8,7 +8,8 @@ module ClientOrders
       event_store = Rails.configuration.event_store
       customer_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
-      order_number = Ordering::FakeNumberGenerator::FAKE_NUMBER
+      product_id = SecureRandom.uuid
+      order_number = Fulfillment::FakeNumberGenerator::FAKE_NUMBER
 
       event_store.publish(Crm::CustomerRegistered.new(
         data: {
@@ -18,11 +19,10 @@ module ClientOrders
       ))
 
       event_store.publish(
-        Ordering::OrderPlaced.new(
+        Pricing::OfferAccepted.new(
           data: {
             order_id: order_id,
-            order_number: order_number,
-            order_lines: { }
+            order_lines: [{ product_id: product_id, quantity: 1 }]
           }
         )
       )
@@ -39,7 +39,7 @@ module ClientOrders
       assert_not_empty(orders)
       assert_equal(1, orders.count)
       assert_equal(order_number, orders.first.number)
-      assert_equal("Submitted",  orders.first.state)
+      assert_equal("Submitted", orders.first.state)
 
       assert_clickable_order_number(customer_id, order_id, order_number)
     end
@@ -48,33 +48,34 @@ module ClientOrders
       event_store = Rails.configuration.event_store
       customer_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
-      order_number = Ordering::FakeNumberGenerator::FAKE_NUMBER
+      order_number = Fulfillment::FakeNumberGenerator::FAKE_NUMBER
 
-      event_store.publish(
-        Crm::CustomerRegistered.new(data: {customer_id: customer_id, name: "John Doe"})
-      )
-
-      event_store.publish(Crm::CustomerAssignedToOrder.new(
-        data: {
-          customer_id: customer_id,
-          order_id: order_id
-        }
-      ))
-
-      event_store.publish(
-        Ordering::OrderPlaced.new(
+      event_store.publish([
+        Crm::CustomerRegistered.new(data: { customer_id: customer_id, name: "John Doe" }),
+        Crm::CustomerAssignedToOrder.new(
+          data: {
+            customer_id: customer_id,
+            order_id: order_id
+          }
+        ),
+        Pricing::OfferAccepted.new(
           data: {
             order_id: order_id,
-            order_number: order_number,
-            order_lines: { }
+            order_lines: [{ product_id: SecureRandom.uuid, quantity: 1 }]
+          }
+        ),
+        Fulfillment::OrderRegistered.new(
+          data: {
+            order_id: order_id,
+            order_number: order_number
           }
         )
-      )
+      ])
       orders = Order.all
       assert_not_empty(orders)
       assert_equal(1, orders.count)
       assert_equal(order_number, orders.first.number)
-      assert_equal("Submitted",  orders.first.state)
+      assert_equal("Submitted", orders.first.state)
     end
 
     private
