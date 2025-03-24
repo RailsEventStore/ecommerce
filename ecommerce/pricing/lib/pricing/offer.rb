@@ -141,6 +141,10 @@ module Pricing
       apply OfferRejected.new(data: { order_id: @id })
     end
 
+    def expire
+      apply OfferExpired.new(data: { order_id: @id })
+    end
+
     private
 
     on PriceItemAdded do |event|
@@ -191,6 +195,10 @@ module Pricing
 
     on OfferRejected do |event|
       @state = :draft
+    end
+
+    on OfferExpired do |event|
+      @state = :expired
     end
 
     def discount_exists?(type)
