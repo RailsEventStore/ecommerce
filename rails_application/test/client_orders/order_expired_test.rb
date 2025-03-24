@@ -8,7 +8,19 @@ module ClientOrders
       event_store = Rails.configuration.event_store
       customer_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
-      order_number = Ordering::FakeNumberGenerator::FAKE_NUMBER
+      product_id = SecureRandom.uuid
+      run_command(
+        ProductCatalog::RegisterProduct.new(
+          product_id: product_id
+        )
+      )
+      run_command(
+        ProductCatalog::NameProduct.new(
+          product_id: product_id,
+          name: "Async Remote"
+        )
+      )
+      run_command(Pricing::SetPrice.new(product_id: product_id, price: 39))
 
       event_store.publish(Crm::CustomerRegistered.new(
         data: {
@@ -18,18 +30,16 @@ module ClientOrders
       ))
 
       event_store.publish(
-        Ordering::OrderPlaced.new(
+        Pricing::PriceItemAdded.new(
           data: {
             order_id: order_id,
-            order_number: order_number,
-            customer_id: customer_id,
-            order_lines: { }
+            product_id: product_id,
           }
         )
       )
 
       event_store.publish(
-        Ordering::OrderExpired.new(
+        Pricing::OfferExpired.new(
           data: {
             order_id: order_id
           }
@@ -39,8 +49,7 @@ module ClientOrders
       orders = Order.all
       assert_not_empty(orders)
       assert_equal(1, orders.count)
-      assert_equal(order_number, orders.first.number)
-      assert_equal("Expired",  orders.first.state)
+      assert_equal("Expired", orders.first.state)
     end
   end
 end

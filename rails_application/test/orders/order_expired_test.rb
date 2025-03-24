@@ -26,7 +26,6 @@ module Orders
       run_command(Pricing::SetPrice.new(product_id: product_id, price: 39))
 
       order_id = SecureRandom.uuid
-      order_number = Ordering::FakeNumberGenerator::FAKE_NUMBER
       event_store.publish(
         Pricing::PriceItemAdded.new(
           data: {
@@ -35,24 +34,19 @@ module Orders
           }
         )
       )
-      event_store.publish(
-        Ordering::OrderPlaced.new(
-          data: {
-            order_id: order_id,
-            order_number: order_number,
-            customer_id: customer_id,
-            order_lines: { product_id => 1 }
-          }
-        )
+      offer_expired = Pricing::OfferExpired.new(
+        data: {
+          order_id: order_id,
+          order_lines: [{ product_id:, quantity: 1 }]
+        }
       )
 
-      order_expired = Ordering::OrderExpired.new(data: { order_id: order_id })
-      event_store.publish(order_expired)
+      event_store.publish(offer_expired)
 
       assert_equal(Order.count, 1)
       order = Order.find_by(uid: order_id)
       assert_equal(order.state, "Expired")
-      assert event_store.event_in_stream?(order_expired.event_id, "Orders$all")
+      assert event_store.event_in_stream?(offer_expired.event_id, "Orders$all")
     end
   end
 end

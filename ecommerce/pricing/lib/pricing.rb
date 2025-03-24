@@ -100,6 +100,10 @@ module Pricing
         OnRejectOffer.new(event_store)
       )
       command_bus.register(
+        ExpireOffer,
+        OnExpireOffer.new(event_store)
+      )
+      command_bus.register(
         SetTimePromotionDiscount,
         SetTimePromotionDiscountHandler.new(event_store)
       )

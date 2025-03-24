@@ -233,4 +233,16 @@ module Pricing
       end
     end
   end
+
+  class OnExpireOffer
+    def initialize(event_store)
+      @repository = Infra::AggregateRootRepository.new(event_store)
+    end
+
+    def call(command)
+      @repository.with_aggregate(Offer, command.aggregate_id) do |order|
+        order.expire
+      end
+    end
+  end
 end
