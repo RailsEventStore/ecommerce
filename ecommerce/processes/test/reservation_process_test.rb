@@ -12,7 +12,6 @@ module Processes
       assert_all_commands(
         Inventory::Reserve.new(product_id: product_id, quantity: 1),
         Inventory::Reserve.new(product_id: another_product_id, quantity: 2),
-        Ordering::AcceptOrder.new(order_id: order_id),
         Fulfillment::RegisterOrder.new(order_id: order_id),
       )
     end

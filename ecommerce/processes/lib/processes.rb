@@ -67,8 +67,8 @@ module Processes
       event_store.subscribe(
         ReleasePaymentProcess.new(event_store, command_bus),
         to: [
-          Ordering::OrderPlaced,
-          Ordering::OrderExpired,
+          Pricing::OfferExpired,
+          Fulfillment::OrderRegistered,
           Fulfillment::OrderConfirmed,
           Payments::PaymentAuthorized,
           Payments::PaymentReleased

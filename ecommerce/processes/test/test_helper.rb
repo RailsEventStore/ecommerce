@@ -64,17 +64,16 @@ module Processes
     end
 
     def order_placed
-      Ordering::OrderPlaced.new(
+      Fulfillment::OrderRegistered.new(
         data: {
           order_id: order_id,
           order_number: order_number,
-          customer_id: customer_id
         }
       )
     end
 
     def order_expired
-      Ordering::OrderExpired.new(data: { order_id: order_id })
+      Pricing::OfferExpired.new(data: { order_id: order_id })
     end
 
     def order_confirmed
