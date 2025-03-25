@@ -20,3 +20,4 @@ matcher:
     - Processes::ThreePlusOneFree*
     - Processes::ReservationProcess#build_state
     - Processes::ReservationProcess::ProcessState#call
+    - Processes::DetermineVatRatesOnOrderPlaced*
