@@ -9,7 +9,7 @@ module Processes
 
     def call(event)
       state = build_state(event)
-      determine_vat_rates(state) if state.order_placed?
+      determine_vat_rates(state) if state.placed?
     end
 
     def determine_vat_rates(state)
@@ -56,7 +56,7 @@ module Processes
         end
       end
 
-      def order_placed? = @order_placed
+      def placed? = @offer_accepted && @order_placed
     end
   end
 end
