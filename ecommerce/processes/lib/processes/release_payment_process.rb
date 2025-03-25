@@ -47,10 +47,10 @@ module Processes
           @payment = :authorized
         when Payments::PaymentReleased
           @payment = :released
-        when Ordering::OrderPlaced
+        when Fulfillment::OrderRegistered
           @order = :placed
           @order_id = event.data.fetch(:order_id)
-        when Ordering::OrderExpired
+        when Pricing::OfferExpired
           @order = :expired
         when Fulfillment::OrderConfirmed
           @order = :confirmed
