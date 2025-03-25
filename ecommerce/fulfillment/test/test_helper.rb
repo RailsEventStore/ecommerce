@@ -7,7 +7,8 @@ module Fulfillment
   class Test < Infra::InMemoryTest
     def before_setup
       super
-      Configuration.new.call(event_store, command_bus)
+      generator = -> { FakeNumberGenerator.new }
+      Configuration.new(generator).call(event_store, command_bus)
     end
   end
 end
