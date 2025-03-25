@@ -35,7 +35,6 @@ module Processes
       set_invoice_payment_date_when_order_confirmed(event_store, command_bus)
       enable_product_name_sync(event_store, command_bus)
       confirm_order_on_payment_captured(event_store, command_bus)
-      register_order_on_order_placed(event_store, command_bus)
 
       enable_release_payment_process(event_store, command_bus)
       enable_shipment_process(event_store, command_bus)
@@ -129,19 +128,6 @@ module Processes
           Fulfillment::OrderCancelled,
           Fulfillment::OrderConfirmed
         ]
-      )
-    end
-
-    def register_order_on_order_placed(event_store, command_bus)
-      event_store.subscribe(
-        ->(event) do
-          command_bus.call(
-            Fulfillment::RegisterOrder.new(
-              order_id: event.data.fetch(:order_id)
-            )
-          )
-        end,
-        to: [Ordering::OrderPlaced]
       )
     end
 
