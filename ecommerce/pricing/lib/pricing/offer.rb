@@ -2,6 +2,7 @@ module Pricing
   class Offer
     include AggregateRoot
 
+    InvalidState = Class.new(StandardError)
     IsEmpty = Class.new(StandardError)
 
     def initialize(id)
@@ -129,6 +130,7 @@ module Pricing
 
     def accept
       raise IsEmpty if @list.products.empty?
+      raise InvalidState.new("Only draft offer can be accepted") unless @state == :draft
       apply OfferAccepted.new(
         data: {
           order_id: @id,
@@ -138,10 +140,12 @@ module Pricing
     end
 
     def reject
+      raise InvalidState.new("Only accepted offer can be rejected") unless @state == :accepted
       apply OfferRejected.new(data: { order_id: @id })
     end
 
     def expire
+      raise InvalidState.new("Only draft offer can be expired") unless @state == :draft
       apply OfferExpired.new(data: { order_id: @id })
     end
 
