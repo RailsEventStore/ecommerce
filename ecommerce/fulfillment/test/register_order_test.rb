@@ -7,10 +7,11 @@ module Fulfillment
     def test_new_order_can_be_registered
       aggregate_id = SecureRandom.uuid
       stream = "Fulfillment::Order$#{aggregate_id}"
+      order_number = FakeNumberGenerator::FAKE_NUMBER
 
       assert_events(
         stream,
-        OrderRegistered.new(data: { order_id: aggregate_id })
+        OrderRegistered.new(data: { order_id: aggregate_id, order_number: order_number })
       ) { act(RegisterOrder.new(order_id: aggregate_id)) }
     end
 
