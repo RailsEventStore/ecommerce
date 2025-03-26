@@ -13,10 +13,15 @@ module Ordering
       stream = "Ordering::Refund$#{aggregate_id}"
 
       arrange(
-        AddItemToBasket.new(order_id: order_id, product_id: product_1_id),
-        AddItemToBasket.new(order_id: order_id, product_id: product_2_id),
-        AddItemToBasket.new(order_id: order_id, product_id: product_2_id),
-        AddItemToBasket.new(order_id: order_id, product_id: product_3_id),
+        Pricing::SetPrice.new(product_id: product_1_id, price: 11),
+        Pricing::SetPrice.new(product_id: product_2_id, price: 22),
+        Pricing::SetPrice.new(product_id: product_3_id, price: 33),
+        Pricing::AddPriceItem.new(order_id: order_id, product_id: product_1_id),
+        Pricing::AddPriceItem.new(order_id: order_id, product_id: product_2_id),
+        Pricing::AddPriceItem.new(order_id: order_id, product_id: product_2_id),
+        Pricing::AddPriceItem.new(order_id: order_id, product_id: product_3_id),
+        Pricing::AcceptOffer.new(order_id: order_id),
+        Fulfillment::RegisterOrder.new(order_id: order_id),
         CreateDraftRefund.new(
           refund_id: aggregate_id,
           order_id: order_id
@@ -55,7 +60,10 @@ module Ordering
       product_id = SecureRandom.uuid
 
       arrange(
-        AddItemToBasket.new(order_id: order_id, product_id: product_id),
+        Pricing::SetPrice.new(product_id: product_id, price: 11),
+        Pricing::AddPriceItem.new(order_id: order_id, product_id: product_id),
+        Pricing::AcceptOffer.new(order_id: order_id),
+        Fulfillment::RegisterOrder.new(order_id: order_id),
         CreateDraftRefund.new(
           refund_id: aggregate_id,
           order_id: order_id
