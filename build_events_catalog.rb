@@ -23,6 +23,7 @@ class BuildEventsCatalog
   private
 
   def configure
+    ensure_root_catalog
     replace_config_file
   end
 
@@ -119,6 +120,10 @@ class BuildEventsCatalog
 
   def replace_config_file
     FileUtils.cp(CONFIG_FILE, root_catalog)
+  end
+
+  def ensure_root_catalog
+    create_catalog(root_catalog) unless File.exist?(root_catalog)
   end
 end
 
