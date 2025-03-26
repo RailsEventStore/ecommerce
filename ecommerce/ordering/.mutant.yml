@@ -11,3 +11,4 @@ matcher:
     - Ordering::Test*
     - Ordering::Configuration#call
     - Ordering::Configuration#initialize
+    - Ordering::RefundableProducts#call
