@@ -62,8 +62,9 @@ class OrdersController < ApplicationController
       redirect_to edit_order_path(params[:id]),
                   alert: "Product not available in requested quantity!" and return
     end
+    price = Products::Product.find(params[:product_id]).price
     ActiveRecord::Base.transaction do
-      command_bus.(Pricing::AddPriceItem.new(order_id: params[:id], product_id: params[:product_id]))
+      command_bus.(Pricing::AddPriceItem.new(order_id: params[:id], product_id: params[:product_id], price:))
     end
     head :ok
   end
