@@ -32,7 +32,7 @@ module Products
 
     def parse_calendar_entry(entry)
       {
-        valid_since:  Time.zone.parse(time_of(entry)).in_time_zone(Time.current.zone),
+        valid_since:  Time.zone.parse(time_of(entry)),
         price: BigDecimal(entry[:price])
       }
     end
