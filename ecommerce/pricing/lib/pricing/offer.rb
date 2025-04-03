@@ -127,12 +127,12 @@ module Pricing
     end
 
     def accept
-      raise IsEmpty if @list.products.empty?
+      raise IsEmpty if @list.empty?
       raise InvalidState.new("Only draft offer can be accepted") unless @state == :draft
       apply OfferAccepted.new(
         data: {
           order_id: @id,
-          order_lines: @list.items
+          order_lines: @list.quantities
         }
       )
     end
@@ -270,6 +270,13 @@ module Pricing
           catalog_price_for_single = pricing_catalog.price_for(product)
           with_total_discount_single = discounts.inject(Discounts::NoPercentageDiscount.new, :add).apply(catalog_price_for_single)
           quantity * (catalog_price_for_single - with_total_discount_single)
+        end
+      end
+
+
+      def quantities
+        sub_amounts_total.map do |product_id, h|
+          { product_id:, quantity: h[:quantity] }
         end
       end
     end
