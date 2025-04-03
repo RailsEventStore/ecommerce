@@ -56,7 +56,7 @@ module Pricing
 
     def find_price(product_id)
       event_store.read.of_type(Pricing::PriceSet).as_of.backward.each do |event|
-        return event.data.fetch(:price) if event.data.fetch(:product_id) == product_id
+        return event.data.fetch(:price) if event.data.fetch(:product_id) == product_id && event.metadata.fetch(:valid_at) <= Time.current
       end
     end
   end
