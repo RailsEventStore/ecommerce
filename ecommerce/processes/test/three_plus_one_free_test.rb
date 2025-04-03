@@ -8,7 +8,7 @@ module Processes
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
       process = ThreePlusOneFree.new(event_store, command_bus)
-      given(item_added_event(order_id, product_id, 1)).each do |event|
+      given(item_added_event(order_id, product_id, 22)).each do |event|
         process.call(event)
       end
       assert_no_command
@@ -19,7 +19,7 @@ module Processes
       order_id = SecureRandom.uuid
       process = ThreePlusOneFree.new(event_store, command_bus)
       given([set_price(product_id, 20)])
-      given(item_added_event(order_id, product_id, 4)).each do |event|
+      given(item_added_event(order_id, product_id, 20, times: 4)).each do |event|
         process.call(event)
       end
       assert_command(Pricing::MakeProductFreeForOrder.new(order_id: order_id, product_id: product_id))
@@ -30,9 +30,9 @@ module Processes
       order_id = SecureRandom.uuid
       process = ThreePlusOneFree.new(event_store, command_bus)
       given([set_price(product_id, 20)])
-      given(item_added_event(order_id, product_id, 4) +
+      given(item_added_event(order_id, product_id, 20, times:4) +
               product_made_for_free(order_id, product_id) +
-              item_removed_event(order_id, product_id, 1) +
+              item_removed_event(order_id, product_id, times: 1) +
               free_product_removed(order_id, product_id)).each do |event|
         process.call(event)
       end
@@ -49,7 +49,7 @@ module Processes
       given([set_price(product_id, 20)])
       given([set_price(cheapest_product_id, 1)])
 
-      given(item_added_event(order_id, product_id, 4) +
+      given(item_added_event(order_id, product_id, 20, times:4) +
                product_made_for_free(order_id, product_id) +
                item_added_event(order_id, cheapest_product_id, 1) +
                free_product_removed(order_id, product_id) +
@@ -71,9 +71,9 @@ module Processes
       given([set_price(product_id, 20)])
       given([set_price(more_expensive_product_id, 50)])
 
-      given(item_added_event(order_id, product_id, 4) +
+      given(item_added_event(order_id, product_id, 20, times: 4) +
               product_made_for_free(order_id, product_id) +
-              item_added_event(order_id, more_expensive_product_id, 1)).each do |event|
+              item_added_event(order_id, more_expensive_product_id, 50)).each do |event|
         process.call(event)
       end
 
@@ -88,12 +88,12 @@ module Processes
       given([set_price(product_id, 20)])
       given([set_price(cheapest_product_id, 1)])
 
-      given(item_added_event(order_id, product_id, 4) +
+      given(item_added_event(order_id, product_id, 20, times: 4) +
               product_made_for_free(order_id, product_id) +
               item_added_event(order_id, cheapest_product_id, 1) +
               free_product_removed(order_id, product_id) +
               product_made_for_free(order_id, cheapest_product_id) +
-              item_removed_event(order_id, cheapest_product_id, 1) +
+              item_removed_event(order_id, cheapest_product_id) +
               free_product_removed(order_id, cheapest_product_id) +
               product_made_for_free(order_id, product_id)).each do |event|
         process.call(event)
@@ -113,18 +113,19 @@ module Processes
       Pricing::PriceSet.new(data: { product_id: product_id, price: amount })
     end
 
-    def item_added_event(order_id, product_id, times)
+    def item_added_event(order_id, product_id, price, times: 1)
       times.times.collect do
         Pricing::PriceItemAdded.new(
           data: {
             order_id: order_id,
-            product_id: product_id
+            product_id: product_id,
+            price: price
           }
         )
       end
     end
 
-    def item_removed_event(order_id, product_id, times)
+    def item_removed_event(order_id, product_id, times: 1)
       times.times.collect do
         Pricing::PriceItemRemoved.new(
           data: {
