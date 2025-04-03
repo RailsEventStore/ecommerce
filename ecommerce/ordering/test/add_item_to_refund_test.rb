@@ -16,10 +16,10 @@ module Ordering
         Pricing::SetPrice.new(product_id: product_1_id, price: 11),
         Pricing::SetPrice.new(product_id: product_2_id, price: 22),
         Pricing::SetPrice.new(product_id: product_3_id, price: 33),
-        Pricing::AddPriceItem.new(order_id: order_id, product_id: product_1_id),
-        Pricing::AddPriceItem.new(order_id: order_id, product_id: product_2_id),
-        Pricing::AddPriceItem.new(order_id: order_id, product_id: product_2_id),
-        Pricing::AddPriceItem.new(order_id: order_id, product_id: product_3_id),
+        Pricing::AddPriceItem.new(order_id: order_id, product_id: product_1_id, price: 11),
+        Pricing::AddPriceItem.new(order_id: order_id, product_id: product_2_id, price: 22),
+        Pricing::AddPriceItem.new(order_id: order_id, product_id: product_2_id, price: 22),
+        Pricing::AddPriceItem.new(order_id: order_id, product_id: product_3_id, price: 33),
         Pricing::AcceptOffer.new(order_id: order_id),
         Fulfillment::RegisterOrder.new(order_id: order_id),
         CreateDraftRefund.new(refund_id: aggregate_id, order_id: order_id),
@@ -58,7 +58,7 @@ module Ordering
 
       arrange(
         Pricing::SetPrice.new(product_id: product_id, price: 11),
-        Pricing::AddPriceItem.new(order_id: order_id, product_id: product_id),
+        Pricing::AddPriceItem.new(order_id: order_id, product_id: product_id, price: 11),
         Pricing::AcceptOffer.new(order_id: order_id),
         Fulfillment::RegisterOrder.new(order_id: order_id),
         CreateDraftRefund.new(refund_id: aggregate_id, order_id: order_id),

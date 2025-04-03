@@ -12,8 +12,8 @@ module Ordering
 
       arrange(
         Pricing::SetPrice.new(product_id: product_id, price: 11),
-        Pricing::AddPriceItem.new(order_id: order_id, product_id: product_id),
-        Pricing::AddPriceItem.new(order_id: order_id, product_id: product_id),
+        Pricing::AddPriceItem.new(order_id: order_id, product_id: product_id, price: 11),
+        Pricing::AddPriceItem.new(order_id: order_id, product_id: product_id, price: 11),
         Pricing::AcceptOffer.new(order_id: order_id),
         Fulfillment::RegisterOrder.new(order_id: order_id),
       )
