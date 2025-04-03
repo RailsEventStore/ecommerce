@@ -29,6 +29,7 @@ module Orders
           data: {
             order_id: order_id,
             product_id: product_id,
+            price: 20
           }
         ),
         Pricing::OfferAccepted.new(

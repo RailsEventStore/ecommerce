@@ -50,6 +50,7 @@ module Orders
           data: {
             order_id: order_id,
             product_id: product_id,
+            price: 20,
           }
         )
       )
@@ -83,6 +84,7 @@ module Orders
           data: {
             order_id: order_id,
             product_id: product_id,
+            price: 20,
           }
         )
       )
@@ -128,6 +130,7 @@ module Orders
           data: {
             order_id: order_id,
             product_id: product_id,
+            price: 20,
           }
         )
       )
@@ -136,6 +139,7 @@ module Orders
           data: {
             order_id: order_1_id,
             product_id: product_id,
+            price: 20,
           }
         )
       )
@@ -194,6 +198,7 @@ module Orders
           data: {
             order_id: order_id,
             product_id: product_id,
+            price: 20,
           }
         )
       )
@@ -202,6 +207,7 @@ module Orders
           data: {
             order_id: order_1_id,
             product_id: product_id,
+            price: 20,
           }
         )
       )

@@ -30,6 +30,7 @@ module ClientOrders
           data: {
             order_id: order_id,
             product_id: product_id,
+            price: 20,
           }
         )
       )
@@ -38,6 +39,7 @@ module ClientOrders
           data: {
             order_id: order_id,
             product_id: product_id,
+            price: 20,
           }
         )
       )
@@ -83,6 +85,7 @@ module ClientOrders
           data: {
             order_id: order_id,
             product_id: product_id,
+            price: 20,
           }
         )
       )
@@ -140,6 +143,7 @@ module ClientOrders
           data: {
             order_id: order_id,
             product_id: product_id,
+            price: 20,
           }
         )
       )
@@ -148,6 +152,7 @@ module ClientOrders
           data: {
             order_id: order_id,
             product_id: product_id,
+            price: 20,
           }
         )
       )
@@ -156,6 +161,7 @@ module ClientOrders
           data: {
             order_id: order_id,
             product_id: another_product_id,
+            price: 20,
           }
         )
       )

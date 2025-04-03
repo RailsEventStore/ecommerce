@@ -15,15 +15,15 @@ module ClientOrders
       set_price_to_product(product_id, 3)
       register_customer(other_customer_id)
       register_customer(customer_id)
-      add_item_to_basket(order_id, product_id)
+      add_item_to_basket(order_id, product_id, 3)
       confirm_order(customer_id, order_id, 3)
 
       customer = Client.find_by(uid: customer_id)
       assert_equal 3.to_d, customer.paid_orders_summary
 
       order_id = SecureRandom.uuid
-      add_item_to_basket(order_id, product_id)
-      add_item_to_basket(order_id, product_id)
+      add_item_to_basket(order_id, product_id, 3)
+      add_item_to_basket(order_id, product_id, 3)
       confirm_order(customer_id, order_id, 6)
 
       customer = Client.find_by(uid: customer_id)
@@ -53,8 +53,8 @@ module ClientOrders
       run_command(Pricing::SetPrice.new(product_id: product_id, price: price))
     end
 
-    def add_item_to_basket(order_id, product_id)
-      run_command(Pricing::AddPriceItem.new(order_id: order_id, product_id: product_id))
+    def add_item_to_basket(order_id, product_id, price)
+      run_command(Pricing::AddPriceItem.new(order_id: order_id, product_id: product_id, price: price))
     end
 
     def confirm_order(customer_id, order_id, total_amount)
