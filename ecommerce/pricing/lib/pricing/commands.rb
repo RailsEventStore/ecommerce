@@ -2,6 +2,7 @@ module Pricing
   class AddPriceItem < Infra::Command
     attribute :order_id, Infra::Types::UUID
     attribute :product_id, Infra::Types::UUID
+    attribute :price, Infra::Types::Price
 
     alias aggregate_id order_id
   end

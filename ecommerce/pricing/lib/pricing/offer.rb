@@ -12,11 +12,12 @@ module Pricing
       @state = :draft
     end
 
-    def add_item(product_id)
+    def add_item(product_id, price)
       apply PriceItemAdded.new(
         data: {
           order_id: @id,
-          product_id: product_id
+          product_id: product_id,
+          price: price,
         }
       )
     end

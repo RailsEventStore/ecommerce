@@ -60,7 +60,8 @@ module Pricing
       Pricing::PriceItemAdded.new(
         data: {
           product_id: product_id,
-          order_id: order_id
+          order_id: order_id,
+          price: 1111,
           }
         )
     end

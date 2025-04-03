@@ -110,7 +110,7 @@ module Pricing
       )
 
       run_command(
-        Pricing::AddPriceItem.new(order_id: order_id, product_id: product_1_id)
+        Pricing::AddPriceItem.new(order_id: order_id, product_id: product_1_id, price: 20)
       )
 
       assert_events_contain(
