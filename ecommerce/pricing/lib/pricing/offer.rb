@@ -153,7 +153,7 @@ module Pricing
     private
 
     on PriceItemAdded do |event|
-      @list.add_item(Product.new(event.data.fetch(:product_id)))
+      @list.add_item(event.data.fetch(:product_id), event.data.fetch(:price))
     end
 
     on PriceItemRemoved do |event|
@@ -211,22 +211,25 @@ module Pricing
     end
 
     class List
-
-      def initialize
-        @products_quantities = Hash.new(0)
+      Item = Data.define(:product_id, :quantity, :price, :catalog_price) do
+        def initialize(product_id:, quantity:, price:, catalog_price: price) = super
       end
 
-      def add_item(product)
-        @products_quantities[product] += 1
+      def initialize
+        @items = []
+      end
+
+      def add_item(product_id, price)
+        @items << Item.new(product_id:, price:, quantity: 1)
       end
 
       def remove_item(product_id)
-        @products_quantities[Product.new(product_id)] -= 1
-        clear_empty_products
+        new_items = @items.sort {|x,y| x.price <=> y.price }
+        index_of_item_to_remove = new_items.index { |item| item.product_id == product_id }
+        new_items.delete_at(index_of_item_to_remove)
+        @items = new_items
       end
 
-      def clear_empty_products
-        @products_quantities.delete_if { |_, value| value.zero? }
       end
 
       def replace(from, to, product_id)
