@@ -176,7 +176,7 @@ module Pricing
       order_id = SecureRandom.uuid
       add_item(order_id, product_1_id)
 
-      assert_raises FreeProductNotExists do
+      assert_no_events(stream_name(order_id)) do
         run_command(
           Pricing::RemoveFreeProductFromOrder.new(order_id: order_id, product_id: product_1_id)
         )
@@ -200,7 +200,7 @@ module Pricing
         Pricing::RemoveFreeProductFromOrder.new(order_id: order_id, product_id: product_1_id)
       )
 
-      assert_raises FreeProductNotExists do
+      assert_no_events(stream_name(order_id)) do
         run_command(
           Pricing::RemoveFreeProductFromOrder.new(order_id: order_id, product_id: product_1_id)
         )

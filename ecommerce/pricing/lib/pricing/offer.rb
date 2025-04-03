@@ -74,7 +74,7 @@ module Pricing
     end
 
     def remove_free_product(order_id, product_id)
-      raise FreeProductNotExists unless @list.contains_free_products?
+      return unless @list.contains_free_products?
       apply FreeProductRemovedFromOrder.new(
         data: {
           order_id: order_id,
@@ -177,11 +177,11 @@ module Pricing
     end
 
     on ProductMadeFreeForOrder do |event|
-      @list.replace(Product, FreeProduct, event.data.fetch(:product_id))
+      @list.set_free(event.data.fetch(:product_id))
     end
 
     on FreeProductRemovedFromOrder do |event|
-      @list.replace(FreeProduct, Product, event.data.fetch(:product_id))
+      @list.restore_nonfree(event.data.fetch(:product_id))
     end
 
     def calculate_total_sub_discounts(pricing_catalog)
@@ -227,30 +227,8 @@ module Pricing
         @items = new_items
       end
 
-      end
-
-      def replace(from, to, product_id)
-        @products_quantities[from.new(product_id)] -= 1
-        @products_quantities[to.new(product_id)] += 1
-        clear_empty_products
-      end
-
-      def products
-        @products_quantities.keys
-      end
-
-      def quantities
-        @products_quantities.values
-      end
-
-      def items
-        @products_quantities.map do |product, quantity|
-          { product_id: product.id, quantity: quantity }
-        end
-      end
-
       def contains_free_products?
-        @products_quantities.keys.any? {|key| key.free? }
+        @items.any? { |item| item.price == 0 }
       end
 
       def base_sum
@@ -273,54 +251,22 @@ module Pricing
         end
       end
 
+      def set_free(product_id)
+        idx = @items.index { |item| item.product_id == product_id && item.price != 0 }
+        old_item = @items.delete_at(idx)
+        @items << old_item.with(price: 0)
+      end
+
+      def restore_nonfree(product_id)
+        idx = @items.index { |item| item.product_id == product_id && item.price == 0 }
+        old_item = @items.delete_at(idx)
+        @items << old_item.with(price: old_item.catalog_price)
+      end
 
       def quantities
         sub_amounts_total.map do |product_id, h|
           { product_id:, quantity: h[:quantity] }
         end
-      end
-    end
-
-    class Product
-      attr_reader :id
-
-      def initialize(id)
-        @id = id
-      end
-
-      def free?
-      end
-
-      def eql?(other)
-        other.instance_of?(Product) && id.eql?(other.id)
-      end
-
-      alias == eql?
-
-      def hash
-        Product.hash ^ id.hash
-      end
-    end
-
-    class FreeProduct
-      attr_reader :id
-
-      def initialize(id)
-        @id = id
-      end
-
-      def free?
-        true
-      end
-
-      def eql?(other)
-        other.instance_of?(FreeProduct) && id.eql?(other.id)
-      end
-
-      alias == eql?
-
-      def hash
-        FreeProduct.hash ^ id.hash
       end
     end
   end
