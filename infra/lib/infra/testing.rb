@@ -58,6 +58,15 @@ module Infra
         expects = expected.map(&:data)
         assert_equal(expects, actuals.map(&:data))
       end
+
+      def assert_no_events(stream_name)
+        scope = event_store.read.stream(stream_name)
+        before = scope.last
+        yield
+        actual_events =
+          before.nil? ? scope.to_a : scope.from(before.event_id).to_a
+        assert_empty actual_events
+      end
     end
   end
 
