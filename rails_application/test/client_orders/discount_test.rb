@@ -86,7 +86,7 @@ module ClientOrders
     end
 
     def item_added_to_basket(order_id, product_id)
-      run_command(Pricing::AddPriceItem.new(product_id: product_id, order_id: order_id))
+      run_command(Pricing::AddPriceItem.new(product_id: product_id, order_id: order_id, price: 50))
     end
 
     def prepare_product(product_id)

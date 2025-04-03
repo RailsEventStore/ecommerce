@@ -27,6 +27,7 @@ module Orders
         data: {
           order_id: order_id,
           product_id: product_id,
+          price: 49,
         }
       )
       event_store.publish(item_added_to_basket)
@@ -70,6 +71,7 @@ module Orders
           data: {
             order_id: order_id,
             product_id: product_id,
+            price: 49,
           }
         )
       )
@@ -79,6 +81,7 @@ module Orders
           data: {
             order_id: order_id,
             product_id: product_id,
+            price: 49,
           }
         )
       )
@@ -137,6 +140,7 @@ module Orders
           data: {
             order_id: order_id,
             product_id: product_id,
+            price: 20,
           }
         )
       )
@@ -146,6 +150,7 @@ module Orders
           data: {
             order_id: order_id,
             product_id: another_product_id,
+            price: 20,
           }
         )
       )

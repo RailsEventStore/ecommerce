@@ -9,7 +9,7 @@ module Refunds
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
       prepare_product(product_id, 50)
-      place_order(order_id, product_id)
+      place_order(order_id, product_id, 50)
       create_draft_refund(refund_id, order_id)
 
       AddItemToRefund.new.call(item_added_to_refund(refund_id, order_id, product_id))
@@ -42,8 +42,8 @@ module Refunds
       run_command(Pricing::SetPrice.new(product_id: product_id, price: price))
     end
 
-    def place_order(order_id, product_id)
-      run_command(Pricing::AddPriceItem.new(order_id:, product_id:))
+    def place_order(order_id, product_id, price)
+      run_command(Pricing::AddPriceItem.new(order_id:, product_id:, price:))
       run_command(Pricing::AcceptOffer.new(order_id:))
     end
 
