@@ -83,8 +83,8 @@ module Pricing
       )
     end
 
-    def calculate_total_value(pricing_catalog)
-      total_value = @list.base_sum(pricing_catalog)
+    def calculate_total_value
+      total_value = @list.base_sum
       discounted_value = @discounts.inject(Discounts::NoPercentageDiscount.new, :add).apply(total_value)
 
       apply(
@@ -98,21 +98,18 @@ module Pricing
       )
     end
 
-    def calculate_sub_amounts(pricing_catalog)
-      sub_amounts_total = @list.sub_amounts_total(pricing_catalog)
-      sub_discounts = calculate_total_sub_discounts(pricing_catalog)
+    def calculate_sub_amounts
+      sub_amounts_total = @list.sub_amounts_total
 
-      products = @list.products
-      quantities = @list.quantities
-      products.zip(quantities, sub_amounts_total, sub_discounts) do |product, quantity, sub_amount, sub_discount|
+      sub_amounts_total.each_pair do |product_id, h|
         apply(
           PriceItemValueCalculated.new(
             data: {
               order_id: @id,
-              product_id: product.id,
-              quantity: quantity,
-              amount: sub_amount,
-              discounted_amount: sub_amount - sub_discount
+              product_id: product_id,
+              quantity: h[:quantity],
+              amount: h[:amount],
+              discounted_amount: @discounts.inject(Discounts::NoPercentageDiscount.new, :add).apply(h[:amount])
             }
           )
         )
@@ -256,12 +253,16 @@ module Pricing
         @products_quantities.keys.any? {|key| key.free? }
       end
 
-      def base_sum(pricing_catalog)
-        @products_quantities.sum { |product, qty| pricing_catalog.price_for(product) * qty }
+      def base_sum
+        @items.sum(&:price)
       end
 
-      def sub_amounts_total(pricing_catalog)
-        @products_quantities.map { |product, quantity| quantity * pricing_catalog.price_for(product) }
+      def sub_amounts_total
+        @items.each_with_object({}) do |item, memo|
+          memo[item.product_id] ||= { amount: 0, quantity: 0 }
+          memo[item.product_id][:amount] += item.price * item.quantity
+          memo[item.product_id][:quantity] += item.quantity
+        end
       end
 
       def sub_discounts(pricing_catalog, discounts)
