@@ -41,6 +41,7 @@ module Pricing
   class PriceItemAdded < Infra::Event
     attribute :order_id, Infra::Types::UUID
     attribute :product_id, Infra::Types::UUID
+    attribute :price, Infra::Types::Price
   end
 
   class PriceItemRemoved < Infra::Event

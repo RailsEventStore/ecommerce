@@ -28,7 +28,7 @@ module Pricing
 
     def add_item(order_id, product_id)
       run_command(
-        AddPriceItem.new(order_id: order_id, product_id: product_id)
+        AddPriceItem.new(order_id: order_id, product_id: product_id, price: find_price(product_id))
       )
     end
 
@@ -52,6 +52,12 @@ module Pricing
 
     def fake_name
       "Fake name"
+    end
+
+    def find_price(product_id)
+      event_store.read.of_type(Pricing::PriceSet).as_of.backward.each do |event|
+        return event.data.fetch(:price) if event.data.fetch(:product_id) == product_id
+      end
     end
   end
 end
