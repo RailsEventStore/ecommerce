@@ -268,6 +268,10 @@ module Pricing
           { product_id:, quantity: h[:quantity] }
         end
       end
+
+      def empty?
+        @items.empty?
+      end
     end
   end
 end
