@@ -16,3 +16,4 @@ matcher:
     - Pricing::Offer#remove_free_product
     - Pricing::Offer::List#set_free
     - Pricing::Offer::List#restore_nonfree
+    - Pricing::Offer::List#sub_amounts_total
