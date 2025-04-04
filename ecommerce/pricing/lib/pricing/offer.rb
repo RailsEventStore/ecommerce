@@ -107,9 +107,9 @@ module Pricing
             data: {
               order_id: @id,
               product_id: product_id,
-              quantity: h[:quantity],
-              amount: h[:amount],
-              discounted_amount: @discounts.inject(Discounts::NoPercentageDiscount.new, :add).apply(h[:amount])
+              quantity: h.fetch(:quantity),
+              amount: h.fetch(:amount),
+              discounted_amount: @discounts.inject(Discounts::NoPercentageDiscount.new, :add).apply(h.fetch(:amount))
             }
           )
         )
