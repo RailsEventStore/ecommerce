@@ -217,7 +217,7 @@ module Pricing
       end
 
       def remove_item(product_id)
-        new_items = @items.sort {|x,y| x.price <=> y.price }
+        new_items = @items.sort { _1.price}
         index_of_item_to_remove = new_items.index { |item| item.product_id == product_id }
         new_items.delete_at(index_of_item_to_remove)
         @items = new_items
@@ -253,7 +253,7 @@ module Pricing
 
       def quantities
         sub_amounts_total.map do |product_id, h|
-          { product_id:, quantity: h[:quantity] }
+          { product_id:, quantity: h.fetch(:quantity) }
         end
       end
 

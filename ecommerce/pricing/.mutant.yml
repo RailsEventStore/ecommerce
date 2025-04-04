@@ -14,6 +14,5 @@ matcher:
     - Pricing::OnCalculateTotalValue#calculate_sub_amounts
     - Pricing::Offer#make_free_product
     - Pricing::Offer#remove_free_product
-    - Pricing::Offer::List#set_free
-    - Pricing::Offer::List#restore_nonfree
-    - Pricing::Offer::List#sub_amounts_total
+    - Pricing::Offer::List*
+    - Pricing::SetFuturePriceHandler#call
