@@ -184,10 +184,6 @@ module Pricing
       @list.restore_nonfree(event.data.fetch(:product_id))
     end
 
-    def calculate_total_sub_discounts(pricing_catalog)
-      @list.sub_discounts(pricing_catalog, @discounts)
-    end
-
     on CouponUsed do |event|
     end
 
@@ -240,14 +236,6 @@ module Pricing
           memo[item.product_id] ||= { amount: 0, quantity: 0 }
           memo[item.product_id][:amount] += item.price * item.quantity
           memo[item.product_id][:quantity] += item.quantity
-        end
-      end
-
-      def sub_discounts(pricing_catalog, discounts)
-        @products_quantities.map do |product, quantity|
-          catalog_price_for_single = pricing_catalog.price_for(product)
-          with_total_discount_single = discounts.inject(Discounts::NoPercentageDiscount.new, :add).apply(catalog_price_for_single)
-          quantity * (catalog_price_for_single - with_total_discount_single)
         end
       end
 
