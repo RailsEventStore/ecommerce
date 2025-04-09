@@ -86,6 +86,8 @@ module Pricing
 
   class OfferRejected < Infra::Event
     attribute :order_id, Infra::Types::UUID
+    attribute :reason, Infra::Types::String
+    attribute? :unavailable_product_ids, Infra::Types::Array.of(Infra::Types::UUID)
   end
 
   class OfferExpired < Infra::Event

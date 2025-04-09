@@ -2,6 +2,14 @@ module Processes
   class ReservationProcess
     include Infra::Retry
 
+    class SomeInventoryNotAvailable < StandardError
+      attr_reader :unavailable_products
+
+      def initialize(unavailable_products)
+        @unavailable_products = unavailable_products
+      end
+    end
+
     def initialize(event_store, command_bus)
       @event_store = event_store
       @command_bus = command_bus
@@ -31,21 +39,17 @@ module Processes
         unavailable_products << product_id
       end
 
-      if unavailable_products.empty?
-        event = ReservationProcessSuceeded.new(data: { order_id: state.order_id })
-      else
+      unless unavailable_products.empty?
         release_stock(state)
-        event = ReservationProcessFailed.new(data: { order_id: state.order_id, unavailable_products: unavailable_products })
+        raise SomeInventoryNotAvailable.new(unavailable_products)
       end
-      event_store.publish(event, stream_name: stream_name(state.order_id))
     end
 
     def update_order_state(state)
-      event_store
-      .within { yield }
-      .subscribe(to: ReservationProcessFailed) { reject_order(state) }
-      .subscribe(to: ReservationProcessSuceeded) { accept_order(state) }
-      .call
+      yield
+      accept_order(state)
+    rescue SomeInventoryNotAvailable => exc
+      reject_order(state, exc.unavailable_products)
     end
 
     def release_stock(state)
@@ -64,8 +68,10 @@ module Processes
       command_bus.(Fulfillment::RegisterOrder.new(order_id: state.order_id))
     end
 
-    def reject_order(state)
-      command_bus.(Pricing::RejectOffer.new(order_id: state.order_id))
+    def reject_order(state, unavailable_products)
+      command_bus.(Pricing::RejectOffer.new(
+        order_id: state.order_id, reason: "Some products were unavailable", unavailable_products: )
+      )
     end
 
     def stream_name(order_id)

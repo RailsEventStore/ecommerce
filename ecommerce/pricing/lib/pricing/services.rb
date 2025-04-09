@@ -228,7 +228,7 @@ module Pricing
 
     def call(command)
       @repository.with_aggregate(Offer, command.aggregate_id) do |order|
-        order.reject
+        order.reject(command.reason, command.unavailable_products)
       end
     end
   end
