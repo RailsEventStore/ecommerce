@@ -137,9 +137,13 @@ module Pricing
       )
     end
 
-    def reject
+    def reject(reason, unavailable_product_ids)
       raise InvalidState.new("Only accepted offer can be rejected") unless @state == :accepted
-      apply OfferRejected.new(data: { order_id: @id })
+      apply OfferRejected.new(data: {
+        order_id: @id,
+        reason:,
+        unavailable_product_ids:
+      })
     end
 
     def expire

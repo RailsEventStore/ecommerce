@@ -6,9 +6,9 @@ module Processes
 
     def test_happy_path
       process = ReservationProcess.new(event_store, command_bus)
-      assert_success_event do
-        given([offer_accepted]).each { |event| process.call(event) }
-      end
+
+      given([offer_accepted]).each { |event| process.call(event) }
+
       assert_all_commands(
         Inventory::Reserve.new(product_id: product_id, quantity: 1),
         Inventory::Reserve.new(product_id: another_product_id, quantity: 2),
@@ -33,14 +33,13 @@ module Processes
       enhanced_command_bus = EnhancedFakeCommandBus.new(command_bus, failing_command => Inventory::InventoryEntry::InventoryNotAvailable)
       process = ReservationProcess.new(event_store, enhanced_command_bus)
 
-      assert_failure_event do
-        given([offer_accepted]).each { |event| process.call(event) }
-      end
+      given([offer_accepted]).each { |event| process.call(event) }
+
       assert_all_commands(
         failing_command,
         Inventory::Reserve.new(product_id: another_product_id, quantity: 2),
         Inventory::Release.new(product_id: another_product_id, quantity: 2),
-        Pricing::RejectOffer.new(order_id: order_id),
+        Pricing::RejectOffer.new(order_id: order_id, reason: "Some products were unavailable", unavailable_products: [product_id]),
       )
     end
 
@@ -95,22 +94,6 @@ module Processes
         data: {
           order_id: order_id
         }
-      )
-    end
-
-    def assert_success_event(&block)
-      assert_events_contain(
-        "ReservationProcess$#{order_id}",
-        ReservationProcessSuceeded.new(data: { order_id: order_id }),
-        &block
-      )
-    end
-
-    def assert_failure_event(&block)
-      assert_events_contain(
-        "ReservationProcess$#{order_id}",
-        ReservationProcessFailed.new(data: { order_id: order_id, unavailable_products: [product_id] }),
-        &block
       )
     end
   end
