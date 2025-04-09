@@ -112,7 +112,7 @@ module Pricing
   class RejectOffer < Infra::Command
     attribute :order_id, Infra::Types::UUID
     attribute :reason, Infra::Types::String
-    attribute? :unavailable_products, Infra::Types::Array.of(Infra::Types::UUID)
+    attribute? :unavailable_product_ids, Infra::Types::Array.of(Infra::Types::UUID)
 
     alias aggregate_id order_id
   end
