@@ -21,8 +21,8 @@ module Orders
       unavailable_products = []
       event_store
         .within { submit_order }
-        .subscribe(to: Processes::ReservationProcessFailed) do |event|
-          unavailable_products = Products::Product.where(id: event.data.fetch(:unavailable_products)).pluck(:name)
+        .subscribe(to: Pricing::OfferRejected) do |event|
+          unavailable_products = Products::Product.where(id: event.data.fetch(:unavailable_product_ids)).pluck(:name)
         end
         .call
 
