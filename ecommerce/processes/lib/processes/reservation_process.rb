@@ -68,9 +68,9 @@ module Processes
       command_bus.(Fulfillment::RegisterOrder.new(order_id: state.order_id))
     end
 
-    def reject_order(state, unavailable_products)
+    def reject_order(state, unavailable_product_ids)
       command_bus.(Pricing::RejectOffer.new(
-        order_id: state.order_id, reason: "Some products were unavailable", unavailable_products: )
+        order_id: state.order_id, reason: "Some products were unavailable", unavailable_product_ids: )
       )
     end
 

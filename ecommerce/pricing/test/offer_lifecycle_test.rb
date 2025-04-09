@@ -48,9 +48,11 @@ module Pricing
         OfferRejected.new(
           data: {
             order_id: order_id,
+            reason: "Some products were unavailable",
+            unavailable_product_ids: [product_id]
           }
         )
-      ) { reject_offer(order_id) }
+      ) { reject_offer(order_id, product_id) }
 
     end
 
@@ -62,7 +64,7 @@ module Pricing
       add_item(order_id, product_id)
 
       exp = assert_raises(Pricing::Offer::InvalidState, "Only accepted offer can be rejected") do
-        reject_offer(order_id)
+        reject_offer(order_id, product_id)
       end
       assert_equal("Only accepted offer can be rejected", exp.message)
     end
@@ -119,8 +121,8 @@ module Pricing
       run_command(AcceptOffer.new(order_id:))
     end
 
-    def reject_offer(order_id)
-      run_command(RejectOffer.new(order_id:))
+    def reject_offer(order_id, *product_ids)
+      run_command(RejectOffer.new(order_id:, reason: "Some products were unavailable", unavailable_product_ids: product_ids))
     end
 
     def expire_offer(order_id)
