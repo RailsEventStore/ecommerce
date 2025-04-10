@@ -22,7 +22,7 @@ module Processes
       when Pricing::OfferAccepted
         update_order_state(state) { reserve_stock(state) }
       when Fulfillment::OrderCancelled
-        release_stock(state)
+        release_stock(state, state.reserved_product_ids)
       when Fulfillment::OrderConfirmed
         dispatch_stock(state)
       end
@@ -32,15 +32,16 @@ module Processes
 
     def reserve_stock(state)
       unavailable_products = []
+      reserved_products = []
       state.order_lines.each do |product_id, quantity|
         command_bus.(Inventory::Reserve.new(product_id: product_id, quantity: quantity))
-        state.product_reserved(product_id)
+        reserved_products << product_id
       rescue Inventory::InventoryEntry::InventoryNotAvailable
         unavailable_products << product_id
       end
 
-      unless unavailable_products.empty?
-        release_stock(state)
+      if unavailable_products.any?
+        release_stock(state, reserved_products)
         raise SomeInventoryNotAvailable.new(unavailable_products)
       end
     end
@@ -52,8 +53,8 @@ module Processes
       reject_order(state, exc.unavailable_products)
     end
 
-    def release_stock(state)
-      state.order_lines.slice(*state.reserved_product_ids).each do |product_id, quantity|
+    def release_stock(state, product_ids)
+      state.order_lines.slice(*product_ids).each do |product_id, quantity|
         command_bus.(Inventory::Release.new(product_id: product_id, quantity: quantity))
       end
     end
@@ -97,10 +98,6 @@ module Processes
     end
 
     class ProcessState
-      def initialize()
-        @reserved_product_ids = []
-      end
-
       attr_reader :order_id, :order_lines, :reserved_product_ids
 
       def call(event)
@@ -111,10 +108,6 @@ module Processes
         when Fulfillment::OrderCancelled, Fulfillment::OrderConfirmed
           @reserved_product_ids = order_lines.keys
         end
-      end
-
-      def product_reserved(product_id)
-        reserved_product_ids << product_id
       end
     end
   end
