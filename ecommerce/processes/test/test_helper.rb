@@ -58,9 +58,11 @@ module Processes
       @customer_id ||= SecureRandom.uuid
     end
 
-    def given(events, store: event_store)
-      events.each { |ev| store.append(ev) }
-      events
+    def given(events, store: event_store, process: nil)
+      events.each do |ev|
+        store.append(ev)
+        process.call(ev) if process
+      end
     end
 
     def order_placed
