@@ -1,28 +1,16 @@
 module Processes
   class ShipmentProcess
-    include Infra::Retry
 
-    def initialize(event_store, command_bus)
-      @event_store = event_store
-      @command_bus = command_bus
-      @event_store.subscribe(
-        self,
-        to: [
-          Shipping::ShippingAddressAddedToShipment,
-          Shipping::ShipmentSubmitted,
-          Fulfillment::OrderRegistered,
-          Fulfillment::OrderConfirmed
-        ]
-      )
-    end
+    private
 
-    def call(event)
-      state = build_state(event)
+    def act
       submit_shipment(state) if state.submit?
       authorize_shipment(state) if state.authorize?
     end
 
-    private
+    def process_id(event)
+      event.data.fetch(:order_id)
+    end
 
     def submit_shipment(state)
       command_bus.call(Shipping::SubmitShipment.new(order_id: state.order_id))
@@ -30,21 +18,6 @@ module Processes
 
     def authorize_shipment(state)
       command_bus.call(Shipping::AuthorizeShipment.new(order_id: state.order_id))
-    end
-
-    attr_reader :command_bus, :event_store
-
-    def build_state(event)
-      with_retry do
-        stream_name = "ShipmentProcess$#{event.data.fetch(:order_id)}"
-        past_events = event_store.read.stream(stream_name).to_a
-        last_stored = past_events.size - 1
-        event_store.link(event.event_id, stream_name: stream_name, expected_version: last_stored)
-        ProcessState.new.tap do |state|
-          past_events.each { |ev| state.call(ev) }
-          state.call(event)
-        end
-      end
     end
 
     class ProcessState
@@ -79,5 +52,14 @@ module Processes
         @shipment == :address_set && @order == :confirmed
       end
     end
+
+    include Infra::ProcessManager.with_state(ProcessState)
+
+    subscribes_to(
+      Shipping::ShippingAddressAddedToShipment,
+      Shipping::ShipmentSubmitted,
+      Fulfillment::OrderRegistered,
+      Fulfillment::OrderConfirmed
+    )
   end
 end
