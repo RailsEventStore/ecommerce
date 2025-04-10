@@ -15,6 +15,19 @@ module Processes
 
     private
 
+    def apply(event)
+      case event
+        when Shipping::ShippingAddressAddedToShipment
+          state.with(shipment: :address_set)
+        when Shipping::ShipmentSubmitted
+          state.with(shipment: :submitted)
+        when Fulfillment::OrderRegistered
+          state.with(order: :placed)
+        when Fulfillment::OrderConfirmed
+          state.with(order: :confirmed)
+      end
+    end
+
     def act
       case state
       in { shipment: :address_set, order: :placed }
@@ -26,10 +39,6 @@ module Processes
       end
     end
 
-    def fetch_id(event)
-      @id = event.data.fetch(:order_id)
-    end
-
     def submit_shipment
       command_bus.call(Shipping::SubmitShipment.new(order_id: id))
     end
@@ -38,17 +47,8 @@ module Processes
       command_bus.call(Shipping::AuthorizeShipment.new(order_id: id))
     end
 
-    def apply(event)
-      case event
-      when Shipping::ShippingAddressAddedToShipment
-        state.with(shipment: :address_set)
-      when Shipping::ShipmentSubmitted
-        state.with(shipment: :submitted)
-      when Fulfillment::OrderRegistered
-        state.with(order: :placed)
-      when Fulfillment::OrderConfirmed
-        state.with(order: :confirmed)
-      end
+    def fetch_id(event)
+      @id = event.data.fetch(:order_id)
     end
   end
 end
