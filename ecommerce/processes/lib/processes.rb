@@ -44,7 +44,10 @@ module Processes
     private
 
     def enable_shipment_process(event_store, command_bus)
-      ShipmentProcess.new(event_store, command_bus)
+      event_store.subscribe(
+        ShipmentProcess.new(event_store, command_bus),
+        to: ShipmentProcess.subscribed_events
+      )
     end
 
     def enable_shipment_sync(event_store, command_bus)
