@@ -7,27 +7,28 @@ module Infra
       end
 
       def call(event)
+        fetch_id(event)
         build_state(event)
         act
       end
 
       private
 
-      attr_reader :event_store, :command_bus
+      attr_reader :event_store, :command_bus, :id
 
       def build_state(event)
         with_retry do
-          stream = stream_name(event)
-          past_events = event_store.read.stream(stream_name(event)).to_a
+          past_events = event_store.read.stream(stream_name).to_a
           last_stored = past_events.size - 1
-          event_store.link(event.event_id, stream_name: stream, expected_version: last_stored)
-          past_events.each { |ev| state.call(ev) }
-          state.call(event)
+          event_store.link(event.event_id, stream_name:, expected_version: last_stored)
+          @state = (past_events + [event]).reduce(state) do |state, ev|
+            apply(ev)
+          end
         end
       end
 
-      def stream_name(event)
-        "#{self.class.name}$#{process_id(event)}"
+      def stream_name
+        "#{self.class.name}$#{id}"
       end
     end
 
