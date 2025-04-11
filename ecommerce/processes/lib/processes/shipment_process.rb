@@ -16,12 +16,12 @@ module Processes
 
     def apply(event)
       case event
-        when Shipping::ShippingAddressAddedToShipment
-          state.with(shipment: :address_set)
-        when Fulfillment::OrderRegistered
-          state.with(order: :placed)
-        when Fulfillment::OrderConfirmed
-          state.with(order: :confirmed)
+      when Shipping::ShippingAddressAddedToShipment
+        state.with(shipment: :address_set)
+      when Fulfillment::OrderRegistered
+        state.with(order: :placed)
+      when Fulfillment::OrderConfirmed
+        state.with(order: :confirmed)
       end
     end
 
