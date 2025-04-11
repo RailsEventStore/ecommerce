@@ -8,9 +8,7 @@ module Processes
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
       process = ThreePlusOneFree.new(event_store, command_bus)
-      given(item_added_event(order_id, product_id, 22)).each do |event|
-        process.call(event)
-      end
+      given(item_added_event(order_id, product_id, 22), process:)
       assert_no_command
     end
 
@@ -19,9 +17,7 @@ module Processes
       order_id = SecureRandom.uuid
       process = ThreePlusOneFree.new(event_store, command_bus)
       given([set_price(product_id, 20)])
-      given(item_added_event(order_id, product_id, 20, times: 4)).each do |event|
-        process.call(event)
-      end
+      given(item_added_event(order_id, product_id, 20, times: 4), process:)
       assert_command(Pricing::MakeProductFreeForOrder.new(order_id: order_id, product_id: product_id))
     end
 
@@ -31,12 +27,11 @@ module Processes
       order_id = SecureRandom.uuid
       process = ThreePlusOneFree.new(event_store, command_bus)
       given([set_price(product_id, 20)])
-      given(item_added_event(order_id, product_id, 20, times:4) +
-              product_made_for_free(order_id, product_id) +
-              item_removed_event(order_id, product_id, times: 1) +
-              free_product_removed(order_id, product_id)).each do |event|
-        process.call(event)
-      end
+      given([item_added_event(order_id, product_id, 20, times: 4),
+             product_made_for_free(order_id, product_id),
+             item_removed_event(order_id, product_id, times: 1),
+             free_product_removed(order_id, product_id)
+            ], process:)
 
       assert_all_commands(Pricing::MakeProductFreeForOrder.new(order_id: order_id, product_id: product_id),
                           Pricing::RemoveFreeProductFromOrder.new(order_id: order_id, product_id: product_id))
@@ -50,14 +45,12 @@ module Processes
       given([set_price(product_id, 20)])
       given([set_price(cheapest_product_id, 1)])
 
-      given(item_added_event(order_id, product_id, 20, times:4) +
-               product_made_for_free(order_id, product_id) +
-               item_added_event(order_id, cheapest_product_id, 1) +
-               free_product_removed(order_id, product_id) +
-               product_made_for_free(order_id, cheapest_product_id)
-      ).each do |event|
-        process.call(event)
-      end
+      given([item_added_event(order_id, product_id, 20, times: 4),
+             product_made_for_free(order_id, product_id),
+             item_added_event(order_id, cheapest_product_id, 1),
+             free_product_removed(order_id, product_id),
+             product_made_for_free(order_id, cheapest_product_id)
+            ], process:)
 
       assert_all_commands(Pricing::MakeProductFreeForOrder.new(order_id: order_id, product_id: product_id),
                           Pricing::RemoveFreeProductFromOrder.new(order_id: order_id, product_id: product_id),
@@ -72,11 +65,10 @@ module Processes
       given([set_price(product_id, 20)])
       given([set_price(more_expensive_product_id, 50)])
 
-      given(item_added_event(order_id, product_id, 20, times: 4) +
-              product_made_for_free(order_id, product_id) +
-              item_added_event(order_id, more_expensive_product_id, 50)).each do |event|
-        process.call(event)
-      end
+      given([item_added_event(order_id, product_id, 20, times: 4),
+             product_made_for_free(order_id, product_id),
+             item_added_event(order_id, more_expensive_product_id, 50)
+            ], process:)
 
       assert_all_commands(Pricing::MakeProductFreeForOrder.new(order_id: order_id, product_id: product_id))
     end
@@ -90,16 +82,15 @@ module Processes
       given([set_price(product_id, 20)])
       given([set_price(cheapest_product_id, 1)])
 
-      given(item_added_event(order_id, product_id, 20, times: 4) +
-              product_made_for_free(order_id, product_id) +
-              item_added_event(order_id, cheapest_product_id, 1) +
-              free_product_removed(order_id, product_id) +
-              product_made_for_free(order_id, cheapest_product_id) +
-              item_removed_event(order_id, cheapest_product_id) +
-              free_product_removed(order_id, cheapest_product_id) +
-              product_made_for_free(order_id, product_id)).each do |event|
-        process.call(event)
-      end
+      given([item_added_event(order_id, product_id, 20, times: 4),
+             product_made_for_free(order_id, product_id),
+             item_added_event(order_id, cheapest_product_id, 1),
+             free_product_removed(order_id, product_id),
+             product_made_for_free(order_id, cheapest_product_id),
+             item_removed_event(order_id, cheapest_product_id),
+             free_product_removed(order_id, cheapest_product_id),
+             product_made_for_free(order_id, product_id),
+            ], process:)
 
       assert_all_commands(Pricing::MakeProductFreeForOrder.new(order_id: order_id, product_id: product_id),
                           Pricing::RemoveFreeProductFromOrder.new(order_id: order_id, product_id: product_id),

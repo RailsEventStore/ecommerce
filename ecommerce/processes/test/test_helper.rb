@@ -59,7 +59,7 @@ module Processes
     end
 
     def given(events, store: event_store, process: nil)
-      events.each do |ev|
+      events.flatten.each do |ev|
         store.append(ev)
         process.call(ev) if process
       end
