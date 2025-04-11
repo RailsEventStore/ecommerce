@@ -7,7 +7,7 @@ module Processes
     def test_happy_path
       process = ReservationProcess.new(event_store, command_bus)
 
-      given([offer_accepted]).each { |event| process.call(event) }
+      given([offer_accepted], process:)
 
       assert_all_commands(
         Inventory::Reserve.new(product_id: product_id, quantity: 1),
@@ -16,24 +16,14 @@ module Processes
       )
     end
 
-    class EnhancedFakeCommandBus < SimpleDelegator
-      def initialize(command_bus, command_error_hash = {})
-        super(command_bus)
-        @command_error_hash = command_error_hash
-      end
-
-      def call(command)
-        super(command)
-        raise @command_error_hash[command] if @command_error_hash[command]
-      end
-    end
-
     def test_rejects_order_and_compensates_stock_when_sth_is_unavailable
       failing_command = Inventory::Reserve.new(product_id: product_id, quantity: 1)
-      enhanced_command_bus = EnhancedFakeCommandBus.new(command_bus, failing_command => Inventory::InventoryEntry::InventoryNotAvailable)
-      process = ReservationProcess.new(event_store, enhanced_command_bus)
+      process = ReservationProcess.new(
+        event_store,
+        EnhancedFakeCommandBus.new(command_bus, failing_command => Inventory::InventoryEntry::InventoryNotAvailable)
+      )
 
-      given([offer_accepted]).each { |event| process.call(event) }
+      given([offer_accepted], process:)
 
       assert_all_commands(
         failing_command,
@@ -45,10 +35,11 @@ module Processes
 
     def test_release_stock_when_order_is_cancelled
       process = ReservationProcess.new(event_store, command_bus)
-      given([offer_accepted]).each { |event| process.call(event) }
-
+      given([offer_accepted], process:)
       command_bus.clear_all_received
-      given([order_cancelled]).each { |event| process.call(event) }
+
+      given([order_cancelled], process:)
+
       assert_all_commands(
         Inventory::Release.new(product_id: product_id, quantity: 1),
         Inventory::Release.new(product_id: another_product_id, quantity: 2)
@@ -57,10 +48,11 @@ module Processes
 
     def test_dispatch_stock_when_order_is_confirmed
       process = ReservationProcess.new(event_store, command_bus)
-      given([offer_accepted]).each { |event| process.call(event) }
-
+      given([offer_accepted], process:)
       command_bus.clear_all_received
-      given([order_confirmed]).each { |event| process.call(event) }
+
+      given([order_confirmed], process:)
+
       assert_all_commands(
         Inventory::Dispatch.new(product_id: product_id, quantity: 1),
         Inventory::Dispatch.new(product_id: another_product_id, quantity: 2)
@@ -95,6 +87,18 @@ module Processes
           order_id: order_id
         }
       )
+    end
+
+    class EnhancedFakeCommandBus < SimpleDelegator
+      def initialize(command_bus, command_error_hash = {})
+        super(command_bus)
+        @command_error_hash = command_error_hash
+      end
+
+      def call(command)
+        super(command)
+        raise @command_error_hash[command] if @command_error_hash[command]
+      end
     end
   end
 end
