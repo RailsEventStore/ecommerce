@@ -1,14 +1,13 @@
 module Processes
   class ShipmentProcess
     class ProcessState < Data.define(:order, :shipment)
-      def initialize(order: :draft, shipment: :draft) = super
+      def initialize(order: nil, shipment: nil) = super
     end
 
     include Infra::ProcessManager.with_state(ProcessState)
 
     subscribes_to(
       Shipping::ShippingAddressAddedToShipment,
-      Shipping::ShipmentSubmitted,
       Fulfillment::OrderRegistered,
       Fulfillment::OrderConfirmed
     )
@@ -19,8 +18,6 @@ module Processes
       case event
         when Shipping::ShippingAddressAddedToShipment
           state.with(shipment: :address_set)
-        when Shipping::ShipmentSubmitted
-          state.with(shipment: :submitted)
         when Fulfillment::OrderRegistered
           state.with(order: :placed)
         when Fulfillment::OrderConfirmed
