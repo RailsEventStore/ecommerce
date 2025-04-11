@@ -46,7 +46,8 @@ module Orders
       item_removed_from_basket = Pricing::PriceItemRemoved.new(
         data: {
           order_id: order_id,
-          product_id: product_id
+          product_id: product_id,
+          price: 20,
         }
       )
       event_store.publish(item_removed_from_basket)
@@ -93,7 +94,8 @@ module Orders
         Pricing::PriceItemRemoved.new(
           data: {
             order_id: order_id,
-            product_id: product_id
+            product_id: product_id,
+            price: 20,
           }
         )
       )
@@ -169,7 +171,8 @@ module Orders
         Pricing::PriceItemRemoved.new(
           data: {
             order_id: order_id,
-            product_id: another_product_id
+            product_id: another_product_id,
+            price: 20,
           }
         )
       )
