@@ -1,7 +1,5 @@
 module Processes
   class ReservationProcess
-    include Infra::Retry
-
     class SomeInventoryNotAvailable < StandardError
       attr_reader :unavailable_products
 
@@ -10,21 +8,43 @@ module Processes
       end
     end
 
-    def initialize(event_store, command_bus)
-      @event_store = event_store
-      @command_bus = command_bus
-    end
-    attr_accessor :event_store, :command_bus
+    class ProcessState < Data.define(:order, :order_lines)
+      def initialize(order: nil, order_lines: nil) = super
 
-    def call(event)
-      state = build_state(event)
+      def reserved_product_ids = order_lines.keys
+    end
+
+    include Infra::ProcessManager.with_state(ProcessState)
+
+    subscribes_to(
+      Pricing::OfferAccepted,
+      Fulfillment::OrderCancelled,
+      Fulfillment::OrderConfirmed
+    )
+
+    def apply(event)
       case event
       when Pricing::OfferAccepted
-        update_order_state(state) { reserve_stock(state) }
+        state.with(
+          order: :accepted,
+          order_lines: event.data.fetch(:order_lines).map { |ol| [ol.fetch(:product_id), ol.fetch(:quantity)] }.to_h
+        )
       when Fulfillment::OrderCancelled
-        release_stock(state, state.reserved_product_ids)
+        state.with(order: :cancelled)
       when Fulfillment::OrderConfirmed
+        state.with(order: :confirmed)
+      end
+    end
+
+    def act
+      case state
+      in order: :accepted
+        update_order_state(state) { reserve_stock(state) }
+      in order: :cancelled
+        release_stock(state, state.reserved_product_ids)
+      in order: :confirmed
         dispatch_stock(state)
+      else
       end
     end
 
@@ -66,49 +86,17 @@ module Processes
     end
 
     def accept_order(state)
-      command_bus.(Fulfillment::RegisterOrder.new(order_id: state.order_id))
+      command_bus.(Fulfillment::RegisterOrder.new(order_id: id))
     end
 
     def reject_order(state, unavailable_product_ids)
       command_bus.(Pricing::RejectOffer.new(
-        order_id: state.order_id, reason: "Some products were unavailable", unavailable_product_ids: )
+        order_id: id, reason: "Some products were unavailable", unavailable_product_ids:)
       )
     end
 
-    def stream_name(order_id)
-      "ReservationProcess$#{order_id}"
-    end
-
-    def build_state(event)
-      stream_name = stream_name(event.data.fetch(:order_id))
-      past_events = nil
-      begin
-        with_retry do
-          past_events = event_store.read.stream(stream_name).to_a
-          last_stored = past_events.size - 1
-          event_store.link(event.event_id, stream_name: stream_name, expected_version: last_stored)
-        end
-      rescue RubyEventStore::EventDuplicatedInStream
-        return
-      end
-      ProcessState.new.tap do |state|
-        past_events.each { |ev| state.call(ev) }
-        state.call(event)
-      end
-    end
-
-    class ProcessState
-      attr_reader :order_id, :order_lines, :reserved_product_ids
-
-      def call(event)
-        case event
-        when Pricing::OfferAccepted
-          @order_lines = event.data.fetch(:order_lines).map { |ol| [ol.fetch(:product_id), ol.fetch(:quantity)] }.to_h
-          @order_id = event.data.fetch(:order_id)
-        when Fulfillment::OrderCancelled, Fulfillment::OrderConfirmed
-          @reserved_product_ids = order_lines.keys
-        end
-      end
+    def fetch_id(event)
+      @id = event.data.fetch(:order_id)
     end
   end
 end
