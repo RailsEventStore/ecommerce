@@ -17,6 +17,4 @@ matcher:
     - Processes::SyncInventoryFromOrdering*
     - Processes::NotifyPaymentsAboutOrderValue*
     - Processes::ThreePlusOneFree*
-    - Processes::ReservationProcess*
-    - Processes::ReservationProcess::ProcessState#call
     - Processes::DetermineVatRatesOnOrderPlaced*
