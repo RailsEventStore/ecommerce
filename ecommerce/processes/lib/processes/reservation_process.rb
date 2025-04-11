@@ -39,7 +39,13 @@ module Processes
     def act
       case state
       in order: :accepted
-        update_order_state { reserve_stock }
+        begin
+          reserve_stock
+        rescue SomeInventoryNotAvailable => exc
+          reject_order(exc.unavailable_products)
+        else
+          accept_order
+        end
       in order: :cancelled
         release_stock(state.reserved_product_ids)
       in order: :confirmed
@@ -64,13 +70,6 @@ module Processes
         release_stock(reserved_products)
         raise SomeInventoryNotAvailable.new(unavailable_products)
       end
-    end
-
-    def update_order_state
-      yield
-      accept_order
-    rescue SomeInventoryNotAvailable => exc
-      reject_order(exc.unavailable_products)
     end
 
     def release_stock(product_ids)
