@@ -21,9 +21,7 @@ module Infra
           past_events = event_store.read.stream(stream_name).to_a
           last_stored = past_events.size - 1
           event_store.link(event.event_id, stream_name:, expected_version: last_stored)
-          @state = (past_events + [event]).reduce(state) do |state, ev|
-            apply(ev)
-          end
+          (past_events + [event]).each { |ev| @state = apply(ev) }
         end
       end
 
