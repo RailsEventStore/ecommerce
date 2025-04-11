@@ -7,7 +7,7 @@ module Infra
       end
 
       def call(event)
-        fetch_id(event)
+        @id = fetch_id(event)
         build_state(event)
         act
       end
