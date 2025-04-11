@@ -47,6 +47,7 @@ module Pricing
   class PriceItemRemoved < Infra::Event
     attribute :order_id, Infra::Types::UUID
     attribute :product_id, Infra::Types::UUID
+    attribute :price, Infra::Types::Price
   end
 
   class PercentageDiscountRemoved < Infra::Event

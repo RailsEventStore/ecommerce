@@ -28,7 +28,7 @@ module Processes
       given([set_price(product_id, 20)])
       given([item_added_event(order_id, product_id, 20, times: 4),
              product_made_for_free(order_id, product_id),
-             item_removed_event(order_id, product_id, times: 1),
+             item_removed_event(order_id, product_id, 20, times: 1),
              free_product_removed(order_id, product_id)
             ], process:)
 
@@ -85,7 +85,7 @@ module Processes
              item_added_event(order_id, cheapest_product_id, 1),
              free_product_removed(order_id, product_id),
              product_made_for_free(order_id, cheapest_product_id),
-             item_removed_event(order_id, cheapest_product_id),
+             item_removed_event(order_id, cheapest_product_id, 1),
              free_product_removed(order_id, cheapest_product_id),
              product_made_for_free(order_id, product_id),
             ], process:)
@@ -116,13 +116,10 @@ module Processes
       end
     end
 
-    def item_removed_event(order_id, product_id, times: 1)
+    def item_removed_event(order_id, product_id, price, times: 1)
       times.times.collect do
         Pricing::PriceItemRemoved.new(
-          data: {
-            order_id: order_id,
-            product_id: product_id
-          }
+          data: { order_id:, product_id:, price: }
         )
       end
     end
