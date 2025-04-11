@@ -77,19 +77,14 @@ module Processes
         when Pricing::PriceItemAdded
           order_lines << { product_id: event.data.fetch(:product_id), price: event.data.fetch(:price) }
         when Pricing::PriceItemRemoved
-          new_lines = order_lines.sort { _1.fetch(:price) }
-          index_of_line_to_remove = new_lines.index { |line| line.fetch(:product_id) == product_id }
-          new_lines.delete_at(index_of_line_to_remove)
-          @order_lines = new_lines
+          index_of_line_to_remove = order_lines.index { |line| line.fetch(:product_id) == product_id && line.fetch(:price) == event.data.fetch(:price) }
+          @order_lines.delete_at(index_of_line_to_remove)
+          @current_free_product_id = nil if event.data.fetch(:price) == 0
         when Pricing::ProductMadeFreeForOrder
           @current_free_product_id = product_id
         when Pricing::FreeProductRemovedFromOrder
           @current_free_product_id = nil
         end
-      end
-
-      def total_quantity
-        order_lines.values.sum
       end
 
       MIN_ORDER_LINES_QUANTITY = 4

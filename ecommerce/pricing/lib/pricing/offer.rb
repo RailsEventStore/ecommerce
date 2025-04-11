@@ -23,10 +23,12 @@ module Pricing
     end
 
     def remove_item(product_id)
+      price = @list.lowest_price(product_id)
       apply PriceItemRemoved.new(
         data: {
           order_id: @id,
-          product_id: product_id
+          product_id: product_id,
+          price: price
         }
       )
     end
@@ -158,7 +160,7 @@ module Pricing
     end
 
     on PriceItemRemoved do |event|
-      @list.remove_item(event.data.fetch(:product_id))
+      @list.remove_item(event.data.fetch(:product_id), event.data.fetch(:price))
     end
 
     on PriceItemValueCalculated do |event|
@@ -220,11 +222,9 @@ module Pricing
         @items << Item.new(product_id:, price:, quantity: 1)
       end
 
-      def remove_item(product_id)
-        new_items = @items.sort { _1.price}
-        index_of_item_to_remove = new_items.index { |item| item.product_id == product_id }
-        new_items.delete_at(index_of_item_to_remove)
-        @items = new_items
+      def remove_item(product_id, price)
+        index_of_item_to_remove = @items.index { |item| item.product_id == product_id && item.price == price }
+        @items.delete_at(index_of_item_to_remove)
       end
 
       def contains_free_products?
@@ -251,8 +251,17 @@ module Pricing
 
       def restore_nonfree(product_id)
         idx = @items.index { |item| item.product_id == product_id && item.price == 0 }
+        return unless idx
         old_item = @items.delete_at(idx)
         @items << old_item.with(price: old_item.catalog_price)
+      end
+
+      def lowest_price(product_id)
+        @items
+          .select { |item| item.product_id == product_id }
+          .sort_by(&:price)
+          .first
+          &.price
       end
 
       def quantities
