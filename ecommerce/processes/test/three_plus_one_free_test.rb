@@ -101,17 +101,13 @@ module Processes
     private
 
     def set_price(product_id, amount)
-      Pricing::PriceSet.new(data: { product_id: product_id, price: amount })
+      Pricing::PriceSet.new(data: { product_id:, price: amount })
     end
 
     def item_added_event(order_id, product_id, price, times: 1)
       times.times.collect do
         Pricing::PriceItemAdded.new(
-          data: {
-            order_id: order_id,
-            product_id: product_id,
-            price: price
-          }
+          data: { order_id:, product_id:, price: }
         )
       end
     end
@@ -127,10 +123,7 @@ module Processes
     def product_made_for_free(order_id, product_id)
       [
         Pricing::ProductMadeFreeForOrder.new(
-          data: {
-            order_id: order_id,
-            product_id: product_id
-          }
+          data: { order_id:, product_id: }
         )
       ]
     end
@@ -138,10 +131,7 @@ module Processes
     def free_product_removed(order_id, product_id)
       [
         Pricing::FreeProductRemovedFromOrder.new(
-          data: {
-            order_id: order_id,
-            product_id: product_id
-          }
+          data: { order_id:, product_id: }
         )
       ]
     end
