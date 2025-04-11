@@ -24,3 +24,4 @@ matcher:
     - Infra::Mapper*
     - Infra::Process*
     - Infra::EventHandler*
+    - Infra::ProcessManager*
