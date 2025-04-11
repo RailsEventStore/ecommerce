@@ -45,7 +45,7 @@ module Processes
     end
 
     def fetch_id(event)
-      @id = event.data.fetch(:order_id)
+      event.data.fetch(:order_id)
     end
   end
 end
