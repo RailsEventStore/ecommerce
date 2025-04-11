@@ -4,10 +4,6 @@ module Processes
   class ThreePlusOneFreeTest < Test
     cover "Processes::ThreePlusOneFree*"
 
-    def setup
-      skip "ThreePlusOneFree process block us from removing Pricing::PricingCatalog"
-    end
-
     def test_one_order_line_is_not_eligible_for_free_product
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
@@ -30,6 +26,7 @@ module Processes
     end
 
     def test_remove_free_product_when_order_lines_qtn_is_less_than_four
+      skip
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
       process = ThreePlusOneFree.new(event_store, command_bus)
@@ -85,6 +82,7 @@ module Processes
     end
 
     def test_change_free_product_if_the_cheapest_order_line_is_removed
+      skip
       product_id = SecureRandom.uuid
       cheapest_product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid

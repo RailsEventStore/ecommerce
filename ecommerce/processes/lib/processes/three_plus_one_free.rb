@@ -39,8 +39,7 @@ module Processes
     end
 
     def make_or_remove_free_product(state)
-      pricing_catalog = Pricing::PricingCatalog.new(@event_store)
-      free_product_id = FreeProductResolver.new(state, pricing_catalog).call
+      free_product_id = state.cheapest_product
 
       return if current_free_product_not_changed?(free_product_id, state)
 
@@ -69,14 +68,14 @@ module Processes
 
       def initialize(order_id)
         @order_id = order_id
-        @order_lines = Hash.new(0)
+        @order_lines = []
       end
 
       def call(event)
         product_id = event.data.fetch(:product_id)
         case event
         when Pricing::PriceItemAdded
-          order_lines[product_id] += 1
+          order_lines << { product_id: event.data.fetch(:product_id), price: event.data.fetch(:price) }
         when Pricing::PriceItemRemoved
           order_lines[product_id] -= 1
           order_lines.delete(product_id) if order_lines.fetch(product_id) <= 0
@@ -90,30 +89,10 @@ module Processes
       def total_quantity
         order_lines.values.sum
       end
-    end
 
-    class FreeProductResolver
       MIN_ORDER_LINES_QUANTITY = 4
-
-      def initialize(state, pricing_catalog)
-        @state = state
-        @pricing_catalog = pricing_catalog
-      end
-
-      def call
-        cheapest_product if eligible_for_free_product?
-      end
-
-      private
-
-      attr_reader :state, :pricing_catalog
-
       def cheapest_product
-        state.order_lines.keys.sort_by { |product_id| pricing_catalog.price_by_product_id(product_id) }.first
-      end
-
-      def eligible_for_free_product?
-        state.total_quantity >= MIN_ORDER_LINES_QUANTITY
+        order_lines.sort_by { |line| line.fetch(:price) }.first.fetch(:product_id) if order_lines.size >= MIN_ORDER_LINES_QUANTITY
       end
     end
   end
