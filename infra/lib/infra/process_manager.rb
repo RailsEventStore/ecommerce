@@ -7,6 +7,7 @@ module Infra
       end
 
       def call(event)
+        @state = initial_state
         @id = fetch_id(event)
         build_state(event)
         act
@@ -45,8 +46,12 @@ module Infra
     def self.with_state(state_class)
 
       Module.new do
-        define_method :state do
-          @state ||= state_class.new
+        define_method :initial_state do
+          state_class.new
+        end
+
+        def state
+          @state ||= initial_state
         end
 
         def self.included(host_class)
