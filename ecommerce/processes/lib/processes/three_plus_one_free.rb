@@ -1,96 +1,68 @@
 module Processes
   class ThreePlusOneFree
-    include Infra::Retry
 
-    def initialize(event_store, command_bus)
-      @event_store = event_store
-      @command_bus = command_bus
-      @event_store.subscribe(
-        self,
-        to: [
-          Pricing::PriceItemAdded,
-          Pricing::PriceItemRemoved,
-          Pricing::ProductMadeFreeForOrder,
-          Pricing::FreeProductRemovedFromOrder
-        ]
-      )
+    class ProcessState < Data.define(:lines, :free_product, :should_act)
+      def initialize(lines: [], free_product: nil, should_act: nil) = super
+
+      MIN_ORDER_LINES_QUANTITY = 4
+
+      def eligible_free_product_id
+        if lines.size >= MIN_ORDER_LINES_QUANTITY
+          line = lines.first
+          line.fetch(:product_id)
+        end
+      end
+
+      def current_free_product_id = free_product
     end
 
-    def call(event)
-      state = build_state(event)
-      return if event_only_for_state_building?(event)
+    include Infra::ProcessManager.with_state(ProcessState)
 
-      make_or_remove_free_product(state)
-    end
+    subscribes_to(
+      Pricing::PriceItemAdded,
+      Pricing::PriceItemRemoved,
+      Pricing::ProductMadeFreeForOrder,
+      Pricing::FreeProductRemovedFromOrder
+    )
 
     private
 
-    def build_state(event)
-      with_retry do
-        stream_name = "ThreePlusOneFreeProcess$#{event.data.fetch(:order_id)}"
-        past_events = @event_store.read.stream(stream_name).to_a
-        last_stored = past_events.size - 1
-        @event_store.link(event.event_id, stream_name: stream_name, expected_version: last_stored)
-        ProcessState.new(event.data.fetch(:order_id)).tap do |state|
-          past_events.each { |ev| state.call(ev) }
-          state.call(event)
-        end
+    def apply(event)
+      product_id = event.data.fetch(:product_id)
+      case event
+      when Pricing::PriceItemAdded
+        lines = (state.lines + [{ product_id:, price: event.data.fetch(:price) }]).sort_by { |line| line.fetch(:price) }
+        state.with(lines:, should_act: true)
+      when Pricing::PriceItemRemoved
+        lines = state.lines.dup
+        index_of_line_to_remove = lines.index { |line| line.fetch(:product_id) == product_id && line.fetch(:price) == event.data.fetch(:price) }
+        lines.delete_at(index_of_line_to_remove)
+        state.with(lines: lines, should_act: true)
+      when Pricing::ProductMadeFreeForOrder
+        state.with(free_product: product_id, should_act: false)
+      when Pricing::FreeProductRemovedFromOrder
+        state.with(free_product: nil, should_act: false)
       end
     end
 
-    def make_or_remove_free_product(state)
-      free_product_id = state.cheapest_product
+    def act
+      return if state.current_free_product_id == state.eligible_free_product_id
+      return unless !!state.should_act
 
-      return if current_free_product_not_changed?(free_product_id, state)
-
-      remove_old_free_product(state)
-      make_new_product_for_free(state, free_product_id)
+      remove_old_free_product if state.current_free_product_id
+      make_new_product_for_free(state.eligible_free_product_id) if state.eligible_free_product_id
     end
 
-    def event_only_for_state_building?(event)
-      event.instance_of?(Pricing::FreeProductRemovedFromOrder) || event.instance_of?(Pricing::ProductMadeFreeForOrder)
+    def remove_old_free_product
+      command_bus.call(Pricing::RemoveFreeProductFromOrder.new(order_id: id, product_id: state.current_free_product_id)) if state.current_free_product_id
     end
 
-    def current_free_product_not_changed?(free_product_id, state)
-      free_product_id == state.current_free_product_id
+    def make_new_product_for_free(free_product_id)
+      command_bus.call(Pricing::MakeProductFreeForOrder.new(order_id: id, product_id: free_product_id)) if free_product_id
     end
 
-    def remove_old_free_product(state)
-      @command_bus.call(Pricing::RemoveFreeProductFromOrder.new(order_id: state.order_id, product_id: state.current_free_product_id)) if state.current_free_product_id
-    end
-
-    def make_new_product_for_free(state, free_product_id)
-      @command_bus.call(Pricing::MakeProductFreeForOrder.new(order_id: state.order_id, product_id: free_product_id)) if free_product_id
-    end
-
-    class ProcessState
-      attr_reader :order_id, :order_lines, :current_free_product_id
-
-      def initialize(order_id)
-        @order_id = order_id
-        @order_lines = []
-      end
-
-      def call(event)
-        product_id = event.data.fetch(:product_id)
-        case event
-        when Pricing::PriceItemAdded
-          order_lines << { product_id: event.data.fetch(:product_id), price: event.data.fetch(:price) }
-        when Pricing::PriceItemRemoved
-          index_of_line_to_remove = order_lines.index { |line| line.fetch(:product_id) == product_id && line.fetch(:price) == event.data.fetch(:price) }
-          @order_lines.delete_at(index_of_line_to_remove)
-          @current_free_product_id = nil if event.data.fetch(:price) == 0
-        when Pricing::ProductMadeFreeForOrder
-          @current_free_product_id = product_id
-        when Pricing::FreeProductRemovedFromOrder
-          @current_free_product_id = nil
-        end
-      end
-
-      MIN_ORDER_LINES_QUANTITY = 4
-      def cheapest_product
-        order_lines.sort_by { |line| line.fetch(:price) }.first.fetch(:product_id) if order_lines.size >= MIN_ORDER_LINES_QUANTITY
-      end
+    def fetch_id(event)
+      event.data.fetch(:order_id)
     end
   end
 end
