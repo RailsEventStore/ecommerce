@@ -24,7 +24,7 @@ module Processes
         state.with(lines:, eligible_free_product: eligible_free_product(lines))
       when Pricing::PriceItemRemoved
         lines = state.lines
-        index_of_line_to_remove = lines.index { |line| line.fetch(:product_id) == product_id && line.fetch(:price) == event.data.fetch(:price) }
+        index_of_line_to_remove = lines.index { |line| line.fetch(:product_id) == product_id }
         lines.delete_at(index_of_line_to_remove)
         state.with(lines:, eligible_free_product: eligible_free_product(lines))
       when Pricing::ProductMadeFreeForOrder
