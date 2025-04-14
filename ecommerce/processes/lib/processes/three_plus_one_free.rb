@@ -54,11 +54,11 @@ module Processes
     end
 
     def remove_old_free_product
-      command_bus.call(Pricing::RemoveFreeProductFromOrder.new(order_id: id, product_id: state.current_free_product_id)) if state.current_free_product_id
+      command_bus.call(Pricing::RemoveFreeProductFromOrder.new(order_id: id, product_id: state.current_free_product_id))
     end
 
     def make_new_product_for_free(free_product_id)
-      command_bus.call(Pricing::MakeProductFreeForOrder.new(order_id: id, product_id: free_product_id)) if free_product_id
+      command_bus.call(Pricing::MakeProductFreeForOrder.new(order_id: id, product_id: free_product_id))
     end
 
     def fetch_id(event)
