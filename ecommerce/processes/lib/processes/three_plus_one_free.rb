@@ -1,8 +1,17 @@
 module Processes
   class ThreePlusOneFree
 
-    class ProcessState < Data.define(:lines, :free_product, :eligible_free_product)
-      def initialize(lines: [], free_product: nil, eligible_free_product: nil) = super
+    class ProcessState < Data.define(:lines, :free_product)
+      def initialize(lines: [], free_product: nil) = super
+
+      MIN_ORDER_LINES_QUANTITY = 4
+
+      def eligible_free_product
+        if lines.size >= MIN_ORDER_LINES_QUANTITY
+          line = lines.first
+          line.fetch(:product_id)
+        end
+      end
     end
 
     include Infra::ProcessManager.with_state(ProcessState)
@@ -21,45 +30,41 @@ module Processes
       case event
       when Pricing::PriceItemAdded
         lines = (state.lines + [{ product_id:, price: event.data.fetch(:price) }]).sort_by { |line| line.fetch(:price) }
-        state.with(lines:, eligible_free_product: eligible_free_product(lines))
+        state.with(lines:)
       when Pricing::PriceItemRemoved
-        lines = state.lines
+        lines = state.lines.dup
         index_of_line_to_remove = lines.index { |line| line.fetch(:product_id) == product_id }
         lines.delete_at(index_of_line_to_remove)
-        state.with(lines:, eligible_free_product: eligible_free_product(lines))
+        state.with(lines:)
       when Pricing::ProductMadeFreeForOrder
-        state.with(free_product: product_id, eligible_free_product: eligible_free_product(state.lines))
+        state.with(free_product: product_id)
       when Pricing::FreeProductRemovedFromOrder
-        state.with(free_product: nil, eligible_free_product: nil)
+        state.with(free_product: nil)
       end
     end
 
     def act
       return if state.free_product == state.eligible_free_product
 
-      remove_old_free_product if state.free_product
-      make_new_product_for_free(state.eligible_free_product) if state.eligible_free_product
+      case [state.free_product, state.eligible_free_product]
+      in [nil, new_free_product]
+        make_new_product_for_free(new_free_product)
+      in [old_free_product, *]
+        remove_old_free_product(old_free_product)
+      else
+      end
     end
 
-    def remove_old_free_product
-      command_bus.call(Pricing::RemoveFreeProductFromOrder.new(order_id: id, product_id: state.free_product))
+    def remove_old_free_product(product_id)
+      command_bus.call(Pricing::RemoveFreeProductFromOrder.new(order_id: id, product_id:))
     end
 
     def make_new_product_for_free(product_id)
-      command_bus.call(Pricing::MakeProductFreeForOrder.new(order_id: id, product_id: product_id))
+      command_bus.call(Pricing::MakeProductFreeForOrder.new(order_id: id, product_id:))
     end
 
     def fetch_id(event)
       event.data.fetch(:order_id)
-    end
-
-    MIN_ORDER_LINES_QUANTITY = 4
-
-    def eligible_free_product(lines)
-      if lines.size >= MIN_ORDER_LINES_QUANTITY
-        line = lines.first
-        line.fetch(:product_id)
-      end
     end
   end
 end
