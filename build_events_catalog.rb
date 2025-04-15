@@ -28,7 +28,7 @@ class BuildEventsCatalog
   end
 
   def read_domains
-    Dir.entries(SOURCE_PATH).select {|entry| File.directory?("#{SOURCE_PATH}#{entry}") and !(entry =='.' || entry == '..' || entry == 'processes') }
+    Dir.entries(SOURCE_PATH).select { |entry| File.directory?("#{SOURCE_PATH}#{entry}") and !(entry == '.' || entry == '..' || entry == 'processes') }
   end
 
   def source_domain_directory(domain)
@@ -83,39 +83,39 @@ class BuildEventsCatalog
   end
 
   def create_domain_index(domain, domain_directory)
-    File.open("#{domain_directory}/index.md", "w") do |f|
+    File.open("#{domain_directory}/index.mdx", "w") do |f|
       f.write(DomainTemplate.new.render(domain))
     end
   end
 
   def create_domain_events(domain)
-    domain_events_directory = "#{domains_catalog}/#{domain}/events"
-    FileUtils.mkdir(domain_events_directory)
     build_events(domain)
   end
 
   def build_events(domain)
     scan_domain_for_events(domain).each do |event|
-      domain_event_directory = "#{domains_catalog}/#{domain}/events/#{event}"
+      domain_event_directory = "#{events_catalog}/#{event}"
       FileUtils.mkdir(domain_event_directory)
       create_event_index(domain_event_directory, event)
     end
   end
 
   def create_event_index(event_directory, event)
-    File.open("#{event_directory}/index.md", "w") do |f|
+    File.open("#{event_directory}/index.mdx", "w") do |f|
       f.write(EventTemplate.new.render(event))
       puts "   - event: #{event}"
     end
   end
 
   def scan_domain_for_events(domain)
-    files =  Dir.glob("#{source_domain_directory(domain)}/**/*").reject { |f| File.directory?(f) || f =='.' || f == '..' }
+    files = Dir.glob("#{source_domain_directory(domain)}/**/*").reject { |f| File.directory?(f) || f == '.' || f == '..' }
     list = files.map do |file|
       IO.read(file).scan(/class (.*?) < #{EVENT_TYPE}/)
-    end.flatten
-      .reject {|e| e.empty?}
+    end
+      .flatten
+      .reject { |e| e.empty? }
       .compact
+      .map { |e| [domain, e].join("::") }
   end
 
   def replace_config_file
@@ -131,7 +131,9 @@ class DomainTemplate
   def render(name)
     <<~EOS
       ---
+      id: #{name}
       name: #{name}
+      version: 0.0.1
       summary: |
         Summary
       owners:
@@ -153,6 +155,7 @@ class EventTemplate
   def render(name)
     <<~EOS
       ---
+      id: #{name.gsub(':', '-')}
       name: #{name}
       version: 0.0.1
       summary: |
