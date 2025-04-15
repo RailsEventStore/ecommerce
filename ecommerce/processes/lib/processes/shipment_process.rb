@@ -1,6 +1,6 @@
 module Processes
   class ShipmentProcess
-    class ProcessState < Data.define(:order, :shipment)
+    ProcessState = Data.define(:order, :shipment) do
       def initialize(order: nil, shipment: nil) = super
     end
 

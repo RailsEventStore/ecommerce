@@ -8,8 +8,10 @@ module Processes
       end
     end
 
-    class ProcessState < Data.define(:order, :order_lines)
-      def initialize(order: nil, order_lines: nil) = super
+    ProcessState = Data.define(:order, :order_lines) do
+      def initialize(order: nil, order_lines: [])
+        super(order:, order_lines: order_lines.freeze)
+      end
 
       def reserved_product_ids = order_lines.keys
     end
