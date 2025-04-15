@@ -119,17 +119,16 @@ module Processes
     end
 
     def enable_three_plus_one_free_process(event_store, command_bus)
-      ThreePlusOneFree.new(event_store, command_bus)
+      event_store.subscribe(
+        ThreePlusOneFree.new(event_store, command_bus),
+        to: ThreePlusOneFree.subscribed_events
+      )
     end
 
     def enable_reservation_process(event_store, command_bus)
       event_store.subscribe(
         ReservationProcess.new(event_store, command_bus),
-        to: [
-          Pricing::OfferAccepted,
-          Fulfillment::OrderCancelled,
-          Fulfillment::OrderConfirmed
-        ]
+        to: ReservationProcess.subscribed_events
       )
     end
 
