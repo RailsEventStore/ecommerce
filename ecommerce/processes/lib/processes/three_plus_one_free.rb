@@ -1,15 +1,16 @@
 module Processes
   class ThreePlusOneFree
 
-    class ProcessState < Data.define(:lines, :free_product)
-      def initialize(lines: [], free_product: nil) = super
+    ProcessState = Data.define(:lines, :free_product) do
+      def initialize(lines: [], free_product: nil)
+        super(lines: lines.freeze, free_product:)
+      end
 
       MIN_ORDER_LINES_QUANTITY = 4
 
       def eligible_free_product
         if lines.size >= MIN_ORDER_LINES_QUANTITY
-          line = lines.first
-          line.fetch(:product_id)
+          lines.sort_by { _1.fetch(:price) }.first.fetch(:product_id)
         end
       end
     end
@@ -29,7 +30,7 @@ module Processes
       product_id = event.data.fetch(:product_id)
       case event
       when Pricing::PriceItemAdded
-        lines = (state.lines + [{ product_id:, price: event.data.fetch(:price) }]).sort_by { |line| line.fetch(:price) }
+        lines = (state.lines + [{ product_id:, price: event.data.fetch(:price) }])
         state.with(lines:)
       when Pricing::PriceItemRemoved
         lines = state.lines.dup
