@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   title: 'EventCatalog',
   tagline: 'Discover, Explore and Document your Event Driven Architectures',
   organizationName: 'Your Company',
