@@ -45,9 +45,8 @@ module Processes
     end
 
     def act
-      return if state.free_product == state.eligible_free_product
-
       case [state.free_product, state.eligible_free_product]
+      in [the_same_product, ^the_same_product]
       in [nil, new_free_product]
         make_new_product_for_free(new_free_product)
       in [old_free_product, *]
