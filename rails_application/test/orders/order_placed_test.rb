@@ -29,7 +29,10 @@ module Orders
           data: {
             order_id: order_id,
             product_id: product_id,
-            price: 20
+            base_price: 20,
+            price: 20,
+            base_total_value: 20,
+            total_value: 20,
           }
         ),
         Pricing::OfferAccepted.new(

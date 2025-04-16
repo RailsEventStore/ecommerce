@@ -28,7 +28,10 @@ module ClientOrders
           data: {
             order_id: order_id,
             product_id: product_id,
+            base_price: 49,
             price: 49,
+            base_total_value: 49,
+            total_value: 49,
           }
         )
       )
@@ -71,7 +74,10 @@ module ClientOrders
           data: {
             order_id: order_id,
             product_id: product_id,
+            base_price: 49,
             price: 49,
+            base_total_value: 49,
+            total_value: 49,
           }
         )
       )
@@ -81,7 +87,10 @@ module ClientOrders
           data: {
             order_id: order_id,
             product_id: product_id,
+            base_price: 49,
             price: 49,
+            base_total_value: 98,
+            total_value: 98,
           }
         )
       )
@@ -140,7 +149,10 @@ module ClientOrders
           data: {
             order_id: order_id,
             product_id: product_id,
+            base_price: 20,
             price: 20,
+            base_total_value: 20,
+            total_value: 20,
           }
         )
       )
@@ -150,7 +162,10 @@ module ClientOrders
           data: {
             order_id: order_id,
             product_id: another_product_id,
+            base_price: 20,
             price: 20,
+            base_total_value: 40,
+            total_value: 40,
           }
         )
       )
