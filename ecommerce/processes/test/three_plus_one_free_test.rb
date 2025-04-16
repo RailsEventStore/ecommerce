@@ -105,17 +105,17 @@ module Processes
     end
 
     def item_added_event(order_id, product_id, price, times: 1)
-      times.times.collect do
+      times.times.collect do |i|
         Pricing::PriceItemAdded.new(
-          data: { order_id:, product_id:, price: }
+          data: { order_id:, product_id:, price:, base_price: price, base_total_value: (i+1) * price, total_value: (i+1) * price }
         )
       end
     end
 
     def item_removed_event(order_id, product_id, price, times: 1)
-      times.times.collect do
+      times.times.collect do |i|
         Pricing::PriceItemRemoved.new(
-          data: { order_id:, product_id:, price: }
+          data: { order_id:, product_id:, price:, base_price: price, base_total_value: (i+1)*price, total_value: (i+i)*price }
         )
       end
     end
