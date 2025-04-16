@@ -25,7 +25,7 @@ module Pricing
           data: {
             order_id: order_id,
             discounted_amount: 60,
-            total_amount: 60
+            total_amount: 80
           }
         )
       ) do
@@ -58,7 +58,7 @@ module Pricing
           data: {
             order_id: order_id,
             discounted_amount: 60,
-            total_amount: 60
+            total_amount: 70
           }
         ),
       ) do
@@ -125,7 +125,7 @@ module Pricing
           data: {
             order_id: order_id,
             discounted_amount: 60,
-            total_amount: 60
+            total_amount: 80
           }
         )
       ) do
