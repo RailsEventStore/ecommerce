@@ -36,7 +36,8 @@ module Orders
     private
 
     def item_added_to_basket(order_id, product_id)
-      event_store.publish(Pricing::PriceItemAdded.new(data: { product_id: product_id, order_id: order_id, price: 50 }))
+      event_store.publish(Pricing::PriceItemAdded.new(
+        data: { product_id: product_id, order_id: order_id, price: 50, base_price: 50, base_total_value: 50, total_value: 50 }))
     end
 
     def prepare_product(product_id)
