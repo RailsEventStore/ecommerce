@@ -12,23 +12,30 @@ module Pricing
       @state = :draft
     end
 
-    def add_item(product_id, price)
+    def add_item(product_id, base_price)
+      price = @discounts.inject(Discounts::NoPercentageDiscount.new, :add).apply(base_price)
       apply PriceItemAdded.new(
         data: {
           order_id: @id,
           product_id: product_id,
+          base_price: base_price,
           price: price,
+          base_total_value: @list.base_sum + base_price,
+          total_value: @list.actual_sum + price
         }
       )
     end
 
     def remove_item(product_id)
-      price = @list.lowest_price(product_id)
+      item = @list.lowest_price_item(product_id)
       apply PriceItemRemoved.new(
         data: {
           order_id: @id,
           product_id: product_id,
-          price: price
+          base_price: item.base_price,
+          price: item.price,
+          base_total_value: @list.base_sum - item.base_price,
+          total_value: @list.actual_sum - item.price
         }
       )
     end
@@ -87,7 +94,7 @@ module Pricing
 
     def calculate_total_value
       total_value = @list.base_sum
-      discounted_value = @discounts.inject(Discounts::NoPercentageDiscount.new, :add).apply(total_value)
+      discounted_value = @list.actual_sum
 
       apply(
         OrderTotalValueCalculated.new(
@@ -110,8 +117,8 @@ module Pricing
               order_id: @id,
               product_id: product_id,
               quantity: h.fetch(:quantity),
-              amount: h.fetch(:amount),
-              discounted_amount: @discounts.inject(Discounts::NoPercentageDiscount.new, :add).apply(h.fetch(:amount))
+              amount: h.fetch(:base_amount),
+              discounted_amount: h.fetch(:amount),
             }
           )
         )
@@ -156,7 +163,7 @@ module Pricing
     private
 
     on PriceItemAdded do |event|
-      @list.add_item(event.data.fetch(:product_id), event.data.fetch(:price))
+      @list.add_item(event.data.fetch(:product_id), event.data.fetch(:base_price), event.data.fetch(:price))
     end
 
     on PriceItemRemoved do |event|
@@ -171,15 +178,18 @@ module Pricing
 
     on PercentageDiscountSet do |event|
       @discounts << Discounts::PercentageDiscount.new(event.data.fetch(:type), event.data.fetch(:amount))
+      @list.apply_discounts(@discounts)
     end
 
     on PercentageDiscountChanged do |event|
       @discounts.delete_if { |discount| discount.type == event.data.fetch(:type) }
       @discounts << Discounts::PercentageDiscount.new(event.data.fetch(:type), event.data.fetch(:amount))
+      @list.apply_discounts(@discounts)
     end
 
     on PercentageDiscountRemoved do |event|
       @discounts.delete_if { |discount| discount.type == event.data.fetch(:type) }
+      @list.apply_discounts(@discounts)
     end
 
     on ProductMadeFreeForOrder do |event|
@@ -210,16 +220,14 @@ module Pricing
     end
 
     class List
-      Item = Data.define(:product_id, :quantity, :price, :catalog_price) do
-        def initialize(product_id:, quantity:, price:, catalog_price: price) = super
-      end
+      Item = Data.define(:product_id, :quantity, :base_price, :price)
 
       def initialize
         @items = []
       end
 
-      def add_item(product_id, price)
-        @items << Item.new(product_id:, price:, quantity: 1)
+      def add_item(product_id, base_price, price)
+        @items << Item.new(product_id:, base_price:, price:, quantity: 1)
       end
 
       def remove_item(product_id, price)
@@ -227,17 +235,29 @@ module Pricing
         @items.delete_at(index_of_item_to_remove)
       end
 
+      def apply_discounts(discounts)
+        @items = @items.map do |item|
+          price = discounts.inject(Discounts::NoPercentageDiscount.new, :add).apply(item.base_price)
+          item.with(price:)
+        end
+      end
+
       def contains_free_products?
         @items.any? { |item| item.price == 0 }
       end
 
       def base_sum
+        @items.sum(&:base_price)
+      end
+
+      def actual_sum
         @items.sum(&:price)
       end
 
       def sub_amounts_total
         @items.each_with_object({}) do |item, memo|
-          memo[item.product_id] ||= { amount: 0, quantity: 0 }
+          memo[item.product_id] ||= { base_amount: 0, amount: 0, quantity: 0 }
+          memo[item.product_id][:base_amount] += item.base_price * item.quantity
           memo[item.product_id][:amount] += item.price * item.quantity
           memo[item.product_id][:quantity] += item.quantity
         end
@@ -256,12 +276,11 @@ module Pricing
         @items << old_item.with(price: old_item.catalog_price)
       end
 
-      def lowest_price(product_id)
+      def lowest_price_item(product_id)
         @items
           .select { |item| item.product_id == product_id }
           .sort_by(&:price)
           .first
-          &.price
       end
 
       def quantities
