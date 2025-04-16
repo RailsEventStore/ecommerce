@@ -1,48 +1,33 @@
+/** @type {import('@eventcatalog/core/bin/eventcatalog.config').Config} */
 export default {
-  title: 'EventCatalog',
-  tagline: 'Discover, Explore and Document your Event Driven Architectures',
-  organizationName: 'Your Company',
-  projectName: 'Event Catalog',
-  editUrl: 'https://github.com/boyney123/eventcatalog-demo/edit/master',
-  trailingSlash: true,
-  primaryCTA: {
-    label: 'Explore Events',
-    href: '/events'
-  },
-  secondaryCTA: {
-    label: 'Getting Started',
-    href:"https://www.eventcatalog.dev/"
-  },
+  title: 'ecommerce EventCatalog',
+  tagline: 'A non-trivial application with DDD, CQRS and Event Sourcing built on Rails and RailsEventStore.',
+  organizationName: 'RailsEventStore ecommerce',
+  homepageLink: 'https://github.com/RailsEventStore/ecommerce',
+  // By default set to false, add true to get urls ending in /
+  trailingSlash: false,
+  // Change to make the base url of the site different, by default https://{website}.com/docs,
+  // changing to /company would be https://{website}.com/company/docs,
+  base: '/',
+  // Customize the logo, add your logo to public/ folder
   logo: {
     alt: 'EventCatalog Logo',
-    // found in the public dir
-    src: 'logo.svg',
+    src: '/logo.png',
+    text: 'EventCatalog'
   },
-  footerLinks: [
-    { label: 'Events', href: '/events' },
-    { label: 'Services', href: '/services' },
-    { label: 'Visualiser', href: '/visualiser' },
-    { label: '3D Node Graph', href: '/overview' },
-    { label: 'GitHub', href: 'https://github.com/boyney123/eventcatalog-demo/edit/master' }
-  ],
-  users: [
-    {
-      id: 'dboyne',
-      name: 'David Boyne',
-      avatarUrl: 'https://pbs.twimg.com/profile_images/1262283153563140096/DYRDqKg6_400x400.png',
-      role: 'Developer',
+  docs: {
+    sidebar: {
+      // TREE_VIEW will render the DOCS as a tree view and map your file system folder structure
+      // LIST_VIEW will render the DOCS that look familiar to API documentation websites
+      type: 'LIST_VIEW'
     },
-    {
-      id: 'mSmith',
-      name: 'Matthew Smith',
-      avatarUrl: 'https://randomuser.me/api/portraits/lego/3.jpg',
-      role: 'Developer',
-    },
-    {
-      id: 'Arkency',
-      name: 'Arkency',
-      avatarUrl: 'https://arkency.com/logo.svg',
-      role: 'Developer',
-    },
-  ],
+  },
+  // Enable RSS feed for your eventcatalog
+  rss: {
+    enabled: true,
+    // number of items to include in the feed per resource (event, service, etc)
+    limit: 20
+  },
+  // required random generated id used by eventcatalog
+  cId: '5aee09af-a4aa-4499-99d0-8af65544da4f'
 }
