@@ -76,7 +76,7 @@ module Pricing
         time_promotion_id: SecureRandom.uuid,
         discount: 50,
         start_time: Time.current - 1,
-        end_time: Time.current + 1,
+        end_time: Time.current + 100,
         label: "Last Minute"
       }
 
