@@ -61,7 +61,10 @@ module Pricing
         data: {
           product_id: product_id,
           order_id: order_id,
+          base_price: 1111,
           price: 1111,
+          base_total_value: 1111,
+          total_value: 1111
           }
         )
     end

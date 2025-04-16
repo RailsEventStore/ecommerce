@@ -41,13 +41,19 @@ module Pricing
   class PriceItemAdded < Infra::Event
     attribute :order_id, Infra::Types::UUID
     attribute :product_id, Infra::Types::UUID
+    attribute :base_price, Infra::Types::Price
     attribute :price, Infra::Types::Price
+    attribute :base_total_value, Infra::Types::Price
+    attribute :total_value, Infra::Types::Price
   end
 
   class PriceItemRemoved < Infra::Event
     attribute :order_id, Infra::Types::UUID
     attribute :product_id, Infra::Types::UUID
+    attribute :base_price, Infra::Types::Price
     attribute :price, Infra::Types::Price
+    attribute :base_total_value, Infra::Types::Price
+    attribute :total_value, Infra::Types::Price
   end
 
   class PercentageDiscountRemoved < Infra::Event
