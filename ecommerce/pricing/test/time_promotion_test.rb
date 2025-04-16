@@ -38,13 +38,12 @@ module Pricing
   end
 
   class DiscountWithTimePromotionTest < Test
-    cover "Pricing*"
+    cover "Pricing::Offer*"
 
     def test_calculates_total_value_with_time_promotion
       order_id = SecureRandom.uuid
       product_1_id = SecureRandom.uuid
       set_price(product_1_id, 20)
-      add_item(order_id, product_1_id)
       stream = stream_name(order_id)
       time_promotion_id = SecureRandom.uuid
       start_time = Time.current - 1
@@ -55,6 +54,16 @@ module Pricing
 
       assert_events_contain(
         stream,
+        PriceItemAdded.new(
+          data: {
+            order_id: order_id,
+            product_id: product_1_id,
+            base_price: 20,
+            price: 10,
+            base_total_value: 20,
+            total_value: 10,
+          }
+        ),
         OrderTotalValueCalculated.new(
           data: {
             order_id: order_id,
@@ -62,7 +71,7 @@ module Pricing
             discounted_amount: 10
           }
         )
-      ) { calculate_total_value(order_id) }
+      ) { add_item(order_id, product_1_id) }
     end
 
     def test_calculates_sub_amounts_with_combined_discounts
