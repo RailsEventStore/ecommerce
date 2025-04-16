@@ -273,7 +273,7 @@ module Pricing
         idx = @items.index { |item| item.product_id == product_id && item.price == 0 }
         return unless idx
         old_item = @items.delete_at(idx)
-        @items << old_item.with(price: old_item.catalog_price)
+        @items << old_item.with(price: old_item.base_price)
       end
 
       def lowest_price_item(product_id)
