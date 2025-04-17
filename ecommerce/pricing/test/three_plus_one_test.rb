@@ -285,5 +285,115 @@ module Pricing
         )
       ) { set_percentage_discount(order_id, 10) }
     end
+
+    def test_given_three_plus_one_promotion_when_five_items_are_added_then_only_one_item_is_free
+      product_id = SecureRandom.uuid
+      set_price(product_id, 20)
+      order_id = SecureRandom.uuid
+      stream = "Pricing::Offer$#{order_id}"
+
+      3.times { add_item(order_id, product_id, promotion: true) }
+
+      assert_events(
+        stream,
+        PriceItemAdded.new(
+          data: {
+            order_id: order_id,
+            product_id: product_id,
+            base_price: 20,
+            price: 0,
+            base_total_value: 80,
+            total_value: 60,
+            applied_promotion: Pricing::Discounts::ThreePlusOneGratis.to_s
+          }
+        ),
+        OrderTotalValueCalculated.new(
+          data: {
+            order_id: order_id,
+            total_amount: 80,
+            discounted_amount: 60
+          }
+        ),
+        PriceItemValueCalculated.new(
+          data: {
+            order_id: order_id,
+            product_id: product_id,
+            quantity: 4,
+            amount: 80,
+            discounted_amount: 60,
+          }
+        )
+      ) { add_item(order_id, product_id, promotion: true) }
+
+      assert_events(
+        stream,
+        PriceItemAdded.new(
+          data: {
+            order_id: order_id,
+            product_id: product_id,
+            base_price: 20,
+            price: 20,
+            base_total_value: 100,
+            total_value: 80,
+          }
+        ),
+        OrderTotalValueCalculated.new(
+          data: {
+            order_id: order_id,
+            total_amount: 100,
+            discounted_amount: 80
+          }
+        ),
+        PriceItemValueCalculated.new(
+          data: {
+            order_id: order_id,
+            product_id: product_id,
+            quantity: 5,
+            amount: 100,
+            discounted_amount: 80,
+          }
+        )
+      ) { add_item(order_id, product_id, promotion: true) }
+    end
+
+    def test_given_three_plus_one_promotion_when_eight_items_are_added_then_two_items_are_free
+      product_id = SecureRandom.uuid
+      set_price(product_id, 20)
+      order_id = SecureRandom.uuid
+      stream = "Pricing::Offer$#{order_id}"
+
+      7.times { add_item(order_id, product_id, promotion: true) }
+
+      assert_events(
+        stream,
+        PriceItemAdded.new(
+          data: {
+            order_id: order_id,
+            product_id: product_id,
+            base_price: 20,
+            price: 0,
+            base_total_value: 160,
+            total_value: 120,
+            applied_promotion: Pricing::Discounts::ThreePlusOneGratis.to_s
+          }
+        ),
+        OrderTotalValueCalculated.new(
+          data: {
+            order_id: order_id,
+            total_amount: 160,
+            discounted_amount: 120
+          }
+        ),
+        PriceItemValueCalculated.new(
+          data: {
+            order_id: order_id,
+            product_id: product_id,
+            quantity: 8,
+            amount: 160,
+            discounted_amount: 120,
+          }
+        )
+      ) { add_item(order_id, product_id, promotion: true) }
+    end
   end
 end
