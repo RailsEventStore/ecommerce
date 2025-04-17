@@ -14,8 +14,10 @@ module Pricing
 
     def add_item(product_id, base_price, promotion = nil)
       if promotion
-        price = promotion.apply(@list.quantities, product_id, base_price)
-      else
+        promotion_applies, price = promotion.apply(@list.quantities, product_id, base_price)
+      end
+
+      unless promotion_applies
         price = @discounts.inject(Discounts::NoPercentageDiscount.new, :add).apply(base_price)
       end
 
@@ -27,8 +29,8 @@ module Pricing
         base_total_value: @list.base_sum + base_price,
         total_value: @list.actual_sum + price,
       }
-
-      data[:applied_promotion] = promotion.class.name if promotion
+      
+      data[:applied_promotion] = promotion.class.name if promotion_applies
 
       apply PriceItemAdded.new(data:)
     end
