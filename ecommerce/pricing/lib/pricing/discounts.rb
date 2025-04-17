@@ -62,11 +62,10 @@ module Pricing
     end
 
     class ThreePlusOneGratis
-      def apply(list)
-        quantities = list.quantities.select { |h| h[:quantity] > 3 }.each do
-          list.set_free(_1[:product_id])
-        end
-        quantities.any?
+      def apply(product_quantities, product_id, base_price)
+        product = product_quantities.find { |product_quantity| product_quantity[:product_id] == product_id }
+        return base_price if product.nil?
+        product[:quantity] == 3 ? 0 : base_price
       end
     end
   end
