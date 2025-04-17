@@ -12,7 +12,7 @@ module Pricing
       @state = :draft
     end
 
-    def add_item(product_id, base_price, promotion = Pricing::Discounts::ThreePlusOneGratis.new)
+    def add_item(product_id, base_price, promotion = nil)
       if promotion
         price = promotion.apply(@list.quantities, product_id, base_price)
       else
