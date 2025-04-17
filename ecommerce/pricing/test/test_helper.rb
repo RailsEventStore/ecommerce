@@ -26,9 +26,9 @@ module Pricing
       run_command(CalculateTotalValue.new(order_id: order_id))
     end
 
-    def add_item(order_id, product_id)
+    def add_item(order_id, product_id, promotion: false)
       run_command(
-        AddPriceItem.new(order_id: order_id, product_id: product_id, price: find_price(product_id))
+        AddPriceItem.new(order_id: order_id, product_id: product_id, price: find_price(product_id), promotion:)
       )
     end
 
