@@ -244,9 +244,14 @@ module Pricing
 
       def apply_discounts(discounts)
         @items = @items.map do |item|
+          next item if is_free?(item)
           price = discounts.inject(Discounts::NoPercentageDiscount.new, :add).apply(item.base_price)
           item.with(price:)
         end
+      end
+
+      def is_free?(item)
+        item.price == 0
       end
 
       def contains_free_products?
