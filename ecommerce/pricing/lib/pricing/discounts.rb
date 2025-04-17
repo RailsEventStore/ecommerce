@@ -60,5 +60,18 @@ module Pricing
       def exists?
       end
     end
+
+    class ThreePlusOneGratis
+      def initialize(list)
+        @list = list
+      end
+
+      def apply(_base_price)
+        quantities = @list.quantities.select { |h| h[:quantity] > 3 }.each do
+          @list.set_free(_1[:product_id])
+        end
+        quantities.any?
+      end
+    end
   end
 end
