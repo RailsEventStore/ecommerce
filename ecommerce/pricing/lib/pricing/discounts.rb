@@ -62,13 +62,9 @@ module Pricing
     end
 
     class ThreePlusOneGratis
-      def initialize(list)
-        @list = list
-      end
-
-      def apply(_base_price)
-        quantities = @list.quantities.select { |h| h[:quantity] > 3 }.each do
-          @list.set_free(_1[:product_id])
+      def apply(list)
+        quantities = list.quantities.select { |h| h[:quantity] > 3 }.each do
+          list.set_free(_1[:product_id])
         end
         quantities.any?
       end
