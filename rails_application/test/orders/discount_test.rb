@@ -86,7 +86,9 @@ module Orders
         data: {
           order_id: order_id,
           type: Pricing::Discounts::GENERAL_DISCOUNT,
-          amount: 30
+          amount: 30,
+          base_total_value: 50,
+          total_value: 35
         },
         metadata: {
           timestamp: Time.current
@@ -96,7 +98,9 @@ module Orders
         data: {
           order_id: order_id,
           type: Pricing::Discounts::GENERAL_DISCOUNT,
-          amount: 20
+          amount: 20,
+          base_total_value: 50,
+          total_value: 40
         },
         metadata: {
           timestamp: 1.minute.ago
