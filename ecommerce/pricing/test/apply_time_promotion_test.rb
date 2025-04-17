@@ -63,10 +63,10 @@ module Pricing
         data: {
           product_id: product_id,
           order_id: order_id,
-          base_price: 1111,
-          price: 1111,
-          base_total_value: 1111,
-          total_value: 1111
+          base_price: 1000,
+          price: 1000,
+          base_total_value: 1000,
+          total_value: 1000
           }
         )
     end
@@ -80,7 +80,9 @@ module Pricing
         data: {
           order_id: order_id,
           type: Pricing::Discounts::TIME_PROMOTION_DISCOUNT,
-          amount: amount
+          amount: amount,
+          base_total_value: 1000,
+          total_value: 500
         }
       )
     end
