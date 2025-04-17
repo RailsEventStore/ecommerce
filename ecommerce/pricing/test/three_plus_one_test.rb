@@ -109,6 +109,7 @@ module Pricing
             price: 0,
             base_total_value: 80,
             total_value: 60,
+            applied_promotion: Pricing::Discounts::ThreePlusOneGratis.to_s
           }
         ),
         OrderTotalValueCalculated.new(
@@ -235,6 +236,7 @@ module Pricing
             price: 0,
             base_total_value: 80,
             total_value: 60,
+            applied_promotion: Pricing::Discounts::ThreePlusOneGratis.to_s
           }
         ),
         OrderTotalValueCalculated.new(
