@@ -36,6 +36,8 @@ module Pricing
     attribute :order_id, Infra::Types::UUID
     attribute :type, Infra::Types::String
     attribute :amount, Infra::Types::PercentageDiscount
+    attribute :base_total_value, Infra::Types::Price
+    attribute :total_value, Infra::Types::Price
   end
 
   class PriceItemAdded < Infra::Event
