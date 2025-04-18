@@ -63,11 +63,11 @@ module Pricing
 
     class ThreePlusOneGratis
       def apply(product_quantities, product_id, base_price)
-        product = product_quantities.find { |product_quantity| product_quantity[:product_id] == product_id }
-        return [false, price: base_price] if product.nil?
-        quantity = product[:quantity] + 1
-        return [false, base_price] if quantity < 4
-        return [true, 0] if quantity % 4 == 0
+        product = product_quantities.find { |product_quantity| product_quantity.fetch(:product_id) == product_id }
+        return [false, base_price] if product.nil?
+        quantity = product.fetch(:quantity) + 1
+        return [false, base_price] if !quantity.%(4).eql?(0)
+        [true, 0]
       end
     end
   end

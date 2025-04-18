@@ -434,5 +434,141 @@ module Pricing
         )
       ) { remove_item(order_id, product_id) }
     end
+
+    def test_given_three_items_added_to_basket_and_no_three_plus_one_promotion_when_fourth_is_added_then_price_is_not_discounted
+      product_id = SecureRandom.uuid
+      set_price(product_id, 20)
+      order_id = SecureRandom.uuid
+      stream = "Pricing::Offer$#{order_id}"
+
+      3.times { add_item(order_id, product_id) }
+
+      assert_events(
+        stream,
+        PriceItemAdded.new(
+          data: {
+            order_id: order_id,
+            product_id: product_id,
+            base_price: 20,
+            price: 20,
+            base_total_value: 80,
+            total_value: 80
+          }
+        ),
+        OrderTotalValueCalculated.new(
+          data: {
+            order_id: order_id,
+            total_amount: 80,
+            discounted_amount: 80
+          }
+        ),
+        PriceItemValueCalculated.new(
+          data: {
+            order_id: order_id,
+            product_id: product_id,
+            quantity: 4,
+            amount: 80,
+            discounted_amount: 80,
+          }),
+      ) { add_item(order_id, product_id) }
+    end
+
+    def test_given_three_items_in_basket_when_different_one_is_added_then_price_is_not_discounted
+      product_id = SecureRandom.uuid
+      different_product_id = SecureRandom.uuid
+      set_price(product_id, 20)
+      set_price(different_product_id, 50)
+      order_id = SecureRandom.uuid
+      stream = "Pricing::Offer$#{order_id}"
+
+      3.times { add_item(order_id, product_id) }
+
+      assert_events(
+        stream,
+        PriceItemAdded.new(
+          data: {
+            order_id: order_id,
+            product_id: different_product_id,
+            base_price: 50,
+            price: 50,
+            base_total_value: 110,
+            total_value: 110
+          }
+        ),
+        OrderTotalValueCalculated.new(
+          data: {
+            order_id: order_id,
+            total_amount: 110,
+            discounted_amount: 110
+          }
+        ),
+        PriceItemValueCalculated.new(
+          data: {
+            order_id: order_id,
+            product_id: product_id,
+            quantity: 3,
+            amount: 60,
+            discounted_amount: 60,
+          }),
+        PriceItemValueCalculated.new(
+          data: {
+            order_id: order_id,
+            product_id: different_product_id,
+            quantity: 1,
+            amount: 50,
+            discounted_amount: 50,
+          })
+      ) { add_item(order_id, different_product_id) }
+    end
+
+    def test_given_two_sets_of_three_items_in_basket_when_added_forth_item_then_price_is_discounted_for_that_item
+      product_id = SecureRandom.uuid
+      different_product_id = SecureRandom.uuid
+      set_price(product_id, 20)
+      set_price(different_product_id, 50)
+      order_id = SecureRandom.uuid
+      stream = "Pricing::Offer$#{order_id}"
+
+      3.times { add_item(order_id, product_id, promotion: true) }
+      3.times { add_item(order_id, different_product_id, promotion: true) }
+
+      assert_events(
+        stream,
+        PriceItemAdded.new(
+          data: {
+            order_id: order_id,
+            product_id: different_product_id,
+            base_price: 50,
+            price: 0,
+            base_total_value: 260,
+            total_value: 210,
+            applied_promotion: Pricing::Discounts::ThreePlusOneGratis.to_s
+          }
+        ),
+        OrderTotalValueCalculated.new(
+          data: {
+            order_id: order_id,
+            total_amount: 260,
+            discounted_amount: 210
+          }
+        ),
+        PriceItemValueCalculated.new(
+          data: {
+            order_id: order_id,
+            product_id: product_id,
+            quantity: 3,
+            amount: 60,
+            discounted_amount: 60,
+          }),
+        PriceItemValueCalculated.new(
+          data: {
+            order_id: order_id,
+            product_id: different_product_id,
+            quantity: 4,
+            amount: 200,
+            discounted_amount: 150,
+          })
+      ) { add_item(order_id, different_product_id, promotion: true) }
+    end
   end
 end
