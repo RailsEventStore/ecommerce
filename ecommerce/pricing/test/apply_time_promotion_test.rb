@@ -5,7 +5,6 @@ module Pricing
     cover "Pricing*"
 
     def test_applies_biggest_time_promotion_discount
-      skip 'This test is skipped because it doesnt fit into new design.'
 
       order_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
@@ -59,7 +58,7 @@ module Pricing
     end
 
     def item_added_to_basket_event(order_id, product_id)
-      Pricing::PriceItemAdded.new(
+      price_item_added = Pricing::PriceItemAdded.new(
         data: {
           product_id: product_id,
           order_id: order_id,
@@ -69,6 +68,8 @@ module Pricing
           total_value: 1000
           }
         )
+      event_store.append(price_item_added, stream_name: stream_name(order_id))
+      price_item_added
     end
 
     def set_time_promotion_discount(order_id, discount)
