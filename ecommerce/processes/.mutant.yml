@@ -16,4 +16,3 @@ matcher:
     - Processes::SyncShipmentFromPricing*
     - Processes::SyncInventoryFromOrdering*
     - Processes::NotifyPaymentsAboutOrderValue*
-    - Processes::DetermineVatRatesOnOrderPlaced*

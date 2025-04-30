@@ -29,6 +29,14 @@ module Processes
       assert_no_command
     end
 
+    def test_stream_name
+      process = DetermineVatRatesOnOrderPlaced.new(event_store, command_bus)
+      given([order_placed]).each do |event|
+        process.call(event)
+      end
+      assert_equal "Processes::DetermineVatRatesOnOrderPlaced$#{order_id}", process.send(:stream_name)
+    end
+
     private
 
     def offer_accepted(order_id, product_id)
