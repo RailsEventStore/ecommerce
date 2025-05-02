@@ -68,7 +68,9 @@ module Pricing
         data: {
           order_id: @id,
           type: discount.type,
-          amount: discount.value
+          amount: discount.value,
+          base_total_value: @list.base_sum,
+          total_value: @list.base_sum - @list.base_sum * (discount.value / 100)
         }
       )
     end

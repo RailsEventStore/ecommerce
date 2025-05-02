@@ -189,7 +189,9 @@ module Pricing
           data: {
             order_id: order_id,
             type: Pricing::Discounts::GENERAL_DISCOUNT,
-            amount: 50
+            amount: 50,
+            base_total_value: 20,
+            total_value: 10
           }
         ),
         OrderTotalValueCalculated.new(
@@ -341,7 +343,9 @@ module Pricing
           data: {
             order_id: order_id,
             type: Pricing::Discounts::GENERAL_DISCOUNT,
-            amount: 100
+            amount: 100,
+            base_total_value: 20,
+            total_value: 0
           }
         ),
         OrderTotalValueCalculated.new(
@@ -377,7 +381,9 @@ module Pricing
           data: {
             order_id: order_id,
             type: Pricing::Discounts::GENERAL_DISCOUNT,
-            amount: 100
+            amount: 100,
+            base_total_value: 20,
+            total_value: 0
           }
         ),
         OrderTotalValueCalculated.new(
