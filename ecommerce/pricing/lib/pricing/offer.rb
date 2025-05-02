@@ -75,10 +75,17 @@ module Pricing
 
     def remove_discount(type)
       raise NotPossibleToRemoveWithoutDiscount unless discount_exists?(type)
+      discount = @discounts.find { |d| d.type == type }
+
+      discounted_value = @list.base_sum * (discount.value / 100)
+
+
       apply PercentageDiscountRemoved.new(
         data: {
           order_id: @id,
-          type: type
+          type: type,
+          base_total_value: @list.base_sum,
+          total_value: @list.actual_sum + discounted_value,
         }
       )
     end
@@ -175,6 +182,7 @@ module Pricing
 
     on PriceItemAdded do |event|
       @list.add_item(event.data.fetch(:product_id), event.data.fetch(:base_price), event.data.fetch(:price))
+      @list.apply_discounts(@discounts)
     end
 
     on PriceItemRemoved do |event|
