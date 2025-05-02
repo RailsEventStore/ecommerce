@@ -12,7 +12,8 @@ matcher:
     - Processes::OrderConfirmation#stream_name
     - Processes::Test*
     - Processes::ReleasePaymentProcess*
-    - Processes::OrderItemInvoicingProcess*
+    - Processes::MoneySplitter*
+    - Processes::OrderItemInvoicingProcess#fetch_id
     - Processes::SyncShipmentFromPricing*
     - Processes::SyncInventoryFromOrdering*
     - Processes::NotifyPaymentsAboutOrderValue*

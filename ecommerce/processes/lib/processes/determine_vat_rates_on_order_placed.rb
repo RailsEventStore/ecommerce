@@ -1,6 +1,5 @@
 module Processes
   class DetermineVatRatesOnOrderPlaced
-    include Infra::Retry
 
     ProcessState = Data.define(:offer_accepted, :order_placed, :order_id, :order_lines) do
       def initialize(offer_accepted: false, order_placed: false, order_id: nil, order_lines: [])
