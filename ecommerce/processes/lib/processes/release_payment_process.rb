@@ -1,65 +1,56 @@
 module Processes
   class ReleasePaymentProcess
-    include Infra::Retry
 
-    def initialize(event_store, command_bus)
-      @event_store = event_store
-      @command_bus = command_bus
+    ProcessState = Data.define(:order, :payment, :order_id) do
+      def initialize(order: :draft, payment: :none, order_id: nil)
+        super(order:, payment:, order_id:)
+      end
+
+      def release?
+        payment.eql?(:authorized) && order.eql?(:expired)
+      end
     end
 
-    def call(event)
-      state = build_state(event)
-      release_payment(state) if state.release?
+    include Infra::ProcessManager.with_state(ProcessState)
+
+    subscribes_to(
+      Payments::PaymentAuthorized,
+      Payments::PaymentReleased,
+      Fulfillment::OrderRegistered,
+      Pricing::OfferExpired,
+      Fulfillment::OrderConfirmed
+    )
+
+    def apply(event)
+      case event
+      when Payments::PaymentAuthorized
+        state.with(payment: :authorized)
+      when Payments::PaymentReleased
+        state.with(payment: :released)
+      when Fulfillment::OrderRegistered
+        state.with(
+          order: :placed,
+          order_id: event.data.fetch(:order_id)
+        )
+      when Pricing::OfferExpired
+        state.with(order: :expired)
+      when Fulfillment::OrderConfirmed
+        state.with(order: :confirmed)
+      end
+    end
+
+    def act
+      release_payment if state.release?
     end
 
     private
 
-    def release_payment(state)
+    def release_payment
       command_bus.call(Payments::ReleasePayment.new(order_id: state.order_id))
     end
 
-    attr_reader :command_bus, :event_store
-
-    def build_state(event)
-      with_retry do
-        stream_name = "PaymentProcess$#{event.data.fetch(:order_id)}"
-        past_events = event_store.read.stream(stream_name).to_a
-        last_stored = past_events.size - 1
-        event_store.link(event.event_id, stream_name: stream_name, expected_version: last_stored)
-        ProcessState.new.tap do |state|
-          past_events.each { |ev| state.call(ev) }
-          state.call(event)
-        end
-      end
-    end
-
-    class ProcessState
-      def initialize
-        @order = :draft
-        @payment = :none
-      end
-
-      attr_reader :order_id
-
-      def call(event)
-        case event
-        when Payments::PaymentAuthorized
-          @payment = :authorized
-        when Payments::PaymentReleased
-          @payment = :released
-        when Fulfillment::OrderRegistered
-          @order = :placed
-          @order_id = event.data.fetch(:order_id)
-        when Pricing::OfferExpired
-          @order = :expired
-        when Fulfillment::OrderConfirmed
-          @order = :confirmed
-        end
-      end
-
-      def release?
-        @payment.eql?(:authorized) && @order.eql?(:expired)
-      end
+    def fetch_id(event)
+      event.data.fetch(:order_id)
     end
   end
 end
