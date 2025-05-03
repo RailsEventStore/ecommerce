@@ -110,7 +110,9 @@ module Pricing
       create_active_time_promotion(25)
       set_time_promotion_discount(order_id, 25)
 
-      assert_raises(NotPossibleToAssignDiscountTwice) { set_time_promotion_discount(order_id, 25) }
+      assert_raises(NotPossibleToAssignDiscountTwice) do
+        set_time_promotion_discount(order_id, 25)
+      end
     end
 
     def test_removes_time_promotion_discount
@@ -135,7 +137,9 @@ module Pricing
     def test_does_not_remove_time_promotion_discount_if_there_is_none
       order_id = SecureRandom.uuid
 
-      assert_raises(NotPossibleToRemoveWithoutDiscount) { remove_time_promotion_discount(order_id) }
+      assert_raises(NotPossibleToRemoveWithoutDiscount) do
+        remove_time_promotion_discount(order_id)
+      end
     end
 
     def test_calculates_total_value_with_discount

@@ -25,9 +25,7 @@ module Pricing
       stream = "Pricing::TimePromotion$#{uid}"
       event = TimePromotionCreated.new(data: data)
 
-      assert_events(stream, event) do
-        run_command.call
-      end
+      assert_events(stream, event) { run_command.call }
     end
 
     private
