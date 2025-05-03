@@ -19,12 +19,10 @@ module Pricing
       set_price(product_2_id, 30)
       order_id = SecureRandom.uuid
       add_item(order_id, product_1_id)
-      add_item(order_id, product_2_id)
-      stream = stream_name(order_id)
       assert_published_within(
         OrderTotalValueCalculated,
         { order_id: order_id, discounted_amount: 50, total_amount: 50 }
-      ) { calculate_total_value(order_id) }
+      ) { add_item(order_id, product_2_id) }
     end
 
     def test_calculates_sub_amounts
@@ -146,12 +144,11 @@ module Pricing
       product_1_id = SecureRandom.uuid
       set_price(product_1_id, 20)
       order_id = SecureRandom.uuid
-      add_item(order_id, product_1_id)
       stream = stream_name(order_id)
       assert_published_within(
         OrderTotalValueCalculated,
         { order_id: order_id, discounted_amount: 20, total_amount: 20 }
-      ) { run_command(CalculateTotalValue.new(order_id: order_id)) }
+      ) { add_item(order_id, product_1_id) }
       assert_events_contain(
         stream,
         PercentageDiscountSet.new(

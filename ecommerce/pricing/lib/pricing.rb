@@ -51,10 +51,6 @@ module Pricing
         SetFuturePriceHandler.new(event_store)
       )
       command_bus.register(
-        CalculateTotalValue,
-        OnCalculateTotalValue.new(event_store)
-      )
-      command_bus.register(
         CalculateSubAmounts,
         OnCalculateTotalValue.new(event_store).public_method(:calculate_sub_amounts)
       )

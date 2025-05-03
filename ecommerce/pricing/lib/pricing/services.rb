@@ -145,14 +145,6 @@ module Pricing
       @repository = Infra::AggregateRootRepository.new(event_store)
     end
 
-    def call(command)
-      with_retry do
-        @repository.with_aggregate(Offer, command.aggregate_id) do |order|
-          order.calculate_total_value
-        end
-      end
-    end
-
     def calculate_sub_amounts(command)
       with_retry do
         @repository.with_aggregate(Offer, command.aggregate_id) do |order|

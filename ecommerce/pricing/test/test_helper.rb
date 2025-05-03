@@ -22,10 +22,6 @@ module Pricing
       run_command(SetFuturePrice.new(product_id: product_id, price: amount, valid_since: valid_since))
     end
 
-    def calculate_total_value(order_id)
-      run_command(CalculateTotalValue.new(order_id: order_id))
-    end
-
     def add_item(order_id, product_id, promotion: false)
       run_command(
         AddPriceItem.new(order_id: order_id, product_id: product_id, price: find_price(product_id), promotion:)
