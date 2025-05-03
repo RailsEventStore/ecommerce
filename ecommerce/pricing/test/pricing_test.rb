@@ -21,15 +21,9 @@ module Pricing
       add_item(order_id, product_1_id)
       add_item(order_id, product_2_id)
       stream = stream_name(order_id)
-      assert_events(
-        stream,
-        OrderTotalValueCalculated.new(
-          data: {
-            order_id: order_id,
-            discounted_amount: 50,
-            total_amount: 50
-          }
-        )
+      assert_published_within(
+        OrderTotalValueCalculated,
+        { order_id: order_id, discounted_amount: 50, total_amount: 50 }
       ) { calculate_total_value(order_id) }
     end
 
@@ -150,15 +144,9 @@ module Pricing
       order_id = SecureRandom.uuid
       add_item(order_id, product_1_id)
       stream = stream_name(order_id)
-      assert_events(
-        stream,
-        OrderTotalValueCalculated.new(
-          data: {
-            order_id: order_id,
-            discounted_amount: 20,
-            total_amount: 20
-          }
-        )
+      assert_published_within(
+        OrderTotalValueCalculated,
+        { order_id: order_id, discounted_amount: 20, total_amount: 20 }
       ) { run_command(CalculateTotalValue.new(order_id: order_id)) }
       assert_events_contain(
         stream,
@@ -170,63 +158,62 @@ module Pricing
             base_total_value: 20,
             total_value: 18
           }
-        ),
-        OrderTotalValueCalculated.new(
-          data: {
-            order_id: order_id,
-            discounted_amount: 18,
-            total_amount: 20
-          }
         )
       ) do
         run_command(
-          Pricing::SetPercentageDiscount.new(order_id: order_id, type: Pricing::Discounts::GENERAL_DISCOUNT, amount: 10)
-        )
-      end
-      assert_events_contain(
-        stream,
-        PercentageDiscountChanged.new(
-          data: {
+          Pricing::SetPercentageDiscount.new(
             order_id: order_id,
             type: Pricing::Discounts::GENERAL_DISCOUNT,
-            amount: 50,
-            base_total_value: 20,
-            total_value: 10
-          }
-        ),
-        OrderTotalValueCalculated.new(
-          data: {
-            order_id: order_id,
-            discounted_amount: 10,
-            total_amount: 20
-          }
-        )
-      ) do
-        run_command(
-          Pricing::ChangePercentageDiscount.new(order_id: order_id, amount: 50)
+            amount: 10
+          )
         )
       end
-      assert_events_contain(
-        stream,
-        PercentageDiscountRemoved.new(
-          data: {
-            order_id: order_id,
-            type: Pricing::Discounts::GENERAL_DISCOUNT,
-            base_total_value: 20,
-            total_value: 20
-          }
-        ),
-        OrderTotalValueCalculated.new(
-          data: {
-            order_id: order_id,
-            discounted_amount: 20,
-            total_amount: 20
-          }
-        )
+      assert_published_within(
+        OrderTotalValueCalculated,
+        { order_id: order_id, discounted_amount: 10, total_amount: 20 }
       ) do
-        run_command(
-          Pricing::RemovePercentageDiscount.new(order_id: order_id, type: Pricing::Discounts::GENERAL_DISCOUNT)
-        )
+        assert_events_contain(
+          stream,
+          PercentageDiscountChanged.new(
+            data: {
+              order_id: order_id,
+              type: Pricing::Discounts::GENERAL_DISCOUNT,
+              amount: 50,
+              base_total_value: 20,
+              total_value: 10
+            }
+          )
+        ) do
+          run_command(
+            Pricing::ChangePercentageDiscount.new(
+              order_id: order_id,
+              amount: 50
+            )
+          )
+        end
+      end
+      assert_published_within(
+        OrderTotalValueCalculated,
+        { order_id: order_id, discounted_amount: 20, total_amount: 20 }
+      ) do
+        assert_events_contain(
+          stream,
+          PercentageDiscountRemoved.new(
+            data: {
+              order_id: order_id,
+              type: Pricing::Discounts::GENERAL_DISCOUNT,
+              base_total_value: 20,
+              total_value: 20
+            }
+          )
+        ) do
+          run_command(
+            Pricing::RemovePercentageDiscount.new(
+              order_id: order_id,
+              type: Pricing::Discounts::GENERAL_DISCOUNT
+            )
+          )
+        end
       end
     end
 
@@ -236,28 +223,26 @@ module Pricing
       order_id = SecureRandom.uuid
       add_item(order_id, product_1_id)
       stream = stream_name(order_id)
-      assert_events_contain(
-        stream,
-        PercentageDiscountSet.new(
-          data: {
-            order_id: order_id,
-            type: Pricing::Discounts::GENERAL_DISCOUNT,
-            amount: 100,
-            base_total_value: 20,
-            total_value: 0
-          }
-        ),
-        OrderTotalValueCalculated.new(
-          data: {
-            order_id: order_id,
-            discounted_amount: 0,
-            total_amount: 20
-          }
-        )
+      assert_published_within(
+        OrderTotalValueCalculated,
+        { order_id: order_id, discounted_amount: 0, total_amount: 20 }
       ) do
-        run_command(
-          Pricing::SetPercentageDiscount.new(order_id: order_id, amount: 100)
-        )
+        assert_events_contain(
+          stream,
+          PercentageDiscountSet.new(
+            data: {
+              order_id: order_id,
+              type: Pricing::Discounts::GENERAL_DISCOUNT,
+              amount: 100,
+              base_total_value: 20,
+              total_value: 0
+            }
+          )
+        ) do
+          run_command(
+            Pricing::SetPercentageDiscount.new(order_id: order_id, amount: 100)
+          )
+        end
       end
     end
 
@@ -316,9 +301,7 @@ module Pricing
       run_command(
         Pricing::SetPercentageDiscount.new(order_id: order_id, amount: 10)
       )
-      run_command(
-        Pricing::RemovePercentageDiscount.new(order_id: order_id)
-      )
+      run_command(Pricing::RemovePercentageDiscount.new(order_id: order_id))
 
       assert_raises NotPossibleToChangeDiscount do
         run_command(
@@ -337,28 +320,29 @@ module Pricing
         Pricing::SetPercentageDiscount.new(order_id: order_id, amount: 10)
       )
 
-      assert_events_contain(
-        stream,
-        PercentageDiscountChanged.new(
-          data: {
-            order_id: order_id,
-            type: Pricing::Discounts::GENERAL_DISCOUNT,
-            amount: 100,
-            base_total_value: 20,
-            total_value: 0
-          }
-        ),
-        OrderTotalValueCalculated.new(
-          data: {
-            order_id: order_id,
-            discounted_amount: 0,
-            total_amount: 20
-          }
-        )
+      assert_published_within(
+        OrderTotalValueCalculated,
+        { order_id: order_id, discounted_amount: 0, total_amount: 20 }
       ) do
-        run_command(
-          Pricing::ChangePercentageDiscount.new(order_id: order_id, amount: 100)
-        )
+        assert_events_contain(
+          stream,
+          PercentageDiscountChanged.new(
+            data: {
+              order_id: order_id,
+              type: Pricing::Discounts::GENERAL_DISCOUNT,
+              amount: 100,
+              base_total_value: 20,
+              total_value: 0
+            }
+          )
+        ) do
+          run_command(
+            Pricing::ChangePercentageDiscount.new(
+              order_id: order_id,
+              amount: 100
+            )
+          )
+        end
       end
     end
 
@@ -375,28 +359,29 @@ module Pricing
         Pricing::ChangePercentageDiscount.new(order_id: order_id, amount: 20)
       )
 
-      assert_events_contain(
-        stream,
-        PercentageDiscountChanged.new(
-          data: {
-            order_id: order_id,
-            type: Pricing::Discounts::GENERAL_DISCOUNT,
-            amount: 100,
-            base_total_value: 20,
-            total_value: 0
-          }
-        ),
-        OrderTotalValueCalculated.new(
-          data: {
-            order_id: order_id,
-            discounted_amount: 0,
-            total_amount: 20
-          }
-        )
+      assert_published_within(
+        OrderTotalValueCalculated,
+        { order_id: order_id, discounted_amount: 0, total_amount: 20 }
       ) do
-        run_command(
-          Pricing::ChangePercentageDiscount.new(order_id: order_id, amount: 100)
-        )
+        assert_events_contain(
+          stream,
+          PercentageDiscountChanged.new(
+            data: {
+              order_id: order_id,
+              type: Pricing::Discounts::GENERAL_DISCOUNT,
+              amount: 100,
+              base_total_value: 20,
+              total_value: 0
+            }
+          )
+        ) do
+          run_command(
+            Pricing::ChangePercentageDiscount.new(
+              order_id: order_id,
+              amount: 100
+            )
+          )
+        end
       end
     end
 
@@ -407,33 +392,42 @@ module Pricing
       add_item(order_id, product_1_id)
       stream = stream_name(order_id)
       run_command(
-        Pricing::SetPercentageDiscount.new(order_id: order_id, type: Discounts::GENERAL_DISCOUNT,amount: 10)
+        Pricing::SetPercentageDiscount.new(
+          order_id: order_id,
+          type: Discounts::GENERAL_DISCOUNT,
+          amount: 10
+        )
       )
       run_command(
-        Pricing::ChangePercentageDiscount.new(order_id: order_id, type: Discounts::GENERAL_DISCOUNT, amount: 20)
+        Pricing::ChangePercentageDiscount.new(
+          order_id: order_id,
+          type: Discounts::GENERAL_DISCOUNT,
+          amount: 20
+        )
       )
 
-      assert_events_contain(
-        stream,
-        PercentageDiscountRemoved.new(
-          data: {
-            order_id: order_id,
-            type: Discounts::GENERAL_DISCOUNT,
-            base_total_value: 20,
-            total_value: 20
-          }
-        ),
-        OrderTotalValueCalculated.new(
-          data: {
-            order_id: order_id,
-            discounted_amount: 20,
-            total_amount: 20
-          }
-        )
+      assert_published_within(
+        OrderTotalValueCalculated,
+        { order_id: order_id, discounted_amount: 20, total_amount: 20 }
       ) do
-        run_command(
-          Pricing::RemovePercentageDiscount.new(order_id: order_id, type: Discounts::GENERAL_DISCOUNT)
-        )
+        assert_events_contain(
+          stream,
+          PercentageDiscountRemoved.new(
+            data: {
+              order_id: order_id,
+              type: Discounts::GENERAL_DISCOUNT,
+              base_total_value: 20,
+              total_value: 20
+            }
+          )
+        ) do
+          run_command(
+            Pricing::RemovePercentageDiscount.new(
+              order_id: order_id,
+              type: Discounts::GENERAL_DISCOUNT
+            )
+          )
+        end
       end
     end
 
@@ -443,20 +437,14 @@ module Pricing
       order_id = SecureRandom.uuid
       add_item(order_id, product_1_id)
       assert_raises NotPossibleToRemoveWithoutDiscount do
-        run_command(
-          Pricing::RemovePercentageDiscount.new(order_id: order_id)
-        )
+        run_command(Pricing::RemovePercentageDiscount.new(order_id: order_id))
       end
       run_command(
         Pricing::SetPercentageDiscount.new(order_id: order_id, amount: 10)
       )
-      run_command(
-        Pricing::RemovePercentageDiscount.new(order_id: order_id)
-      )
+      run_command(Pricing::RemovePercentageDiscount.new(order_id: order_id))
       assert_raises NotPossibleToRemoveWithoutDiscount do
-        run_command(
-          Pricing::RemovePercentageDiscount.new(order_id: order_id)
-        )
+        run_command(Pricing::RemovePercentageDiscount.new(order_id: order_id))
       end
     end
 
