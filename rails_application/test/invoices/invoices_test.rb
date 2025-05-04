@@ -19,7 +19,6 @@ module Invoices
     end
 
     def test_product_name_change_affects_existing_invoices
-      product_id = SecureRandom.uuid
       initial_product_name = "Initial Name"
       updated_product_name = "Updated Name"
 
@@ -42,6 +41,18 @@ module Invoices
       assert_invoice_product_name(new_order_id, updated_product_name)
     end
 
+    def test_invoice_value_with_taxes
+      add_available_vat_rate(20)
+      product_id = register_product("Test Product", 100, 20)
+      customer_id = register_customer("Test Customer")
+
+      order_id = SecureRandom.uuid
+      add_product_to_basket(order_id, product_id)
+      submit_order(customer_id, order_id)
+
+      assert_invoice_value_with_taxes(order_id, 120)
+    end
+
     private
 
     def update_product_name(product_id, new_name)
@@ -57,6 +68,12 @@ module Invoices
       get "/invoices/#{order_id}"
       assert_response :success
       assert_select ".py-2", text: expected_name
+    end
+
+    def assert_invoice_value_with_taxes(order_id, expected_value)
+      get "/invoices/#{order_id}"
+      assert_response :success
+      assert_select "td.font-bold", text: "$#{expected_value}.00"
     end
   end
 end

@@ -34,7 +34,8 @@
     <th class="text-left py-2">VAT rate</th>
     <th class="text-left py-2">Quantity</th>
     <th class="text-left py-2">Unit Price</th>
-    <th class="text-right py-2">Value</th>
+    <th class="text-right py-2">Value (net)</th>
+    <th class="text-right py-2">Value + VAT</th>
   </tr>
   </thead>
 
@@ -46,13 +47,15 @@
       <td class="py-2"><%= item.quantity %></td>
       <td class="py-2"><%= number_to_currency(item.unit_price) %></td>
       <td class="py-2 text-right"><%= number_to_currency(item.value) %></td>
+      <td class="py-2 text-right"><%= number_to_currency(item.value_with_tax) %></td>
     </tr>
   <% end %>
   </tbody>
   <tfoot>
   <tr class="border-t">
     <td class="py-2" colspan="4">Total</td>
-    <td class="py-2 text-right font-bold"><%= number_to_currency(@invoice.total_value) %></td>
+    <td class="py-2 text-right"><%= number_to_currency(@invoice.total_value) %></td>
+    <td class="py-2 text-right font-bold"><%= number_to_currency(@invoice.total_value_with_tax) %></td>
   </tr>
   </tfoot>
 </table>
