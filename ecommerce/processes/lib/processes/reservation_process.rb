@@ -1,13 +1,5 @@
 module Processes
   class ReservationProcess
-    class SomeInventoryNotAvailable < StandardError
-      attr_reader :unavailable_products
-
-      def initialize(unavailable_products)
-        @unavailable_products = unavailable_products
-      end
-    end
-
     ProcessState = Data.define(:order, :order_lines) do
       def initialize(order: nil, order_lines: [])
         super(order:, order_lines: order_lines.freeze)
@@ -53,6 +45,14 @@ module Processes
       in order: :confirmed
         dispatch_stock
       else
+      end
+    end
+
+    class SomeInventoryNotAvailable < StandardError
+      attr_reader :unavailable_products
+
+      def initialize(unavailable_products)
+        @unavailable_products = unavailable_products
       end
     end
 
