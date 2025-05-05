@@ -16,6 +16,8 @@ module Processes
       Fulfillment::OrderConfirmed
     )
 
+    private
+
     def act
       case state
       in order: :accepted
@@ -47,16 +49,6 @@ module Processes
         state.with(order: :confirmed)
       end
     end
-
-    class SomeInventoryNotAvailable < StandardError
-      attr_reader :unavailable_products
-
-      def initialize(unavailable_products)
-        @unavailable_products = unavailable_products
-      end
-    end
-
-    private
 
     def reserve_stock
       unavailable_products = []
@@ -98,6 +90,14 @@ module Processes
 
     def fetch_id(event)
       event.data.fetch(:order_id)
+    end
+
+    class SomeInventoryNotAvailable < StandardError
+      attr_reader :unavailable_products
+
+      def initialize(unavailable_products)
+        @unavailable_products = unavailable_products
+      end
     end
   end
 end

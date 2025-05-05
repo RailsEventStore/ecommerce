@@ -15,6 +15,8 @@ module Processes
       Fulfillment::OrderRegistered
     )
 
+    private
+
     def act
       determine_vat_rates if state.placed?
     end
@@ -39,8 +41,6 @@ module Processes
         state.with(order_placed: true)
       end
     end
-
-    private
 
     def fetch_id(event)
       event.data.fetch(:order_id)

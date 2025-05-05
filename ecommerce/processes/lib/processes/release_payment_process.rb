@@ -21,6 +21,8 @@ module Processes
       Fulfillment::OrderConfirmed
     )
 
+    private
+
     def act
       release_payment if state.release?
     end
@@ -42,8 +44,6 @@ module Processes
         state.with(order: :confirmed)
       end
     end
-
-    private
 
     def release_payment
       command_bus.call(Payments::ReleasePayment.new(order_id: state.order_id))

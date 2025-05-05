@@ -18,6 +18,8 @@ module Processes
       Taxes::VatRateDetermined
     )
 
+    private
+
     def act
       return unless state.can_create_invoice_item?
 
@@ -50,8 +52,6 @@ module Processes
         )
       end
     end
-
-    private
 
     def fetch_id(event)
       "#{event.data.fetch(:order_id)}$#{event.data.fetch(:product_id)}"
