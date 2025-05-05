@@ -3,7 +3,7 @@ module Processes
 
     ProcessState = Data.define(:offer_accepted, :order_placed, :order_id, :order_lines) do
       def initialize(offer_accepted: false, order_placed: false, order_id: nil, order_lines: [])
-        super(offer_accepted:, order_placed:, order_id:, order_lines: order_lines)
+        super
       end
 
       def placed? = offer_accepted && order_placed

@@ -3,7 +3,7 @@ module Processes
 
     ProcessState = Data.define(:order, :payment, :order_id) do
       def initialize(order: :draft, payment: :none, order_id: nil)
-        super(order:, payment:, order_id:)
+        super
       end
 
       def release?

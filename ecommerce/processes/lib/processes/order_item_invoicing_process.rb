@@ -3,7 +3,7 @@ module Processes
 
     ProcessState = Data.define(:order_id, :product_id, :quantity, :vat_rate, :discounted_amount) do
       def initialize(order_id: nil, product_id: nil, quantity: nil, vat_rate: nil, discounted_amount: nil)
-        super(order_id:, product_id:, quantity:, vat_rate:, discounted_amount:)
+        super
       end
 
       def can_create_invoice_item?
