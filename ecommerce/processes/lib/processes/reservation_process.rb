@@ -16,20 +16,6 @@ module Processes
       Fulfillment::OrderConfirmed
     )
 
-    def apply(event)
-      case event
-      when Pricing::OfferAccepted
-        state.with(
-          order: :accepted,
-          order_lines: event.data.fetch(:order_lines).map { |ol| [ol.fetch(:product_id), ol.fetch(:quantity)] }.to_h
-        )
-      when Fulfillment::OrderCancelled
-        state.with(order: :cancelled)
-      when Fulfillment::OrderConfirmed
-        state.with(order: :confirmed)
-      end
-    end
-
     def act
       case state
       in order: :accepted
@@ -45,6 +31,20 @@ module Processes
       in order: :confirmed
         dispatch_stock
       else
+      end
+    end
+
+    def apply(event)
+      case event
+      when Pricing::OfferAccepted
+        state.with(
+          order: :accepted,
+          order_lines: event.data.fetch(:order_lines).map { |ol| [ol.fetch(:product_id), ol.fetch(:quantity)] }.to_h
+        )
+      when Fulfillment::OrderCancelled
+        state.with(order: :cancelled)
+      when Fulfillment::OrderConfirmed
+        state.with(order: :confirmed)
       end
     end
 

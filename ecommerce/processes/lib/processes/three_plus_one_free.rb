@@ -26,6 +26,17 @@ module Processes
 
     private
 
+    def act
+      case [state.free_product, state.eligible_free_product]
+      in [the_same_product, ^the_same_product]
+      in [nil, new_free_product]
+        make_new_product_for_free(new_free_product)
+      in [old_free_product, *]
+        remove_old_free_product(old_free_product)
+      else
+      end
+    end
+
     def apply(event)
       product_id = event.data.fetch(:product_id)
       case event
@@ -41,17 +52,6 @@ module Processes
         state.with(free_product: product_id)
       when Pricing::FreeProductRemovedFromOrder
         state.with(free_product: nil)
-      end
-    end
-
-    def act
-      case [state.free_product, state.eligible_free_product]
-      in [the_same_product, ^the_same_product]
-      in [nil, new_free_product]
-        make_new_product_for_free(new_free_product)
-      in [old_free_product, *]
-        remove_old_free_product(old_free_product)
-      else
       end
     end
 

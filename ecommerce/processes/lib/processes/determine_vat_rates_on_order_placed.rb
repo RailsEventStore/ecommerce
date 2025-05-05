@@ -15,6 +15,18 @@ module Processes
       Fulfillment::OrderRegistered
     )
 
+    def act
+      determine_vat_rates if state.placed?
+    end
+
+    def determine_vat_rates
+      state.order_lines.each do |line|
+        product_id = line.fetch(:product_id)
+        command = Taxes::DetermineVatRate.new(order_id: state.order_id, product_id: product_id)
+        command_bus.call(command)
+      end
+    end
+
     def apply(event)
       case event
       when Pricing::OfferAccepted
@@ -25,18 +37,6 @@ module Processes
         )
       when Fulfillment::OrderRegistered
         state.with(order_placed: true)
-      end
-    end
-
-    def act
-      determine_vat_rates if state.placed?
-    end
-
-    def determine_vat_rates
-      state.order_lines.each do |line|
-        product_id = line.fetch(:product_id)
-        command = Taxes::DetermineVatRate.new(order_id: state.order_id, product_id: product_id)
-        command_bus.call(command)
       end
     end
 

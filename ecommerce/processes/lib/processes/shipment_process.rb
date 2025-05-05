@@ -14,17 +14,6 @@ module Processes
 
     private
 
-    def apply(event)
-      case event
-      when Shipping::ShippingAddressAddedToShipment
-        state.with(shipment: :address_set)
-      when Fulfillment::OrderRegistered
-        state.with(order: :placed)
-      when Fulfillment::OrderConfirmed
-        state.with(order: :confirmed)
-      end
-    end
-
     def act
       case state
       in { shipment: :address_set, order: :placed }
@@ -33,6 +22,17 @@ module Processes
         submit_shipment
         authorize_shipment
       else
+      end
+    end
+
+    def apply(event)
+      case event
+      when Shipping::ShippingAddressAddedToShipment
+        state.with(shipment: :address_set)
+      when Fulfillment::OrderRegistered
+        state.with(order: :placed)
+      when Fulfillment::OrderConfirmed
+        state.with(order: :confirmed)
       end
     end
 

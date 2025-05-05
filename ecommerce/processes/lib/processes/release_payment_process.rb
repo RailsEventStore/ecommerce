@@ -21,6 +21,10 @@ module Processes
       Fulfillment::OrderConfirmed
     )
 
+    def act
+      release_payment if state.release?
+    end
+
     def apply(event)
       case event
       when Payments::PaymentAuthorized
@@ -37,10 +41,6 @@ module Processes
       when Fulfillment::OrderConfirmed
         state.with(order: :confirmed)
       end
-    end
-
-    def act
-      release_payment if state.release?
     end
 
     private

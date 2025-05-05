@@ -18,6 +18,23 @@ module Processes
       Taxes::VatRateDetermined
     )
 
+    def act
+      return unless state.can_create_invoice_item?
+
+      unit_prices = MoneySplitter.new(state.discounted_amount, state.quantity).call
+      unit_prices.tally.each do |unit_price, quantity|
+        command_bus.call(
+          Invoicing::AddInvoiceItem.new(
+            invoice_id: state.order_id,
+            product_id: state.product_id,
+            vat_rate: state.vat_rate,
+            quantity: quantity,
+            unit_price: unit_price
+          )
+        )
+      end
+    end
+
     def apply(event)
       case event
       when Pricing::PriceItemValueCalculated
@@ -31,21 +48,6 @@ module Processes
         state.with(
           vat_rate: event.data.fetch(:vat_rate)
         )
-      end
-    end
-
-    def act
-      return unless state.can_create_invoice_item?
-
-      unit_prices = MoneySplitter.new(state.discounted_amount, state.quantity).call
-      unit_prices.tally.each do |unit_price, quantity|
-        command_bus.call(Invoicing::AddInvoiceItem.new(
-          invoice_id: state.order_id,
-          product_id: state.product_id,
-          vat_rate: state.vat_rate,
-          quantity: quantity,
-          unit_price: unit_price
-        ))
       end
     end
 
@@ -70,12 +72,14 @@ module Processes
           distributed_amounts << 0
           next
         end
+
         p = weight / total_weight
         distributed_amount = (p * @amount).round(2)
         distributed_amounts << distributed_amount
         total_weight -= weight
         @amount -= distributed_amount
       end
+
       distributed_amounts
     end
   end
