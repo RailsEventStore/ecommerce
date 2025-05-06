@@ -1,17 +1,6 @@
 module Processes
   class ReleasePaymentProcess
-
-    ProcessState = Data.define(:order, :payment, :order_id) do
-      def initialize(order: :draft, payment: :none, order_id: nil)
-        super
-      end
-
-      def release?
-        payment.eql?(:authorized) && order.eql?(:expired)
-      end
-    end
-
-    include Infra::ProcessManager.with_state(ProcessState)
+    include Infra::ProcessManager.with_state { ProcessState }
 
     subscribes_to(
       Payments::PaymentAuthorized,
@@ -51,6 +40,16 @@ module Processes
 
     def fetch_id(event)
       event.data.fetch(:order_id)
+    end
+
+    ProcessState = Data.define(:order, :payment, :order_id) do
+      def initialize(order: :draft, payment: :none, order_id: nil)
+        super
+      end
+
+      def release?
+        payment.eql?(:authorized) && order.eql?(:expired)
+      end
     end
   end
 end

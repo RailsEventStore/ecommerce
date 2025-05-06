@@ -1,10 +1,6 @@
 module Processes
   class ShipmentProcess
-    ProcessState = Data.define(:order, :shipment) do
-      def initialize(order: nil, shipment: nil) = super
-    end
-
-    include Infra::ProcessManager.with_state(ProcessState)
+    include Infra::ProcessManager.with_state { ProcessState }
 
     subscribes_to(
       Shipping::ShippingAddressAddedToShipment,
@@ -46,6 +42,10 @@ module Processes
 
     def fetch_id(event)
       event.data.fetch(:order_id)
+    end
+
+    ProcessState = Data.define(:order, :shipment) do
+      def initialize(order: nil, shipment: nil) = super
     end
   end
 end
