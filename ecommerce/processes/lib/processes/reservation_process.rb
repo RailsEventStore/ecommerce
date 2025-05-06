@@ -1,14 +1,6 @@
 module Processes
   class ReservationProcess
-    ProcessState = Data.define(:order, :order_lines) do
-      def initialize(order: nil, order_lines: [])
-        super(order:, order_lines: order_lines.freeze)
-      end
-
-      def reserved_product_ids = order_lines.keys
-    end
-
-    include Infra::ProcessManager.with_state(ProcessState)
+    include Infra::ProcessManager.with_state { ProcessState }
 
     subscribes_to(
       Pricing::OfferAccepted,
@@ -90,6 +82,14 @@ module Processes
 
     def fetch_id(event)
       event.data.fetch(:order_id)
+    end
+
+    ProcessState = Data.define(:order, :order_lines) do
+      def initialize(order: nil, order_lines: [])
+        super(order:, order_lines: order_lines.freeze)
+      end
+
+      def reserved_product_ids = order_lines.keys
     end
 
     class SomeInventoryNotAvailable < StandardError

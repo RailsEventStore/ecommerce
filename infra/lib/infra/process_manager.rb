@@ -43,18 +43,31 @@ module Infra
       attr_reader :subscribed_events
     end
 
-    def self.with_state(state_class)
+    def self.with_state(&state_class_block)
+      unless block_given?
+        raise ArgumentError, "A block returning the state class is required."
+      end
 
       Module.new do
-        define_method :initial_state do
+        @state_definition_block = state_class_block
+
+        define_method(:initial_state) do
+          block = self.class.instance_variable_get(:@state_definition_block)
+          raise "State definition block not found on #{self.class}" unless block
+
+          state_class = block.call
+          raise "State definition block did not return a Class" unless state_class.is_a?(Class)
+
           state_class.new
         end
 
-        def state
+        define_method(:state) do
           @state ||= initial_state
         end
 
         def self.included(host_class)
+          host_class.instance_variable_set(:@state_definition_block, @state_definition_block)
+
           host_class.include(ProcessMethods)
           host_class.include(Infra::Retry)
           host_class.extend(Subscriptions)

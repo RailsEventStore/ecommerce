@@ -1,17 +1,6 @@
 module Processes
   class OrderItemInvoicingProcess
-
-    ProcessState = Data.define(:order_id, :product_id, :quantity, :vat_rate, :discounted_amount) do
-      def initialize(order_id: nil, product_id: nil, quantity: nil, vat_rate: nil, discounted_amount: nil)
-        super
-      end
-
-      def can_create_invoice_item?
-        order_id && product_id && quantity && vat_rate && discounted_amount
-      end
-    end
-
-    include Infra::ProcessManager.with_state(ProcessState)
+    include Infra::ProcessManager.with_state { ProcessState }
 
     subscribes_to(
       Pricing::PriceItemValueCalculated,
@@ -55,6 +44,16 @@ module Processes
 
     def fetch_id(event)
       "#{event.data.fetch(:order_id)}$#{event.data.fetch(:product_id)}"
+    end
+
+    ProcessState = Data.define(:order_id, :product_id, :quantity, :vat_rate, :discounted_amount) do
+      def initialize(order_id: nil, product_id: nil, quantity: nil, vat_rate: nil, discounted_amount: nil)
+        super
+      end
+
+      def can_create_invoice_item?
+        order_id && product_id && quantity && vat_rate && discounted_amount
+      end
     end
   end
 
