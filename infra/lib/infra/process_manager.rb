@@ -43,21 +43,21 @@ module Infra
       attr_reader :subscribed_events
     end
 
-    def self.with_state(state_class)
+    def self.included(host_class)
+      host_class.include(ProcessMethods)
+      host_class.include(Infra::Retry)
+      host_class.extend(Subscriptions)
+      host_class.extend(ClassMethods)
+    end
 
-      Module.new do
-        define_method :initial_state do
+    module ClassMethods
+      def process_state(state_class)
+        define_method(:initial_state) do
           state_class.new
         end
 
-        def state
+        define_method(:state) do
           @state ||= initial_state
-        end
-
-        def self.included(host_class)
-          host_class.include(ProcessMethods)
-          host_class.include(Infra::Retry)
-          host_class.extend(Subscriptions)
         end
       end
     end
