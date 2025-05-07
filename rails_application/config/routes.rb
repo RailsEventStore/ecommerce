@@ -59,6 +59,7 @@ Rails.application.routes.draw do
   get :logout, to: "client/clients#logout"
   get "clients", to: "client/clients#index"
   get "client/products", to: "client/products#index"
+  get "client/inbox", to: "client/inbox#index"
 
   mount RailsEventStore::Browser => "/res"
 end
