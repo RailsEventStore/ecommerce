@@ -1,13 +1,5 @@
 module Processes
   class ReservationProcess
-    class SomeInventoryNotAvailable < StandardError
-      attr_reader :unavailable_products
-
-      def initialize(unavailable_products)
-        @unavailable_products = unavailable_products
-      end
-    end
-
     ProcessState = Data.define(:order, :order_lines) do
       def initialize(order: nil, order_lines: [])
         super(order:, order_lines: order_lines.freeze)
@@ -24,19 +16,7 @@ module Processes
       Fulfillment::OrderConfirmed
     )
 
-    def apply(event)
-      case event
-      when Pricing::OfferAccepted
-        state.with(
-          order: :accepted,
-          order_lines: event.data.fetch(:order_lines).map { |ol| [ol.fetch(:product_id), ol.fetch(:quantity)] }.to_h
-        )
-      when Fulfillment::OrderCancelled
-        state.with(order: :cancelled)
-      when Fulfillment::OrderConfirmed
-        state.with(order: :confirmed)
-      end
-    end
+    private
 
     def act
       case state
@@ -56,7 +36,19 @@ module Processes
       end
     end
 
-    private
+    def apply(event)
+      case event
+      when Pricing::OfferAccepted
+        state.with(
+          order: :accepted,
+          order_lines: event.data.fetch(:order_lines).map { |ol| [ol.fetch(:product_id), ol.fetch(:quantity)] }.to_h
+        )
+      when Fulfillment::OrderCancelled
+        state.with(order: :cancelled)
+      when Fulfillment::OrderConfirmed
+        state.with(order: :confirmed)
+      end
+    end
 
     def reserve_stock
       unavailable_products = []
@@ -98,6 +90,14 @@ module Processes
 
     def fetch_id(event)
       event.data.fetch(:order_id)
+    end
+
+    class SomeInventoryNotAvailable < StandardError
+      attr_reader :unavailable_products
+
+      def initialize(unavailable_products)
+        @unavailable_products = unavailable_products
+      end
     end
   end
 end

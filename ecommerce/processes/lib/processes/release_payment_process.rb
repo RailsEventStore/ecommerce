@@ -3,7 +3,7 @@ module Processes
 
     ProcessState = Data.define(:order, :payment, :order_id) do
       def initialize(order: :draft, payment: :none, order_id: nil)
-        super(order:, payment:, order_id:)
+        super
       end
 
       def release?
@@ -20,6 +20,12 @@ module Processes
       Pricing::OfferExpired,
       Fulfillment::OrderConfirmed
     )
+
+    private
+
+    def act
+      release_payment if state.release?
+    end
 
     def apply(event)
       case event
@@ -38,12 +44,6 @@ module Processes
         state.with(order: :confirmed)
       end
     end
-
-    def act
-      release_payment if state.release?
-    end
-
-    private
 
     def release_payment
       command_bus.call(Payments::ReleasePayment.new(order_id: state.order_id))
