@@ -4,8 +4,7 @@
     <div class="xl:grid xl:grid-cols-6 xl:gap-8">
       <div class="space-y-8 xl:col-span-3">
         <p class="text-gray-500 text-base">
-          Ecommerce application with CQRS and Event Sourcing built on Rails
-          and <%= link_to "Rails Event Store", "https://railseventstore.org", class: "bg-link font-semibold text-gray-800" %>.
+          MyCommerce.md — All rights reserved.
         </p>
       </div>
       <div class="mt-12 grid grid-cols-1 gap-8 xl:mt-0 xl:col-span-3">
@@ -17,7 +16,6 @@
             <ul role="list" class="mt-4 space-y-4">
               <%
                 { "Errors"       => "https://app.honeybadger.io/project/9d53P8W1ML",
-                  "Analytics"    => "https://plausible.io/ecommerce.arkademy.dev",
                   "Events"       => ruby_event_store_browser_app_path,
                   "Performance"  => "https://oss.skylight.io/app/applications/pTvtzqO3cOxV/recent/6h/endpoints"
                 }.each do |label, url|
@@ -32,33 +30,11 @@
             <h3 class="text-sm font-semibold text-gray-400 tracking-wider uppercase">
               Improve
             </h3>
-            <ul role="list" class="mt-4 space-y-4">
-              <%
-                { "Issues"      => "https://github.com/RailsEventStore/ecommerce/issues",
-                  "Source Code" => "https://github.com/RailsEventStore/ecommerce",
-                }.each do |label, url|
-              %>
-              <li>
-                <%= link_to label, url, class: "text-base text-gray-500 hover:text-gray-900" %>
-              </li>
-              <% end %>
-            </ul>
           </div>
           <div class="mt-12 md:mt-0">
             <h3 class="text-sm font-semibold text-gray-400 tracking-wider uppercase">
               Learn
             </h3>
-            <ul role="list" class="mt-4 space-y-4">
-              <%
-                { "DDD as Low-Code" => "https://www.youtube.com/watch?v=yohu6qx8-dU",
-                  "arkademy.dev"    => "https://arkademy.dev",
-                }.each do |label, url|
-              %>
-              <li>
-                <%= link_to label, url, class: "text-base text-gray-500 hover:text-gray-900" %>
-              </li>
-              <% end %>
-            </ul>
           </div>
         </div>
       </div>

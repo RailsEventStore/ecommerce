@@ -1,16 +1,39 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>PricingCatalogRailsApp</title>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <%= csrf_meta_tags %>
-    <%= csp_meta_tag %>
+<head>
+  <title>MyCommerce.md</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
 
-    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
-    <%= javascript_importmap_tags %>
-  </head>
+  <%= stylesheet_link_tag "application", media: "all", "data-turbo-track": "reload" %>
+  <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
+</head>
 
-  <body>
-    <%= yield %>
-  </body>
+<body class="bg-gray-100 text-gray-800 font-sans">
+<nav class="bg-blue-600 text-white p-4 shadow-md">
+  <div class="container mx-auto flex justify-between items-center">
+    <h1 class="text-xl font-bold">🛍 MyCommerce</h1>
+    <ul class="flex gap-4">
+      <li><%= link_to "Главная", root_path, class: "hover:underline" %></li>
+      <li><%= link_to "Товары", products_path, class: "hover:underline" %></li>
+      <li><%= link_to "Заказы", orders_path, class: "hover:underline" %></li>
+    </ul>
+  </div>
+</nav>
+
+<main class="container mx-auto mt-6">
+  <% if notice %>
+    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 mb-4">
+      <%= notice %>
+    </div>
+  <% end %>
+
+  <%= yield %>
+</main>
+
+<footer class="bg-blue-600 text-white text-center py-4 mt-10">
+  © <%= Time.current.year %> MyCommerce — Все права защищены
+</footer>
+</body>
 </html>

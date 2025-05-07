@@ -3,9 +3,10 @@
     <div class="flex items-center justify-between h-16">
       <div class="flex items-center">
         <div class="flex-shrink-0">
-          <h1 class="text-gray-600 uppercase tracking-tight font-bold">
-            ecommerce
-          </h1>
+          <%= link_to root_path, class: "flex items-center space-x-2 text-gray-300 hover:text-white uppercase tracking-tight font-bold" do %>
+            <%= image_tag("logo_new.png", alt: "Logo", class: "h-8 w-8") %>
+            <span>Mycommerce.md</span>
+          <% end %>
         </div>
         <div class="hidden md:block">
           <div class="ml-10 flex items-baseline space-x-4">

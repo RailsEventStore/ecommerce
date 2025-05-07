@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+require_relative '../config/environment'
 
 class GenerateFiles
   EVENT_TO_HANDLERS_FILE = "lib/event_to_handlers.rb"

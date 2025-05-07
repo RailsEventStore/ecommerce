@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="RUBY_MODULE" version="4">
+  <component name="ModuleRunConfigurationManager">
+    <shared />
+  </component>
+  <component name="NewModuleRootManager">
+    <content url="file://$MODULE_DIR$/../../ecommerce/pricing" />
+    <orderEntry type="jdk" jdkName="RVM: ruby-3.1.4 [global]" jdkType="RUBY_SDK" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" scope="PROVIDED" name="activesupport (v7.1.2, RVM: ruby-3.1.4 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="aggregate_root (v2.16.0, RVM: ruby-3.1.4 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="arkency-command_bus (v0.4.1, RVM: ruby-3.1.4 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="ast (v2.4.2, RVM: ruby-3.1.4 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="base64 (v0.2.0, RVM: ruby-3.1.4 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="bigdecimal (v3.1.4, RVM: ruby-3.1.4 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="bundler (v2.6.6, RVM: ruby-3.1.4 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="concurrent-ruby (v1.2.2, RVM: ruby-3.1.4 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="connection_pool (v2.4.1, RVM: ruby-3.1.4 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="diff-lcs (v1.5.1, RVM: ruby-3.1.4 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="drb (v2.2.0, RVM: ruby-3.1.4 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="dry-core (v1.0.1, RVM: ruby-3.1.4 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="dry-inflector (v1.0.0, RVM: ruby-3.1.4 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="dry-logic (v1.5.0, RVM: ruby-3.1.4 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="dry-struct (v1.6.0, RVM: ruby-3.1.4 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="dry-types (v1.7.1, RVM: ruby-3.1.4 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="i18n (v1.14.1, RVM: ruby-3.1.4 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="ice_nine (v0.11.2, RVM: ruby-3.1.4 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="minitest (v5.25.0, RVM: ruby-3.1.4 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="mutant (v0.12.4, RVM: ruby-3.1.4 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="mutant-minitest (v0.12.4, RVM: ruby-3.1.4 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="mutex_m (v0.2.0, RVM: ruby-3.1.4 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="parser (v3.3.4.2, RVM: ruby-3.1.4 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="racc (v1.8.1, RVM: ruby-3.1.4 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="rake (v13.1.0, RVM: ruby-3.1.4 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="regexp_parser (v2.9.2, RVM: ruby-3.1.4 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="ruby2_keywords (v0.0.5, RVM: ruby-3.1.4 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="ruby_event_store (v2.16.0, RVM: ruby-3.1.4 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="ruby_event_store-transformations (v0.1.0, RVM: ruby-3.1.4 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="sorbet-runtime (v0.5.11525, RVM: ruby-3.1.4 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="tzinfo (v2.0.6, RVM: ruby-3.1.4 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="unparser (v0.6.15, RVM: ruby-3.1.4 [global]) [gem]" level="application" />
+    <orderEntry type="library" scope="PROVIDED" name="zeitwerk (v2.6.12, RVM: ruby-3.1.4 [global]) [gem]" level="application" />
+  </component>
+  <component name="RubyModuleProperties">
+    <option name="autoCreated" value="true" />
+  </component>
+</module>

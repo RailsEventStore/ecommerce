@@ -1,36 +1,29 @@
 # Rails application
+# MyCommerce.md — E-commerce Backend Platform на Ruby on Rails
 
-[![Build Status](https://github.com/RailsEventStore/cqrs-es-sample-with-res/workflows/rails_application/badge.svg)](https://github.com/RailsEventStore/cqrs-es-sample-with-res/actions/workflows/rails_application.yml)
+MyCommerce.md — это модульная и масштабируемая e-commerce платформа, построенная на Ruby on Rails с использованием архитектурных подходов CQRS и Event Sourcing.
 
-## Setup
+Проект задуман как надёжная основа для построения интернет-магазинов и B2B решений с высокой гибкостью, расширяемостью и интеграцией с современными технологиями.
 
-### Postgresql
+## Особенности
 
-#### Docker
+- Поддержка заказов, продуктов, доставок, клиентов и купонов
+- Чистая архитектура: CQRS (Command Query Responsibility Segregation)
+- Event Sourcing с использованием Rails Event Store
+- Авторизация пользователей
+- RSpec + тесты на бизнес-логику
+- Кастомизированный интерфейс и бренд MyCommerce.md
+- Добавлен логотип и навигация
+- Инициализация данных через `db/seeds.rb`
 
-If you would like to use Docker image with PostgreSQL provided by us,
-run `docker-compose up -d`. You're done for this step.
+## Установка и запуск
 
-#### Installed in the system
+### Зависимости
 
-If you have PostgreSQL installed directly in your system and prefer
-to use it, create
-
-- `.env.development.local`
-  containing:
-
-  ```
-  DATABASE_URL=postgresql:///ecommerce_development
-  ```
-
-* `.env.test.local` containing:
-
-  ```
-  DATABASE_URL=postgresql:///ecommerce_test
-  ```
-
-It should would work for most of the cases. If you have more sophisticated setup,
-you need to update `DATABASE_URL`.
+- Ruby 3.3.7
+- PostgreSQL
+- Redis
+- Node.js & Yarn (для frontend-части)
 
 ### Kickstart
 
@@ -41,17 +34,6 @@ you need to update `DATABASE_URL`.
 
 - run `make test` to run unit and integration tests
 - run `make mutate` to perform mutation coverage
-
-## Big Picture
-
-In event-driven architectures, navigation between events and handlers can be 
-challenging, so we've created a script that generates two classes:
-
-- `EventToHandlers`
-- `HandlerToEvents`
-
-They contain mappings between events and handlers, so it should help you with 
-navigation during the development.
 
 The script is called `big_picture.rb`, and you can execute it like this:
 
