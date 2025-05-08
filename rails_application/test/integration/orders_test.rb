@@ -267,6 +267,45 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     assert_select("td", "50.0%")
   end
 
+  def test_unable_to_pay_for_not_submitted_order
+    shopify_id = register_customer("Shopify")
+
+    order_id = SecureRandom.uuid
+    another_order_id = SecureRandom.uuid
+
+    async_remote_id = register_product("Async Remote", 39, 10)
+    fearless_id = register_product("Fearless Refactoring", 49, 10)
+
+    post "/orders",
+         params: {
+           "authenticity_token" => "[FILTERED]",
+           "order_id" => another_order_id,
+           "customer_id" => shopify_id,
+           "commit" => "Submit order"
+         }
+
+    get "/"
+    get "/orders/new"
+    follow_redirect!
+
+    assert_remove_buttons_not_visible(async_remote_id, fearless_id)
+
+    post "/orders/#{order_id}/add_item?product_id=#{async_remote_id}"
+    post "/orders/#{order_id}/add_item?product_id=#{fearless_id}"
+    post "/orders/#{order_id}/add_item?product_id=#{fearless_id}"
+    get "/orders/#{order_id}/edit"
+    assert_remove_buttons_visible(async_remote_id, fearless_id, order_id)
+
+    apply_discount_10_percent(order_id)
+
+    post "/orders/#{order_id}/pay"
+
+    follow_redirect!
+    assert_select "#alert", "Order is not in a valid state for payment"
+    assert_select("td", text: "Not submitted")
+  end
+
+
   private
 
   def assert_remove_buttons_visible(async_remote_id, fearless_id, order_id)
