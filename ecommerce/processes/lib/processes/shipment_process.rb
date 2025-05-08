@@ -1,6 +1,8 @@
 module Processes
   class ShipmentProcess
-    include Infra::ProcessManager.with_state { ProcessState }
+    include Infra::ProcessManager.with_state(
+      state_repository_class: ShipmentProcessStateRepository
+    )
 
     subscribes_to(
       Shipping::ShippingAddressAddedToShipment,
@@ -21,17 +23,6 @@ module Processes
       end
     end
 
-    def apply(event)
-      case event
-      when Shipping::ShippingAddressAddedToShipment
-        state.with(shipment: :address_set)
-      when Fulfillment::OrderRegistered
-        state.with(order: :placed)
-      when Fulfillment::OrderConfirmed
-        state.with(order: :confirmed)
-      end
-    end
-
     def submit_shipment
       command_bus.call(Shipping::SubmitShipment.new(order_id: id))
     end
@@ -42,10 +33,6 @@ module Processes
 
     def fetch_id(event)
       event.data.fetch(:order_id)
-    end
-
-    ProcessState = Data.define(:order, :shipment) do
-      def initialize(order: nil, shipment: nil) = super
     end
   end
 end

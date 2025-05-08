@@ -1,6 +1,6 @@
 module Processes
   class ReservationProcess
-    include Infra::ProcessManager.with_state { ProcessState }
+    include Infra::ProcessManager.with_state(state_repository_class: ReservationProcessStateRepository)
 
     subscribes_to(
       Pricing::OfferAccepted,
@@ -25,20 +25,6 @@ module Processes
       in order: :confirmed
         dispatch_stock
       else
-      end
-    end
-
-    def apply(event)
-      case event
-      when Pricing::OfferAccepted
-        state.with(
-          order: :accepted,
-          order_lines: event.data.fetch(:order_lines).map { |ol| [ol.fetch(:product_id), ol.fetch(:quantity)] }.to_h
-        )
-      when Fulfillment::OrderCancelled
-        state.with(order: :cancelled)
-      when Fulfillment::OrderConfirmed
-        state.with(order: :confirmed)
       end
     end
 
@@ -82,14 +68,6 @@ module Processes
 
     def fetch_id(event)
       event.data.fetch(:order_id)
-    end
-
-    ProcessState = Data.define(:order, :order_lines) do
-      def initialize(order: nil, order_lines: [])
-        super(order:, order_lines: order_lines.freeze)
-      end
-
-      def reserved_product_ids = order_lines.keys
     end
 
     class SomeInventoryNotAvailable < StandardError

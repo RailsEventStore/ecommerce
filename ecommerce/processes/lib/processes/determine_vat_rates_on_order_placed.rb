@@ -1,6 +1,6 @@
 module Processes
   class DetermineVatRatesOnOrderPlaced
-    include Infra::ProcessManager.with_state { ProcessState }
+    include Infra::ProcessManager.with_state(state_repository_class: DetermineVatRatesOnOrderPlacedStateRepository)
 
     subscribes_to(
       Pricing::OfferAccepted,
@@ -36,14 +36,6 @@ module Processes
 
     def fetch_id(event)
       event.data.fetch(:order_id)
-    end
-
-    ProcessState = Data.define(:offer_accepted, :order_placed, :order_id, :order_lines) do
-      def initialize(offer_accepted: false, order_placed: false, order_id: nil, order_lines: [])
-        super
-      end
-
-      def placed? = offer_accepted && order_placed
     end
   end
 end

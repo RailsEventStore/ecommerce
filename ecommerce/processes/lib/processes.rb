@@ -9,13 +9,19 @@ require_relative "../../taxes/lib/taxes"
 require_relative "../../invoicing/lib/invoicing"
 require_relative "../../fulfillment/lib/fulfillment"
 require_relative 'processes/confirm_order_on_payment_captured'
+require_relative 'processes/release_payment_process_state_repository'
 require_relative 'processes/release_payment_process'
+require_relative 'processes/shipment_process_state_repository'
 require_relative 'processes/shipment_process'
+require_relative 'processes/determine_vat_rates_on_order_placed_state_repository'
 require_relative 'processes/determine_vat_rates_on_order_placed'
+require_relative 'processes/order_item_invoicing_process_state_repository'
 require_relative 'processes/order_item_invoicing_process'
 require_relative 'processes/notify_payments_about_order_value'
 require_relative 'processes/sync_shipment_from_pricing'
+require_relative 'processes/three_plus_one_free_state_repository'
 require_relative 'processes/three_plus_one_free'
+require_relative 'processes/reservation_process_state_repository'
 require_relative 'processes/reservation_process'
 
 module Processes
