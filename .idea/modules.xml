@@ -2,23 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/authentication.iml" filepath="$PROJECT_DIR$/.idea/modules/authentication.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/crm.iml" filepath="$PROJECT_DIR$/.idea/modules/crm.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/ecommerce.iml" filepath="$PROJECT_DIR$/.idea/ecommerce.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/fulfillment.iml" filepath="$PROJECT_DIR$/.idea/modules/fulfillment.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/infra.iml" filepath="$PROJECT_DIR$/.idea/modules/infra.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/inventory.iml" filepath="$PROJECT_DIR$/.idea/modules/inventory.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/invoicing.iml" filepath="$PROJECT_DIR$/.idea/modules/invoicing.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ordering.iml" filepath="$PROJECT_DIR$/.idea/modules/ordering.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/payments.iml" filepath="$PROJECT_DIR$/.idea/modules/payments.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/pricing.iml" filepath="$PROJECT_DIR$/.idea/modules/pricing.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/pricing_catalog_rails_app.iml" filepath="$PROJECT_DIR$/.idea/modules/pricing_catalog_rails_app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/processes.iml" filepath="$PROJECT_DIR$/.idea/modules/processes.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/product_catalog.iml" filepath="$PROJECT_DIR$/.idea/modules/product_catalog.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/rails_application.iml" filepath="$PROJECT_DIR$/.idea/modules/rails_application.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/shipping.iml" filepath="$PROJECT_DIR$/.idea/modules/shipping.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/taxes.iml" filepath="$PROJECT_DIR$/.idea/modules/taxes.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/todo.iml" filepath="$PROJECT_DIR$/.idea/modules/todo.iml" />
     </modules>
   </component>
 </project>
