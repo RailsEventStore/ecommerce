@@ -11,6 +11,7 @@ class Configuration
     enable_customers_read_model(event_store)
     enable_invoices_read_model(event_store)
     enable_client_orders_read_model(event_store)
+    enable_client_inbox_read_model(event_store)
     enable_coupons_read_model(event_store)
     enable_time_promotions_read_model(event_store)
     enable_shipments_read_model(event_store)
@@ -57,6 +58,10 @@ class Configuration
 
   def enable_client_orders_read_model(event_store)
     ClientOrders::Configuration.new.call(event_store)
+  end
+
+  def enable_client_inbox_read_model(event_store)
+    ClientInbox::Configuration.new.call(event_store)
   end
 
   def enable_coupons_read_model(event_store)

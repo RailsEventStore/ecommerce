@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_12_09_102208) do
+ActiveRecord::Schema[7.2].define(version: 2025_05_07_182202) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -32,6 +32,15 @@ ActiveRecord::Schema[7.2].define(version: 2024_12_09_102208) do
     t.decimal "rate", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "client_inbox_messages", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "client_uid", null: false
+    t.string "title", null: false
+    t.boolean "read", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["client_uid"], name: "index_client_inbox_messages_on_client_uid"
   end
 
   create_table "client_order_lines", force: :cascade do |t|

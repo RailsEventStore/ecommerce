@@ -6,18 +6,16 @@ module ClientInbox
       include Rails.application.routes.url_helpers
 
       def self.build(view_context, client_id)
-        new(Arbre::Context.new(nil, view_context)).build(dummy_messages)
-      end
-
-      def self.dummy_messages
-        [
-          OpenStruct.new(
-            id: 1,
+        messages = inbox_messages(client_id)
+        if messages.empty?
+          messages << OpenStruct.new(
+            id: SecureRandom.uuid,
             title: "Welcome to our platform!",
             created_at: 2.days.ago,
             read: false
           )
-        ]
+        end
+        new(Arbre::Context.new(nil, view_context)).build(messages)
       end
 
       def build(messages, attributes = {})
@@ -30,6 +28,10 @@ module ClientInbox
       end
 
       private
+
+      def self.inbox_messages(client_id)
+        ClientInbox::Message.where(client_uid: client_id).order(created_at: :desc).to_a
+      end
 
       def inbox_header
         h1 class: "text-3xl font-bold text-gray-900 mb-6" do
