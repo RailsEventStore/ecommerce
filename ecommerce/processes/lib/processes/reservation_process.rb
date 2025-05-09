@@ -1,6 +1,8 @@
+require_relative 'state_projectors/reservation_process'
+
 module Processes
   class ReservationProcess
-    include Infra::ProcessManager.with_state { ProcessState }
+    include Infra::ProcessManager.with_state(StateProjectors::ReservationProcess)
 
     subscribes_to(
       Pricing::OfferAccepted,
@@ -25,20 +27,6 @@ module Processes
       in order: :confirmed
         dispatch_stock
       else
-      end
-    end
-
-    def apply(event)
-      case event
-      when Pricing::OfferAccepted
-        state.with(
-          order: :accepted,
-          order_lines: event.data.fetch(:order_lines).map { |ol| [ol.fetch(:product_id), ol.fetch(:quantity)] }.to_h
-        )
-      when Fulfillment::OrderCancelled
-        state.with(order: :cancelled)
-      when Fulfillment::OrderConfirmed
-        state.with(order: :confirmed)
       end
     end
 

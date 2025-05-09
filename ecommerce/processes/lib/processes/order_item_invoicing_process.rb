@@ -1,6 +1,8 @@
+require_relative 'state_projectors/order_item_invoicing_process'
+
 module Processes
   class OrderItemInvoicingProcess
-    include Infra::ProcessManager.with_state { ProcessState }
+    include Infra::ProcessManager.with_state(StateProjectors::OrderItemInvoicingProcess)
 
     subscribes_to(
       Pricing::PriceItemValueCalculated,
@@ -26,34 +28,8 @@ module Processes
       end
     end
 
-    def apply(event)
-      case event
-      when Pricing::PriceItemValueCalculated
-        state.with(
-          order_id: event.data.fetch(:order_id),
-          product_id: event.data.fetch(:product_id),
-          quantity: event.data.fetch(:quantity),
-          discounted_amount: event.data.fetch(:discounted_amount)
-        )
-      when Taxes::VatRateDetermined
-        state.with(
-          vat_rate: event.data.fetch(:vat_rate)
-        )
-      end
-    end
-
     def fetch_id(event)
       "#{event.data.fetch(:order_id)}$#{event.data.fetch(:product_id)}"
-    end
-
-    ProcessState = Data.define(:order_id, :product_id, :quantity, :vat_rate, :discounted_amount) do
-      def initialize(order_id: nil, product_id: nil, quantity: nil, vat_rate: nil, discounted_amount: nil)
-        super
-      end
-
-      def can_create_invoice_item?
-        order_id && product_id && quantity && vat_rate && discounted_amount
-      end
     end
   end
 

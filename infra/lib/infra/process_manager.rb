@@ -15,14 +15,22 @@ module Infra
 
       private
 
-      attr_reader :event_store, :command_bus, :id
+      attr_reader :event_store, :command_bus, :id, :state
 
       def build_state(event)
+        projector_class = self.class.instance_variable_get(:@projector_class)
+        raise "State projector class not found/configured for #{self.class}" unless projector_class
         with_retry do
           past_events = event_store.read.stream(stream_name).to_a
-          last_stored = past_events.size - 1
-          event_store.link(event.event_id, stream_name:, expected_version: last_stored)
-          (past_events + [event]).each { |ev| @state = apply(ev) }
+          last_stored_idx = past_events.empty? ? -1 : past_events.size - 1
+          event_store.link(event.event_id, stream_name: stream_name, expected_version: last_stored_idx)
+
+          current_projected_state = projector_class.initial_state_instance
+          all_events_to_apply = past_events + [event]
+          all_events_to_apply.uniq(&:event_id).each do |ev|
+            current_projected_state = projector_class.apply(current_projected_state, ev)
+          end
+          @state = current_projected_state
         end
       end
 
@@ -43,31 +51,22 @@ module Infra
       attr_reader :subscribed_events
     end
 
-    def self.with_state(&state_class_block)
-      unless block_given?
-        raise ArgumentError, "A block returning the state class is required."
+    def self.with_state(projector_class)
+      unless projector_class && projector_class.respond_to?(:apply) && projector_class.respond_to?(:initial_state_instance)
+        raise ArgumentError, "Projector class must be valid and respond to :apply and :initial_state_instance."
       end
 
       Module.new do
-        @state_definition_block = state_class_block
-
+        @projector_class_config = projector_class
         define_method(:initial_state) do
-          block = self.class.instance_variable_get(:@state_definition_block)
-          raise "State definition block not found on #{self.class}" unless block
-
-          state_class = block.call
-          raise "State definition block did not return a Class" unless state_class.is_a?(Class)
-
-          state_class.new
-        end
-
-        define_method(:state) do
-          @state ||= initial_state
+          configured_projector = self.class.instance_variable_get(:@projector_class)
+          raise "Projector class not found on #{self.class}" unless configured_projector
+          configured_projector.initial_state_instance
         end
 
         def self.included(host_class)
-          host_class.instance_variable_set(:@state_definition_block, @state_definition_block)
-
+          projector_to_set = @projector_class_config
+          host_class.instance_variable_set(:@projector_class, projector_to_set)
           host_class.include(ProcessMethods)
           host_class.include(Infra::Retry)
           host_class.extend(Subscriptions)
