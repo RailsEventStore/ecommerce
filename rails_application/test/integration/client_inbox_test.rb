@@ -9,7 +9,7 @@ class ClientInboxTest < InMemoryRESIntegrationTestCase
     assert_response :success
     assert_select "h1", "Your Inbox"
 
-    assert_message("Welcome to our platform!", /\d+ days? ago/)
+    assert_message("Welcome to our platform!", /minute ago/)
   end
 
   private

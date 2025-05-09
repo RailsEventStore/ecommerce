@@ -6,16 +6,7 @@ module ClientInbox
       include Rails.application.routes.url_helpers
 
       def self.build(view_context, client_id)
-        messages = inbox_messages(client_id)
-        if messages.empty?
-          messages << OpenStruct.new(
-            id: SecureRandom.uuid,
-            title: "Welcome to our platform!",
-            created_at: 2.days.ago,
-            read: false
-          )
-        end
-        new(Arbre::Context.new(nil, view_context)).build(messages)
+        new(Arbre::Context.new(nil, view_context)).build(inbox_messages(client_id))
       end
 
       def build(messages, attributes = {})

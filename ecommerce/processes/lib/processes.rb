@@ -17,6 +17,7 @@ require_relative 'processes/notify_payments_about_order_value'
 require_relative 'processes/sync_shipment_from_pricing'
 require_relative 'processes/three_plus_one_free'
 require_relative 'processes/reservation_process'
+require_relative 'processes/welcome_message_process'
 
 module Processes
   class Configuration
@@ -39,6 +40,7 @@ module Processes
       enable_shipment_process(event_store, command_bus)
       enable_order_item_invoicing_process(event_store, command_bus)
       enable_reservation_process(event_store, command_bus)
+      enable_welcome_message_process(event_store, command_bus)
     end
 
     private
@@ -136,6 +138,13 @@ module Processes
       Infra::Process.new(event_store, command_bus)
                     .call(Pricing::CouponUsed, [:order_id, :discount],
                           Pricing::SetPercentageDiscount, [:order_id, :amount])
+    end
+
+    def enable_welcome_message_process(event_store, command_bus)
+      event_store.subscribe(
+        WelcomeMessageProcess.new(event_store, command_bus),
+        to: [Crm::CustomerRegistered]
+      )
     end
   end
 end
