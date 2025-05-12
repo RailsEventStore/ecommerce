@@ -79,15 +79,15 @@ jobs:
         working-directory: ${{ env.WORKING_DIRECTORY }}
         run: bundle exec rails tailwindcss:build
 
+      - name: Set Node Number Env Var
+        run: echo "NODE_NUMBER=$(( ${{ matrix.node_index }} + 1 ))" >> $GITHUB_ENV
+
       - name: Run mutation tests (Node $((${{ matrix.node_index }} + 1 )) / ${{ matrix.total_nodes }})
         run: make mutate
         env:
           MUTANT_NODE_INDEX: ${{ matrix.node_index }}
           MUTANT_TOTAL_NODES: ${{ matrix.total_nodes }}
         working-directory: ${{ env.WORKING_DIRECTORY }}
-
-      - name: Set Node Number Env Var
-        run: echo "NODE_NUMBER=$(( ${{ matrix.node_index }} + 1 ))" >> $GITHUB_ENV
 
       - name: Send Slack Notification on Mutate Status (Node ${{ env.NODE_NUMBER }})
         uses: 8398a7/action-slack@v3
