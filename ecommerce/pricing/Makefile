@@ -29,7 +29,7 @@ ifeq ($(origin MUTANT_NODE_INDEX), environment)
 	 head -n 5 .node_files.tmp || echo "File .node_files.tmp is empty."; \
 	 echo "--- END DEBUG (awk) ---"; \
 	 echo "--- DEBUG: Attempting to derive subject names for this node... ---"; \
-	 DERIVED_NAMES=$$(cat .node_files.tmp | perl -ne 'chomp; s#^lib/##; s#\.rb$$##; my @parts = split /\//; my $result = ""; foreach my $$part (@parts) { $$part =~ s#_([a-z])#uc($$1)#eg; $result .= "::" . ucfirst($$part); } $result =~ s/^:://; print "$$result\n"'); \
+	 DERIVED_NAMES=$$(cat .node_files.tmp | perl -ne 'chomp; s#^lib/##; s#\.rb$$##; my @parts = split /\//; my $$result = ""; foreach my $$part (@parts) { $$part =~ s#_([a-z])#uc($$1)#eg; $$result .= "::" . ucfirst($$part); } $$result =~ s/^:://; print "$$result\n"'); \
 	 PERL_EXIT_CODE=$$?; \
 	 if [ $$PERL_EXIT_CODE -ne 0 ]; then \
 	   echo "ERROR: Perl command failed with exit code $$PERL_EXIT_CODE"; \
