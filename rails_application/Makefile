@@ -45,7 +45,7 @@ ifeq ($(origin MUTANT_NODE_INDEX), environment)
 	 head -n 5 .node_files.tmp || echo "File .node_files.tmp is empty."; \
 	 echo "--- END DEBUG (awk) ---"; \
 	 echo "--- DEBUG: Attempting to derive subject names for this node... ---"; \
-	 DERIVED_NAMES=$$(cat .node_files.tmp | perl -ne 'chomp; s#^(app/(controllers|models|helpers|jobs|mailers|channels|client_panel|read_models|services)|lib)/##; s#\.rb$$##; my @parts = split /\//; my $$result = ""; foreach my $$part (@parts) { $$part =~ s#_([a-z])#uc($$1)#eg; $$result .= ucfirst($$part) . "::"; } $$result =~ s/::$$//; print "$$result\n"'); \
+	 DERIVED_NAMES=$$(cat .node_files.tmp | perl -ne 'next unless /\S/; chomp; s#^(app/(controllers|models|helpers|jobs|mailers|channels|client_panel|read_models|services)|lib)/##; s#\.rb$$##; my @parts = split /\//; my $$result = ""; foreach my $$part (@parts) { next unless $$part; $$part =~ s#_([a-z])#uc($$1)#eg; $$result .= ucfirst($$part) . "::"; } $$result =~ s/::$$//; print "$$result\n" if $$result && $$result !~ /^::/'); \
 	 PERL_EXIT_CODE=$$?; \
 	 if [ $$PERL_EXIT_CODE -ne 0 ]; then \
 	   echo "ERROR: Perl command failed with exit code $$PERL_EXIT_CODE"; \
@@ -57,7 +57,7 @@ ifeq ($(origin MUTANT_NODE_INDEX), environment)
 	   echo "$$DERIVED_NAMES"; \
 	 fi; \
 	 echo "--- END DEBUG (perl) ---"; \
-	 SUBJECT_ARGS=$$(echo "$$DERIVED_NAMES" | tr '\\n' ' '); \
+	 SUBJECT_ARGS=$$(echo "$$DERIVED_NAMES" | xargs); \
 	 if [ -z "$$SUBJECT_ARGS" ]; then \
 	   echo "No subjects derived for this node. Skipping."; \
 	 else \
