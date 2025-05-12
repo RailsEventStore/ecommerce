@@ -45,7 +45,7 @@ ifeq ($(origin MUTANT_NODE_INDEX), environment)
 	 head -n 5 .node_files.tmp || echo "File .node_files.tmp is empty."; \
 	 echo "--- END DEBUG (awk) ---"; \
 	 echo "--- DEBUG: Attempting to derive subject names for this node... ---"; \
-	 @DERIVED_NAMES=$$(cat .node_files.tmp | perl -pe 's#^(app|lib)/##; s#\.rb$$##; s#_([a-z])#uc($$1)#eg; s#/#::#g; s#(?:^|::)(.)#\u$$1#g'); \
+	 DERIVED_NAMES=$$(cat .node_files.tmp | perl -pe 's#^(app/(controllers|models|helpers|jobs|mailers|channels|client_panel)|lib)/##; s#\.rb$$##; s#/(.)#"::" . ucfirst($$1)#eg; s#_([a-z])#uc($$1)#eg; s/(?:^|::)(.)/\u$$1/g'); \
 	 PERL_EXIT_CODE=$$?; \
 	 if [ $$PERL_EXIT_CODE -ne 0 ]; then \
 	   echo "ERROR: Perl command failed with exit code $$PERL_EXIT_CODE"; \
@@ -69,6 +69,7 @@ else
 	@echo "Running mutation tests locally for rails_application (mutant discovers subjects)"
 	@RAILS_ENV=test bundle exec mutant run
 endif
+
 
 .PHONY: help test db
 .DEFAULT_GOAL := help
