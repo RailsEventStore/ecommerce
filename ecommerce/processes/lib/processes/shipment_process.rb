@@ -1,8 +1,6 @@
-require_relative 'state_projectors/shipment_process'
-
 module Processes
   class ShipmentProcess
-    include Infra::ProcessManager.with_state(StateProjectors::ShipmentProcess)
+    include Infra::ProcessManager.with_state { StateProjector }
 
     subscribes_to(
       Shipping::ShippingAddressAddedToShipment,
@@ -33,6 +31,27 @@ module Processes
 
     def fetch_id(event)
       event.data.fetch(:order_id)
+    end
+
+    class StateProjector
+      ProcessState = Data.define(:order, :shipment) do
+        def initialize(order: nil, shipment: nil) = super
+      end
+
+      def self.initial_state_instance
+        ProcessState.new
+      end
+
+      def self.apply(state_instance, event)
+        case event
+        when Shipping::ShippingAddressAddedToShipment
+          state_instance.with(shipment: :address_set)
+        when Fulfillment::OrderRegistered
+          state_instance.with(order: :placed)
+        when Fulfillment::OrderConfirmed
+          state_instance.with(order: :confirmed)
+        end
+      end
     end
   end
 end

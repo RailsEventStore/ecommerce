@@ -1,8 +1,6 @@
-require_relative 'state_projectors/reservation_process'
-
 module Processes
   class ReservationProcess
-    include Infra::ProcessManager.with_state(StateProjectors::ReservationProcess)
+    include Infra::ProcessManager.with_state { StateProjector }
 
     subscribes_to(
       Pricing::OfferAccepted,
@@ -72,12 +70,34 @@ module Processes
       event.data.fetch(:order_id)
     end
 
-    ProcessState = Data.define(:order, :order_lines) do
-      def initialize(order: nil, order_lines: [])
-        super(order:, order_lines: order_lines.freeze)
+    class StateProjector
+      ProcessState = Data.define(:order, :order_lines) do
+        def initialize(order: nil, order_lines: [])
+          super(order: order, order_lines: order_lines.freeze)
+        end
+
+        def reserved_product_ids
+          order_lines.keys
+        end
       end
 
-      def reserved_product_ids = order_lines.keys
+      def self.initial_state_instance
+        ProcessState.new
+      end
+
+      def self.apply(state_instance, event)
+        case event
+        when Pricing::OfferAccepted
+          state_instance.with(
+            order: :accepted,
+            order_lines: event.data.fetch(:order_lines).map { |ol| [ol.fetch(:product_id), ol.fetch(:quantity)] }.to_h
+          )
+        when Fulfillment::OrderCancelled
+          state_instance.with(order: :cancelled)
+        when Fulfillment::OrderConfirmed
+          state_instance.with(order: :confirmed)
+        end
+      end
     end
 
     class SomeInventoryNotAvailable < StandardError
@@ -87,5 +107,6 @@ module Processes
         @unavailable_products = unavailable_products
       end
     end
+
   end
 end
