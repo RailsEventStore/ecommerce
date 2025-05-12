@@ -38,10 +38,11 @@ ifeq ($(origin MUTANT_NODE_INDEX), environment)
 	 elif [ -z "$$DERIVED_NAMES" ]; then \
 	   echo "Perl command produced no output (expected if no files for node)."; \
 	 else \
-	   echo "$$DERIVED_NAMES"; \
+	   echo "$$DERIVED_NAMES" | sed 's/^:://'; \
 	 fi; \
 	 echo "--- END DEBUG (perl) ---"; \
-	 SUBJECT_ARGS=$$(echo "$$DERIVED_NAMES" | tr '\\n' ' '); \
+	 DERIVED_NAMES_FILTERED=$$(echo "$$DERIVED_NAMES" | sed 's/^:://'); \
+	 SUBJECT_ARGS=$$(echo "$$DERIVED_NAMES_FILTERED" | tr '\\n' ' '); \
 	 if [ -z "$$SUBJECT_ARGS" ]; then \
 	   echo "No subjects derived for this node. Skipping."; \
 	 else \
