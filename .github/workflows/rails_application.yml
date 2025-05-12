@@ -48,9 +48,13 @@ jobs:
         continue-on-error: true
 
   mutate:
+    needs: test
     runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
+      matrix:
+        total_nodes: [2]
+        node_index: [0, 1]
     env:
       WORKING_DIRECTORY: rails_application
     services:
@@ -64,16 +68,23 @@ jobs:
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
       - uses: actions/checkout@v3
+
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: ruby-3.3.7
           bundler-cache: true
           working-directory: ${{ env.WORKING_DIRECTORY }}
+
       - name: Assets Precompile
         working-directory: ${{ env.WORKING_DIRECTORY }}
         run: bundle exec rails tailwindcss:build
+
       - run: make mutate
+        env:
+          MUTANT_NODE_INDEX: ${{ matrix.node_index }}
+          MUTANT_TOTAL_NODES: ${{ matrix.total_nodes }}
         working-directory: ${{ env.WORKING_DIRECTORY }}
+
       - uses: 8398a7/action-slack@v3
         with:
           status: custom
@@ -82,7 +93,7 @@ jobs:
             {
               attachments: [{
                 color: '${{ job.status }}' === 'success' ? 'good' : '${{ job.status }}' === 'failure' ? 'danger' : 'warning',
-                text: `${process.env.AS_WORKFLOW}/${process.env.AS_JOB} ${{ job.status }} in ${process.env.AS_TOOK}\n${process.env.AS_COMMIT} in ${process.env.AS_REF}`,
+                text: `Workflow: ${process.env.AS_WORKFLOW}\nJob: ${process.env.AS_JOB} (Node ${{ matrix.node_index }}/${{ matrix.total_nodes }})\nStatus: ${{ job.status }} in ${process.env.AS_TOOK}\nCommit: ${process.env.AS_COMMIT} on ${process.env.AS_REF} by ${process.env.AS_AUTHOR}`,
               }]
             }
         env:
