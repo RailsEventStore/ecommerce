@@ -54,13 +54,15 @@ jobs:
           bundler-cache: true
           working-directory: ${{ env.WORKING_DIRECTORY }}
 
-      - run: make mutate
+      - name: Run mutation tests (Node ${{ matrix.node_index + 1 }} / ${{ matrix.total_nodes }})
+        run: make mutate
         env:
           MUTANT_NODE_INDEX: ${{ matrix.node_index }}
           MUTANT_TOTAL_NODES: ${{ matrix.total_nodes }}
         working-directory: ${{ env.WORKING_DIRECTORY }}
 
-      - uses: 8398a7/action-slack@v3
+      - name: Send Slack Notification on Mutate Status (Node ${{ matrix.node_index + 1 }})
+        uses: 8398a7/action-slack@v3
         with:
           status: custom
           fields: workflow,job,commit,repo,ref,author,took
@@ -68,7 +70,7 @@ jobs:
             {
               attachments: [{
                 color: '${{ job.status }}' === 'success' ? 'good' : '${{ job.status }}' === 'failure' ? 'danger' : 'warning',
-                text: `Workflow: ${process.env.AS_WORKFLOW}\nJob: ${process.env.AS_JOB} (Node ${{ matrix.node_index }}/${{ matrix.total_nodes }})\nStatus: ${{ job.status }} in ${process.env.AS_TOOK}\nCommit: ${process.env.AS_COMMIT} on ${process.env.AS_REF} by ${process.env.AS_AUTHOR}`,
+                text: `Workflow: ${process.env.AS_WORKFLOW}\nJob: ${process.env.AS_JOB} (Node ${{ matrix.node_index + 1 }}/${{ matrix.total_nodes }})\nStatus: ${{ job.status }} in ${process.env.AS_TOOK}\nCommit: ${process.env.AS_COMMIT} on ${process.env.AS_REF} by ${process.env.AS_AUTHOR}`,
               }]
             }
         env:

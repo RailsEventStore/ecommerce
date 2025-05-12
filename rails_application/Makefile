@@ -17,7 +17,8 @@ help:
 
 mutate: ## Run mutation tests
 ifeq ($(origin MUTANT_NODE_INDEX), environment)
-	@echo "Running mutation tests in parallel (Node $(MUTANT_NODE_INDEX)/$(MUTANT_TOTAL_NODES)) for rails_application"
+	@echo "Running mutation tests in parallel (Node $$(( $(MUTANT_NODE_INDEX) + 1 ))/$(MUTANT_TOTAL_NODES)) for rails_application"
+	@echo "--- DEBUG: Finding potential subject files ---"
 	@find $(MUTANT_TARGET_DIRS) -name '*.rb' \
 		-not -path '*/test/*' \
 		-not -path '*/spec/*' \
@@ -26,8 +27,17 @@ ifeq ($(origin MUTANT_NODE_INDEX), environment)
 		-not -path 'db/*' \
 		-not -path 'vendor/*' \
 		-print > .all_files.tmp
+	@echo "--- DEBUG: Found files (.all_files.tmp): ---"
+	@cat .all_files.tmp || echo "No files found by find."
+	@echo "--- END DEBUG ---"
 	@awk "NR % $(MUTANT_TOTAL_NODES) == $(MUTANT_NODE_INDEX)" .all_files.tmp > .node_files.tmp
+	@echo "--- DEBUG: Files for this node ($(MUTANT_NODE_INDEX)) (.node_files.tmp): ---"
+	@cat .node_files.tmp || echo "No files selected for this node by awk."
+	@echo "--- END DEBUG ---"
 	@SUBJECT_NAMES_CMD="cat .node_files.tmp | perl -pe 's|^(app|lib)/||; s|\\.rb$$||; s|/|::|g; s/\\b(\\w)/ucfirst(\$1)/ge'"
+	@echo "--- DEBUG: Derived subject names for this node: ---"
+	@eval $$SUBJECT_NAMES_CMD || echo "Perl command failed or produced no output."
+	@echo "--- END DEBUG ---"
 	@SUBJECT_ARGS=$$($$SUBJECT_NAMES_CMD | tr '\\n' ' '); \
 	 if [ -z "$$SUBJECT_ARGS" ]; then \
 	   echo "No subjects derived for this node. Skipping."; \
