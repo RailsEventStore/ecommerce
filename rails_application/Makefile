@@ -27,18 +27,25 @@ ifeq ($(origin MUTANT_NODE_INDEX), environment)
 		-not -path 'db/*' \
 		-not -path 'vendor/*' \
 		-print > .all_files.tmp
-	@echo "--- DEBUG: Found files (.all_files.tmp): ---"
-	@cat .all_files.tmp || echo "No files found by find."
+	@echo "--- DEBUG: Found files count: $(shell wc -l < .all_files.tmp)"
 	@echo "--- END DEBUG ---"
 	@awk "NR % $(MUTANT_TOTAL_NODES) == $(MUTANT_NODE_INDEX)" .all_files.tmp > .node_files.tmp
-	@echo "--- DEBUG: Files for this node ($(MUTANT_NODE_INDEX)) (.node_files.tmp): ---"
-	@cat .node_files.tmp || echo "No files selected for this node by awk."
+	@echo "--- DEBUG: Files count for this node ($(MUTANT_NODE_INDEX)): $(shell wc -l < .node_files.tmp)"
 	@echo "--- END DEBUG ---"
-	@SUBJECT_NAMES_CMD="cat .node_files.tmp | perl -pe 's|^(app|lib)/||; s|\\.rb$$||; s|/|::|g; s/\\b(\\w)/ucfirst(\$1)/ge'"
-	@echo "--- DEBUG: Derived subject names for this node: ---"
-	@eval $$SUBJECT_NAMES_CMD || echo "Perl command failed or produced no output."
+	@SUBJECT_NAMES_CMD="cat .node_files.tmp | perl -pe 's|^(app|lib)/||; s|\\.rb$$||; s|_([a-z])|uc(\$1)|eg; s|/|::|g; s/(?:^|::)(.)/\\u\$1/g'"
+	@echo "--- DEBUG: Attempting to derive subject names for this node... ---"
+	@DERIVED_NAMES=$$(eval $$SUBJECT_NAMES_CMD); \
+	 EXIT_CODE=$$?; \
+	 if [ $$EXIT_CODE -ne 0 ]; then \
+	   echo "Perl command failed with exit code $$EXIT_CODE"; \
+	   exit $$EXIT_CODE; \
+	 elif [ -z "$$DERIVED_NAMES" ]; then \
+	   echo "Perl command produced no output."; \
+	 else \
+	   echo "$$DERIVED_NAMES"; \
+	 fi
 	@echo "--- END DEBUG ---"
-	@SUBJECT_ARGS=$$($$SUBJECT_NAMES_CMD | tr '\\n' ' '); \
+	@SUBJECT_ARGS=$$(echo "$$DERIVED_NAMES" | tr '\\n' ' '); \
 	 if [ -z "$$SUBJECT_ARGS" ]; then \
 	   echo "No subjects derived for this node. Skipping."; \
 	 else \
