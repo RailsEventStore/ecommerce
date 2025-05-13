@@ -61,12 +61,13 @@ ifeq ($(origin MUTANT_NODE_INDEX), environment)
 	 if [ -z "$$SUBJECT_ARGS" ]; then \
 	   echo "No subjects derived for this node. Skipping."; \
 	 else \
-	   echo "Attempting to run mutant for derived subjects: $$SUBJECT_ARGS"; \
+	   echo "Attempting to run mutant for derived subjects (mutant should apply its own ignore rules): $$SUBJECT_ARGS"; \
 	   RAILS_ENV=test bundle exec mutant run $$SUBJECT_ARGS; \
 	 fi; \
 	 rm -f .all_files.tmp .node_files.tmp
 else
-	@echo "Running mutation tests locally for rails_application (mutant discovers subjects)"
+	# --- Local Execution ---
+	@echo "Running mutation tests locally for rails_application (mutant discovers subjects from .mutant.yml)"
 	@RAILS_ENV=test bundle exec mutant run
 endif
 
