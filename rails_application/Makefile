@@ -19,32 +19,62 @@ mutate: ## Run mutation tests
 ifeq ($(origin MUTANT_NODE_INDEX), environment)
 	@NODE_DISPLAY_INDEX=$$(( $(MUTANT_NODE_INDEX) + 1 )); \
 	 echo "Running mutation tests in parallel (Node $$NODE_DISPLAY_INDEX/$(MUTANT_TOTAL_NODES)) for rails_application"; \
-	 \
-	 echo "--- DEBUG: Generating canonical list of subjects from .mutant.yml using 'mutant util subjects' ---"; \
-	 RAILS_ENV=test bundle exec mutant util subjects > .canonical_subjects.tmp; \
-	 if [ $$? -ne 0 ]; then echo "ERROR: 'mutant util subjects' failed!"; exit 1; fi; \
-	 CANONICAL_COUNT=$$(cat .canonical_subjects.tmp | wc -l); \
-	 echo "--- DEBUG: Canonical subjects count (from mutant util subjects): $$CANONICAL_COUNT"; \
-	 echo "--- DEBUG: Content of .canonical_subjects.tmp (first 10 lines): ---"; \
-	 head -n 10 .canonical_subjects.tmp || echo "File .canonical_subjects.tmp is empty."; \
-	 echo "--- END DEBUG (canonical subjects) ---"; \
-	 \
-	 echo "--- DEBUG: Dividing canonical subjects for this node ($(MUTANT_NODE_INDEX)) ---"; \
-	 awk "NR % $(MUTANT_TOTAL_NODES) == $(MUTANT_NODE_INDEX)" .canonical_subjects.tmp > .node_subjects.tmp; \
-	 if [ $$? -ne 0 ]; then echo "ERROR: awk command failed to divide subjects!"; exit 1; fi; \
-	 NODE_SUBJECT_COUNT=$$(cat .node_subjects.tmp | wc -l); \
-	 echo "--- DEBUG: Subjects for this node count: $$NODE_SUBJECT_COUNT"; \
-	 echo "--- DEBUG: Content of .node_subjects.tmp (first 10 lines): ---"; \
-	 head -n 10 .node_subjects.tmp || echo "File .node_subjects.tmp is empty."; \
-	 echo "--- END DEBUG (node subjects) ---"; \
-	 \
-	 SUBJECT_ARGS=$$(cat .node_subjects.tmp | xargs); \
-	 echo "--- DEBUG: SUBJECT_ARGS for mutant: [$$SUBJECT_ARGS]"; \
-	 \
-	 if [ -z "$$SUBJECT_ARGS" ]; then \
-	   echo "No subjects assigned to this node. Skipping."; \
+	 echo "--- DEBUG: Checking target directories [$(MUTANT_TARGET_DIRS)] ---"; \
+	 ls -ld $(MUTANT_TARGET_DIRS) || (echo "ERROR: Target directories not found!" && exit 1); \
+	 echo "--- DEBUG: Finding potential subject files ---"; \
+	 find $(MUTANT_TARGET_DIRS) -name '*.rb' \
+		-not -path '*/test/*' \
+		-not -path '*/spec/*' \
+		-not -path 'config/*' \
+		-not -path '*/initializers/*' \
+		-not -path 'db/*' \
+		-not -path 'vendor/*' \
+		-print > .all_files.tmp; \
+	 if [ $$? -ne 0 ]; then echo "ERROR: find command failed!"; exit 1; fi; \
+	 FOUND_COUNT=$$(cat .all_files.tmp | wc -l); \
+	 echo "--- DEBUG: Found files count: $$FOUND_COUNT"; \
+	 echo "--- DEBUG: Content of .all_files.tmp (first 5 lines): ---"; \
+	 head -n 5 .all_files.tmp || echo "File .all_files.tmp is empty."; \
+	 echo "--- END DEBUG (find) ---"; \
+	 echo "--- DEBUG: Running awk to create .node_files.tmp ---"; \
+	 awk "NR % $(MUTANT_TOTAL_NODES) == $(MUTANT_NODE_INDEX)" .all_files.tmp > .node_files.tmp; \
+	 if [ $$? -ne 0 ]; then echo "ERROR: awk command failed!"; exit 1; fi; \
+	 NODE_COUNT=$$(cat .node_files.tmp | wc -l); \
+	 echo "--- DEBUG: Files count for this node ($(MUTANT_NODE_INDEX)): $$NODE_COUNT"; \
+	 echo "--- DEBUG: Content of .node_files.tmp (first 5 lines): ---"; \
+	 head -n 5 .node_files.tmp || echo "File .node_files.tmp is empty."; \
+	 echo "--- END DEBUG (awk) ---"; \
+	 echo "--- DEBUG: Attempting to derive subject names for this node... ---"; \
+	 DERIVED_NAMES=$$(cat .node_files.tmp | perl -ne 'next unless /\S/; chomp; s#^(app/(controllers|models|helpers|jobs|mailers|channels|client_panel|read_models|services)|lib)/##; s#\.rb$$##; my @parts = split /\//; my $$result = ""; foreach my $$part (@parts) { next unless $$part; $$part =~ s#_([a-z])#uc($$1)#eg; $$result .= ucfirst($$part) . "::"; } $$result =~ s/::$$//; print "$$result\n" if $$result && $$result !~ /^::/'); \
+	 PERL_EXIT_CODE=$$?; \
+	 if [ $$PERL_EXIT_CODE -ne 0 ]; then \
+	   echo "ERROR: Perl command failed with exit code $$PERL_EXIT_CODE"; \
+	 elif [ -z "$$DERIVED_NAMES" ] && [ "$$NODE_COUNT" -gt 0 ]; then \
+	   echo "WARN: Perl command produced no output, but node files exist."; \
+	 elif [ -z "$$DERIVED_NAMES" ]; then \
+	   echo "Perl command produced no output (expected if no files for node)."; \
 	 else \
-	   echo "Attempting to run mutant for subjects: $$SUBJECT_ARGS"; \
+	   echo "--- DEBUG: Derived names (before subject filter): ---"; \
+	   echo "$$DERIVED_NAMES" > .derived_names.tmp; \
+	   cat .derived_names.tmp; \
+	 fi; \
+	 echo "--- END DEBUG (perl) ---"; \
+	 echo "--- DEBUG: Filtering derived names based on .mutant.yml 'subjects' patterns for rails_application ---"; \
+	 SUBJECT_PATTERNS_RAILS_APP='^(Orders::|ClientOrders::)'; \
+	 if [ -f .derived_names.tmp ]; then \
+	   grep -E "$$SUBJECT_PATTERNS_RAILS_APP" .derived_names.tmp > .filtered_names.tmp || true; \
+	 else \
+	   touch .filtered_names.tmp; \
+	 fi; \
+	 FILTERED_NAMES_CONTENT=$$(cat .filtered_names.tmp); \
+	 echo "--- DEBUG: Filtered names (after subject filter, from .filtered_names.tmp): ---"; \
+	 echo "$$FILTERED_NAMES_CONTENT"; \
+	 SUBJECT_ARGS=$$(cat .filtered_names.tmp | xargs); \
+	 echo "--- DEBUG: SUBJECT_ARGS for mutant: [$$SUBJECT_ARGS]"; \
+	 if [ -z "$$SUBJECT_ARGS" ]; then \
+	   echo "No subjects matching 'subjects' criteria found for this node. Skipping."; \
+	 else \
+	   echo "Attempting to run mutant for filtered subjects: $$SUBJECT_ARGS"; \
 	   RAILS_ENV=test bundle exec mutant run $$SUBJECT_ARGS; \
 	   MUTANT_EXIT_CODE=$$?; \
 	   if [ $$MUTANT_EXIT_CODE -ne 0 ]; then \
@@ -52,7 +82,7 @@ ifeq ($(origin MUTANT_NODE_INDEX), environment)
 	     exit $$MUTANT_EXIT_CODE; \
 	   fi; \
 	 fi; \
-	 rm -f .canonical_subjects.tmp .node_subjects.tmp .all_files.tmp .derived_names.tmp .filtered_names.tmp # Clean up all potential temp files
+	 rm -f .all_files.tmp .node_files.tmp .derived_names.tmp .filtered_names.tmp
 else
 	@echo "Running mutation tests locally for rails_application (mutant discovers subjects from .mutant.yml)"
 	@RAILS_ENV=test bundle exec mutant run
