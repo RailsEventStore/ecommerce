@@ -47,6 +47,11 @@ ifeq ($(origin MUTANT_NODE_INDEX), environment)
 	 else \
 	   echo "Attempting to run mutant for derived subjects (mutant should apply its own ignore rules): $$SUBJECT_ARGS"; \
 	   RAILS_ENV=test bundle exec mutant run $$SUBJECT_ARGS; \
+	   MUTANT_EXIT_CODE=$$?; \
+	   if [ $$MUTANT_EXIT_CODE -ne 0 ]; then \
+	     echo "ERROR: mutant run failed with exit code $$MUTANT_EXIT_CODE"; \
+	     exit $$MUTANT_EXIT_CODE; \
+	   fi; \
 	 fi; \
 	 rm -f .all_files.tmp .node_files.tmp
 else
