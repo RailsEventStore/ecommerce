@@ -55,14 +55,22 @@ ifeq ($(origin MUTANT_NODE_INDEX), environment)
 	   echo "Perl command produced no output (expected if no files for node)."; \
 	 else \
 	   echo "--- DEBUG: Derived names (before subject filter): ---"; \
-	   echo "$$DERIVED_NAMES"; \
+	   echo "$$DERIVED_NAMES" > .derived_names.tmp; \
+	   cat .derived_names.tmp; \
 	 fi; \
 	 echo "--- END DEBUG (perl) ---"; \
+	 echo "--- DEBUG: Filtering derived names based on .mutant.yml patterns ---"; \
 	 SUBJECT_PATTERNS_RAILS_APP='^(Orders::|ClientOrders::)'; \
-	 FILTERED_NAMES=$$(echo "$$DERIVED_NAMES" | grep -E "$$SUBJECT_PATTERNS_RAILS_APP" || true); \
-	 echo "--- DEBUG: Filtered names (after subject filter to modules): ---"; \
-	 echo "$$FILTERED_NAMES"; \
-	 SUBJECT_ARGS=$$(echo "$$FILTERED_NAMES" | xargs); \
+	 if [ -f .derived_names.tmp ]; then \
+	   grep -E "$$SUBJECT_PATTERNS_RAILS_APP" .derived_names.tmp > .filtered_names.tmp || true; \
+	 else \
+	   touch .filtered_names.tmp; \
+	 fi; \
+	 FILTERED_NAMES_CONTENT=$$(cat .filtered_names.tmp); \
+	 echo "--- DEBUG: Filtered names (after subject filter to modules, from .filtered_names.tmp): ---"; \
+	 echo "$$FILTERED_NAMES_CONTENT"; \
+	 SUBJECT_ARGS=$$(cat .filtered_names.tmp | xargs); \
+	 echo "--- DEBUG: SUBJECT_ARGS for mutant: [$$SUBJECT_ARGS]"; \
 	 if [ -z "$$SUBJECT_ARGS" ]; then \
 	   echo "No subjects matching module criteria (Orders::*, ClientOrders::*) found for this node. Skipping."; \
 	 else \
@@ -74,7 +82,7 @@ ifeq ($(origin MUTANT_NODE_INDEX), environment)
 	     exit $$MUTANT_EXIT_CODE; \
 	   fi; \
 	 fi; \
-	 rm -f .all_files.tmp .node_files.tmp
+	 rm -f .all_files.tmp .node_files.tmp .derived_names.tmp .filtered_names.tmp
 else
 	@echo "Running mutation tests locally for rails_application (mutant discovers subjects from .mutant.yml)"
 	@RAILS_ENV=test bundle exec mutant run
