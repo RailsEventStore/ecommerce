@@ -54,14 +54,19 @@ ifeq ($(origin MUTANT_NODE_INDEX), environment)
 	 elif [ -z "$$DERIVED_NAMES" ]; then \
 	   echo "Perl command produced no output (expected if no files for node)."; \
 	 else \
+	   echo "--- DEBUG: Derived names (before subject filter): ---"; \
 	   echo "$$DERIVED_NAMES"; \
 	 fi; \
 	 echo "--- END DEBUG (perl) ---"; \
-	 SUBJECT_ARGS=$$(echo "$$DERIVED_NAMES" | xargs); \
+	 SUBJECT_PATTERNS_RAILS_APP='^(Orders|ClientOrders)'; \
+	 FILTERED_NAMES=$$(echo "$$DERIVED_NAMES" | grep -E "$$SUBJECT_PATTERNS_RAILS_APP" || true); \
+	 echo "--- DEBUG: Filtered names (after subject filter): ---"; \
+	 echo "$$FILTERED_NAMES"; \
+	 SUBJECT_ARGS=$$(echo "$$FILTERED_NAMES" | xargs); \
 	 if [ -z "$$SUBJECT_ARGS" ]; then \
-	   echo "No subjects derived for this node. Skipping."; \
+	   echo "No subjects matching .mutant.yml 'subjects' criteria found for this node. Skipping."; \
 	 else \
-	   echo "Attempting to run mutant for derived subjects (mutant should apply its own ignore rules): $$SUBJECT_ARGS"; \
+	   echo "Attempting to run mutant for filtered subjects: $$SUBJECT_ARGS"; \
 	   RAILS_ENV=test bundle exec mutant run $$SUBJECT_ARGS; \
 	   MUTANT_EXIT_CODE=$$?; \
 	   if [ $$MUTANT_EXIT_CODE -ne 0 ]; then \
