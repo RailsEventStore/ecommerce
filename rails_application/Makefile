@@ -58,13 +58,13 @@ ifeq ($(origin MUTANT_NODE_INDEX), environment)
 	   echo "$$DERIVED_NAMES"; \
 	 fi; \
 	 echo "--- END DEBUG (perl) ---"; \
-	 SUBJECT_PATTERNS_RAILS_APP='^(Orders|ClientOrders)'; \
+	 SUBJECT_PATTERNS_RAILS_APP='^(Orders::|ClientOrders::)'; \
 	 FILTERED_NAMES=$$(echo "$$DERIVED_NAMES" | grep -E "$$SUBJECT_PATTERNS_RAILS_APP" || true); \
-	 echo "--- DEBUG: Filtered names (after subject filter): ---"; \
+	 echo "--- DEBUG: Filtered names (after subject filter to modules): ---"; \
 	 echo "$$FILTERED_NAMES"; \
 	 SUBJECT_ARGS=$$(echo "$$FILTERED_NAMES" | xargs); \
 	 if [ -z "$$SUBJECT_ARGS" ]; then \
-	   echo "No subjects matching .mutant.yml 'subjects' criteria found for this node. Skipping."; \
+	   echo "No subjects matching module criteria (Orders::*, ClientOrders::*) found for this node. Skipping."; \
 	 else \
 	   echo "Attempting to run mutant for filtered subjects: $$SUBJECT_ARGS"; \
 	   RAILS_ENV=test bundle exec mutant run $$SUBJECT_ARGS; \
