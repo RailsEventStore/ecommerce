@@ -130,6 +130,8 @@ jobs:
         working-directory: ${{ env.WORKING_DIRECTORY }}
         env:
           CI_MUTATE_SUBJECTS: ${{ matrix.subject_group }}
+      - name: Set Shard Display Index
+        run: echo "SHARD_DISPLAY_INDEX=$(( ${{ strategy['job-index'] }} + 1 ))" >> $GITHUB_ENV
       - uses: 8398a7/action-slack@v3
         with:
           status: custom
@@ -138,7 +140,7 @@ jobs:
             {
               attachments: [{
                 color: '${{ job.status }}' === 'success' ? 'good' : '${{ job.status }}' === 'failure' ? 'danger' : 'warning',
-                text: `${process.env.AS_WORKFLOW}/${process.env.AS_JOB} (shard ${{ format('{0}', strategy['job-index'] + 1) }}/${{ strategy.job-total }}) ${{ job.status }} in ${process.env.AS_TOOK}\n${process.env.AS_COMMIT} in ${process.env.AS_REF}`,
+                text: `${process.env.AS_WORKFLOW}/${process.env.AS_JOB} (shard ${{ env.SHARD_DISPLAY_INDEX }}/${{ strategy.job-total }}) ${{ job.status }} in ${process.env.AS_TOOK}\n${process.env.AS_COMMIT} in ${process.env.AS_REF}`,
               }]
             }
         env:
