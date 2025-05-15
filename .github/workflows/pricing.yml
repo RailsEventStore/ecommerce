@@ -27,7 +27,7 @@ jobs:
             {
               attachments: [{
                 color: '${{ job.status }}' === 'success' ? 'good' : '${{ job.status }}' === 'failure' ? 'danger' : 'warning',
-                text: `${process.env.AS_WORKFLOW}/${process.env.AS_JOB} ${{ job.status }} in ${process.env.AS_TOOK}\n${process.env.AS_COMMIT} in ${process.env.AS_REF}`,
+                text: `${process.env.AS_WORKFLOW}/${{ github.job }} ${{ job.status }} in ${process.env.AS_TOOK}\n${process.env.AS_COMMIT} in ${process.env.AS_REF}`,
               }]
             }
         env:
@@ -117,12 +117,12 @@ jobs:
       - uses: 8398a7/action-slack@v3
         with:
           status: custom
-          fields: workflow,job,commit,repo,ref,author,took
+          fields: workflow,commit,repo,ref,author
           custom_payload: |
             {
               attachments: [{
                 color: '${{ job.status }}' === 'success' ? 'good' : '${{ job.status }}' === 'failure' ? 'danger' : 'warning',
-                text: `${process.env.AS_WORKFLOW}/${process.env.AS_JOB} (shard ${{ env.SHARD_DISPLAY_INDEX }}/${{ strategy.job-total }}) ${{ job.status }} in ${process.env.AS_TOOK}\n${process.env.AS_COMMIT} in ${process.env.AS_REF}`,
+                text: `${process.env.AS_WORKFLOW}/${{ github.job }} (shard ${{ env.SHARD_DISPLAY_INDEX }}/${{ strategy.job-total }}) ${{ job.status }}\n${process.env.AS_COMMIT} in ${process.env.AS_REF}`,
               }]
             }
         env:
