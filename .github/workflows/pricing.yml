@@ -53,11 +53,17 @@ jobs:
         working-directory: ${{ env.WORKING_DIRECTORY }}
         run: |
           SUBJECT_LIST_OUTPUT=$(RAILS_ENV=test bundle exec mutant environment subject list)
-          # Skip the first line (e.g., "Subjects in environment: XX") and read subjects into an array
-          mapfile -t subjects_array < <(echo "$SUBJECT_LIST_OUTPUT" | tail -n +2 | sed 's/\x1b\[[0-9;]*m//g' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | awk 'NF')
+
+          mapfile -t subjects_array < <( \
+            echo "$SUBJECT_LIST_OUTPUT" | \
+            awk 'NR == 1 {next} /Run options:/ {exit} {print}' | \
+            sed 's/\x1b\[[0-9;]*m//g' | \
+            sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | \
+            awk 'NF' \
+          )
 
           if [ ${#subjects_array[@]} -eq 0 ]; then
-            echo "No subjects found for pricing. Setting empty subject_groups."
+            echo "No subjects found for pricing after cleaning. Setting empty subject_groups."
             echo "subject_groups=[]" >> $GITHUB_OUTPUT
             exit 0
           fi
@@ -82,7 +88,7 @@ jobs:
               groups_json_array_content="$groups_json_array_content\"$escaped_group_subjects_string\""
             fi
           done
-          echo "Generated subject_groups: [$groups_json_array_content]"
+          echo "Generated subject_groups for pricing: [$groups_json_array_content]"
           echo "subject_groups=[$groups_json_array_content]" >> $GITHUB_OUTPUT
 
   mutate:
