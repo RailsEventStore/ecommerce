@@ -35,10 +35,64 @@ jobs:
         if: always()
         continue-on-error: true
 
+  prepare_mutation_subjects_pricing:
+    runs-on: ubuntu-24.04
+    outputs:
+      subject_groups: ${{ steps.split_subjects.outputs.subject_groups }}
+    env:
+      WORKING_DIRECTORY: ecommerce/pricing
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ruby-3.3.7
+          bundler-cache: true
+          working-directory: ${{ env.WORKING_DIRECTORY }}
+      - name: List and split subjects for pricing
+        id: split_subjects
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+        run: |
+          SUBJECT_LIST_OUTPUT=$(RAILS_ENV=test bundle exec mutant environment subject list)
+          # Skip the first line (e.g., "Subjects in environment: XX") and read subjects into an array
+          mapfile -t subjects_array < <(echo "$SUBJECT_LIST_OUTPUT" | tail -n +2 | sed 's/\x1b\[[0-9;]*m//g' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | awk 'NF')
+
+          if [ ${#subjects_array[@]} -eq 0 ]; then
+            echo "No subjects found for pricing. Setting empty subject_groups."
+            echo "subject_groups=[]" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          total_subjects=${#subjects_array[@]}
+          NUM_GROUPS=2 # Define the number of parallel jobs
+          groups_json_array_content=""
+
+          for (( i=0; i<NUM_GROUPS; i++ )); do
+            current_group_subjects_array=()
+            for (( j=i; j<total_subjects; j+=NUM_GROUPS )); do
+              current_group_subjects_array+=("${subjects_array[j]}")
+            done
+
+            if [ ${#current_group_subjects_array[@]} -gt 0 ]; then
+              group_subjects_string=$(IFS=' '; echo "${current_group_subjects_array[*]}")
+
+              if [ -n "$groups_json_array_content" ]; then
+                groups_json_array_content="$groups_json_array_content,"
+              fi
+              escaped_group_subjects_string=$(printf '%s' "$group_subjects_string" | sed 's/"/\\"/g')
+              groups_json_array_content="$groups_json_array_content\"$escaped_group_subjects_string\""
+            fi
+          done
+          echo "Generated subject_groups: [$groups_json_array_content]"
+          echo "subject_groups=[$groups_json_array_content]" >> $GITHUB_OUTPUT
+
   mutate:
+    needs: prepare_mutation_subjects_pricing
+    if: ${{ needs.prepare_mutation_subjects_pricing.outputs.subject_groups != '[]' && needs.prepare_mutation_subjects_pricing.outputs.subject_groups != '' }}
     runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
+      matrix:
+        subject_group: ${{ fromJson(needs.prepare_mutation_subjects_pricing.outputs.subject_groups) }}
     env:
       WORKING_DIRECTORY: ecommerce/pricing
     steps:
@@ -50,6 +104,8 @@ jobs:
           working-directory: ${{ env.WORKING_DIRECTORY }}
       - run: make mutate
         working-directory: ${{ env.WORKING_DIRECTORY }}
+        env:
+          CI_MUTATE_SUBJECTS: ${{ matrix.subject_group }}
       - uses: 8398a7/action-slack@v3
         with:
           status: custom
@@ -58,7 +114,7 @@ jobs:
             {
               attachments: [{
                 color: '${{ job.status }}' === 'success' ? 'good' : '${{ job.status }}' === 'failure' ? 'danger' : 'warning',
-                text: `${process.env.AS_WORKFLOW}/${process.env.AS_JOB} ${{ job.status }} in ${process.env.AS_TOOK}\n${process.env.AS_COMMIT} in ${process.env.AS_REF}`,
+                text: `${process.env.AS_WORKFLOW}/${process.env.AS_JOB} (shard ${{ format('{0}', strategy['job-index'] + 1) }}/${{ strategy.job-total }}) ${{ job.status }} in ${process.env.AS_TOOK}\n${process.env.AS_COMMIT} in ${process.env.AS_REF}`,
               }]
             }
         env:

@@ -6,7 +6,13 @@ dev:
 	@$(MAKE) -j 10 web css
 
 mutate: ## Run mutation tests
+ifeq ($(CI_MUTATE_SUBJECTS),)
+	@echo "Running all mutation tests (local or full CI run)"
 	@env RAILS_ENV=test bundle exec mutant run
+else
+	@echo "Running CI mutation tests for subjects: $(CI_MUTATE_SUBJECTS)"
+	@env RAILS_ENV=test bundle exec mutant run $(CI_MUTATE_SUBJECTS)
+endif
 
 test: ## Run unit tests
 	@bin/rails tailwindcss:build
