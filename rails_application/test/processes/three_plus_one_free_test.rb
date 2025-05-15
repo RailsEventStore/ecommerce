@@ -1,7 +1,7 @@
-require_relative "test_helper"
+require "test_helper"
 
 module Processes
-  class ThreePlusOneFreeTest < Test
+  class ThreePlusOneFreeTest < ProcessTest
     cover "Processes::ThreePlusOneFree*"
 
     def test_one_order_line_is_not_eligible_for_free_product

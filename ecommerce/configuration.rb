@@ -9,7 +9,6 @@ require_relative "shipping/lib/shipping"
 require_relative "invoicing/lib/invoicing"
 require_relative "taxes/lib/taxes"
 require_relative "fulfillment/lib/fulfillment"
-require_relative "processes/lib/processes"
 
 module Ecommerce
   class Configuration
@@ -20,7 +19,6 @@ module Ecommerce
 
     def call(event_store, command_bus)
       configure_bounded_contexts(event_store, command_bus)
-      configure_processes(event_store, command_bus)
     end
 
     def configure_bounded_contexts(event_store, command_bus)
@@ -40,10 +38,6 @@ module Ecommerce
         ProductCatalog::Configuration.new,
         Fulfillment::Configuration.new(@number_generator),
       ].each { |c| c.call(event_store, command_bus) }
-    end
-
-    def configure_processes(event_store, command_bus)
-      Processes::Configuration.new.call(event_store, command_bus)
     end
   end
 end
