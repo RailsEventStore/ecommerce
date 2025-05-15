@@ -53,6 +53,15 @@ jobs:
       subject_groups: ${{ steps.split_subjects.outputs.subject_groups }}
     env:
       WORKING_DIRECTORY: rails_application
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: cqrs-es-sample-with-res_test
+          POSTGRES_PASSWORD: secret
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
       - uses: actions/checkout@v3
       - uses: ruby/setup-ruby@v1
@@ -64,6 +73,15 @@ jobs:
         id: split_subjects
         working-directory: ${{ env.WORKING_DIRECTORY }}
         run: |
+          # Ensure database is ready before listing subjects
+          echo "Waiting for PostgreSQL to be ready..."
+          until pg_isready -h localhost -p 5432 -U "postgres" -d "cqrs-es-sample-with-res_test"; do
+            sleep 1
+          done
+          echo "PostgreSQL is ready."
+
+          RAILS_ENV=test bundle exec rails db:prepare
+
           SUBJECT_LIST_OUTPUT=$(RAILS_ENV=test bundle exec mutant environment subject list)
           # Skip the first line (e.g., "Subjects in environment: 47") and read subjects into an array
           mapfile -t subjects_array < <(echo "$SUBJECT_LIST_OUTPUT" | tail -n +2 | sed 's/\x1b\[[0-9;]*m//g' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | awk 'NF')
