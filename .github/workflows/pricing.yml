@@ -118,6 +118,16 @@ jobs:
     needs: [mutate, prepare_mutation_subjects_pricing]
     if: always() && needs.prepare_mutation_subjects_pricing.outputs.subject_groups != '[]' && needs.prepare_mutation_subjects_pricing.outputs.subject_groups != ''
     steps:
+      - name: Determine notification color
+        id: set_color
+        run: |
+          if [[ "${{ needs.mutate.result }}" == "success" ]]; then
+            echo "NOTIFICATION_COLOR=good" >> $GITHUB_ENV
+          elif [[ "${{ needs.mutate.result }}" == "failure" ]]; then
+            echo "NOTIFICATION_COLOR=danger" >> $GITHUB_ENV
+          else
+            echo "NOTIFICATION_COLOR=warning" >> $GITHUB_ENV
+          fi
       - name: Send mutation summary notification
         uses: 8398a7/action-slack@v3
         with:
@@ -126,7 +136,7 @@ jobs:
           custom_payload: |
             {
               "attachments": [{
-                "color": "${{ needs.mutate.result == 'success' ? 'good' : (needs.mutate.result == 'failure' ? 'danger' : 'warning') }}",
+                "color": "${{ env.NOTIFICATION_COLOR }}",
                 "text": "pricing Mutation Test Summary:\nStatus: ${{ needs.mutate.result }}\nWorkflow: ${process.env.AS_WORKFLOW}\nCommit: ${process.env.AS_COMMIT} in ${process.env.AS_REF}"
               }]
             }
