@@ -137,7 +137,7 @@ jobs:
             {
               "attachments": [{
                 "color": "${{ env.NOTIFICATION_COLOR }}",
-                "text": "pricing Mutation Test Summary:\nStatus: ${{ needs.mutate.result }}\nWorkflow: ${process.env.AS_WORKFLOW}\nCommit: ${process.env.AS_COMMIT} in ${process.env.AS_REF}"
+                "text": "pricing Mutation Test Summary:\nStatus: ${{ needs.mutate.result }}\nWorkflow: ${{ github.workflow }}\nCommit: ${{ github.sha }} in ${{ github.ref }}"
               }]
             }
         env:
