@@ -69,7 +69,7 @@ jobs:
           fi
 
           total_subjects=${#subjects_array[@]}
-          NUM_GROUPS=82 # Define the number of parallel jobs
+          NUM_GROUPS=32 # Define the number of parallel jobs
           groups_json_array_content=""
 
           for (( i=0; i<NUM_GROUPS; i++ )); do
