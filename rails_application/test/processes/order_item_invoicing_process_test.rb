@@ -1,7 +1,7 @@
-require_relative "test_helper"
+require "test_helper"
 
 module Processes
-  class OrderItemInvoicingProcessTest < Test
+  class OrderItemInvoicingProcessTest < ProcessTest
     cover "Processes::OrderItemInvoicingProcess*"
 
     def setup
