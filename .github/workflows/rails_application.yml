@@ -34,12 +34,12 @@ jobs:
       - uses: 8398a7/action-slack@v3
         with:
           status: custom
-          fields: workflow,job,commit,repo,ref,author,took
+          fields: workflow,commit,repo,ref,author
           custom_payload: |
             {
               attachments: [{
                 color: '${{ job.status }}' === 'success' ? 'good' : '${{ job.status }}' === 'failure' ? 'danger' : 'warning',
-                text: `${process.env.AS_WORKFLOW}/${{ github.job }} ${{ job.status }} in ${process.env.AS_TOOK}\n${process.env.AS_COMMIT} in ${process.env.AS_REF}`,
+                text: `${process.env.AS_WORKFLOW}/${{ github.job }} ${{ job.status }}\n${process.env.AS_COMMIT} in ${process.env.AS_REF}`
               }]
             }
         env:
@@ -73,7 +73,6 @@ jobs:
         id: split_subjects
         working-directory: ${{ env.WORKING_DIRECTORY }}
         run: |
-          # Ensure database is ready before listing subjects
           echo "Waiting for PostgreSQL to be ready..."
           until pg_isready -h localhost -p 5432 -U "postgres" -d "cqrs-es-sample-with-res_test"; do
             sleep 1
@@ -101,7 +100,7 @@ jobs:
           fi
 
           total_subjects=${#subjects_array[@]}
-          NUM_GROUPS=24 # Define the number of parallel jobs
+          NUM_GROUPS=32 # Define the number of parallel jobs
           groups_json_array_content=""
 
           for (( i=0; i<NUM_GROUPS; i++ )); do
@@ -156,23 +155,36 @@ jobs:
         working-directory: ${{ env.WORKING_DIRECTORY }}
         env:
           CI_MUTATE_SUBJECTS: ${{ matrix.subject_group }}
-      - name: Set Shard Display Index
-        run: echo "SHARD_DISPLAY_INDEX=$(( ${{ strategy['job-index'] }} + 1 ))" >> $GITHUB_ENV
-      - uses: 8398a7/action-slack@v3
+
+  notify_rails_mutation_summary:
+    runs-on: ubuntu-24.04
+    needs: [mutate, prepare_mutation_subjects_rails]
+    if: always() && needs.prepare_mutation_subjects_rails.outputs.subject_groups != '[]' && needs.prepare_mutation_subjects_rails.outputs.subject_groups != ''
+    steps:
+      - name: Determine notification color
+        id: set_color
+        run: |
+          if [[ "${{ needs.mutate.result }}" == "success" ]]; then
+            echo "NOTIFICATION_COLOR=good" >> $GITHUB_ENV
+          elif [[ "${{ needs.mutate.result }}" == "failure" ]]; then
+            echo "NOTIFICATION_COLOR=danger" >> $GITHUB_ENV
+          else
+            echo "NOTIFICATION_COLOR=warning" >> $GITHUB_ENV
+          fi
+      - name: Send mutation summary notification
+        uses: 8398a7/action-slack@v3
         with:
           status: custom
           fields: workflow,commit,repo,ref,author
           custom_payload: |
             {
-              attachments: [{
-                color: '${{ job.status }}' === 'success' ? 'good' : '${{ job.status }}' === 'failure' ? 'danger' : 'warning',
-                text: `${process.env.AS_WORKFLOW}/${{ github.job }} (shard ${{ env.SHARD_DISPLAY_INDEX }}/${{ strategy.job-total }}) ${{ job.status }}\n${process.env.AS_COMMIT} in ${process.env.AS_REF}`,
+              "attachments": [{
+                "color": "${{ env.NOTIFICATION_COLOR }}",
+                "text": "rails_application Mutation Test Summary:\nStatus: ${{ needs.mutate.result }}\nWorkflow: ${{ github.workflow }}\nCommit: ${{ github.sha }} in ${{ github.ref }}"
               }]
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.CI_WEBHOOK }}
-        if: always()
-        continue-on-error: true
 
   release:
     runs-on: ubuntu-24.04
