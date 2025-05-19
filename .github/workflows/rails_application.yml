@@ -156,35 +156,73 @@ jobs:
         id: set_mutant_args
         shell: bash
         run: |
+          echo "--- Debug: Determining mutation run type ---"
+          echo "Event name: ${{ github.event_name }}"
+          echo "Ref name: ${{ github.ref_name }}"
+          echo "Base ref (for PR): ${{ github.event.pull_request.base.ref }}"
+          echo "PR title: ${{ github.event.pull_request.title }}"
+          COMMIT_MESSAGES_LOG=$(echo "${{ join(github.event.commits.*.message, ' // ') }}" | head -c 500)
+          echo "Commit messages in push (first 500 chars): ${COMMIT_MESSAGES_LOG}..."
+          CONTAINS_MUTATE_FULL_IN_PUSH=$([[ "${{ contains(join(github.event.commits.*.message, ' '), '[mutate-full]') }}" == "true" ]] && echo "true" || echo "false")
+          echo "Contains '[mutate-full]' in push commit messages: $CONTAINS_MUTATE_FULL_IN_PUSH"
+          CONTAINS_MUTATE_FULL_IN_PR_TITLE=$([[ "${{ contains(github.event.pull_request.title, '[mutate-full]') }}" == "true" ]] && echo "true" || echo "false")
+          echo "Contains '[mutate-full]' in PR title: $CONTAINS_MUTATE_FULL_IN_PR_TITLE"
+          CONTAINS_MUTATE_FULL_IN_PR_BODY=$([[ "${{ contains(github.event.pull_request.body, '[mutate-full]') }}" == "true" ]] && echo "true" || echo "false")
+          echo "Contains '[mutate-full]' in PR body: $CONTAINS_MUTATE_FULL_IN_PR_BODY"
+          echo "---------------------------------------------"
+
           FULL_RUN_TRIGGER="false"
+          MUTANT_MODE_SET="false"
+
           if [[ "${{ github.event_name }}" == "pull_request" && \
-                ( "${{ contains(github.event.pull_request.title, '[mutate-full]') }}" == "true" || \
-                  "${{ contains(github.event.pull_request.body, '[mutate-full]') }}" == "true" ) ]]; then
+                ( "$CONTAINS_MUTATE_FULL_IN_PR_TITLE" == "true" || "$CONTAINS_MUTATE_FULL_IN_PR_BODY" == "true" ) ]]; then
+            echo "Logic path: [mutate-full] in PR title/body."
             FULL_RUN_TRIGGER="true"
-            echo "Full mutant run requested by PR title/description: [mutate-full]"
-          elif [[ "${{ github.event_name }}" == "push" && \
-                  "${{ contains(join(github.event.commits.*.message, ' '), '[mutate-full]') }}" == "true" ]]; then
+          elif [[ "${{ github.event_name }}" == "push" && "$CONTAINS_MUTATE_FULL_IN_PUSH" == "true" ]]; then
+            echo "Logic path: [mutate-full] in push commit message(s)."
             FULL_RUN_TRIGGER="true"
-            echo "Full mutant run requested by commit message: [mutate-full]"
           fi
 
           if [[ "$FULL_RUN_TRIGGER" == "true" ]]; then
+            echo "Action: Setting MUTANT_MODE=full due to [mutate-full] trigger."
             echo "MUTANT_MODE=full" >> $GITHUB_ENV
-          elif [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            echo "MUTANT_MODE=incremental" >> $GITHUB_ENV
-            echo "MUTANT_SINCE_TARGET=origin/${{ github.event.pull_request.base.ref }}" >> $GITHUB_ENV
-            echo "Increment mutant run for PR relative to base branch: origin/${{ github.event.pull_request.base.ref }}"
-          elif [[ "${{ github.event_name }}" == "push" && "${{ github.ref_name }}" == "master" ]]; then
-            echo "MUTANT_MODE=full" >> $GITHUB_ENV
-            echo "Full mutant run for push to master"
-          elif [[ "${{ github.event_name }}" == "push" && "${{ github.ref_name }}" != "master" ]]; then
-            echo "MUTANT_MODE=incremental" >> $GITHUB_ENV
-            echo "MUTANT_SINCE_TARGET=origin/master" >> $GITHUB_ENV
-            echo "Incremental mutant run for push to brnach ${{ github.ref_name }} relative to origin/master"
-          else
-            echo "MUTANT_MODE=full" >> $GITHUB_ENV
-            echo "Full mutation is run by default"
+            MUTANT_MODE_SET="true"
           fi
+
+          if [[ "$MUTANT_MODE_SET" == "false" ]]; then
+            if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+              echo "Logic path: Pull request event (no [mutate-full] trigger)."
+              echo "Action: Setting MUTANT_MODE=incremental for PR."
+              echo "MUTANT_MODE=incremental" >> $GITHUB_ENV
+              echo "MUTANT_SINCE_TARGET=origin/${{ github.event.pull_request.base.ref }}" >> $GITHUB_ENV
+              echo "Incremental target: origin/${{ github.event.pull_request.base.ref }}"
+              MUTANT_MODE_SET="true"
+            elif [[ "${{ github.event_name }}" == "push" ]]; then
+              if [[ "${{ github.ref_name }}" == "master" ]]; then
+                echo "Logic path: Push event to master branch (no [mutate-full] trigger)."
+                echo "Action: Setting MUTANT_MODE=full for master branch."
+                echo "MUTANT_MODE=full" >> $GITHUB_ENV
+                MUTANT_MODE_SET="true"
+              else
+                echo "Logic path: Push event to non-master branch ('${{ github.ref_name }}') (no [mutate-full] trigger)."
+                echo "Action: Setting MUTANT_MODE=incremental for branch push."
+                echo "MUTANT_MODE=incremental" >> $GITHUB_ENV
+                echo "MUTANT_SINCE_TARGET=origin/master" >> $GITHUB_ENV
+                echo "Incremental target: origin/master"
+                MUTANT_MODE_SET="true"
+              fi
+            fi
+          fi
+
+          if [[ "$MUTANT_MODE_SET" == "false" ]]; then
+            echo "Logic path: No specific condition met, defaulting to full mutation run."
+            echo "Action: Setting MUTANT_MODE=full (default)."
+            echo "MUTANT_MODE=full" >> $GITHUB_ENV
+          fi
+          echo "--- Final Environment Variables ---"
+          cat $GITHUB_ENV
+          echo "---------------------------------"
+
       - name: Assets Precompile
         working-directory: ${{ env.WORKING_DIRECTORY }}
         run: bundle exec rails tailwindcss:build
