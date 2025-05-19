@@ -180,7 +180,7 @@ jobs:
             {
               "attachments": [{
                 "color": "${{ env.NOTIFICATION_COLOR }}",
-                "text": "<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|pricing> Mutation Test Summary:\nStatus: ${{ needs.mutate.result }}\nWorkflow: <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|${{ github.workflow }}>\nCommit: <${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}|${{ github.sha }}> in ${{ github.ref }}"
+                "text": "<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|rails_application> Mutation Test Summary:\nStatus: ${{ needs.mutate.result }}\nWorkflow: <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|${{ github.workflow }}>\nCommit: <${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }}|${{ github.sha }}> in ${{ github.ref }}"
               }]
             }
         env:
