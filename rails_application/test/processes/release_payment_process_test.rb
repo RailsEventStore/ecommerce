@@ -1,7 +1,7 @@
-require_relative "test_helper"
+require "test_helper"
 
 module Processes
-  class ReleasePaymentProcessTest < Test
+  class ReleasePaymentProcessTest < ProcessTest
     cover "Processes::ReleasePaymentProcess*"
 
     def test_happy_path

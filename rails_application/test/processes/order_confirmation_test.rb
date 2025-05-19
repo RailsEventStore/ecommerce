@@ -1,7 +1,7 @@
-require_relative "test_helper"
+require "test_helper"
 
 module Processes
-  class OrderConfirmationTest < Test
+  class OrderConfirmationTest < ProcessTest
     cover "Processes::OrderConfirmation"
 
     def test_payment_confirms_order

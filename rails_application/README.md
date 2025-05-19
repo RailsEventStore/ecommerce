@@ -58,3 +58,25 @@ The script is called `big_picture.rb`, and you can execute it like this:
 ```shell
 bin/rails r script/big_picture.rb
 ```
+
+## Process managers
+
+### Release payments when order expired
+
+There's a process manager responsible for dealing with the process of
+expiring orders.
+
+It takes the following events as the input:
+- Ordering::OrderPlaced
+- Ordering::OrderExpired
+- Ordering::OrderConfirmed
+- Payments::PaymentAuthorized
+- Payments::PaymentReleased
+
+When certain conditions are met the process manager return a
+`ReleasePayment` command.
+
+### Confirm order when payment successful
+
+Another process manager is responsible for confirming order.
+It does it, when a successful payment is detected.

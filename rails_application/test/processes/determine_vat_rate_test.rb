@@ -1,7 +1,7 @@
-require_relative "test_helper"
+require "test_helper"
 
 module Processes
-  class DetermineVatRateTest < Test
+  class DetermineVatRateTest < ProcessTest
     cover "Processes::DetermineVatRatesOnOrderPlaced*"
 
     def test_happy_path
@@ -38,6 +38,10 @@ module Processes
     end
 
     private
+
+    def command_bus
+      @command_bus
+    end
 
     def offer_accepted(order_id, product_id)
       Pricing::OfferAccepted.new(
