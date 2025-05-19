@@ -43,7 +43,6 @@ ecommerce/
 ├── ordering
 ├── payments
 ├── pricing
-├── processes
 ├── product_catalog
 ├── shipping
 └── taxes
@@ -57,7 +56,6 @@ ecommerce/
 * [Ordering](ecommerce/ordering/README.md)
 * [Payments](ecommerce/payments/README.md)
 * [Pricing](ecommerce/pricing/README.md)
-* [Processes](ecommerce/processes/README.md)
 * [Product Catalog](ecommerce/product_catalog/README.md)
 * [Shipping](ecommerce/shipping/README.md)
 * [Taxes](ecommerce/taxes/README.md)
@@ -97,25 +95,10 @@ It's a good example of how to create a separate application that uses the same d
 
 ### Process Managers
 
-#### Release payments when order expired
+Processes are application specific so they live at the application level.
+In our case it's in the main ecommerce Rails app:
 
-There's a process manager responsible for dealing with the process of
-expiring orders.
-
-It takes the following events as the input:
-- Ordering::OrderPlaced
-- Ordering::OrderExpired
-- Ordering::OrderConfirmed
-- Payments::PaymentAuthorized
-- Payments::PaymentReleased
-
-When certain conditions are met the process manager return a
-`ReleasePayment` command.
-
-#### Confirm order when payment successful
-
-Another process manager is responsible for confirming order.
-It does it, when a successful payment is detected.
+[Processes](https://github.com/RailsEventStore/ecommerce/tree/master/rails_application/app/processes)
 
 
 # Contributing guide
