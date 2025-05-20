@@ -73,9 +73,9 @@ jobs:
             fi
           fi
 
-          echo "::set-output name=mutant_mode::${FINAL_MUTANT_MODE}"
-          echo "::set-output name=mutant_since_target::${FINAL_SINCE_TARGET}"
-          echo "::set-output name=num_groups::${FINAL_NUM_GROUPS}"
+          echo "mutant_mode=${FINAL_MUTANT_MODE}" >> $GITHUB_OUTPUT
+          echo "mutant_since_target=${FINAL_SINCE_TARGET}" >> $GITHUB_OUTPUT
+          echo "num_groups=${FINAL_NUM_GROUPS}" >> $GITHUB_OUTPUT
 
           echo "--- Final Parameters ---"
           echo "Mutant Mode: ${FINAL_MUTANT_MODE}"
@@ -176,7 +176,7 @@ jobs:
 
           if [ ${#subjects_array[@]} -eq 0 ]; then
             echo "No subjects found for rails_application after cleaning. Setting empty subject_groups."
-            echo "::set-output name=subject_groups::[]"
+            echo "subject_groups=[]" >> $GITHUB_OUTPUT
             exit 0
           fi
 
@@ -202,7 +202,7 @@ jobs:
             fi
           done
           echo "Generated subject_groups for rails_application: [$groups_json_array_content]"
-          echo "::set-output name=subject_groups::[$groups_json_array_content]"
+          echo "subject_groups=[$groups_json_array_content]" >> $GITHUB_OUTPUT
 
   mutate:
     needs: [determine_run_parameters, prepare_mutation_subjects_rails]
