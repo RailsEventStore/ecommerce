@@ -4,6 +4,85 @@ on:
   pull_request:
     types: [ opened, reopened ]
 jobs:
+  determine_run_parameters:
+    runs-on: ubuntu-24.04
+    outputs:
+      mutant_mode: ${{ steps.set_params.outputs.mutant_mode }}
+      mutant_since_target: ${{ steps.set_params.outputs.mutant_since_target }}
+      num_groups: ${{ steps.set_params.outputs.num_groups }}
+    steps:
+      - name: Determine Mutation Run Parameters
+        id: set_params
+        shell: bash
+        run: |
+          echo "--- Debug: Determining mutation run parameters ---"
+          echo "Event name: ${{ github.event_name }}"
+          echo "Ref name: ${{ github.ref_name }}"
+          echo "Base ref (for PR): ${{ github.event.pull_request.base.ref }}"
+          echo "PR title: ${{ github.event.pull_request.title }}"
+          COMMIT_MESSAGES_LOG=$(echo "${{ join(github.event.commits.*.message, ' // ') }}" | head -c 500)
+          echo "Commit messages in push (first 500 chars): ${COMMIT_MESSAGES_LOG}..."
+          CONTAINS_MUTATE_FULL_IN_PUSH=$([[ "${{ contains(join(github.event.commits.*.message, ' '), '[mutate-full]') }}" == "true" ]] && echo "true" || echo "false")
+          echo "Contains '[mutate-full]' in push commit messages: $CONTAINS_MUTATE_FULL_IN_PUSH"
+          CONTAINS_MUTATE_FULL_IN_PR_TITLE=$([[ "${{ contains(github.event.pull_request.title, '[mutate-full]') }}" == "true" ]] && echo "true" || echo "false")
+          echo "Contains '[mutate-full]' in PR title: $CONTAINS_MUTATE_FULL_IN_PR_TITLE"
+          CONTAINS_MUTATE_FULL_IN_PR_BODY=$([[ "${{ contains(github.event.pull_request.body, '[mutate-full]') }}" == "true" ]] && echo "true" || echo "false")
+          echo "Contains '[mutate-full]' in PR body: $CONTAINS_MUTATE_FULL_IN_PR_BODY"
+          echo "---------------------------------------------"
+
+          FINAL_MUTANT_MODE="full"
+          FINAL_NUM_GROUPS=32
+          FINAL_SINCE_TARGET=""
+
+          IS_MUTATE_FULL_TRIGGERED="false"
+          if [[ "${{ github.event_name }}" == "pull_request" && \
+                ( "$CONTAINS_MUTATE_FULL_IN_PR_TITLE" == "true" || "$CONTAINS_MUTATE_FULL_IN_PR_BODY" == "true" ) ]]; then
+            echo "Logic path: [mutate-full] in PR title/body."
+            IS_MUTATE_FULL_TRIGGERED="true"
+          elif [[ "${{ github.event_name }}" == "push" && "$CONTAINS_MUTATE_FULL_IN_PUSH" == "true" ]]; then
+            echo "Logic path: [mutate-full] in push commit message(s)."
+            IS_MUTATE_FULL_TRIGGERED="true"
+          fi
+
+          if [[ "$IS_MUTATE_FULL_TRIGGERED" == "true" ]]; then
+            echo "Action: Mode set to 'full' (NUM_GROUPS=32) due to [mutate-full] trigger."
+            FINAL_MUTANT_MODE="full"
+            FINAL_NUM_GROUPS=32
+          else
+            if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+              echo "Logic path: Pull request event (no [mutate-full] trigger)."
+              echo "Action: Mode set to 'incremental' (NUM_GROUPS=4) for PR."
+              FINAL_MUTANT_MODE="incremental"
+              FINAL_NUM_GROUPS=4
+              FINAL_SINCE_TARGET="origin/${{ github.event.pull_request.base.ref }}"
+              echo "Incremental target: $FINAL_SINCE_TARGET"
+            elif [[ "${{ github.event_name }}" == "push" ]]; then
+              if [[ "${{ github.ref_name }}" == "master" ]]; then
+                echo "Logic path: Push event to master branch (no [mutate-full] trigger)."
+                echo "Action: Mode set to 'full' (NUM_GROUPS=32) for master branch."
+                FINAL_MUTANT_MODE="full"
+                FINAL_NUM_GROUPS=32
+              else
+                echo "Logic path: Push event to non-master branch ('${{ github.ref_name }}') (no [mutate-full] trigger)."
+                echo "Action: Mode set to 'incremental' (NUM_GROUPS=4) for branch push."
+                FINAL_MUTANT_MODE="incremental"
+                FINAL_NUM_GROUPS=4
+                FINAL_SINCE_TARGET="origin/master"
+                echo "Incremental target: $FINAL_SINCE_TARGET"
+              fi
+            fi
+          fi
+
+          echo "mutant_mode=${FINAL_MUTANT_MODE}" >> $GITHUB_OUTPUT
+          echo "mutant_since_target=${FINAL_SINCE_TARGET}" >> $GITHUB_OUTPUT
+          echo "num_groups=${FINAL_NUM_GROUPS}" >> $GITHUB_OUTPUT
+
+          echo "--- Final Parameters ---"
+          echo "Mutant Mode: ${FINAL_MUTANT_MODE}"
+          echo "Mutant Since Target: ${FINAL_SINCE_TARGET}"
+          echo "Num Groups: ${FINAL_NUM_GROUPS}"
+          echo "------------------------"
+
   test:
     runs-on: ubuntu-24.04
     strategy:
@@ -49,6 +128,7 @@ jobs:
 
   prepare_mutation_subjects_rails:
     runs-on: ubuntu-24.04
+    needs: determine_run_parameters
     outputs:
       subject_groups: ${{ steps.split_subjects.outputs.subject_groups }}
     env:
@@ -64,6 +144,8 @@ jobs:
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: ruby-3.3.7
@@ -72,6 +154,8 @@ jobs:
       - name: List and split subjects for rails_application
         id: split_subjects
         working-directory: ${{ env.WORKING_DIRECTORY }}
+        env:
+          NUM_GROUPS_FROM_CI: ${{ needs.determine_run_parameters.outputs.num_groups }}
         run: |
           echo "Waiting for PostgreSQL to be ready..."
           until pg_isready -h localhost -p 5432 -U "postgres" -d "cqrs-es-sample-with-res_test"; do
@@ -82,9 +166,6 @@ jobs:
           RAILS_ENV=test bundle exec rails db:prepare
 
           SUBJECT_LIST_OUTPUT=$(RAILS_ENV=test bundle exec mutant environment subject list)
-          # Skip the first line (e.g., "Subjects in environment: 47") and read subjects into an array
-          mapfile -t subjects_array < <(echo "$SUBJECT_LIST_OUTPUT" | tail -n +2 | sed 's/\x1b\[[0-9;]*m//g' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | awk 'NF')
-
           mapfile -t subjects_array < <( \
             echo "$SUBJECT_LIST_OUTPUT" | \
             awk 'NR == 1 {next} /Run options:/ {exit} {print}' | \
@@ -100,7 +181,8 @@ jobs:
           fi
 
           total_subjects=${#subjects_array[@]}
-          NUM_GROUPS=32 # Define the number of parallel jobs
+          NUM_GROUPS=${NUM_GROUPS_FROM_CI:-32}
+          echo "Number of parallel groups to create: $NUM_GROUPS"
           groups_json_array_content=""
 
           for (( i=0; i<NUM_GROUPS; i++ )); do
@@ -123,7 +205,7 @@ jobs:
           echo "subject_groups=[$groups_json_array_content]" >> $GITHUB_OUTPUT
 
   mutate:
-    needs: prepare_mutation_subjects_rails
+    needs: [determine_run_parameters, prepare_mutation_subjects_rails]
     if: ${{ needs.prepare_mutation_subjects_rails.outputs.subject_groups != '[]' && needs.prepare_mutation_subjects_rails.outputs.subject_groups != '' }}
     runs-on: ubuntu-24.04
     strategy:
@@ -132,6 +214,8 @@ jobs:
         subject_group: ${{ fromJson(needs.prepare_mutation_subjects_rails.outputs.subject_groups) }}
     env:
       WORKING_DIRECTORY: rails_application
+      MUTANT_MODE: ${{ needs.determine_run_parameters.outputs.mutant_mode }}
+      MUTANT_SINCE_TARGET: ${{ needs.determine_run_parameters.outputs.mutant_since_target }}
     services:
       postgres:
         image: postgres:17-alpine
@@ -143,6 +227,8 @@ jobs:
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - uses: ruby/setup-ruby@v1
         with:
           ruby-version: ruby-3.3.7
@@ -151,7 +237,8 @@ jobs:
       - name: Assets Precompile
         working-directory: ${{ env.WORKING_DIRECTORY }}
         run: bundle exec rails tailwindcss:build
-      - run: make mutate
+      - name: Run mutation tests (parallel group)
+        run: make mutate
         working-directory: ${{ env.WORKING_DIRECTORY }}
         env:
           CI_MUTATE_SUBJECTS: ${{ matrix.subject_group }}
