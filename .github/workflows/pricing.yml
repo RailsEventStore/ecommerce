@@ -73,6 +73,10 @@ jobs:
             fi
           fi
 
+          echo "Debug before GITHUB_OUTPUT: FINAL_MUTANT_MODE='${FINAL_MUTANT_MODE}'"
+          echo "Debug before GITHUB_OUTPUT: FINAL_SINCE_TARGET='${FINAL_SINCE_TARGET}'"
+          echo "Debug before GITHUB_OUTPUT: FINAL_NUM_GROUPS='${FINAL_NUM_GROUPS}'"
+
           echo "mutant_mode=${FINAL_MUTANT_MODE}" >> $GITHUB_OUTPUT
           echo "mutant_since_target=${FINAL_SINCE_TARGET}" >> $GITHUB_OUTPUT
           echo "num_groups=${FINAL_NUM_GROUPS}" >> $GITHUB_OUTPUT
@@ -201,7 +205,15 @@ jobs:
           bundler-cache: true
           working-directory: ${{ env.WORKING_DIRECTORY }}
       - name: Run mutation tests (parallel group for pricing)
-        run: make mutate
+        run: |
+          echo "Debug from CI step before calling make (using PASSED_ var names):"
+          echo "  Value for PASSED_MODE='${{ env.ENV_CLI_MUTANT_MODE }}'"
+          echo "  Value for PASSED_SINCE_TARGET='${{ env.ENV_CLI_MUTANT_SINCE_TARGET }}'"
+          echo "  CI_MUTATE_SUBJECTS (from env): '${{ env.CI_MUTATE_SUBJECTS }}'"
+        
+          make mutate \
+            PASSED_MODE="${{ env.ENV_CLI_MUTANT_MODE }}" \
+            PASSED_SINCE_TARGET="${{ env.ENV_CLI_MUTANT_SINCE_TARGET }}"
         working-directory: ${{ env.WORKING_DIRECTORY }}
         env:
           CI_MUTATE_SUBJECTS: ${{ matrix.subject_group }}
