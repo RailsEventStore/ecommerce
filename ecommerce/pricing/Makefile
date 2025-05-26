@@ -9,15 +9,6 @@ test:
 	@bundle exec ruby -e "require \"rake/rake_test_loader\"" test/*_test.rb
 
 mutate:
-	@echo "--- Makefile Debug: Initial State ---"
-	@echo "PASSED_MODE (from CLI):                  '$(PASSED_MODE)'"
-	@echo "PASSED_SINCE_TARGET (from CLI):          '$(PASSED_SINCE_TARGET)'"
-	@echo "CI_MUTATE_SUBJECTS (from environment):   '$(CI_MUTATE_SUBJECTS)'"
-
-	@echo "--- Makefile Debug: After Internal Assignment ---"
-	@echo "MUTANT_MODE_INTERNAL (after assign):     '$(MUTANT_MODE_INTERNAL)'"
-	@echo "MUTANT_SINCE_TARGET_INTERNAL (after assign):'$(MUTANT_SINCE_TARGET_INTERNAL)'"
-
 	$(eval SUBJECTS_TO_RUN := $(strip $(CI_MUTATE_SUBJECTS)))
 	$(eval TEMP_ACTUAL_MUTANT_ARGS :=)
 
