@@ -1,7 +1,7 @@
-require_relative "test_helper"
+require "test_helper"
 
 module Processes
-  class ShipmentProcessTest < Test
+  class ShipmentProcessTest < ProcessTest
     cover "Processes::ShipmentProcess*"
 
     def test_submit_and_authorize_shipment_when_order_confirmed_and_address_set

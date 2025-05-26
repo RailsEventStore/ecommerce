@@ -16,6 +16,7 @@ matcher:
   subjects:
     - Orders*
     - ClientOrders*
+    - Processes*
   ignore:
     - Orders::Configuration#call
     - Orders::Configuration#change_product_price
@@ -39,3 +40,13 @@ matcher:
     - Orders::SubmitOrder*
     - Orders::AssignCustomerToOrder*
     - Orders::SubmitService#submit_order
+    - Processes::Configuration*
+    - Processes::OrderConfirmation#stream_name
+    - Processes::Test*
+    - Processes::ReleasePaymentProcess*
+    - Processes::MoneySplitter*
+    - Processes::OrderItemInvoicingProcess#fetch_id
+    - Processes::SyncShipmentFromPricing*
+    - Processes::SyncInventoryFromOrdering*
+    - Processes::NotifyPaymentsAboutOrderValue*
+    - Processes::WelcomeMessageProcess*

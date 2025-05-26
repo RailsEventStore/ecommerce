@@ -19,6 +19,7 @@ class Configuration
     enable_authentication_read_model(event_store)
     enable_vat_rates_read_model(event_store)
     enable_refunds_read_model(event_store)
+    configure_processes(event_store, command_bus)
 
     Ecommerce::Configuration.new(
       number_generator: Rails.configuration.number_generator,
@@ -90,5 +91,9 @@ class Configuration
 
   def enable_refunds_read_model(event_store)
     Refunds::Configuration.new.call(event_store)
+  end
+
+  def configure_processes(event_store, command_bus)
+    Processes::Configuration.new.call(event_store, command_bus)
   end
 end

@@ -28,7 +28,7 @@ class BuildEventsCatalog
   end
 
   def read_domains
-    Dir.entries(SOURCE_PATH).select { |entry| File.directory?("#{SOURCE_PATH}#{entry}") and !(entry == '.' || entry == '..' || entry == 'processes') }
+    Dir.entries(SOURCE_PATH).select { |entry| File.directory?("#{SOURCE_PATH}#{entry}") and !(entry == '.' || entry == '..') }
   end
 
   def source_domain_directory(domain)
