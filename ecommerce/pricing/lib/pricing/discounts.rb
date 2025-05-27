@@ -6,6 +6,9 @@ module Pricing
     class UnacceptableDiscountRange < StandardError
     end
 
+    class BasePriceNotProvided < StandardError
+    end
+
     class Discount
       def self.build(discount)
         if discount.zero?
@@ -63,6 +66,7 @@ module Pricing
 
     class ThreePlusOneGratis
       def apply(product_quantities, product_id, base_price)
+        raise BasePriceNotProvided unless base_price
         product = product_quantities.find { |product_quantity| product_quantity.fetch(:product_id) == product_id }
         return [false, base_price] if product.nil?
         quantity = product.fetch(:quantity) + 1
