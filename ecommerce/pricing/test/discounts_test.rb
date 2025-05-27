@@ -113,6 +113,13 @@ module Pricing
         result = @three_plus_one_gratis.apply(quantities, @product_id, 20)
         assert_equal [false, 20], result
       end
+
+      def test_raises_exeption_when_base_price_is_nil
+        quantities = [{ product_id: @product_id, quantity: 8 }]
+        assert_raises BasePriceNotProvided do
+          @three_plus_one_gratis.apply(quantities, @product_id, nil)
+        end
+      end
     end
   end
 end
