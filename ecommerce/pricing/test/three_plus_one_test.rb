@@ -127,7 +127,7 @@ module Pricing
             discounted_amount: 60,
           }
         )
-      ) { add_item(order_id, product_id, promotion: true) }
+      ) { add_item(order_id, product_id) }
     end
 
     def test_given_3_plus_one__when_10_percent_discount_for_offer__then_offer_price_includes_both_discounts
@@ -253,7 +253,7 @@ module Pricing
             discounted_amount: 60,
           }
         )
-      ) { add_item(order_id, product_id, promotion: true) }
+      ) { add_item(order_id, product_id) }
       assert_events(
         stream,
         PercentageDiscountSet.new(
