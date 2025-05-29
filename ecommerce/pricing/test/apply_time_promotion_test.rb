@@ -92,9 +92,7 @@ module Pricing
       PercentageDiscountRemoved.new(
         data: {
           order_id: order_id,
-          type: Pricing::Discounts::TIME_PROMOTION_DISCOUNT,
-          base_total_value: 1000,
-          total_value: 1000
+          type: Pricing::Discounts::TIME_PROMOTION_DISCOUNT
         }
       )
     end

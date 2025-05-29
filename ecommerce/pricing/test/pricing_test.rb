@@ -130,9 +130,7 @@ module Pricing
         PercentageDiscountRemoved.new(
           data: {
             order_id: order_id,
-            type: Discounts::TIME_PROMOTION_DISCOUNT,
-            base_total_value: 0,
-            total_value: 0
+            type: Discounts::TIME_PROMOTION_DISCOUNT
           }
         )
       ) { remove_time_promotion_discount(order_id) }
@@ -209,9 +207,7 @@ module Pricing
         PercentageDiscountRemoved.new(
           data: {
             order_id: order_id,
-            type: Pricing::Discounts::GENERAL_DISCOUNT,
-            base_total_value: 20,
-            total_value: 20
+            type: Pricing::Discounts::GENERAL_DISCOUNT
           }
         ),
         OrderTotalValueCalculated.new(
@@ -412,9 +408,7 @@ module Pricing
         PercentageDiscountRemoved.new(
           data: {
             order_id: order_id,
-            type: Discounts::GENERAL_DISCOUNT,
-            base_total_value: 20,
-            total_value: 20
+            type: Discounts::GENERAL_DISCOUNT
           }
         ),
         OrderTotalValueCalculated.new(
