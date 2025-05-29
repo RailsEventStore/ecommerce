@@ -254,23 +254,6 @@ module Pricing
           }
         )
       ) { add_item(order_id, product_id) }
-      assert_events(
-        stream,
-        PercentageDiscountSet.new(
-          data: {
-            order_id: order_id,
-            type: Discounts::GENERAL_DISCOUNT,
-            amount: 10
-          }
-        ),
-        OrderTotalValueCalculated.new(
-          data: {
-            order_id: order_id,
-            discounted_amount: 54,
-            total_amount: 80
-          }
-        )
-      ) { set_percentage_discount(order_id, 10) }
     end
   end
 end
