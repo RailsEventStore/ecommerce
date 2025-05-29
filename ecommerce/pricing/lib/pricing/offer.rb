@@ -10,15 +10,12 @@ module Pricing
       @list = List.new
       @discounts = []
       @state = :draft
+
+      @three_plus_one_gratis = Discounts::ThreePlusOneGratis.new
     end
 
-    def add_item(product_id, base_price, promotion = Pricing::Discounts::ThreePlusOneGratis.new)
-      if promotion
-        price = promotion.apply(@list.quantities, product_id, base_price)
-      else
-        price = @discounts.inject(Discounts::NoPercentageDiscount.new, :add).apply(base_price)
-      end
-
+    def add_item(product_id, base_price)
+      price = @discounts.inject(Discounts::NoPercentageDiscount.new, :add).apply(base_price)
       apply PriceItemAdded.new(
         data: {
           order_id: @id,
@@ -29,6 +26,15 @@ module Pricing
           total_value: @list.actual_sum + price
         }
       )
+
+      anything_applied = @three_plus_one_gratis.apply(@list)
+      apply DiscountApplied.new(
+        data: {
+          order_id: @id,
+          base_total_value: @list.base_sum,
+          total_value: @list.actual_sum
+        }
+      ) if anything_applied
     end
 
     def remove_item(product_id)
@@ -166,6 +172,10 @@ module Pricing
     end
 
     private
+
+    on DiscountApplied do |event|
+      # TODO: Something about discount?
+    end
 
     on PriceItemAdded do |event|
       @list.add_item(event.data.fetch(:product_id), event.data.fetch(:base_price), event.data.fetch(:price))
