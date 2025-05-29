@@ -64,7 +64,6 @@ module Pricing
         assert_equal(100, NoPercentageDiscount.new.apply(100))
       end
     end
-
     class ThreePlusOneGratisTest < Test
       cover "Pricing::Discounts*"
       def setup
