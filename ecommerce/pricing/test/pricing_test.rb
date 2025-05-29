@@ -103,9 +103,7 @@ module Pricing
           data: {
             order_id: order_id,
             type: Discounts::TIME_PROMOTION_DISCOUNT,
-            amount: 25,
-            base_total_value: 0,
-            total_value: 0
+            amount: 25
           }
         )
       ) { set_time_promotion_discount(order_id, 25) }
@@ -164,9 +162,7 @@ module Pricing
           data: {
             order_id: order_id,
             type: Pricing::Discounts::GENERAL_DISCOUNT,
-            amount: 10,
-            base_total_value: 20,
-            total_value: 18
+            amount: 10
           }
         ),
         OrderTotalValueCalculated.new(
@@ -236,9 +232,7 @@ module Pricing
           data: {
             order_id: order_id,
             type: Pricing::Discounts::GENERAL_DISCOUNT,
-            amount: 100,
-            base_total_value: 20,
-            total_value: 0
+            amount: 100
           }
         ),
         OrderTotalValueCalculated.new(
