@@ -120,7 +120,7 @@ module Pricing
 
     def call(command)
       @repository.with_aggregate(Offer, command.aggregate_id) do |order|
-        promotion = Discounts::ThreePlusOneGratis.new  if command.promotion
+        promotion = command.promotion ? Discounts::ThreePlusOneGratis.new : nil
         order.add_item(command.product_id, command.price, promotion)
       end
     end
