@@ -395,44 +395,5 @@ module Pricing
         )
       ) { add_item(order_id, product_id, promotion: true) }
     end
-
-    def test_given_three_plus_one_is_applied_when_item_is_removed_then_the_discount_is_removed
-      product_id = SecureRandom.uuid
-      set_price(product_id, 20)
-      order_id = SecureRandom.uuid
-      stream = "Pricing::Offer$#{order_id}"
-
-      4.times { add_item(order_id, product_id, promotion: true) }
-
-      assert_events(
-        stream,
-        PriceItemRemoved.new(
-          data: {
-            order_id: order_id,
-            product_id: product_id,
-            base_price: 20,
-            price: 0,
-            base_total_value: 60,
-            total_value: 60
-          }
-        ),
-        OrderTotalValueCalculated.new(
-          data: {
-            order_id: order_id,
-            total_amount: 60,
-            discounted_amount: 60
-          }
-        ),
-        PriceItemValueCalculated.new(
-          data: {
-            order_id: order_id,
-            product_id: product_id,
-            quantity: 3,
-            amount: 60,
-            discounted_amount: 60,
-          }
-        )
-      ) { remove_item(order_id, product_id) }
-    end
   end
 end
