@@ -47,7 +47,6 @@ module Pricing
     attribute :price, Infra::Types::Price
     attribute :base_total_value, Infra::Types::Price
     attribute :total_value, Infra::Types::Price
-    attribute? :applied_promotion, Infra::Types::String
   end
 
   class PriceItemRemoved < Infra::Event
