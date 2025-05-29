@@ -174,3 +174,4 @@ Feel free to join [here](https://discord.gg/2xDJPgPjc8) to ask questions or disc
 ## I like it, where can I learn more about all those DDD concepts?
 
 Over time we have developed a number of DDD-related online courses. We now sell them as part of one membership access via [arkademy.dev](https://arkademy.dev).
+
