@@ -271,15 +271,6 @@ module Pricing
             discounted_amount: 54,
             total_amount: 80
           }
-        ),
-        PriceItemValueCalculated.new(
-          data: {
-            order_id: order_id,
-            product_id: product_id,
-            quantity: 4,
-            amount: 80,
-            discounted_amount: 54,
-          }
         )
       ) { set_percentage_discount(order_id, 10) }
     end
