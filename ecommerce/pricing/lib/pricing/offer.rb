@@ -11,7 +11,7 @@ module Pricing
       @discounts = []
       @state = :draft
 
-      @three_plus_one_gratis = Discounts::ThreePlusOneGratis.new
+      @three_plus_one_gratis = Discounts::ThreePlusOneGratis.new(@list)
     end
 
     def add_item(product_id, base_price)
@@ -26,8 +26,8 @@ module Pricing
           total_value: @list.actual_sum + price
         }
       )
-
-      anything_applied = @three_plus_one_gratis.apply(@list)
+      
+      anything_applied = @three_plus_one_gratis.apply(base_price)
       apply DiscountApplied.new(
         data: {
           order_id: @id,
