@@ -46,10 +46,6 @@ module Pricing
       run_command(SetTimePromotionDiscount.new(order_id: order_id, amount: amount))
     end
 
-    def set_percentage_discount(order_id, amount)
-      run_command(SetPercentageDiscount.new(order_id: order_id, amount: amount))
-    end
-
     def remove_time_promotion_discount(order_id)
       run_command(RemoveTimePromotionDiscount.new(order_id: order_id))
     end
