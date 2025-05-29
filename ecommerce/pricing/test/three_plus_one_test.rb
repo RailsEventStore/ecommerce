@@ -260,9 +260,7 @@ module Pricing
           data: {
             order_id: order_id,
             type: Discounts::GENERAL_DISCOUNT,
-            amount: 10,
-            base_total_value: 80,
-            total_value: 54
+            amount: 10
           }
         ),
         OrderTotalValueCalculated.new(
