@@ -19,18 +19,16 @@ module Pricing
         price = @discounts.inject(Discounts::NoPercentageDiscount.new, :add).apply(base_price)
       end
 
-      data = {
-        order_id: @id,
-        product_id: product_id,
-        base_price: base_price,
-        price: price,
-        base_total_value: @list.base_sum + base_price,
-        total_value: @list.actual_sum + price,
-      }
-
-      data[:applied_promotion] = promotion.class.name if promotion
-
-      apply PriceItemAdded.new(data:)
+      apply PriceItemAdded.new(
+        data: {
+          order_id: @id,
+          product_id: product_id,
+          base_price: base_price,
+          price: price,
+          base_total_value: @list.base_sum + base_price,
+          total_value: @list.actual_sum + price
+        }
+      )
     end
 
     def remove_item(product_id)
