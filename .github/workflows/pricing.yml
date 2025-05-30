@@ -14,25 +14,59 @@ jobs:
       - name: Determine Mutation Run Parameters
         id: set_params
         shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          REF_NAME: ${{ github.ref_name }}
+          PR_BASE_REF: ${{ github.event.pull_request.base.ref }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+          COMMIT_MESSAGES_JOINED_WITH_SPACES_ACTIONS: ${{ join(github.event.commits.*.message, ' ') }}
+          COMMIT_MESSAGES_JOINED_WITH_SLASHES_ACTIONS: ${{ join(github.event.commits.*.message, ' // ') }}
+
         run: |
           echo "--- Debug: Determining mutation run parameters for pricing ---"
-          echo "Event name: ${{ github.event_name }}"
-          echo "Ref name: ${{ github.ref_name }}"
-          echo "Base ref (for PR): ${{ github.event.pull_request.base.ref }}"
-          echo "PR title: ${{ github.event.pull_request.title }}"
-          RAW_COMMIT_MESSAGES_FOR_CONTAINS="${{ join(github.event.commits.*.message, ' ') }}"
-          COMMIT_MESSAGES_LOG=$(printf "%s" "${{ join(github.event.commits.*.message, ' // ') }}" | head -c 500)
-          echo "Commit messages in push (first 500 chars): ${COMMIT_MESSAGES_LOG}..."
-          if [[ "${RAW_COMMIT_MESSAGES_FOR_CONTAINS}" == *"[mutate-full]"* ]]; then
+          echo "Event name: $EVENT_NAME"
+          echo "Ref name: $REF_NAME"
+          echo "Base ref (for PR): $PR_BASE_REF"
+          echo "PR title: $PR_TITLE" # Powinno teraz wyświetlić pusty string dla push, a nie literał
+
+          # Pobierz surowe, połączone komunikaty commitów ze zmiennych środowiskowych
+          # Te zmienne są już "czystymi" stringami w środowisku shella
+          RAW_COMMIT_MESSAGES_FOR_JOIN_WITH_SLASHES="$COMMIT_MESSAGES_JOINED_WITH_SLASHES_ACTIONS"
+          RAW_COMMIT_MESSAGES_FOR_JOIN_WITH_SPACES="$COMMIT_MESSAGES_FOR_JOIN_WITH_SPACES_ACTIONS"
+
+          # Oczyść komunikaty z apostrofów dla celów logowania
+          CLEANED_COMMIT_MESSAGES_FOR_LOG="${RAW_COMMIT_MESSAGES_FOR_JOIN_WITH_SLASHES//\'/}"
+          COMMIT_MESSAGES_LOG=$(echo "${CLEANED_COMMIT_MESSAGES_FOR_LOG}" | head -c 500)
+          echo "Commit messages in push (cleaned, first 500 chars): ${COMMIT_MESSAGES_LOG}..."
+
+          # Oczyść komunikaty z apostrofów PRZED użyciem ich w logice warunkowej
+          CLEANED_COMMIT_MESSAGES_FOR_CONTAINS="${RAW_COMMIT_MESSAGES_FOR_JOIN_WITH_SPACES//\'/}"
+          
+          if [[ "${CLEANED_COMMIT_MESSAGES_FOR_CONTAINS}" == *"[mutate-full]"* ]]; then
             CONTAINS_MUTATE_FULL_IN_PUSH="true"
           else
             CONTAINS_MUTATE_FULL_IN_PUSH="false"
           fi
-          echo "Contains '[mutate-full]' in push commit messages: $CONTAINS_MUTATE_FULL_IN_PUSH"
-          CONTAINS_MUTATE_FULL_IN_PR_TITLE=$([[ "${{ contains(github.event.pull_request.title, '[mutate-full]') }}" == "true" ]] && echo "true" || echo "false")
-          echo "Contains '[mutate-full]' in PR title: $CONTAINS_MUTATE_FULL_IN_PR_TITLE"
-          CONTAINS_MUTATE_FULL_IN_PR_BODY=$([[ "${{ contains(github.event.pull_request.body, '[mutate-full]') }}" == "true" ]] && echo "true" || echo "false")
-          echo "Contains '[mutate-full]' in PR body: $CONTAINS_MUTATE_FULL_IN_PR_BODY"
+          echo "Contains '[mutate-full]' in push commit messages (from cleaned messages): $CONTAINS_MUTATE_FULL_IN_PUSH"
+          
+          # Użyj zmiennych środowiskowych dla tytułu i body PR
+          CLEANED_PR_TITLE="${PR_TITLE//\'/}"
+          if [[ "${CLEANED_PR_TITLE}" == *"[mutate-full]"* ]]; then
+            CONTAINS_MUTATE_FULL_IN_PR_TITLE="true"
+          else
+            CONTAINS_MUTATE_FULL_IN_PR_TITLE="false"
+          fi
+          echo "Contains '[mutate-full]' in PR title (from cleaned title): $CONTAINS_MUTATE_FULL_IN_PR_TITLE"
+
+          CLEANED_PR_BODY="${PR_BODY//\'/}"
+          if [[ "${CLEANED_PR_BODY}" == *"[mutate-full]"* ]]; then
+            CONTAINS_MUTATE_FULL_IN_PR_BODY="true"
+          else
+            CONTAINS_MUTATE_FULL_IN_PR_BODY="false"
+          fi
+          echo "Contains '[mutate-full]' in PR body (from cleaned body): $CONTAINS_MUTATE_FULL_IN_PR_BODY"
+          
           echo "---------------------------------------------"
 
           FINAL_MUTANT_MODE="full"
@@ -40,11 +74,11 @@ jobs:
           FINAL_SINCE_TARGET=""
 
           IS_MUTATE_FULL_TRIGGERED="false"
-          if [[ "${{ github.event_name }}" == "pull_request" && \
+          if [[ "$EVENT_NAME" == "pull_request" && \
                 ( "$CONTAINS_MUTATE_FULL_IN_PR_TITLE" == "true" || "$CONTAINS_MUTATE_FULL_IN_PR_BODY" == "true" ) ]]; then
             echo "Logic path: [mutate-full] in PR title/body."
             IS_MUTATE_FULL_TRIGGERED="true"
-          elif [[ "${{ github.event_name }}" == "push" && "$CONTAINS_MUTATE_FULL_IN_PUSH" == "true" ]]; then
+          elif [[ "$EVENT_NAME" == "push" && "$CONTAINS_MUTATE_FULL_IN_PUSH" == "true" ]]; then
             echo "Logic path: [mutate-full] in push commit message(s)."
             IS_MUTATE_FULL_TRIGGERED="true"
           fi
@@ -54,25 +88,25 @@ jobs:
             FINAL_MUTANT_MODE="full"
             FINAL_NUM_GROUPS=32
           else
-            if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            if [[ "$EVENT_NAME" == "pull_request" ]]; then
               echo "Logic path: Pull request event (no [mutate-full] trigger)."
               echo "Action: Mode set to 'incremental' (NUM_GROUPS=4) for PR."
               FINAL_MUTANT_MODE="incremental"
               FINAL_NUM_GROUPS=4
-              FINAL_SINCE_TARGET="origin/${{ github.event.pull_request.base.ref }}"
+              FINAL_SINCE_TARGET="origin/$PR_BASE_REF" # Używamy zmiennej środowiskowej
               echo "Incremental target: $FINAL_SINCE_TARGET"
-            elif [[ "${{ github.event_name }}" == "push" ]]; then
-              if [[ "${{ github.ref_name }}" == "master" || "${{ github.ref_name }}" == "main" ]]; then
+            elif [[ "$EVENT_NAME" == "push" ]]; then
+              if [[ "$REF_NAME" == "master" || "$REF_NAME" == "main" ]]; then
                 echo "Logic path: Push event to main branch (no [mutate-full] trigger)."
                 echo "Action: Mode set to 'full' (NUM_GROUPS=32) for main branch."
                 FINAL_MUTANT_MODE="full"
                 FINAL_NUM_GROUPS=32
               else
-                echo "Logic path: Push event to non-main branch ('${{ github.ref_name }}') (no [mutate-full] trigger)."
+                echo "Logic path: Push event to non-main branch ('$REF_NAME') (no [mutate-full] trigger)."
                 echo "Action: Mode set to 'incremental' (NUM_GROUPS=4) for branch push."
                 FINAL_MUTANT_MODE="incremental"
                 FINAL_NUM_GROUPS=4
-                FINAL_SINCE_TARGET="origin/master"
+                FINAL_SINCE_TARGET="origin/master" # Lub origin/main jeśli to Twój główny branch
                 echo "Incremental target: $FINAL_SINCE_TARGET"
               fi
             fi
