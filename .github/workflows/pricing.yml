@@ -20,9 +20,14 @@ jobs:
           echo "Ref name: ${{ github.ref_name }}"
           echo "Base ref (for PR): ${{ github.event.pull_request.base.ref }}"
           echo "PR title: ${{ github.event.pull_request.title }}"
-          COMMIT_MESSAGES_LOG=$(echo "${{ join(github.event.commits.*.message, ' // ') }}" | head -c 500)
+          RAW_COMMIT_MESSAGES_FOR_CONTAINS="${{ join(github.event.commits.*.message, ' ') }}"
+          COMMIT_MESSAGES_LOG=$(printf "%s" "${{ join(github.event.commits.*.message, ' // ') }}" | head -c 500)
           echo "Commit messages in push (first 500 chars): ${COMMIT_MESSAGES_LOG}..."
-          CONTAINS_MUTATE_FULL_IN_PUSH=$([[ "${{ contains(join(github.event.commits.*.message, ' '), '[mutate-full]') }}" == "true" ]] && echo "true" || echo "false")
+          if [[ "${RAW_COMMIT_MESSAGES_FOR_CONTAINS}" == *"[mutate-full]"* ]]; then
+            CONTAINS_MUTATE_FULL_IN_PUSH="true"
+          else
+            CONTAINS_MUTATE_FULL_IN_PUSH="false"
+          fi
           echo "Contains '[mutate-full]' in push commit messages: $CONTAINS_MUTATE_FULL_IN_PUSH"
           CONTAINS_MUTATE_FULL_IN_PR_TITLE=$([[ "${{ contains(github.event.pull_request.title, '[mutate-full]') }}" == "true" ]] && echo "true" || echo "false")
           echo "Contains '[mutate-full]' in PR title: $CONTAINS_MUTATE_FULL_IN_PR_TITLE"
