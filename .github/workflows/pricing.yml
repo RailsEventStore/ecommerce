@@ -28,19 +28,15 @@ jobs:
           echo "Event name: $EVENT_NAME"
           echo "Ref name: $REF_NAME"
           echo "Base ref (for PR): $PR_BASE_REF"
-          echo "PR title: $PR_TITLE" # Powinno teraz wyświetlić pusty string dla push, a nie literał
+          echo "PR title: $PR_TITLE"
 
-          # Pobierz surowe, połączone komunikaty commitów ze zmiennych środowiskowych
-          # Te zmienne są już "czystymi" stringami w środowisku shella
           RAW_COMMIT_MESSAGES_FOR_JOIN_WITH_SLASHES="$COMMIT_MESSAGES_JOINED_WITH_SLASHES_ACTIONS"
           RAW_COMMIT_MESSAGES_FOR_JOIN_WITH_SPACES="$COMMIT_MESSAGES_FOR_JOIN_WITH_SPACES_ACTIONS"
 
-          # Oczyść komunikaty z apostrofów dla celów logowania
           CLEANED_COMMIT_MESSAGES_FOR_LOG="${RAW_COMMIT_MESSAGES_FOR_JOIN_WITH_SLASHES//\'/}"
           COMMIT_MESSAGES_LOG=$(echo "${CLEANED_COMMIT_MESSAGES_FOR_LOG}" | head -c 500)
           echo "Commit messages in push (cleaned, first 500 chars): ${COMMIT_MESSAGES_LOG}..."
 
-          # Oczyść komunikaty z apostrofów PRZED użyciem ich w logice warunkowej
           CLEANED_COMMIT_MESSAGES_FOR_CONTAINS="${RAW_COMMIT_MESSAGES_FOR_JOIN_WITH_SPACES//\'/}"
           
           if [[ "${CLEANED_COMMIT_MESSAGES_FOR_CONTAINS}" == *"[mutate-full]"* ]]; then
@@ -50,7 +46,6 @@ jobs:
           fi
           echo "Contains '[mutate-full]' in push commit messages (from cleaned messages): $CONTAINS_MUTATE_FULL_IN_PUSH"
           
-          # Użyj zmiennych środowiskowych dla tytułu i body PR
           CLEANED_PR_TITLE="${PR_TITLE//\'/}"
           if [[ "${CLEANED_PR_TITLE}" == *"[mutate-full]"* ]]; then
             CONTAINS_MUTATE_FULL_IN_PR_TITLE="true"
@@ -93,7 +88,7 @@ jobs:
               echo "Action: Mode set to 'incremental' (NUM_GROUPS=4) for PR."
               FINAL_MUTANT_MODE="incremental"
               FINAL_NUM_GROUPS=4
-              FINAL_SINCE_TARGET="origin/$PR_BASE_REF" # Używamy zmiennej środowiskowej
+              FINAL_SINCE_TARGET="origin/$PR_BASE_REF"
               echo "Incremental target: $FINAL_SINCE_TARGET"
             elif [[ "$EVENT_NAME" == "push" ]]; then
               if [[ "$REF_NAME" == "master" || "$REF_NAME" == "main" ]]; then
@@ -106,7 +101,7 @@ jobs:
                 echo "Action: Mode set to 'incremental' (NUM_GROUPS=4) for branch push."
                 FINAL_MUTANT_MODE="incremental"
                 FINAL_NUM_GROUPS=4
-                FINAL_SINCE_TARGET="origin/master" # Lub origin/main jeśli to Twój główny branch
+                FINAL_SINCE_TARGET="origin/master"
                 echo "Incremental target: $FINAL_SINCE_TARGET"
               fi
             fi
