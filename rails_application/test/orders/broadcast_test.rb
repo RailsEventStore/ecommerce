@@ -239,9 +239,7 @@ module Orders
           data: {
             order_id: order_1_id,
             type: Pricing::Discounts::GENERAL_DISCOUNT,
-            amount: 30,
-            base_total_value: 40,
-            total_value: 28
+            amount: 30
           }
         )
       )
@@ -253,9 +251,7 @@ module Orders
           data: {
             order_id: order_id,
             type: Pricing::Discounts::GENERAL_DISCOUNT,
-            amount: 30,
-            base_total_value: 20,
-            total_value: 14
+            amount: 30
           }
         )
       )

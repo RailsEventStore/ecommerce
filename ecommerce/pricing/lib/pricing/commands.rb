@@ -3,7 +3,6 @@ module Pricing
     attribute :order_id, Infra::Types::UUID
     attribute :product_id, Infra::Types::UUID
     attribute :price, Infra::Types::Price
-    attribute :promotion, Infra::Types::Strict::Bool.default(false)
 
     alias aggregate_id order_id
   end

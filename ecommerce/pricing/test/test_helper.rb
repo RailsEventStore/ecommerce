@@ -26,9 +26,9 @@ module Pricing
       run_command(CalculateTotalValue.new(order_id: order_id))
     end
 
-    def add_item(order_id, product_id, promotion: false)
+    def add_item(order_id, product_id)
       run_command(
-        AddPriceItem.new(order_id: order_id, product_id: product_id, price: find_price(product_id), promotion:)
+        AddPriceItem.new(order_id: order_id, product_id: product_id, price: find_price(product_id))
       )
     end
 
@@ -44,10 +44,6 @@ module Pricing
 
     def set_time_promotion_discount(order_id, amount)
       run_command(SetTimePromotionDiscount.new(order_id: order_id, amount: amount))
-    end
-
-    def set_percentage_discount(order_id, amount)
-      run_command(SetPercentageDiscount.new(order_id: order_id, amount: amount))
     end
 
     def remove_time_promotion_discount(order_id)

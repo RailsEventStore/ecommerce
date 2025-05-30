@@ -36,8 +36,6 @@ module Pricing
     attribute :order_id, Infra::Types::UUID
     attribute :type, Infra::Types::String
     attribute :amount, Infra::Types::PercentageDiscount
-    attribute :base_total_value, Infra::Types::Price
-    attribute :total_value, Infra::Types::Price
   end
 
   class PriceItemAdded < Infra::Event
@@ -47,7 +45,6 @@ module Pricing
     attribute :price, Infra::Types::Price
     attribute :base_total_value, Infra::Types::Price
     attribute :total_value, Infra::Types::Price
-    attribute? :applied_promotion, Infra::Types::String
   end
 
   class PriceItemRemoved < Infra::Event
@@ -62,16 +59,12 @@ module Pricing
   class PercentageDiscountRemoved < Infra::Event
     attribute :order_id, Infra::Types::UUID
     attribute :type, Infra::Types::String
-    attribute :base_total_value, Infra::Types::Price
-    attribute :total_value, Infra::Types::Price
   end
 
   class PercentageDiscountChanged < Infra::Event
     attribute :order_id, Infra::Types::UUID
     attribute :type, Infra::Types::String
     attribute :amount, Infra::Types::Price
-    attribute :base_total_value, Infra::Types::Price
-    attribute :total_value, Infra::Types::Price
   end
 
   class ProductMadeFreeForOrder < Infra::Event

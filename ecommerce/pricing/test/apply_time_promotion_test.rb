@@ -5,7 +5,6 @@ module Pricing
     cover "Pricing*"
 
     def test_applies_biggest_time_promotion_discount
-
       order_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
       create_inactive_time_promotion(60)
@@ -58,18 +57,16 @@ module Pricing
     end
 
     def item_added_to_basket_event(order_id, product_id)
-      price_item_added = Pricing::PriceItemAdded.new(
+      Pricing::PriceItemAdded.new(
         data: {
           product_id: product_id,
           order_id: order_id,
-          base_price: 1000,
-          price: 1000,
-          base_total_value: 1000,
-          total_value: 1000
+          base_price: 1111,
+          price: 1111,
+          base_total_value: 1111,
+          total_value: 1111
           }
         )
-      event_store.append(price_item_added, stream_name: stream_name(order_id))
-      price_item_added
     end
 
     def set_time_promotion_discount(order_id, discount)
@@ -81,9 +78,7 @@ module Pricing
         data: {
           order_id: order_id,
           type: Pricing::Discounts::TIME_PROMOTION_DISCOUNT,
-          amount: amount,
-          base_total_value: 1000,
-          total_value: 500
+          amount: amount
         }
       )
     end
@@ -92,9 +87,7 @@ module Pricing
       PercentageDiscountRemoved.new(
         data: {
           order_id: order_id,
-          type: Pricing::Discounts::TIME_PROMOTION_DISCOUNT,
-          base_total_value: 1000,
-          total_value: 1000
+          type: Pricing::Discounts::TIME_PROMOTION_DISCOUNT
         }
       )
     end

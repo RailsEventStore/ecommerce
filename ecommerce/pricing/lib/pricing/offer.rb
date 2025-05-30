@@ -12,27 +12,18 @@ module Pricing
       @state = :draft
     end
 
-    def add_item(product_id, base_price, promotion)
-      if promotion
-        promotion_applies, price = promotion.apply(@list.quantities, product_id, base_price)
-      end
-
-      unless promotion_applies
-        price = @discounts.inject(Discounts::NoPercentageDiscount.new, :add).apply(base_price)
-      end
-
-      data = {
-        order_id: @id,
-        product_id: product_id,
-        base_price: base_price,
-        price: price,
-        base_total_value: @list.base_sum + base_price,
-        total_value: @list.actual_sum + price,
-      }
-      
-      data[:applied_promotion] = promotion.class.name if promotion_applies
-
-      apply PriceItemAdded.new(data:)
+    def add_item(product_id, base_price)
+      price = @discounts.inject(Discounts::NoPercentageDiscount.new, :add).apply(base_price)
+      apply PriceItemAdded.new(
+        data: {
+          order_id: @id,
+          product_id: product_id,
+          base_price: base_price,
+          price: price,
+          base_total_value: @list.base_sum + base_price,
+          total_value: @list.actual_sum + price
+        }
+      )
     end
 
     def remove_item(product_id)
@@ -55,9 +46,7 @@ module Pricing
         data: {
           order_id: @id,
           type: discount.type,
-          amount: discount.value,
-          base_total_value: @list.base_sum,
-          total_value: @list.actual_sum - @list.actual_sum * (discount.value / 100)
+          amount: discount.value
         }
       )
     end
@@ -68,26 +57,17 @@ module Pricing
         data: {
           order_id: @id,
           type: discount.type,
-          amount: discount.value,
-          base_total_value: @list.base_sum,
-          total_value: @list.base_sum - @list.base_sum * (discount.value / 100)
+          amount: discount.value
         }
       )
     end
 
     def remove_discount(type)
       raise NotPossibleToRemoveWithoutDiscount unless discount_exists?(type)
-      discount = @discounts.find { |d| d.type == type }
-
-      discounted_value = @list.base_sum * (discount.value / 100)
-
-
       apply PercentageDiscountRemoved.new(
         data: {
           order_id: @id,
-          type: type,
-          base_total_value: @list.base_sum,
-          total_value: @list.actual_sum + discounted_value,
+          type: type
         }
       )
     end
@@ -184,7 +164,6 @@ module Pricing
 
     on PriceItemAdded do |event|
       @list.add_item(event.data.fetch(:product_id), event.data.fetch(:base_price), event.data.fetch(:price))
-      @list.apply_discounts(@discounts)
     end
 
     on PriceItemRemoved do |event|
@@ -258,14 +237,9 @@ module Pricing
 
       def apply_discounts(discounts)
         @items = @items.map do |item|
-          next item if is_free?(item)
           price = discounts.inject(Discounts::NoPercentageDiscount.new, :add).apply(item.base_price)
           item.with(price:)
         end
-      end
-
-      def is_free?(item)
-        item.price == 0
       end
 
       def contains_free_products?
