@@ -8,7 +8,12 @@ module Processes
     def call(event)
       case event
       when Crm::CustomerRegistered
-        ClientInbox::Message.create(client_uid: event.data.fetch(:customer_id), title: "Welcome to our platform!")
+        @command_bus.call(
+          Communication::SendMessage.new(
+            message_id: SecureRandom.uuid,
+            receiver_id: event.data.fetch(:customer_id),
+            message: "Welcome to our platform!")
+        )
       end
     end
   end
