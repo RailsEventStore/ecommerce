@@ -5,6 +5,7 @@ module Communication
 
     def call(event_store, command_bus)
       command_bus.register(SendMessage, OnSendMessage.new(event_store))
+      command_bus.register(ReadMessage, OnReadMessage.new(event_store))
     end
   end
 
@@ -20,6 +21,14 @@ module Communication
     attribute :message, Infra::Types::String
   end
 
+  class ReadMessage < Infra::Command
+    attribute :message_id, Infra::Types::UUID
+  end
+
+  class MessageRead < Infra::Event
+    attribute :message_id, Infra::Types::UUID
+  end
+
   class OnSendMessage
     def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)
@@ -28,6 +37,18 @@ module Communication
     def call(command)
       @repository.with_aggregate(Message, command.message_id) do |message|
         message._send(command.receiver_id, command.message)
+      end
+    end
+  end
+
+  class OnReadMessage
+    def initialize(event_store)
+      @repository = Infra::AggregateRootRepository.new(event_store)
+    end
+
+    def call(command)
+      @repository.with_aggregate(Message, command.message_id) do |message|
+        message.read(command.message_id)
       end
     end
   end
@@ -49,7 +70,14 @@ module Communication
       )
     end
 
+    def read(message_id)
+      apply MessageRead.new(data: { message_id: message_id })
+    end
+
     def apply_message_sent(_)
+    end
+
+    def apply_message_read(_)
     end
   end
 end

@@ -149,7 +149,7 @@ class InMemoryRESIntegrationTestCase < ActionDispatch::IntegrationTest
     result
   end
 
-  def register_customer(name)
+  def register_customer(name="Test Customer")
     customer_id = SecureRandom.uuid
     post "/customers", params: { customer_id: customer_id, name: name }
     customer_id

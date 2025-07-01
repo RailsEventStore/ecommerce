@@ -45,23 +45,53 @@ module ClientInbox
       end
 
       def message_item(message)
+        if message.read?
+          read_message_item(message)
+        else
+          unread_message_item(message)
+        end
+      end
+
+      def unread_message_item(message)
         div class: "flex items-start justify-between" do
           div class: "flex-1" do
+            form action: client_inbox_mark_as_read_path, method: :post, class: "block", data: { turbo: false } do
+              input type: "hidden", name: "authenticity_token", value: form_authenticity_token
+              input type: "hidden", name: "message_id", value: message.id
+              h3 class: message_title_classes(message), onclick: "this.closest('form').submit();" do
+                message.title
+              end
+            end
+
+            timestamp(message.created_at)
+          end
+
+          unread_indicator
+        end
+      end
+
+      def read_message_item(message)
+        div class: "flex items-start justify-between" do
+          div class: "flex-1" do
+            input type: "hidden", name: "authenticity_token", value: form_authenticity_token
+            input type: "hidden", name: "message_id", value: message.id
             h3 class: message_title_classes(message) do
               message.title
             end
-            
-            span class: "text-sm text-gray-500" do
-              time_ago_in_words(message.created_at) + " ago"
-            end
+
+            timestamp(message.created_at)
           end
-          
-          unread_indicator if !message.read
+        end
+      end
+
+      def timestamp(created_at)
+        span class: "text-sm text-gray-500" do
+          time_ago_in_words(created_at) + " ago"
         end
       end
 
       def message_title_classes(message)
-        message.read ? "text-gray-700 text-lg" : "font-bold text-gray-900 text-lg"
+        message.read ? "text-gray-700 text-lg" : "font-bold text-gray-900 text-lg cursor-pointer"
       end
 
       def unread_indicator

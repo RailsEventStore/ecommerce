@@ -60,6 +60,7 @@ Rails.application.routes.draw do
   get "clients", to: "client/clients#index"
   get "client/products", to: "client/products#index"
   get "client/inbox", to: "client/inbox#index"
+  post "client/inbox/mark_as_read", to: "client/inbox#mark_as_read"
 
   mount RailsEventStore::Browser => "/res"
 end

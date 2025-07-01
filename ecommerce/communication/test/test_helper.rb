@@ -16,6 +16,10 @@ module Communication
       run_command(SendMessage.new(message_id: message_id, receiver_id: receiver_id, message: message_content))
     end
 
+    def read_message
+      run_command(ReadMessage.new(message_id: message_id))
+    end
+
     def message_content
       "Hello, this is a test message."
     end
