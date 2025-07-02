@@ -13,25 +13,26 @@ module Pricing
       add_item(order_id, product_1_id)
       add_item(order_id, product_1_id)
 
-      assert_events_contain(
-        stream_name(order_id),
-        ProductMadeFreeForOrder.new(
-          data: {
-            order_id: order_id,
-            product_id: product_1_id
-          }
-        ),
-        OrderTotalValueCalculated.new(
-          data: {
-            order_id: order_id,
-            discounted_amount: 60,
-            total_amount: 80
-          }
-        )
+      assert_published_within(
+        OrderTotalValueCalculated,
+        { order_id: order_id, discounted_amount: 60, total_amount: 80 }
       ) do
-        run_command(
-          Pricing::MakeProductFreeForOrder.new(order_id: order_id, product_id: product_1_id)
-        )
+        assert_events_contain(
+          stream_name(order_id),
+          ProductMadeFreeForOrder.new(
+            data: {
+              order_id: order_id,
+              product_id: product_1_id
+            }
+          )
+        ) do
+          run_command(
+            Pricing::MakeProductFreeForOrder.new(
+              order_id: order_id,
+              product_id: product_1_id
+            )
+          )
+        end
       end
     end
 
@@ -46,25 +47,26 @@ module Pricing
       add_item(order_id, product_1_id)
       add_item(order_id, cheaper_product)
 
-      assert_events_contain(
-        stream_name(order_id),
-        ProductMadeFreeForOrder.new(
-          data: {
-            order_id: order_id,
-            product_id: cheaper_product
-          }
-        ),
-        OrderTotalValueCalculated.new(
-          data: {
-            order_id: order_id,
-            discounted_amount: 60,
-            total_amount: 70
-          }
-        ),
+      assert_published_within(
+        OrderTotalValueCalculated,
+        { order_id: order_id, discounted_amount: 60, total_amount: 70 }
       ) do
-        run_command(
-          Pricing::MakeProductFreeForOrder.new(order_id: order_id, product_id: cheaper_product)
-        )
+        assert_events_contain(
+          stream_name(order_id),
+          ProductMadeFreeForOrder.new(
+            data: {
+              order_id: order_id,
+              product_id: cheaper_product
+            }
+          )
+        ) do
+          run_command(
+            Pricing::MakeProductFreeForOrder.new(
+              order_id: order_id,
+              product_id: cheaper_product
+            )
+          )
+        end
       end
     end
 
@@ -78,12 +80,18 @@ module Pricing
       add_item(order_id, product_1_id)
 
       run_command(
-        Pricing::MakeProductFreeForOrder.new(order_id: order_id, product_id: product_1_id)
+        Pricing::MakeProductFreeForOrder.new(
+          order_id: order_id,
+          product_id: product_1_id
+        )
       )
 
       assert_raises FreeProductAlreadyMade do
         run_command(
-          Pricing::MakeProductFreeForOrder.new(order_id: order_id, product_id: product_1_id)
+          Pricing::MakeProductFreeForOrder.new(
+            order_id: order_id,
+            product_id: product_1_id
+          )
         )
       end
     end
@@ -98,40 +106,54 @@ module Pricing
       add_item(order_id, product_1_id)
 
       run_command(
-        Pricing::MakeProductFreeForOrder.new(order_id: order_id, product_id: product_1_id)
-      )
-
-      run_command(
-        Pricing::RemovePriceItem.new(order_id: order_id, product_id: product_1_id)
-      )
-
-      run_command(
-        Pricing::RemoveFreeProductFromOrder.new(order_id: order_id, product_id: product_1_id)
-      )
-
-      run_command(
-        Pricing::AddPriceItem.new(order_id: order_id, product_id: product_1_id, price: 20)
-      )
-
-      assert_events_contain(
-        stream_name(order_id),
-        ProductMadeFreeForOrder.new(
-          data: {
-            order_id: order_id,
-            product_id: product_1_id
-          }
-        ),
-        OrderTotalValueCalculated.new(
-          data: {
-            order_id: order_id,
-            discounted_amount: 60,
-            total_amount: 80
-          }
+        Pricing::MakeProductFreeForOrder.new(
+          order_id: order_id,
+          product_id: product_1_id
         )
+      )
+
+      run_command(
+        Pricing::RemovePriceItem.new(
+          order_id: order_id,
+          product_id: product_1_id
+        )
+      )
+
+      run_command(
+        Pricing::RemoveFreeProductFromOrder.new(
+          order_id: order_id,
+          product_id: product_1_id
+        )
+      )
+
+      run_command(
+        Pricing::AddPriceItem.new(
+          order_id: order_id,
+          product_id: product_1_id,
+          price: 20
+        )
+      )
+
+      assert_published_within(
+        OrderTotalValueCalculated,
+        { order_id: order_id, discounted_amount: 60, total_amount: 80 }
       ) do
-        run_command(
-          Pricing::MakeProductFreeForOrder.new(order_id: order_id, product_id: product_1_id)
-        )
+        assert_events_contain(
+          stream_name(order_id),
+          ProductMadeFreeForOrder.new(
+            data: {
+              order_id: order_id,
+              product_id: product_1_id
+            }
+          ),
+        ) do
+          run_command(
+            Pricing::MakeProductFreeForOrder.new(
+              order_id: order_id,
+              product_id: product_1_id
+            )
+          )
+        end
       end
     end
 
@@ -145,28 +167,32 @@ module Pricing
       add_item(order_id, product_1_id)
 
       run_command(
-        Pricing::MakeProductFreeForOrder.new(order_id: order_id, product_id: product_1_id)
+        Pricing::MakeProductFreeForOrder.new(
+          order_id: order_id,
+          product_id: product_1_id
+        )
       )
 
-      assert_events_contain(
-        stream_name(order_id),
-        FreeProductRemovedFromOrder.new(
-          data: {
-            order_id: order_id,
-            product_id: product_1_id
-          }
-        ),
-        OrderTotalValueCalculated.new(
-          data: {
-            order_id: order_id,
-            discounted_amount: 80,
-            total_amount: 80
-          }
-        )
+      assert_published_within(
+        OrderTotalValueCalculated,
+        { order_id: order_id, discounted_amount: 80, total_amount: 80 }
       ) do
-        run_command(
-          Pricing::RemoveFreeProductFromOrder.new(order_id: order_id, product_id: product_1_id)
-        )
+        assert_events_contain(
+          stream_name(order_id),
+          FreeProductRemovedFromOrder.new(
+            data: {
+              order_id: order_id,
+              product_id: product_1_id
+            }
+          )
+        ) do
+          run_command(
+            Pricing::RemoveFreeProductFromOrder.new(
+              order_id: order_id,
+              product_id: product_1_id
+            )
+          )
+        end
       end
     end
 
@@ -178,7 +204,10 @@ module Pricing
 
       assert_no_events(stream_name(order_id)) do
         run_command(
-          Pricing::RemoveFreeProductFromOrder.new(order_id: order_id, product_id: product_1_id)
+          Pricing::RemoveFreeProductFromOrder.new(
+            order_id: order_id,
+            product_id: product_1_id
+          )
         )
       end
     end
@@ -193,16 +222,25 @@ module Pricing
       add_item(order_id, product_1_id)
 
       run_command(
-        Pricing::MakeProductFreeForOrder.new(order_id: order_id, product_id: product_1_id)
+        Pricing::MakeProductFreeForOrder.new(
+          order_id: order_id,
+          product_id: product_1_id
+        )
       )
 
       run_command(
-        Pricing::RemoveFreeProductFromOrder.new(order_id: order_id, product_id: product_1_id)
+        Pricing::RemoveFreeProductFromOrder.new(
+          order_id: order_id,
+          product_id: product_1_id
+        )
       )
 
       assert_no_events(stream_name(order_id)) do
         run_command(
-          Pricing::RemoveFreeProductFromOrder.new(order_id: order_id, product_id: product_1_id)
+          Pricing::RemoveFreeProductFromOrder.new(
+            order_id: order_id,
+            product_id: product_1_id
+          )
         )
       end
     end
@@ -212,6 +250,5 @@ module Pricing
     def stream_name(id)
       "Pricing::Offer$#{id}"
     end
-
   end
 end
