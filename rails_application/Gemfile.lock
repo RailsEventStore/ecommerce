@@ -173,7 +173,6 @@ GEM
       net-smtp
     marcel (1.0.4)
     mini_mime (1.1.5)
-    mini_portile2 (2.8.8)
     minitest (5.25.0)
     msgpack (1.6.0)
     mutant (0.13.1)
@@ -197,9 +196,6 @@ GEM
     net-smtp (0.5.1)
       net-protocol
     nio4r (2.7.4)
-    nokogiri (1.18.3)
-      mini_portile2 (~> 2.8.2)
-      racc (~> 1.4)
     nokogiri (1.18.3-aarch64-linux-gnu)
       racc (~> 1.4)
     nokogiri (1.18.3-aarch64-linux-musl)
@@ -312,8 +308,6 @@ GEM
     stimulus-rails (1.2.1)
       railties (>= 6.0.0)
     stringio (3.1.5)
-    tailwindcss-rails (2.6.0)
-      railties (>= 7.0.0)
     tailwindcss-rails (2.6.0-aarch64-linux)
       railties (>= 7.0.0)
     tailwindcss-rails (2.6.0-arm-linux)
@@ -351,7 +345,6 @@ PLATFORMS
   arm-linux-gnu
   arm-linux-musl
   arm64-darwin
-  ruby
   x86_64-darwin
   x86_64-linux
   x86_64-linux-gnu
