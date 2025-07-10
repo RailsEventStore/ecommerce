@@ -4,6 +4,9 @@ integration: minitest
 usage: opensource
 coverage_criteria:
   process_abort: true
+  timeout: true
+mutation:
+  timeout: 2.0
 matcher:
   subjects:
     - Pricing*
