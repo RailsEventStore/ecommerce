@@ -200,11 +200,21 @@ GEM
     nokogiri (1.18.3)
       mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
+    nokogiri (1.18.3-aarch64-linux-gnu)
+      racc (~> 1.4)
+    nokogiri (1.18.3-aarch64-linux-musl)
+      racc (~> 1.4)
+    nokogiri (1.18.3-arm-linux-gnu)
+      racc (~> 1.4)
+    nokogiri (1.18.3-arm-linux-musl)
+      racc (~> 1.4)
     nokogiri (1.18.3-arm64-darwin)
       racc (~> 1.4)
     nokogiri (1.18.3-x86_64-darwin)
       racc (~> 1.4)
     nokogiri (1.18.3-x86_64-linux-gnu)
+      racc (~> 1.4)
+    nokogiri (1.18.3-x86_64-linux-musl)
       racc (~> 1.4)
     parser (3.3.4.2)
       ast (~> 2.4.1)
@@ -304,6 +314,10 @@ GEM
     stringio (3.1.5)
     tailwindcss-rails (2.6.0)
       railties (>= 7.0.0)
+    tailwindcss-rails (2.6.0-aarch64-linux)
+      railties (>= 7.0.0)
+    tailwindcss-rails (2.6.0-arm-linux)
+      railties (>= 7.0.0)
     tailwindcss-rails (2.6.0-arm64-darwin)
       railties (>= 7.0.0)
     tailwindcss-rails (2.6.0-x86_64-darwin)
@@ -330,11 +344,18 @@ GEM
     zeitwerk (2.7.2)
 
 PLATFORMS
-  arm64-darwin-20
-  arm64-darwin-21
+  aarch64-linux
+  aarch64-linux-gnu
+  aarch64-linux-musl
+  arm-linux
+  arm-linux-gnu
+  arm-linux-musl
+  arm64-darwin
   ruby
-  x86_64-darwin-20
+  x86_64-darwin
   x86_64-linux
+  x86_64-linux-gnu
+  x86_64-linux-musl
 
 DEPENDENCIES
   arbre
