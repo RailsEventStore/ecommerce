@@ -135,7 +135,9 @@ GEM
     ffi (1.15.5)
     globalid (1.2.1)
       activesupport (>= 6.1)
-    honeybadger (5.15.6)
+    honeybadger (5.29.1)
+      logger
+      ostruct
     i18n (1.14.7)
       concurrent-ruby (~> 1.0)
     ice_nine (0.11.2)
@@ -212,6 +214,7 @@ GEM
       racc (~> 1.4)
     nokogiri (1.18.8-x86_64-linux-musl)
       racc (~> 1.4)
+    ostruct (0.6.2)
     parser (3.3.4.2)
       ast (~> 2.4.1)
       racc
@@ -355,7 +358,7 @@ DEPENDENCIES
   bootsnap (>= 1.9.2)
   byebug
   dotenv-rails
-  honeybadger (= 5.15.6)
+  honeybadger
   importmap-rails (~> 1.1)
   infra!
   kaminari
