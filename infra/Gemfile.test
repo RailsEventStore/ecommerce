@@ -1,4 +1,4 @@
 source "https://rubygems.org" do
   gem "minitest", "5.25.0"
-  gem "mutant-minitest", "0.13.1"
+  gem "mutant-minitest", "0.13.2"
 end
