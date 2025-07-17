@@ -67,6 +67,34 @@ module Infra
           before.nil? ? scope.to_a : scope.from(before.event_id).to_a
         assert_empty actual_events
       end
+
+      def assert_published_within(
+        event_type,
+        event_data,
+        event_store: @event_store,
+        &block
+      )
+        before = event_store.read.to_a
+        block.call
+        events =
+          (
+            if before.any?
+              event_store
+                .read
+                .newer_than(before.last.timestamp)
+                .of_type(event_type)
+                .to_a
+            else
+              event_store.read.of_type(event_type).to_a
+            end
+          )
+        refute events.empty?, "expected some events, none were there"
+        events.each do |e|
+          assert_equal event_type.to_s, e.event_type
+          assert_equal event_data.with_indifferent_access,
+                       e.data.with_indifferent_access
+        end
+      end
     end
   end
 
