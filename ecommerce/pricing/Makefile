@@ -38,7 +38,7 @@ else
 endif
 	@echo "-----------------------------------------------------"
 
-	@echo "Executing: bundle exec mutant run $(TEMP_ACTUAL_MUTANT_ARGS) $(SUBJECTS_TO_RUN)"
-	@bundle exec mutant run $(TEMP_ACTUAL_MUTANT_ARGS) $(SUBJECTS_TO_RUN)
+	@echo "Executing: bundle exec mutant run"
+	@bundle exec mutant run
 
 .PHONY: install test mutate

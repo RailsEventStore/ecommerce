@@ -27,8 +27,8 @@ else
 	@echo "Subjects: Specific group for CI - '$(SUBJECTS_TO_RUN)'"
 endif
 	@echo "------------------------------------"
-	@echo "Executing: env RAILS_ENV=test bundle exec mutant run $(ACTUAL_MUTANT_ARGS) $(SUBJECTS_TO_RUN)"
-	@env RAILS_ENV=test bundle exec mutant run $(ACTUAL_MUTANT_ARGS) $(SUBJECTS_TO_RUN)
+	@echo "Executing: env RAILS_ENV=test bundle exec mutant run"
+	@env RAILS_ENV=test bundle exec mutant run
 
 test: ## Run unit tests
 	@bin/rails tailwindcss:build
