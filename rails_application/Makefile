@@ -6,29 +6,13 @@ dev:
 	@$(MAKE) -j 10 web css
 
 mutate: ## Run mutation tests
-	$(eval ACTUAL_MUTANT_ARGS :=)
-	$(eval SUBJECTS_TO_RUN := $(strip $(CI_MUTATE_SUBJECTS)))
-
-	@echo "--- Preparing Mutation Test Run ---"
-ifeq ($(MUTANT_MODE),incremental)
-    ifndef MUTANT_SINCE_TARGET
-		$(error MUTANT_MODE is 'incremental', but MUTANT_SINCE_TARGET is not set. This variable should be set by the CI workflow.)
-    endif
-	$(eval ACTUAL_MUTANT_ARGS := --since $(MUTANT_SINCE_TARGET))
-	@echo "Mutation Mode: Incremental"
-	@echo "Target for --since: $(MUTANT_SINCE_TARGET)"
+ifeq ($(CI_MUTATE_SUBJECTS),)
+	@echo "Running all mutation tests (local or full CI run)"
+	@env RAILS_ENV=test bundle exec mutant run
 else
-	@echo "Mutation Mode: Full"
+	@echo "Running CI mutation tests for subjects: $(CI_MUTATE_SUBJECTS)"
+	@env RAILS_ENV=test bundle exec mutant run $(CI_MUTATE_SUBJECTS)
 endif
-
-ifeq ($(SUBJECTS_TO_RUN),)
-	@echo "Subjects: All relevant (within scope of full/incremental mode)"
-else
-	@echo "Subjects: Specific group for CI - '$(SUBJECTS_TO_RUN)'"
-endif
-	@echo "------------------------------------"
-	@echo "Executing: env RAILS_ENV=test bundle exec mutant run $(ACTUAL_MUTANT_ARGS) $(SUBJECTS_TO_RUN)"
-	@env RAILS_ENV=test bundle exec mutant run $(ACTUAL_MUTANT_ARGS) $(SUBJECTS_TO_RUN)
 
 test: ## Run unit tests
 	@bin/rails tailwindcss:build
