@@ -65,7 +65,7 @@ jobs:
           echo "---------------------------------------------"
 
           FINAL_MUTANT_MODE="full"
-          FINAL_NUM_GROUPS=32
+          FINAL_NUM_GROUPS=16
           FINAL_SINCE_TARGET=""
 
           IS_MUTATE_FULL_TRIGGERED="false"
@@ -79,28 +79,28 @@ jobs:
           fi
 
           if [[ "$IS_MUTATE_FULL_TRIGGERED" == "true" ]]; then
-            echo "Action: Mode set to 'full' (NUM_GROUPS=32) due to [mutate-full] trigger."
+            echo "Action: Mode set to 'full' (NUM_GROUPS=16) due to [mutate-full] trigger."
             FINAL_MUTANT_MODE="full"
-            FINAL_NUM_GROUPS=32
+            FINAL_NUM_GROUPS=16
           else
             if [[ "$EVENT_NAME" == "pull_request" ]]; then
               echo "Logic path: Pull request event (no [mutate-full] trigger)."
-              echo "Action: Mode set to 'incremental' (NUM_GROUPS=4) for PR."
+              echo "Action: Mode set to 'incremental' (NUM_GROUPS=2) for PR."
               FINAL_MUTANT_MODE="incremental"
-              FINAL_NUM_GROUPS=4
+              FINAL_NUM_GROUPS=2
               FINAL_SINCE_TARGET="origin/$PR_BASE_REF"
               echo "Incremental target: $FINAL_SINCE_TARGET"
             elif [[ "$EVENT_NAME" == "push" ]]; then
               if [[ "$REF_NAME" == "master" || "$REF_NAME" == "main" ]]; then
                 echo "Logic path: Push event to main branch (no [mutate-full] trigger)."
-                echo "Action: Mode set to 'full' (NUM_GROUPS=32) for main branch."
+                echo "Action: Mode set to 'full' (NUM_GROUPS=16) for main branch."
                 FINAL_MUTANT_MODE="full"
-                FINAL_NUM_GROUPS=32
+                FINAL_NUM_GROUPS=16
               else
                 echo "Logic path: Push event to non-main branch ('$REF_NAME') (no [mutate-full] trigger)."
-                echo "Action: Mode set to 'incremental' (NUM_GROUPS=4) for branch push."
+                echo "Action: Mode set to 'incremental' (NUM_GROUPS=2) for branch push."
                 FINAL_MUTANT_MODE="incremental"
-                FINAL_NUM_GROUPS=4
+                FINAL_NUM_GROUPS=2
                 FINAL_SINCE_TARGET="origin/master"
                 echo "Incremental target: $FINAL_SINCE_TARGET"
               fi
@@ -192,7 +192,7 @@ jobs:
           fi
 
           total_subjects=${#subjects_array[@]}
-          NUM_GROUPS=${NUM_GROUPS_FROM_CI:-4}
+          NUM_GROUPS=${NUM_GROUPS_FROM_CI:-2}
           echo "Total subjects found: $total_subjects"
           echo "Number of parallel groups to create: $NUM_GROUPS"
           groups_json_array_content=""
