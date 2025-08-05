@@ -52,26 +52,24 @@ module Pricing
 
       run_command(SetTimePromotionDiscount.new(order_id: order_id, amount: 50))
 
-      assert_events_contain(
-        stream,
-        PriceItemAdded.new(
-          data: {
-            order_id: order_id,
-            product_id: product_1_id,
-            base_price: 20,
-            price: 10,
-            base_total_value: 20,
-            total_value: 10,
-          }
-        ),
-        OrderTotalValueCalculated.new(
-          data: {
-            order_id: order_id,
-            total_amount: 20,
-            discounted_amount: 10
-          }
-        )
-      ) { add_item(order_id, product_1_id) }
+      assert_published_within(
+        OrderTotalValueCalculated,
+        { order_id: order_id, discounted_amount: 10, total_amount: 20 }
+      ) do
+        assert_events_contain(
+          stream,
+          PriceItemAdded.new(
+            data: {
+              order_id: order_id,
+              product_id: product_1_id,
+              base_price: 20,
+              price: 10,
+              base_total_value: 20,
+              total_value: 10
+            }
+          )
+        ) { add_item(order_id, product_1_id) }
+      end
     end
 
     def test_calculates_sub_amounts_with_combined_discounts
@@ -200,9 +198,20 @@ module Pricing
       "Pricing::Offer$#{order_id}"
     end
 
-    def set_time_promotion_range(time_promotion_id, start_time, end_time, discount)
+    def set_time_promotion_range(
+      time_promotion_id,
+      start_time,
+      end_time,
+      discount
+    )
       run_command(
-        CreateTimePromotion.new(time_promotion_id: time_promotion_id, start_time: start_time, end_time: end_time, discount: discount, label: "test")
+        CreateTimePromotion.new(
+          time_promotion_id: time_promotion_id,
+          start_time: start_time,
+          end_time: end_time,
+          discount: discount,
+          label: "test"
+        )
       )
     end
 
