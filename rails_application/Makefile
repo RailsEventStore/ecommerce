@@ -1,3 +1,5 @@
+GIT_BASE_SHA ?= $(shell git merge-base HEAD origin/master)
+
 install: ## Installs dependencies, runs migrations, creates db & seeds if necessary
 	@bin/setup
 
@@ -8,8 +10,8 @@ mutate: ## Run full mutation tests
 	@echo "Running full mutation tests..."
 	@RAILS_ENV=test bundle exec mutant run
 
-mutate-changes: ## Run incremental mutation tests on changes against master
-	@echo "Running incremental mutation tests..."
+mutate-changes: ## Run incremental mutation tests on changes
+	@echo "Running incremental mutation tests against $(GIT_BASE_SHA)..."
 	@RAILS_ENV=test bundle exec mutant run --since $(GIT_BASE_SHA)
 
 test: ## Run unit tests
