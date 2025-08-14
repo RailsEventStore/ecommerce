@@ -12,7 +12,7 @@ mutate: ## Run full mutation tests
 
 mutate-changes: ## Run incremental mutation tests on changes
 	@echo "Running incremental mutation tests against $(GIT_BASE_SHA)..."
-	@MUTANT_SINCE=$(GIT_BASE_SHA) RUBYOPT="-Ilib -Itest" bundle exec mutant run 'Pricing*'
+	@RUBYOPT="-Ilib -Itest" bundle exec mutant run --since $(GIT_BASE_SHA) 'Pricing*'
 
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%%-30s\033[0m %%s\n", $$1, $$2}'
