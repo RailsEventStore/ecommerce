@@ -1,4 +1,4 @@
-GIT_BASE_SHA ?= origin/master
+GIT_BASE_SHA ?= $(shell git merge-base HEAD origin/master)
 
 install:
 	@bundle install
@@ -10,8 +10,8 @@ mutate: ## Run full mutation tests
 	@echo "Running full mutation tests..."
 	@RUBYOPT="-Ilib -Itest" bundle exec mutant run 'Pricing*'
 
-mutate-changes: ## Run incremental mutation tests on changes against master
-	@echo "Running incremental mutation tests..."
+mutate-changes: ## Run incremental mutation tests on changes
+	@echo "Running incremental mutation tests against $(GIT_BASE_SHA)..."
 	@MUTANT_SINCE=$(GIT_BASE_SHA) RUBYOPT="-Ilib -Itest" bundle exec mutant run 'Pricing*'
 
 help:
