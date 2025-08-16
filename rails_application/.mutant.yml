@@ -50,3 +50,4 @@ matcher:
     - Processes::SyncInventoryFromOrdering*
     - Processes::NotifyPaymentsAboutOrderValue*
     - Processes::WelcomeMessageProcess*
+    - Processes::TotalOrderValue#fetch_id
