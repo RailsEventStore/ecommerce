@@ -68,6 +68,36 @@ module Processes
         process.call(event_2)
       end
     end
+    def test_total_order_value_calculation_for_2_items_of_different_products_and_1_item_removed
+      process = TotalOrderValue.new(event_store, command_bus)
+      product_id_1 = SecureRandom.uuid
+      product_id_2 = SecureRandom.uuid
+      event_1 = price_item_added(product_id_1)
+      event_2 = price_item_added(product_id_2)
+      event_3 = Pricing::PriceItemRemoved.new(data: {
+        order_id: order_id,
+        product_id: product_id_1,
+        base_price: 100,
+        price: 100,
+        base_total_value: 100,
+        total_value: 100
+      })
+      event_store.append(event_1)
+      event_store.append(event_2)
+      event_store.append(event_3)
+      process.call(event_1)
+      process.call(event_2)
+      assert_events_contain(
+        "Processes::TotalOrderValue$#{event_3.data[:order_id]}",
+        Processes::TotalOrderValueUpdated.new(
+          data: {
+            total_value: 100,
+            order_id: order_id
+          }
+        )) do
+        process.call(event_3)
+      end
+    end
 
 
 

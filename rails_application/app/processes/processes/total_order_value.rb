@@ -3,7 +3,8 @@ module Processes
     include Infra::ProcessManager.with_state { Offer }
 
     subscribes_to(
-      Pricing::PriceItemAdded
+      Pricing::PriceItemAdded,
+      Pricing::PriceItemRemoved
     )
 
     private
@@ -17,7 +18,11 @@ module Processes
       @order_id = event.data.fetch(:order_id)
       case event
       when Pricing::PriceItemAdded
-        lines = (state.lines + [{ price: event.data.fetch(:price) }])
+        product_id = event.data.fetch(:product_id)
+        lines = (state.lines + [{ product_id:, price: event.data.fetch(:price) }])
+        state.with(lines:)
+      when Pricing::PriceItemRemoved
+        lines = state.lines.reject { |line| line.fetch(:product_id) == event.data.fetch(:product_id) }
         state.with(lines:)
       else
         state
