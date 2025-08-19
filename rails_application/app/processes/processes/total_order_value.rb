@@ -6,7 +6,8 @@ module Processes
       Pricing::PriceItemAdded,
       Pricing::PriceItemRemoved,
       Pricing::PercentageDiscountSet,
-      Pricing::PercentageDiscountChanged
+      Pricing::PercentageDiscountChanged,
+      Pricing::PercentageDiscountRemoved
     )
 
     private
@@ -30,6 +31,8 @@ module Processes
         state.with(discount_amount: event.data.fetch(:amount))
       when Pricing::PercentageDiscountChanged
         state.with(discount_amount: event.data.fetch(:amount))
+      when Pricing::PercentageDiscountRemoved
+        state.with(discount_amount: 0)
       else
         state
       end
