@@ -5,7 +5,8 @@ module Processes
     subscribes_to(
       Pricing::PriceItemAdded,
       Pricing::PriceItemRemoved,
-      Pricing::PercentageDiscountSet
+      Pricing::PercentageDiscountSet,
+      Pricing::PercentageDiscountChanged
     )
 
     private
@@ -26,6 +27,8 @@ module Processes
         lines = state.lines.reject { |line| line.fetch(:product_id) == event.data.fetch(:product_id) }
         state.with(lines:)
       when Pricing::PercentageDiscountSet
+        state.with(discount_amount: event.data.fetch(:amount))
+      when Pricing::PercentageDiscountChanged
         state.with(discount_amount: event.data.fetch(:amount))
       else
         state
