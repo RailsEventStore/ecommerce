@@ -4,14 +4,15 @@ module Processes
 
     subscribes_to(
       Pricing::PriceItemAdded,
-      Pricing::PriceItemRemoved
+      Pricing::PriceItemRemoved,
+      Pricing::PercentageDiscountSet
     )
 
     private
 
     def act
-      @total_value = state.lines.sum { |line| line.fetch(:price) }
-      publish_total_order_value
+      value = state.lines.sum { |line| line.fetch(:price) } - state.discount_amount
+      publish_total_order_value(value)
     end
 
     def apply(event)
@@ -24,6 +25,8 @@ module Processes
       when Pricing::PriceItemRemoved
         lines = state.lines.reject { |line| line.fetch(:product_id) == event.data.fetch(:product_id) }
         state.with(lines:)
+      when Pricing::PercentageDiscountSet
+        state.with(discount_amount: event.data.fetch(:amount))
       else
         state
       end
@@ -31,9 +34,9 @@ module Processes
 
     private
 
-    def publish_total_order_value
+    def publish_total_order_value(value)
       event_store.publish(
-        TotalOrderValueUpdated.new(data: { total_value: @total_value, order_id: @order_id }),
+        TotalOrderValueUpdated.new(data: { total_value: value, order_id: @order_id }),
         stream_name: "Processes::TotalOrderValue$#{@order_id}"
       )
     end
@@ -43,9 +46,9 @@ module Processes
     end
   end
 
-  Offer = Data.define(:lines) do
-    def initialize(lines: [])
-      super(lines: lines.freeze)
+  Offer = Data.define(:lines, :discount_amount) do
+    def initialize(lines: [], discount_amount: 0)
+      super(lines: lines.freeze, discount_amount:)
     end
   end
 

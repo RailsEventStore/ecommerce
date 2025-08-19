@@ -68,6 +68,7 @@ module Processes
         process.call(event_2)
       end
     end
+
     def test_total_order_value_calculation_for_2_items_of_different_products_and_1_item_removed
       process = TotalOrderValue.new(event_store, command_bus)
       product_id_1 = SecureRandom.uuid
@@ -96,6 +97,30 @@ module Processes
           }
         )) do
         process.call(event_3)
+      end
+    end
+
+    def test_with_discount
+      process = TotalOrderValue.new(event_store, command_bus)
+      product_id = SecureRandom.uuid
+      event_1 = price_item_added(product_id)
+      event_2 = Pricing::PercentageDiscountSet.new(data: {
+        order_id: order_id,
+        type: "test_discount",
+        amount: 10
+      })
+      event_store.append(event_1)
+      event_store.append(event_2)
+      process.call(event_1)
+      assert_events_contain(
+        "Processes::TotalOrderValue$#{event_2.data[:order_id]}",
+        Processes::TotalOrderValueUpdated.new(
+          data: {
+            total_value: 90,
+            order_id: order_id
+          }
+        )) do
+        process.call(event_2)
       end
     end
 
