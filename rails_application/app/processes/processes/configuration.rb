@@ -20,6 +20,7 @@ module Processes
       enable_order_item_invoicing_process(event_store, command_bus)
       enable_reservation_process(event_store, command_bus)
       enable_welcome_message_process(event_store, command_bus)
+      enable_total_order_value_process(event_store, command_bus)
     end
 
     private
@@ -123,6 +124,13 @@ module Processes
       event_store.subscribe(
         WelcomeMessageProcess.new(event_store, command_bus),
         to: [Crm::CustomerRegistered]
+      )
+    end
+
+    def enable_total_order_value_process(event_store, command_bus)
+      event_store.subscribe(
+        TotalOrderValue.new(event_store, command_bus),
+        to: TotalOrderValue.subscribed_events
       )
     end
   end

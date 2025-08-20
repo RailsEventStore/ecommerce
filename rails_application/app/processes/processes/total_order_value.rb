@@ -13,7 +13,8 @@ module Processes
     private
 
     def act
-      value = state.lines.sum { |line| line.fetch(:price) } - state.discount_amount
+      subtotal = state.lines.sum { |line| line.fetch(:price) }
+      value = subtotal * (1 - state.discount_amount / 100.0)
       publish_total_order_value(value)
     end
 
