@@ -14,7 +14,11 @@ module Processes
 
     def act
       subtotal = state.lines.sum { |line| line.fetch(:price) }
-      discounted_value = subtotal * (1 - state.discount_amount / 100.0)
+      
+      total_discount = state.discounts.sum { |discount| discount.fetch(:amount) }
+      final_discount = [total_discount, 100].min
+      
+      discounted_value = subtotal * (1 - final_discount / 100.0)
       publish_total_order_value(subtotal, discounted_value)
     end
 
@@ -23,17 +27,28 @@ module Processes
       case event
       when Pricing::PriceItemAdded
         product_id = event.data.fetch(:product_id)
-        lines = (state.lines + [{ product_id:, price: event.data.fetch(:price) }])
+        base_price = event.data.fetch(:base_price)
+        lines = (state.lines + [{ product_id:, price: base_price }])
         state.with(lines:)
       when Pricing::PriceItemRemoved
         lines = state.lines.reject { |line| line.fetch(:product_id) == event.data.fetch(:product_id) }
         state.with(lines:)
       when Pricing::PercentageDiscountSet
-        state.with(discount_amount: event.data.fetch(:amount))
+        discount_type = event.data.fetch(:type)
+        discount_amount = event.data.fetch(:amount)
+        discounts = state.discounts.reject { |d| d.fetch(:type) == discount_type }
+        discounts = discounts + [{ type: discount_type, amount: discount_amount }]
+        state.with(discounts:)
       when Pricing::PercentageDiscountChanged
-        state.with(discount_amount: event.data.fetch(:amount))
+        discount_type = event.data.fetch(:type)
+        discount_amount = event.data.fetch(:amount)
+        discounts = state.discounts.reject { |d| d.fetch(:type) == discount_type }
+        discounts = discounts + [{ type: discount_type, amount: discount_amount }]
+        state.with(discounts:)
       when Pricing::PercentageDiscountRemoved
-        state.with(discount_amount: 0)
+        discount_type = event.data.fetch(:type)
+        discounts = state.discounts.reject { |d| d.fetch(:type) == discount_type }
+        state.with(discounts:)
       else
         state
       end
@@ -57,12 +72,10 @@ module Processes
     end
   end
 
-  Offer = Data.define(:lines, :discount_amount) do
-    def initialize(lines: [], discount_amount: 0)
-      super(lines: lines.freeze, discount_amount:)
+  Offer = Data.define(:lines, :discounts) do
+    def initialize(lines: [], discounts: [])
+      super(lines: lines.freeze, discounts: discounts.freeze)
     end
   end
-
-
 
 end

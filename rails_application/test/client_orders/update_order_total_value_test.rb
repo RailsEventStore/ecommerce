@@ -12,7 +12,7 @@ module ClientOrders
       customer_registered(customer_id)
       prepare_product(product_id)
 
-      event_store.publish(Pricing::OrderTotalValueCalculated.new(data: { order_id: order_id, discounted_amount: 0, total_amount: 10 }))
+      event_store.publish(Processes::TotalOrderValueUpdated.new(data: { order_id: order_id, discounted_amount: 0, total_amount: 10 }))
 
       order = ClientOrders::Order.find_by(order_uid: order_id)
       assert_equal "Draft", order.state
@@ -20,7 +20,7 @@ module ClientOrders
 
     def test_broadcasts
       order_id = SecureRandom.uuid
-      event_store.publish(Pricing::OrderTotalValueCalculated.new(data: { order_id: order_id, discounted_amount: 0, total_amount: 10 }))
+      event_store.publish(Processes::TotalOrderValueUpdated.new(data: { order_id: order_id, discounted_amount: 0, total_amount: 10 }))
 
       assert_broadcast_on(
         "client_orders_#{order_id}",

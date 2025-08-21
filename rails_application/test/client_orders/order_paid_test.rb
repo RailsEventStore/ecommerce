@@ -15,7 +15,7 @@ module ClientOrders
       run_command(Pricing::AddPriceItem.new(order_id: order_id, product_id: product_id, price: 30))
 
       event_store.publish(
-        Pricing::OrderTotalValueCalculated.new(
+        Processes::TotalOrderValueUpdated.new(
           data: {
             order_id: order_id,
             discounted_amount: 30,

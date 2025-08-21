@@ -59,7 +59,7 @@ module ClientOrders
 
     def confirm_order(customer_id, order_id, total_amount)
       event_store.publish(
-        Pricing::OrderTotalValueCalculated.new(
+        Processes::TotalOrderValueUpdated.new(
           data: {
             order_id: order_id,
             discounted_amount: total_amount,
