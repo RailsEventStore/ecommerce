@@ -14,7 +14,8 @@ module Processes
         "Processes::TotalOrderValue$#{event.data[:order_id]}",
         Processes::TotalOrderValueUpdated.new(
           data: {
-            total_value: 100,
+            total_amount: 100,
+            discounted_amount: 100,
             order_id: order_id
           }
         )) do
@@ -37,7 +38,8 @@ module Processes
         "Processes::TotalOrderValue$#{event_2.data[:order_id]}",
         Processes::TotalOrderValueUpdated.new(
           data: {
-            total_value: 200,
+            total_amount: 200,
+            discounted_amount: 200,
             order_id: order_id
           }
         )) do
@@ -61,7 +63,8 @@ module Processes
         "Processes::TotalOrderValue$#{event_2.data[:order_id]}",
         Processes::TotalOrderValueUpdated.new(
           data: {
-            total_value: 200,
+            total_amount: 200,
+            discounted_amount: 200,
             order_id: order_id
           }
         )) do
@@ -92,7 +95,8 @@ module Processes
         "Processes::TotalOrderValue$#{event_3.data[:order_id]}",
         Processes::TotalOrderValueUpdated.new(
           data: {
-            total_value: 100,
+            total_amount: 100,
+            discounted_amount: 100,
             order_id: order_id
           }
         )) do
@@ -116,7 +120,8 @@ module Processes
         "Processes::TotalOrderValue$#{event_2.data[:order_id]}",
         Processes::TotalOrderValueUpdated.new(
           data: {
-            total_value: 90,
+            total_amount: 100,
+            discounted_amount: 90,
             order_id: order_id
           }
         )) do
@@ -147,7 +152,8 @@ module Processes
         "Processes::TotalOrderValue$#{event_3.data[:order_id]}",
         Processes::TotalOrderValueUpdated.new(
           data: {
-            total_value: 80,
+            total_amount: 100,
+            discounted_amount: 80,
             order_id: order_id
           }
         )) do
@@ -177,15 +183,14 @@ module Processes
         "Processes::TotalOrderValue$#{event_3.data[:order_id]}",
         Processes::TotalOrderValueUpdated.new(
           data: {
-            total_value: 100,
+            total_amount: 100,
+            discounted_amount: 100,
             order_id: order_id
           }
         )) do
         process.call(event_3)
       end
     end
-
-
 
     private
 

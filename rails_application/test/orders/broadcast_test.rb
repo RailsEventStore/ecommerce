@@ -161,7 +161,7 @@ module Orders
       )
 
       event_store.publish(
-        Pricing::OrderTotalValueCalculated.new(
+        Processes::TotalOrderValueUpdated.new(
           data: {
             order_id: order_1_id,
             discounted_amount: 30,
@@ -173,7 +173,7 @@ module Orders
       in_memory_broadcast.result.clear
 
       event_store.publish(
-        Pricing::OrderTotalValueCalculated.new(
+        Processes::TotalOrderValueUpdated.new(
           data: {
             order_id: order_id,
             discounted_amount: 30,

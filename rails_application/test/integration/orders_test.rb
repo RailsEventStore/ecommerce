@@ -396,7 +396,7 @@ class OrdersTest < InMemoryRESIntegrationTestCase
 
     assert(event_names.include?("Fulfillment::OrderConfirmed"))
     assert(event_names.include?("Pricing::PriceItemAdded"))
-    assert(event_names.include?("Pricing::OrderTotalValueCalculated"))
+    assert(event_names.include?("Processes::TotalOrderValueUpdated"))
     assert(event_names.include?("Fulfillment::OrderRegistered"))
   end
 
