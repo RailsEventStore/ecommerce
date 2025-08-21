@@ -13,7 +13,7 @@ module Processes
     private
 
     def act
-      publish_total_order_value(calculate_subtotal, calculate_discounted_value)
+      publish_total_order_value(state.subtotal, state.discounted_value)
     end
 
     def apply(event)
@@ -84,26 +84,27 @@ module Processes
       state.with(discounts:)
     end
 
-    def calculate_subtotal
-      state.lines.sum { |line| line.fetch(:price) }
-    end
-
-    def calculate_total_discount_percentage
-      state.discounts.sum { |discount| discount.fetch(:amount) }
-    end
-
-    def calculate_final_discount_percentage
-      [calculate_total_discount_percentage, 100].min
-    end
-
-    def calculate_discounted_value
-      calculate_subtotal * (1 - calculate_final_discount_percentage / 100.0)
-    end
   end
 
   Offer = Data.define(:lines, :discounts) do
     def initialize(lines: [], discounts: [])
       super(lines: lines.freeze, discounts: discounts.freeze)
+    end
+
+    def subtotal
+      lines.sum { |line| line.fetch(:price) }
+    end
+
+    def total_discount_percentage
+      discounts.sum { |discount| discount.fetch(:amount) }
+    end
+
+    def final_discount_percentage
+      [total_discount_percentage, 100].min
+    end
+
+    def discounted_value
+      subtotal * (1 - final_discount_percentage / 100.0)
     end
   end
 
