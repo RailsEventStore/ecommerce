@@ -19,9 +19,7 @@ module Pricing
           order_id: @id,
           product_id: product_id,
           base_price: base_price,
-          price: price,
-          base_total_value: @list.base_sum + base_price,
-          total_value: @list.actual_sum + price
+          price: price
         }
       )
     end
@@ -33,9 +31,7 @@ module Pricing
           order_id: @id,
           product_id: product_id,
           base_price: item.base_price,
-          price: item.price,
-          base_total_value: @list.base_sum - item.base_price,
-          total_value: @list.actual_sum - item.price
+          price: item.price
         }
       )
     end

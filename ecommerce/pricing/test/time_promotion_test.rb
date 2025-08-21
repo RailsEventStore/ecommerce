@@ -59,9 +59,7 @@ module Pricing
             order_id: order_id,
             product_id: product_1_id,
             base_price: 20,
-            price: 10,
-            base_total_value: 20,
-            total_value: 10,
+            price: 10
           }
         )
       ) { add_item(order_id, product_1_id) }
