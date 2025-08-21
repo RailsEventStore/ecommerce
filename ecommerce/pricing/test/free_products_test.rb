@@ -20,13 +20,6 @@ module Pricing
             order_id: order_id,
             product_id: product_1_id
           }
-        ),
-        OrderTotalValueCalculated.new(
-          data: {
-            order_id: order_id,
-            discounted_amount: 60,
-            total_amount: 80
-          }
         )
       ) do
         run_command(
@@ -53,14 +46,7 @@ module Pricing
             order_id: order_id,
             product_id: cheaper_product
           }
-        ),
-        OrderTotalValueCalculated.new(
-          data: {
-            order_id: order_id,
-            discounted_amount: 60,
-            total_amount: 70
-          }
-        ),
+        )
       ) do
         run_command(
           Pricing::MakeProductFreeForOrder.new(order_id: order_id, product_id: cheaper_product)
@@ -120,13 +106,6 @@ module Pricing
             order_id: order_id,
             product_id: product_1_id
           }
-        ),
-        OrderTotalValueCalculated.new(
-          data: {
-            order_id: order_id,
-            discounted_amount: 60,
-            total_amount: 80
-          }
         )
       ) do
         run_command(
@@ -154,13 +133,6 @@ module Pricing
           data: {
             order_id: order_id,
             product_id: product_1_id
-          }
-        ),
-        OrderTotalValueCalculated.new(
-          data: {
-            order_id: order_id,
-            discounted_amount: 80,
-            total_amount: 80
           }
         )
       ) do

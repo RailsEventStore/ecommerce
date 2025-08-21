@@ -12,26 +12,6 @@ module Pricing
       assert Pricing.command_bus, Infra::CommandBus
     end
 
-    def test_calculates_total_value
-      product_1_id = SecureRandom.uuid
-      product_2_id = SecureRandom.uuid
-      set_price(product_1_id, 20)
-      set_price(product_2_id, 30)
-      order_id = SecureRandom.uuid
-      add_item(order_id, product_1_id)
-      add_item(order_id, product_2_id)
-      stream = stream_name(order_id)
-      assert_events(
-        stream,
-        OrderTotalValueCalculated.new(
-          data: {
-            order_id: order_id,
-            discounted_amount: 50,
-            total_amount: 50
-          }
-        )
-      ) { calculate_total_value(order_id) }
-    end
 
     def test_calculates_sub_amounts
       product_1_id = SecureRandom.uuid
@@ -146,16 +126,6 @@ module Pricing
       order_id = SecureRandom.uuid
       add_item(order_id, product_1_id)
       stream = stream_name(order_id)
-      assert_events(
-        stream,
-        OrderTotalValueCalculated.new(
-          data: {
-            order_id: order_id,
-            discounted_amount: 20,
-            total_amount: 20
-          }
-        )
-      ) { run_command(CalculateTotalValue.new(order_id: order_id)) }
       assert_events_contain(
         stream,
         PercentageDiscountSet.new(
@@ -163,13 +133,6 @@ module Pricing
             order_id: order_id,
             type: Pricing::Discounts::GENERAL_DISCOUNT,
             amount: 10
-          }
-        ),
-        OrderTotalValueCalculated.new(
-          data: {
-            order_id: order_id,
-            discounted_amount: 18,
-            total_amount: 20
           }
         )
       ) do
@@ -185,13 +148,6 @@ module Pricing
             type: Pricing::Discounts::GENERAL_DISCOUNT,
             amount: 50
           }
-        ),
-        OrderTotalValueCalculated.new(
-          data: {
-            order_id: order_id,
-            discounted_amount: 10,
-            total_amount: 20
-          }
         )
       ) do
         run_command(
@@ -204,13 +160,6 @@ module Pricing
           data: {
             order_id: order_id,
             type: Pricing::Discounts::GENERAL_DISCOUNT
-          }
-        ),
-        OrderTotalValueCalculated.new(
-          data: {
-            order_id: order_id,
-            discounted_amount: 20,
-            total_amount: 20
           }
         )
       ) do
@@ -233,13 +182,6 @@ module Pricing
             order_id: order_id,
             type: Pricing::Discounts::GENERAL_DISCOUNT,
             amount: 100
-          }
-        ),
-        OrderTotalValueCalculated.new(
-          data: {
-            order_id: order_id,
-            discounted_amount: 0,
-            total_amount: 20
           }
         )
       ) do
@@ -333,13 +275,6 @@ module Pricing
             type: Pricing::Discounts::GENERAL_DISCOUNT,
             amount: 100
           }
-        ),
-        OrderTotalValueCalculated.new(
-          data: {
-            order_id: order_id,
-            discounted_amount: 0,
-            total_amount: 20
-          }
         )
       ) do
         run_command(
@@ -369,13 +304,6 @@ module Pricing
             type: Pricing::Discounts::GENERAL_DISCOUNT,
             amount: 100
           }
-        ),
-        OrderTotalValueCalculated.new(
-          data: {
-            order_id: order_id,
-            discounted_amount: 0,
-            total_amount: 20
-          }
         )
       ) do
         run_command(
@@ -403,13 +331,6 @@ module Pricing
           data: {
             order_id: order_id,
             type: Discounts::GENERAL_DISCOUNT
-          }
-        ),
-        OrderTotalValueCalculated.new(
-          data: {
-            order_id: order_id,
-            discounted_amount: 20,
-            total_amount: 20
           }
         )
       ) do

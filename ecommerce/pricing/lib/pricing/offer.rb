@@ -92,20 +92,6 @@ module Pricing
       )
     end
 
-    def calculate_total_value
-      total_value = @list.base_sum
-      discounted_value = @list.actual_sum
-
-      apply(
-        OrderTotalValueCalculated.new(
-          data: {
-            order_id: @id,
-            total_amount: total_value,
-            discounted_amount: discounted_value
-          }
-        )
-      )
-    end
 
     def calculate_sub_amounts
       sub_amounts_total = @list.sub_amounts_total
@@ -173,8 +159,6 @@ module Pricing
     on PriceItemValueCalculated do |event|
     end
 
-    on OrderTotalValueCalculated do |event|
-    end
 
     on PercentageDiscountSet do |event|
       @discounts << Discounts::PercentageDiscount.new(event.data.fetch(:type), event.data.fetch(:amount))

@@ -137,19 +137,11 @@ module Pricing
     end
   end
 
-  class OnCalculateTotalValue
+  class OnCalculateSubAmounts
     include Infra::Retry
 
     def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)
-    end
-
-    def call(command)
-      with_retry do
-        @repository.with_aggregate(Offer, command.aggregate_id) do |order|
-          order.calculate_total_value
-        end
-      end
     end
 
     def calculate_sub_amounts(command)

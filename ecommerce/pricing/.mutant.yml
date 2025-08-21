@@ -13,8 +13,6 @@ matcher:
   ignore:
     - Pricing::Configuration*
     - Pricing::Test*
-    - Pricing::OnCalculateTotalValue#call
-    - Pricing::OnCalculateTotalValue#calculate_sub_amounts
     - Pricing::Offer#make_free_product
     - Pricing::Offer#remove_free_product
     - Pricing::Offer::List*

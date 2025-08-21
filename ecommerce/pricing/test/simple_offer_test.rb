@@ -21,13 +21,6 @@ module Pricing
             total_value: 20,
           }
         ),
-        OrderTotalValueCalculated.new(
-          data: {
-            order_id: order_id,
-            discounted_amount: 20,
-            total_amount: 20
-          }
-        ),
         PriceItemValueCalculated.new(
           data: {
             order_id: order_id,
@@ -49,13 +42,6 @@ module Pricing
             price: 20,
             base_total_value: 40,
             total_value: 40,
-          }
-        ),
-        OrderTotalValueCalculated.new(
-          data: {
-            order_id: order_id,
-            discounted_amount: 40,
-            total_amount: 40
           }
         ),
         PriceItemValueCalculated.new(
@@ -91,13 +77,6 @@ module Pricing
             total_value: 20,
           }
         ),
-        OrderTotalValueCalculated.new(
-          data: {
-            order_id: order_id,
-            discounted_amount: 20,
-            total_amount: 20
-          }
-        ),
         PriceItemValueCalculated.new(
           data: {
             order_id: order_id,
@@ -119,13 +98,6 @@ module Pricing
             price: 20,
             base_total_value: 0,
             total_value: 0,
-          }
-        ),
-        OrderTotalValueCalculated.new(
-          data: {
-            order_id: order_id,
-            discounted_amount: 0,
-            total_amount: 0
           }
         )
       ) { remove_item(order_id, product_id) }

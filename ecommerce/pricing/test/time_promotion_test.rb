@@ -63,13 +63,6 @@ module Pricing
             base_total_value: 20,
             total_value: 10,
           }
-        ),
-        OrderTotalValueCalculated.new(
-          data: {
-            order_id: order_id,
-            total_amount: 20,
-            discounted_amount: 10
-          }
         )
       ) { add_item(order_id, product_1_id) }
     end
@@ -143,39 +136,6 @@ module Pricing
       end
     end
 
-    def test_takes_bigger_value_for_time_promotion_if_more_than_one
-      timestamp = Time.new(2022, 5, 30, 15, 33)
-      time_promotion_id_1 = SecureRandom.uuid
-      time_promotion_id_2 = SecureRandom.uuid
-      time_promotion_id_3 = SecureRandom.uuid
-      start_time = timestamp - 5
-      end_time = timestamp - 2
-      set_time_promotion_range(time_promotion_id_1, start_time, end_time, 30)
-
-      start_time = timestamp - 1
-      end_time = timestamp + 1
-      set_time_promotion_range(time_promotion_id_2, start_time, end_time, 50)
-      set_time_promotion_range(time_promotion_id_3, start_time, end_time, 40)
-
-      Timecop.freeze(timestamp) do
-        product_1_id = SecureRandom.uuid
-        set_price(product_1_id, 20)
-        order_id = SecureRandom.uuid
-        add_item(order_id, product_1_id)
-        stream = stream_name(order_id)
-
-        assert_events(
-          stream,
-          OrderTotalValueCalculated.new(
-            data: {
-              order_id: order_id,
-              discounted_amount: 10,
-              total_amount: 20
-            }
-          )
-        ) { calculate_total_value(order_id) }
-      end
-    end
 
     private
 

@@ -18,11 +18,6 @@ module Pricing
     attribute? :end_time, Infra::Types::Time
   end
 
-  class OrderTotalValueCalculated < Infra::Event
-    attribute :order_id, Infra::Types::UUID
-    attribute :discounted_amount, Infra::Types::Value
-    attribute :total_amount, Infra::Types::Value
-  end
 
   class PriceItemValueCalculated < Infra::Event
     attribute :order_id, Infra::Types::UUID
