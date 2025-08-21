@@ -226,13 +226,6 @@ module Pricing
         @items.any? { |item| item.price == 0 }
       end
 
-      def base_sum
-        @items.sum(&:base_price)
-      end
-
-      def actual_sum
-        @items.sum(&:price)
-      end
 
       def sub_amounts_total
         @items.each_with_object({}) do |item, memo|
