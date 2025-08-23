@@ -51,3 +51,4 @@ matcher:
     - Processes::NotifyPaymentsAboutOrderValue*
     - Processes::WelcomeMessageProcess*
     - Processes::TotalOrderValue#fetch_id
+    - Processes::InvoiceGeneration#fetch_id

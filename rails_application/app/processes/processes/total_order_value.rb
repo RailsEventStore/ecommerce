@@ -10,8 +10,6 @@ module Processes
       Pricing::PercentageDiscountRemoved
     )
 
-    private
-
     def act
       publish_total_order_value(state.subtotal, state.discounted_value)
     end
@@ -33,6 +31,7 @@ module Processes
         state
       end
     end
+
     private
 
     def publish_total_order_value(total_amount, discounted_amount)
