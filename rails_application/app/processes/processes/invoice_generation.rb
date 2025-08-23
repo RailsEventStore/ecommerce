@@ -10,11 +10,16 @@ module Processes
       Pricing::PercentageDiscountRemoved
     )
 
+    def act
+    end
 
     private
 
     def fetch_id(event)
       event.data.fetch(:order_id)
+    end
+
+    def apply(event)
     end
 
   end
