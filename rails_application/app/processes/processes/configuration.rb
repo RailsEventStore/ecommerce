@@ -65,7 +65,7 @@ module Processes
       event_store.subscribe(
         OrderItemInvoicingProcess.new(event_store, command_bus),
         to: [
-          Pricing::PriceItemValueCalculated,
+          Processes::InvoiceItemValueCalculated,
           Taxes::VatRateDetermined
         ]
       )

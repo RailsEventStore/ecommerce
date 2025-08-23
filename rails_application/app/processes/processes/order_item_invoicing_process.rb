@@ -3,7 +3,7 @@ module Processes
     include Infra::ProcessManager.with_state { ProcessState }
 
     subscribes_to(
-      Pricing::PriceItemValueCalculated,
+      InvoiceItemValueCalculated,
       Taxes::VatRateDetermined
     )
 
@@ -28,7 +28,7 @@ module Processes
 
     def apply(event)
       case event
-      when Pricing::PriceItemValueCalculated
+      when InvoiceItemValueCalculated
         state.with(
           order_id: event.data.fetch(:order_id),
           product_id: event.data.fetch(:product_id),

@@ -16,7 +16,7 @@ module Processes
     def test_invoice_item_being_created
       process = OrderItemInvoicingProcess.new(event_store, command_bus)
       given([
-              Pricing::PriceItemValueCalculated.new(
+              Processes::InvoiceItemValueCalculated.new(
                 data: {
                   order_id: order_id,
                   product_id: @product_id,
@@ -42,48 +42,48 @@ module Processes
         unit_price: 18.to_d
       ))
     end
-  end
 
-  def test_vat_rate_comes_first
-    process = OrderItemInvoicingProcess.new(event_store, command_bus)
-    given([
-            Taxes::VatRateDetermined.new(
-              data: {
-                order_id: order_id,
-                product_id: @product_id,
-                vat_rate: @vat_rate
-              }
-            ),
-            Pricing::PriceItemValueCalculated.new(
-              data: {
-                order_id: order_id,
-                product_id: @product_id,
-                quantity: @quantity,
-                amount: @amount,
-                discounted_amount: @discounted_amount
-              }
-            )
-          ]).each do |event|
-      process.call(event)
+    def test_vat_rate_comes_first
+      process = OrderItemInvoicingProcess.new(event_store, command_bus)
+      given([
+              Taxes::VatRateDetermined.new(
+                data: {
+                  order_id: order_id,
+                  product_id: @product_id,
+                  vat_rate: @vat_rate
+                }
+              ),
+              Processes::InvoiceItemValueCalculated.new(
+                data: {
+                  order_id: order_id,
+                  product_id: @product_id,
+                  quantity: @quantity,
+                  amount: @amount,
+                  discounted_amount: @discounted_amount
+                }
+              )
+            ]).each do |event|
+        process.call(event)
+      end
+      assert_command(Invoicing::AddInvoiceItem.new(
+        invoice_id: order_id,
+        product_id: @product_id,
+        quantity: @quantity,
+        vat_rate: @vat_rate,
+        unit_price: 18.to_d
+      ))
     end
-    assert_command(Invoicing::AddInvoiceItem.new(
-      invoice_id: order_id,
-      product_id: @product_id,
-      quantity: @quantity,
-      vat_rate: @vat_rate,
-      unit_price: 18.to_d
-    ))
-  end
 
-  def test_stream_name
-    process = OrderItemInvoicingProcess.new(event_store, command_bus)
-    given([Pricing::PriceItemValueCalculated.new(data: { order_id: order_id,
-                                                         product_id: product_id,
-                                                         quantity: quantity,
-                                                         amount: amount,
-                                                         discounted_amount: discounted_amount })]).each do |event|
-      process.call(event)
+    def test_stream_name
+      process = OrderItemInvoicingProcess.new(event_store, command_bus)
+      given([Processes::InvoiceItemValueCalculated.new(data: { order_id: order_id,
+                                                               product_id: @product_id,
+                                                               quantity: @quantity,
+                                                               amount: @amount,
+                                                               discounted_amount: @discounted_amount })]).each do |event|
+        process.call(event)
+      end
+      assert_equal "Processes::OrderItemInvoicingProcess$#{order_id}$#{@product_id}", process.send(:stream_name)
     end
-    assert_equal "Processes::OrderItemInvoicingProcess$#{order_id}", process.send(:stream_name)
   end
 end
