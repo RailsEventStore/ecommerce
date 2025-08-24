@@ -65,53 +65,6 @@ module Pricing
       ) { add_item(order_id, product_1_id) }
     end
 
-    def test_calculates_sub_amounts_with_combined_discounts
-      product_1_id = SecureRandom.uuid
-      product_2_id = SecureRandom.uuid
-      set_price(product_1_id, 20)
-      set_price(product_2_id, 30)
-      order_id = SecureRandom.uuid
-      stream = stream_name(order_id)
-      data = {
-        time_promotion_id: SecureRandom.uuid,
-        discount: 50,
-        start_time: Time.current - 1,
-        end_time: Time.current + 100,
-        label: "Last Minute"
-      }
-
-      run_command(CreateTimePromotion.new(data))
-
-      add_item(order_id, product_1_id)
-      add_item(order_id, product_2_id)
-      add_item(order_id, product_2_id)
-
-      run_command(
-        Pricing::SetPercentageDiscount.new(order_id: order_id, amount: 10)
-      )
-
-      assert_events_contain(
-        stream,
-        PriceItemValueCalculated.new(
-          data: {
-            order_id: order_id,
-            product_id: product_1_id,
-            quantity: 1,
-            amount: 20,
-            discounted_amount: 8
-          }
-        ),
-        PriceItemValueCalculated.new(
-          data: {
-            order_id: order_id,
-            product_id: product_2_id,
-            quantity: 2,
-            amount: 60,
-            discounted_amount: 24
-          }
-        )
-      ) { calculate_sub_amounts(order_id) }
-    end
 
     def test_cant_create_twice
       uid = SecureRandom.uuid
@@ -164,8 +117,5 @@ module Pricing
       )
     end
 
-    def calculate_sub_amounts(order_id)
-      run_command(CalculateSubAmounts.new(order_id: order_id))
-    end
   end
 end

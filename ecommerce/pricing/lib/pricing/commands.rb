@@ -14,10 +14,6 @@ module Pricing
     alias aggregate_id order_id
   end
 
-  class CalculateSubAmounts < Infra::Command
-    attribute :order_id, Infra::Types::UUID
-    alias aggregate_id order_id
-  end
 
   class SetPrice < Infra::Command
     attribute :product_id, Infra::Types::UUID

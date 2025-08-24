@@ -88,25 +88,6 @@ module Pricing
       )
     end
 
-
-    def calculate_sub_amounts
-      sub_amounts_total = @list.sub_amounts_total
-
-      sub_amounts_total.each_pair do |product_id, h|
-        apply(
-          PriceItemValueCalculated.new(
-            data: {
-              order_id: @id,
-              product_id: product_id,
-              quantity: h.fetch(:quantity),
-              amount: h.fetch(:base_amount),
-              discounted_amount: h.fetch(:amount),
-            }
-          )
-        )
-      end
-    end
-
     def use_coupon(coupon_id, discount)
       apply CouponUsed.new(
         data: {
@@ -152,8 +133,6 @@ module Pricing
       @list.remove_item(event.data.fetch(:product_id), event.data.fetch(:price))
     end
 
-    on PriceItemValueCalculated do |event|
-    end
 
 
     on PercentageDiscountSet do |event|

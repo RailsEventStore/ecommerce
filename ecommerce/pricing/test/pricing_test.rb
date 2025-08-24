@@ -13,65 +13,6 @@ module Pricing
     end
 
 
-    def test_calculates_sub_amounts
-      product_1_id = SecureRandom.uuid
-      product_2_id = SecureRandom.uuid
-      set_price(product_1_id, 20)
-      set_price(product_2_id, 30)
-      order_id = SecureRandom.uuid
-      stream = stream_name(order_id)
-
-      assert_events(stream) { calculate_sub_amounts(order_id) }
-
-      add_item(order_id, product_1_id)
-      add_item(order_id, product_2_id)
-      add_item(order_id, product_2_id)
-      assert_events(
-        stream,
-        PriceItemValueCalculated.new(
-          data: {
-            order_id: order_id,
-            product_id: product_1_id,
-            quantity: 1,
-            amount: 20,
-            discounted_amount: 20
-          }
-        ),
-        PriceItemValueCalculated.new(
-          data: {
-            order_id: order_id,
-            product_id: product_2_id,
-            quantity: 2,
-            amount: 60,
-            discounted_amount: 60
-          }
-        )
-      ) { calculate_sub_amounts(order_id) }
-      run_command(
-        Pricing::SetPercentageDiscount.new(order_id: order_id, amount: 10)
-      )
-      assert_events(
-        stream,
-        PriceItemValueCalculated.new(
-          data: {
-            order_id: order_id,
-            product_id: product_1_id,
-            quantity: 1,
-            amount: 20,
-            discounted_amount: 18
-          }
-        ),
-        PriceItemValueCalculated.new(
-          data: {
-            order_id: order_id,
-            product_id: product_2_id,
-            quantity: 2,
-            amount: 60,
-            discounted_amount: 54
-          }
-        )
-      ) { calculate_sub_amounts(order_id) }
-    end
 
     def test_sets_time_promotion_discount
       order_id = SecureRandom.uuid
@@ -369,9 +310,6 @@ module Pricing
       "Pricing::Offer$#{order_id}"
     end
 
-    def calculate_sub_amounts(order_id)
-      run_command(CalculateSubAmounts.new(order_id: order_id))
-    end
 
     def create_active_time_promotion(discount)
       run_command(

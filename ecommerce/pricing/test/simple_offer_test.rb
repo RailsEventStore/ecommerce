@@ -18,15 +18,6 @@ module Pricing
             base_price: 20,
             price: 20
           }
-        ),
-        PriceItemValueCalculated.new(
-          data: {
-            order_id: order_id,
-            product_id: product_id,
-            quantity: 1,
-            amount: 20,
-            discounted_amount: 20,
-          }
         )
       ) { add_item(order_id, product_id) }
 
@@ -38,15 +29,6 @@ module Pricing
             product_id: product_id,
             base_price: 20,
             price: 20
-          }
-        ),
-        PriceItemValueCalculated.new(
-          data: {
-            order_id: order_id,
-            product_id: product_id,
-            quantity: 2,
-            amount: 40,
-            discounted_amount: 40,
           }
         )
       ) { add_item(order_id, product_id) }
@@ -69,15 +51,6 @@ module Pricing
             product_id: product_id,
             base_price: 20,
             price: 20
-          }
-        ),
-        PriceItemValueCalculated.new(
-          data: {
-            order_id: order_id,
-            product_id: product_id,
-            quantity: 1,
-            amount: 20,
-            discounted_amount: 20,
           }
         )
       ) { remove_item(order_id, product_id) }
