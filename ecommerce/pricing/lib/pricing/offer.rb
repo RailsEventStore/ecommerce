@@ -133,8 +133,6 @@ module Pricing
       @list.remove_item(event.data.fetch(:product_id), event.data.fetch(:price))
     end
 
-
-
     on PercentageDiscountSet do |event|
       @discounts << Discounts::PercentageDiscount.new(event.data.fetch(:type), event.data.fetch(:amount))
       @list.apply_discounts(@discounts)
@@ -206,15 +204,6 @@ module Pricing
       end
 
 
-      def sub_amounts_total
-        @items.each_with_object({}) do |item, memo|
-          memo[item.product_id] ||= { base_amount: 0, amount: 0, quantity: 0 }
-          memo[item.product_id][:base_amount] += item.base_price * item.quantity
-          memo[item.product_id][:amount] += item.price * item.quantity
-          memo[item.product_id][:quantity] += item.quantity
-        end
-      end
-
       def set_free(product_id)
         idx = @items.index { |item| item.product_id == product_id && item.price != 0 }
         old_item = @items.delete_at(idx)
@@ -236,8 +225,11 @@ module Pricing
       end
 
       def quantities
-        sub_amounts_total.map do |product_id, h|
-          { product_id:, quantity: h.fetch(:quantity) }
+        @items.each_with_object({}) do |item, memo|
+          memo[item.product_id] ||= 0
+          memo[item.product_id] += item.quantity
+        end.map do |product_id, quantity|
+          { product_id:, quantity: }
         end
       end
 
