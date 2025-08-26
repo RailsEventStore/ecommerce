@@ -12,11 +12,29 @@ module Orders
       product_id = SecureRandom.uuid
 
       create_product(product_id, "Async Remote", 10)
-      run_command(Crm::RegisterCustomer.new(customer_id: customer_id, name: "John Doe"))
-      run_command(Pricing::AddPriceItem.new(order_id: order_id, product_id: product_id, price: 10))
-      run_command(Pricing::AcceptOffer.new(order_id: order_id))
-      run_command(
-        Crm::AssignCustomerToOrder.new(customer_id: customer_id, order_id: order_id)
+      event_store.publish(Crm::CustomerRegistered.new(data: { customer_id: customer_id, name: "John Doe" }))
+      event_store.publish(
+        Pricing::PriceItemAdded.new(
+          data: {
+            order_id: order_id,
+            product_id: product_id,
+            base_price: 10,
+            price: 10,
+            base_total_value: 10,
+            total_value: 10
+          }
+        )
+      )
+      event_store.publish(
+        Pricing::OfferAccepted.new(
+          data: {
+            order_id: order_id,
+            order_lines: [{ product_id: product_id, quantity: 1 }]
+          }
+        )
+      )
+      event_store.publish(
+        Crm::CustomerAssignedToOrder.new(data: { customer_id: customer_id, order_id: order_id })
       )
 
       event_store.publish(Processes::TotalOrderValueUpdated.new(data: { order_id: order_id, discounted_amount: 0, total_amount: 10 }))
@@ -38,9 +56,13 @@ module Orders
     private
 
     def create_product(product_id, name, price)
-      run_command(ProductCatalog::RegisterProduct.new(product_id: product_id))
-      run_command(ProductCatalog::NameProduct.new(product_id: product_id, name: name))
-      run_command(Pricing::SetPrice.new(product_id: product_id, price: price))
+      event_store.publish(ProductCatalog::ProductRegistered.new(data: { product_id: product_id }))
+      event_store.publish(ProductCatalog::ProductNamed.new(data: { product_id: product_id, name: name }))
+      event_store.publish(Pricing::PriceSet.new(data: { product_id: product_id, price: price }))
+    end
+
+    def event_store
+      Rails.configuration.event_store
     end
   end
 end

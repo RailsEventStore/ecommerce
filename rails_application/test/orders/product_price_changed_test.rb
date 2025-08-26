@@ -8,7 +8,7 @@ module Orders
       product_id = prepare_product
       unchanged_product_id = prepare_product
 
-      run_command(Pricing::SetPrice.new(product_id: product_id, price: 100))
+      event_store.publish(Pricing::PriceSet.new(data: { product_id: product_id, price: 100 }))
 
       assert_equal 100, Product.find_by_uid(product_id).price
       assert_equal 50, Product.find_by_uid(unchanged_product_id).price
@@ -24,18 +24,17 @@ module Orders
 
     def prepare_product
       product_id = SecureRandom.uuid
-      run_command(
-        ProductCatalog::RegisterProduct.new(
-          product_id: product_id,
-          )
-      )
-      run_command(
-        ProductCatalog::NameProduct.new(
-          product_id: product_id,
-          name: "test"
+      event_store.publish(
+        ProductCatalog::ProductRegistered.new(
+          data: { product_id: product_id }
         )
       )
-      run_command(Pricing::SetPrice.new(product_id: product_id, price: 50))
+      event_store.publish(
+        ProductCatalog::ProductNamed.new(
+          data: { product_id: product_id, name: "test" }
+        )
+      )
+      event_store.publish(Pricing::PriceSet.new(data: { product_id: product_id, price: 50 }))
 
       product_id
     end

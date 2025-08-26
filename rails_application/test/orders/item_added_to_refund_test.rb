@@ -27,30 +27,52 @@ module Refunds
 
     private
 
+    def event_store
+      Rails.configuration.event_store
+    end
+
     def prepare_product(product_id, price)
-      run_command(
-        ProductCatalog::RegisterProduct.new(
-          product_id: product_id,
-          )
-      )
-      run_command(
-        ProductCatalog::NameProduct.new(
-          product_id: product_id,
-          name: "Async Remote"
+      event_store.publish(
+        ProductCatalog::ProductRegistered.new(
+          data: { product_id: product_id }
         )
       )
-      run_command(Pricing::SetPrice.new(product_id: product_id, price: price))
+      event_store.publish(
+        ProductCatalog::ProductNamed.new(
+          data: { product_id: product_id, name: "Async Remote" }
+        )
+      )
+      event_store.publish(Pricing::PriceSet.new(data: { product_id: product_id, price: price }))
     end
 
     def place_order(order_id, product_id, price)
-      run_command(Pricing::AddPriceItem.new(order_id:, product_id:, price:))
-      run_command(Pricing::AcceptOffer.new(order_id:))
+      event_store.publish(
+        Pricing::PriceItemAdded.new(
+          data: {
+            order_id: order_id,
+            product_id: product_id,
+            base_price: price,
+            price: price,
+            base_total_value: price,
+            total_value: price
+          }
+        )
+      )
+      event_store.publish(
+        Pricing::OfferAccepted.new(
+          data: {
+            order_id: order_id,
+            order_lines: [{ product_id: product_id, quantity: 1 }]
+          }
+        )
+      )
     end
 
     def create_draft_refund(refund_id, order_id)
-      run_command(
-        Ordering::CreateDraftRefund.new(refund_id: refund_id, order_id: order_id)
+      draft_refund_created = Ordering::DraftRefundCreated.new(
+        data: { refund_id: refund_id, order_id: order_id, refundable_products: [] }
       )
+      CreateDraftRefund.new.call(draft_refund_created)
     end
 
     def item_added_to_refund(refund_id, order_id, product_id)
