@@ -41,18 +41,22 @@ module Orders
     end
 
     def prepare_product(product_id)
-      run_command(
-        ProductCatalog::RegisterProduct.new(
-          product_id: product_id,
-          )
-      )
-      run_command(
-        ProductCatalog::NameProduct.new(
-          product_id: product_id,
-          name: "test"
+      event_store.publish(
+        ProductCatalog::ProductRegistered.new(
+          data: {
+            product_id: product_id
+          }
         )
       )
-      run_command(Pricing::SetPrice.new(product_id: product_id, price: 50))
+      event_store.publish(
+        ProductCatalog::ProductNamed.new(
+          data: {
+            product_id: product_id,
+            name: "test"
+          }
+        )
+      )
+      event_store.publish(Pricing::PriceSet.new(data: { product_id: product_id, price: 50 }))
     end
 
     def customer_registered(customer_id)

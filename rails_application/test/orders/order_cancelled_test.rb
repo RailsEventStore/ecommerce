@@ -19,8 +19,22 @@ module Orders
       ))
 
       create_product(product_id, "Async Remote", 30)
-      run_command(Pricing::AddPriceItem.new(order_id: order_id, product_id: product_id, price: 30))
-      run_command(Pricing::AcceptOffer.new(order_id: order_id))
+      event_store.publish(Pricing::PriceItemAdded.new(
+        data: {
+          order_id: order_id,
+          product_id: product_id,
+          base_price: 30,
+          price: 30,
+          base_total_value: 30,
+          total_value: 30
+        }
+      ))
+      event_store.publish(Pricing::OfferAccepted.new(
+        data: {
+          order_id: order_id,
+          order_lines: [{ product_id: product_id, quantity: 1 }]
+        }
+      ))
 
       order_cancelled = Fulfillment::OrderCancelled.new(
         data: {
@@ -41,9 +55,13 @@ module Orders
     private
 
     def create_product(product_id, name, price)
-      run_command(ProductCatalog::RegisterProduct.new(product_id: product_id))
-      run_command(ProductCatalog::NameProduct.new(product_id: product_id, name: name))
-      run_command(Pricing::SetPrice.new(product_id: product_id, price: price))
+      event_store.publish(ProductCatalog::ProductRegistered.new(data: { product_id: product_id }))
+      event_store.publish(ProductCatalog::ProductNamed.new(data: { product_id: product_id, name: name }))
+      event_store.publish(Pricing::PriceSet.new(data: { product_id: product_id, price: price }))
+    end
+
+    def event_store
+      Rails.configuration.event_store
     end
   end
 end

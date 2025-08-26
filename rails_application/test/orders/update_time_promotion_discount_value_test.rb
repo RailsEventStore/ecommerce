@@ -27,18 +27,22 @@ module Orders
     end
 
     def prepare_product(product_id)
-      run_command(
-        ProductCatalog::RegisterProduct.new(
-          product_id: product_id,
-          )
-      )
-      run_command(
-        ProductCatalog::NameProduct.new(
-          product_id: product_id,
-          name: "test"
+      event_store.publish(
+        ProductCatalog::ProductRegistered.new(
+          data: {
+            product_id: product_id
+          }
         )
       )
-      run_command(Pricing::SetPrice.new(product_id: product_id, price: 50))
+      event_store.publish(
+        ProductCatalog::ProductNamed.new(
+          data: {
+            product_id: product_id,
+            name: "test"
+          }
+        )
+      )
+      event_store.publish(Pricing::PriceSet.new(data: { product_id: product_id, price: 50 }))
     end
 
     def customer_registered(customer_id)
@@ -46,13 +50,15 @@ module Orders
     end
 
     def create_active_time_promotion
-      run_command(
-        Pricing::CreateTimePromotion.new(
-          time_promotion_id: SecureRandom.uuid,
-          discount: 50,
-          start_time: Time.current - 1,
-          end_time: Time.current + 1,
-          label: "Last Minute"
+      event_store.publish(
+        Pricing::TimePromotionCreated.new(
+          data: {
+            time_promotion_id: SecureRandom.uuid,
+            discount: 50,
+            start_time: Time.current - 1,
+            end_time: Time.current + 1,
+            label: "Last Minute"
+          }
         )
       )
     end

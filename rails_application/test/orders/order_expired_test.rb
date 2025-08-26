@@ -8,22 +8,26 @@ module Orders
       event_store = Rails.configuration.event_store
 
       customer_id = SecureRandom.uuid
-      run_command(
-        Crm::RegisterCustomer.new(customer_id: customer_id, name: "dummy")
+      event_store.publish(
+        Crm::CustomerRegistered.new(data: { customer_id: customer_id, name: "dummy" })
       )
       product_id = SecureRandom.uuid
-      run_command(
-        ProductCatalog::RegisterProduct.new(
-          product_id: product_id
+      event_store.publish(
+        ProductCatalog::ProductRegistered.new(
+          data: {
+            product_id: product_id
+          }
         )
       )
-      run_command(
-        ProductCatalog::NameProduct.new(
-          product_id: product_id,
-          name: "Async Remote"
+      event_store.publish(
+        ProductCatalog::ProductNamed.new(
+          data: {
+            product_id: product_id,
+            name: "Async Remote"
+          }
         )
       )
-      run_command(Pricing::SetPrice.new(product_id: product_id, price: 39))
+      event_store.publish(Pricing::PriceSet.new(data: { product_id: product_id, price: 39 }))
 
       order_id = SecureRandom.uuid
       event_store.publish(

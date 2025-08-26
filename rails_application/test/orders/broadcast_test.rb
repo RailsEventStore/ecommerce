@@ -30,18 +30,22 @@ module Orders
 
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
-      run_command(
-        ProductCatalog::RegisterProduct.new(
-          product_id: product_id
+      event_store.publish(
+        ProductCatalog::ProductRegistered.new(
+          data: {
+            product_id: product_id
+          }
         )
       )
-      run_command(
-        ProductCatalog::NameProduct.new(
-          product_id: product_id,
-          name: "Async Remote"
+      event_store.publish(
+        ProductCatalog::ProductNamed.new(
+          data: {
+            product_id: product_id,
+            name: "Async Remote"
+          }
         )
       )
-      run_command(Pricing::SetPrice.new(product_id: product_id, price: 20))
+      event_store.publish(Pricing::PriceSet.new(data: { product_id: product_id, price: 20 }))
 
       in_memory_broadcast.result.clear
 
@@ -68,18 +72,22 @@ module Orders
       event_store = Rails.configuration.event_store
 
       product_id = SecureRandom.uuid
-      run_command(
-        ProductCatalog::RegisterProduct.new(
-          product_id: product_id
+      event_store.publish(
+        ProductCatalog::ProductRegistered.new(
+          data: {
+            product_id: product_id
+          }
         )
       )
-      run_command(
-        ProductCatalog::NameProduct.new(
-          product_id: product_id,
-          name: "Async Remote"
+      event_store.publish(
+        ProductCatalog::ProductNamed.new(
+          data: {
+            product_id: product_id,
+            name: "Async Remote"
+          }
         )
       )
-      run_command(Pricing::SetPrice.new(product_id: product_id, price: 20))
+      event_store.publish(Pricing::PriceSet.new(data: { product_id: product_id, price: 20 }))
       order_id = SecureRandom.uuid
 
       event_store.publish(
@@ -123,18 +131,22 @@ module Orders
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
       order_1_id = SecureRandom.uuid
-      run_command(
-        ProductCatalog::RegisterProduct.new(
-          product_id: product_id
+      event_store.publish(
+        ProductCatalog::ProductRegistered.new(
+          data: {
+            product_id: product_id
+          }
         )
       )
-      run_command(
-        ProductCatalog::NameProduct.new(
-          product_id: product_id,
-          name: "Async Remote"
+      event_store.publish(
+        ProductCatalog::ProductNamed.new(
+          data: {
+            product_id: product_id,
+            name: "Async Remote"
+          }
         )
       )
-      run_command(Pricing::SetPrice.new(product_id: product_id, price: 20))
+      event_store.publish(Pricing::PriceSet.new(data: { product_id: product_id, price: 20 }))
       event_store.publish(
         Pricing::PriceItemAdded.new(
           data: {
@@ -197,18 +209,22 @@ module Orders
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
       order_1_id = SecureRandom.uuid
-      run_command(
-        ProductCatalog::RegisterProduct.new(
-          product_id: product_id
+      event_store.publish(
+        ProductCatalog::ProductRegistered.new(
+          data: {
+            product_id: product_id
+          }
         )
       )
-      run_command(
-        ProductCatalog::NameProduct.new(
-          product_id: product_id,
-          name: "Async Remote"
+      event_store.publish(
+        ProductCatalog::ProductNamed.new(
+          data: {
+            product_id: product_id,
+            name: "Async Remote"
+          }
         )
       )
-      run_command(Pricing::SetPrice.new(product_id: product_id, price: 20))
+      event_store.publish(Pricing::PriceSet.new(data: { product_id: product_id, price: 20 }))
       event_store.publish(
         Pricing::PriceItemAdded.new(
           data: {
