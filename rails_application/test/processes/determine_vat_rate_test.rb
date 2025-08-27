@@ -2,27 +2,27 @@ require "test_helper"
 
 module Processes
   class DetermineVatRateTest < ProcessTest
-    cover "Processes::DetermineVatRatesOnOrderPlaced*"
+    cover "Processes::InvoiceGeneration*"
 
     def test_happy_path
       product_id = SecureRandom.uuid
-      process = DetermineVatRatesOnOrderPlaced.new(event_store, command_bus)
-      given([offer_accepted(order_id, product_id), order_placed]).each do |event|
+      process = InvoiceGeneration.new(event_store, command_bus)
+      given([price_item_added(order_id, product_id), order_placed]).each do |event|
         process.call(event)
       end
       assert_command(Taxes::DetermineVatRate.new(order_id: order_id, product_id: product_id))
     end
 
-    def test_accepted_but_not_placed
-      process = DetermineVatRatesOnOrderPlaced.new(event_store, command_bus)
-      given([offer_accepted(order_id, SecureRandom.uuid)]).each do |event|
+    def test_price_added_but_not_placed
+      process = InvoiceGeneration.new(event_store, command_bus)
+      given([price_item_added(order_id, SecureRandom.uuid)]).each do |event|
         process.call(event)
       end
       assert_no_command
     end
 
     def test_placed_but_not_accepted
-      process = DetermineVatRatesOnOrderPlaced.new(event_store, command_bus)
+      process = InvoiceGeneration.new(event_store, command_bus)
       given([order_placed]).each do |event|
         process.call(event)
       end
@@ -30,11 +30,11 @@ module Processes
     end
 
     def test_stream_name
-      process = DetermineVatRatesOnOrderPlaced.new(event_store, command_bus)
+      process = InvoiceGeneration.new(event_store, command_bus)
       given([order_placed]).each do |event|
         process.call(event)
       end
-      assert_equal "Processes::DetermineVatRatesOnOrderPlaced$#{order_id}", process.send(:stream_name)
+      assert_equal "Processes::InvoiceGeneration$#{order_id}", process.send(:stream_name)
     end
 
     private
@@ -43,11 +43,13 @@ module Processes
       @command_bus
     end
 
-    def offer_accepted(order_id, product_id)
-      Pricing::OfferAccepted.new(
+    def price_item_added(order_id, product_id)
+      Pricing::PriceItemAdded.new(
         data: {
           order_id: order_id,
-          order_lines: [{ product_id: product_id, quantity: 1 }]
+          product_id: product_id,
+          base_price: 100,
+          price: 100
         }
       )
     end

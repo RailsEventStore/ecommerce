@@ -10,7 +10,6 @@ module Processes
       enable_coupon_discount_process(event_store, command_bus)
       notify_payments_about_order_total_value(event_store, command_bus)
       enable_shipment_sync(event_store, command_bus)
-      determine_vat_rates_on_order_placed(event_store, command_bus)
       set_invoice_payment_date_when_order_confirmed(event_store, command_bus)
       enable_product_name_sync(event_store, command_bus)
       confirm_order_on_payment_captured(event_store, command_bus)
@@ -71,15 +70,6 @@ module Processes
       )
     end
 
-    def determine_vat_rates_on_order_placed(event_store, command_bus)
-      event_store.subscribe(
-        DetermineVatRatesOnOrderPlaced.new(event_store, command_bus),
-        to: [
-          Pricing::OfferAccepted,
-          Fulfillment::OrderRegistered
-        ]
-      )
-    end
 
     def enable_product_name_sync(event_store, command_bus)
       Infra::Process.new(event_store, command_bus)

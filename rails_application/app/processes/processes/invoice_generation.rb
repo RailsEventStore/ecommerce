@@ -7,11 +7,13 @@ module Processes
       Pricing::PriceItemRemoved,
       Pricing::PercentageDiscountSet,
       Pricing::PercentageDiscountChanged,
-      Pricing::PercentageDiscountRemoved
+      Pricing::PercentageDiscountRemoved,
+      Fulfillment::OrderRegistered
     )
 
     def act
       calculate_sub_amounts
+      determine_vat_rates if state.placed?
     end
 
     private
@@ -33,6 +35,8 @@ module Processes
         apply_percentage_discount_changed(event)
       when Pricing::PercentageDiscountRemoved
         apply_percentage_discount_removed(event)
+      when Fulfillment::OrderRegistered
+        apply_order_registered
       else
         state
       end
@@ -121,11 +125,22 @@ module Processes
       new_state.with(lines: updated_lines)
     end
 
+    def determine_vat_rates
+      state.sub_amounts_total.each_key do |product_id|
+        command = Taxes::DetermineVatRate.new(order_id: @order_id, product_id: product_id)
+        command_bus.call(command)
+      end
+    end
+
+    def apply_order_registered
+      state.with(order_placed: true)
+    end
+
   end
 
-  Invoice = Data.define(:lines, :discounts) do
-    def initialize(lines: [], discounts: [])
-      super(lines: lines.freeze, discounts: discounts.freeze)
+  Invoice = Data.define(:lines, :discounts, :order_placed) do
+    def initialize(lines: [], discounts: [], order_placed: false)
+      super(lines: lines.freeze, discounts: discounts.freeze, order_placed: order_placed)
     end
 
     def sub_amounts_total
@@ -152,6 +167,10 @@ module Processes
 
     def discounted_value
       subtotal * (1 - final_discount_percentage / 100.0)
+    end
+
+    def placed?
+      order_placed
     end
   end
 
