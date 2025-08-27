@@ -1,7 +1,26 @@
 module Infra
   class EventStore < SimpleDelegator
     def self.main
-      new(RailsEventStore::JSONClient.new)
+      require_relative "../../../rails_application/lib/transformations/refund_to_return_event_mapper" rescue nil
+
+      if defined?(Transformations::RefundToReturnEventMapper)
+        mapper = RubyEventStore::Mappers::PipelineMapper.new(
+          RubyEventStore::Mappers::Pipeline.new(
+            Transformations::RefundToReturnEventMapper.new(
+              'Ordering::DraftRefundCreated' => 'Ordering::DraftReturnCreated',
+              'Ordering::ItemAddedToRefund' => 'Ordering::ItemAddedToReturn',
+              'Ordering::ItemRemovedFromRefund' => 'Ordering::ItemRemovedFromReturn'
+            ),
+            RubyEventStore::Mappers::Transformation::DomainEvent.new,
+            RubyEventStore::Mappers::Transformation::SymbolizeMetadataKeys.new,
+            RubyEventStore::Mappers::Transformation::PreserveTypes.new
+          )
+        )
+      else
+        mapper = default_mapper
+      end
+
+      new(RailsEventStore::JSONClient.new(mapper: mapper))
     end
 
     def self.in_memory
@@ -13,9 +32,26 @@ module Infra
     end
 
     def self.in_memory_rails
+      if defined?(Transformations::RefundToReturnEventMapper)
+        mapper = RubyEventStore::Mappers::PipelineMapper.new(
+          RubyEventStore::Mappers::Pipeline.new(
+            Transformations::RefundToReturnEventMapper.new(
+              'Ordering::DraftRefundCreated' => 'Ordering::DraftReturnCreated',
+              'Ordering::ItemAddedToRefund' => 'Ordering::ItemAddedToReturn',
+              'Ordering::ItemRemovedFromRefund' => 'Ordering::ItemRemovedFromReturn'
+            ),
+            RubyEventStore::Mappers::Transformation::DomainEvent.new,
+            RubyEventStore::Mappers::Transformation::SymbolizeMetadataKeys.new
+          )
+        )
+      else
+        mapper = default_mapper
+      end
+      
       new(
         RailsEventStore::Client.new(
-          repository: RubyEventStore::InMemoryRepository.new
+          repository: RubyEventStore::InMemoryRepository.new,
+          mapper: mapper
         )
       )
     end
@@ -29,6 +65,17 @@ module Infra
         event.event_id,
         stream_name: stream,
         expected_version: expected_version
+      )
+    end
+
+    private
+
+    def self.default_mapper
+      RubyEventStore::Mappers::PipelineMapper.new(
+        RubyEventStore::Mappers::Pipeline.new(
+          RubyEventStore::Mappers::Transformation::DomainEvent.new,
+          RubyEventStore::Mappers::Transformation::SymbolizeMetadataKeys.new
+        )
       )
     end
   end
