@@ -30,15 +30,15 @@ module Processes
       @order_id = event.data.fetch(:order_id)
       case event
       when Pricing::PriceItemAdded
-        apply_price_item_added(event)
+        apply_price_item_added(event.data.fetch(:product_id), event.data.fetch(:base_price), event.data.fetch(:price))
       when Pricing::PriceItemRemoved
-        apply_price_item_removed(event)
+        apply_price_item_removed(event.data.fetch(:product_id))
       when Pricing::PercentageDiscountSet
-        apply_percentage_discount_set(event)
+        apply_percentage_discount_set(event.data.fetch(:type), event.data.fetch(:amount))
       when Pricing::PercentageDiscountChanged
-        apply_percentage_discount_changed(event)
+        apply_percentage_discount_changed(event.data.fetch(:type), event.data.fetch(:amount))
       when Pricing::PercentageDiscountRemoved
-        apply_percentage_discount_removed(event)
+        apply_percentage_discount_removed(event.data.fetch(:type))
       when Fulfillment::OrderRegistered
         apply_order_registered
       end
@@ -50,14 +50,14 @@ module Processes
       sub_amounts_total = state.sub_amounts_total
       sub_amounts_total.each_pair do |product_id, h|
         create_invoice_items_for_product(
-          product_id: product_id,
-          quantity: h.fetch(:quantity),
-          discounted_amount: h.fetch(:amount)
+          product_id,
+          h.fetch(:quantity),
+          h.fetch(:amount)
         )
       end
     end
 
-    def create_invoice_items_for_product(product_id:, quantity:, discounted_amount:)
+    def create_invoice_items_for_product(product_id, quantity, discounted_amount)
       vat_rate = @vat_rate_catalog.vat_rate_for(product_id)
       unit_prices = MoneySplitter.new(discounted_amount, quantity).call
       unit_prices.tally.each do |unit_price, quantity|
@@ -73,42 +73,33 @@ module Processes
       end
     end
 
-    def apply_price_item_added(event)
-      product_id = event.data.fetch(:product_id)
-      base_price = event.data.fetch(:base_price)
-      price = event.data.fetch(:price)
+    def apply_price_item_added(product_id, base_price, price)
       lines = (state.lines + [{ product_id:, base_price:, price: }])
       state.with(lines:)
     end
 
-    def apply_price_item_removed(event)
-      product_id = event.data.fetch(:product_id)
+    def apply_price_item_removed(product_id)
       lines = state.lines.dup
       index_to_remove = lines.find_index { |line| line.fetch(:product_id) == product_id}
       lines.delete_at(index_to_remove)
       state.with(lines:)
     end
 
-    def apply_percentage_discount_set(event)
-      discount_type = event.data.fetch(:type)
-      discount_amount = event.data.fetch(:amount)
+    def apply_percentage_discount_set(discount_type, discount_amount)
       discounts = state.discounts.reject { |d| d.fetch(:type) == discount_type }
       discounts = discounts + [{ type: discount_type, amount: discount_amount }]
       new_state = state.with(discounts:)
       apply_discounts_to_existing_lines(new_state)
     end
 
-    def apply_percentage_discount_changed(event)
-      discount_type = event.data.fetch(:type)
-      discount_amount = event.data.fetch(:amount)
+    def apply_percentage_discount_changed(discount_type, discount_amount)
       discounts = state.discounts.reject { |d| d.fetch(:type) == discount_type }
       discounts = discounts + [{ amount: discount_amount }]
       new_state = state.with(discounts: discounts)
       apply_discounts_to_existing_lines(new_state)
     end
 
-    def apply_percentage_discount_removed(event)
-      discount_type = event.data.fetch(:type)
+    def apply_percentage_discount_removed(discount_type)
       discounts = state.discounts.reject { |d| d.fetch(:type) == discount_type }
       new_state = state.with(discounts:)
       apply_discounts_to_existing_lines(new_state)
