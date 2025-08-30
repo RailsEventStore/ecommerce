@@ -5,21 +5,29 @@ module ClientOrders
     include ActionView::Helpers::FormTagHelper
 
     def call(event)
+      item, order_id, product_id = persist_item(event)
+      broadcast_to_ui(item, order_id, product_id)
+    end
+
+    private
+
+    def persist_item(event)
       order_id = event.data.fetch(:order_id)
       product_id = event.data.fetch(:product_id)
       create_draft_order(order_id)
       item =
         find(order_id, product_id) ||
-          create(order_id, product_id)
+        create(order_id, product_id)
       item.product_quantity += 1
       item.save!
+      return item, order_id, product_id
+    end
 
+    def broadcast_to_ui(item, order_id, product_id)
       broadcast_update(order_id, product_id, "product_quantity", item.product_quantity)
       broadcast_update(order_id, product_id, "value", ActiveSupport::NumberHelper.number_to_currency(item.value))
       show_remove_item_button(order_id, product_id)
     end
-
-    private
 
     def show_remove_item_button(order_id, product_id)
       broadcast_update(order_id, product_id, "remove_item_button", remove_button_html(order_id, product_id))
