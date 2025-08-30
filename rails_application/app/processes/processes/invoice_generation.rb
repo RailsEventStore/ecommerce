@@ -109,21 +109,19 @@ module Processes
     end
 
     def remove_line(product_id)
-      new_lines = lines.dup
-      index = new_lines.find_index { |line| line.fetch(:product_id) == product_id }
-      new_lines.delete_at(index)
-      with(lines: new_lines)
+      with(lines: lines.dup.tap { |lines| lines.delete_at(index_of_first_line_with(product_id)) })
+    end
+
+    def index_of_first_line_with(product_id)
+      lines.find_index { |line| line.fetch(:product_id) == product_id }
     end
 
     def set_discount(type, amount)
-      new_discounts = discounts.reject { |d| d.fetch(:type) == type } + 
-                      [{ type:, amount: }]
-      with_discounts_applied(new_discounts)
+      with_discounts_applied(discounts.reject { |d| d.fetch(:type) == type } + [{ type:, amount: }])
     end
 
     def remove_discount(type)
-      new_discounts = discounts.reject { |d| d.fetch(:type) == type }
-      with_discounts_applied(new_discounts)
+      with_discounts_applied(discounts.reject { |d| d.fetch(:type) == type })
     end
 
     def mark_placed
@@ -161,8 +159,7 @@ module Processes
     private
 
     def with_discounts_applied(new_discounts)
-      new_state = with(discounts: new_discounts)
-      new_state.apply_discounts_to_lines
+      with(discounts: new_discounts).apply_discounts_to_lines
     end
 
     def subtotal
