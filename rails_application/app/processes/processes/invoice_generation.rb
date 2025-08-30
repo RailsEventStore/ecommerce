@@ -74,53 +74,27 @@ module Processes
     end
 
     def apply_price_item_added(product_id, base_price, price)
-      lines = (state.lines + [{ product_id:, base_price:, price: }])
-      state.with(lines:)
+      state.add_line(product_id, base_price, price)
     end
 
     def apply_price_item_removed(product_id)
-      lines = state.lines.dup
-      index_to_remove = lines.find_index { |line| line.fetch(:product_id) == product_id}
-      lines.delete_at(index_to_remove)
-      state.with(lines:)
+      state.remove_line(product_id)
     end
 
     def apply_percentage_discount_set(discount_type, discount_amount)
-      discounts = state.discounts.reject { |d| d.fetch(:type) == discount_type }
-      discounts = discounts + [{ type: discount_type, amount: discount_amount }]
-      new_state = state.with(discounts:)
-      apply_discounts_to_existing_lines(new_state)
+      state.set_discount(discount_type, discount_amount)
     end
 
     def apply_percentage_discount_changed(discount_type, discount_amount)
-      discounts = state.discounts.reject { |d| d.fetch(:type) == discount_type }
-      discounts = discounts + [{ amount: discount_amount }]
-      new_state = state.with(discounts: discounts)
-      apply_discounts_to_existing_lines(new_state)
+      state.set_discount(discount_type, discount_amount)
     end
 
     def apply_percentage_discount_removed(discount_type)
-      discounts = state.discounts.reject { |d| d.fetch(:type) == discount_type }
-      new_state = state.with(discounts:)
-      apply_discounts_to_existing_lines(new_state)
-    end
-
-    def apply_discounts_to_existing_lines(new_state)
-      total_discount_percentage = new_state.total_discount_percentage
-      final_discount_percentage = [total_discount_percentage, 100].min
-      discount_multiplier = (1 - final_discount_percentage / 100.0)
-      
-      updated_lines = new_state.lines.map do |line|
-        base_price = line.fetch(:base_price)
-        discounted_price = base_price * discount_multiplier
-        line.merge(price: discounted_price)
-      end
-      
-      new_state.with(lines: updated_lines)
+      state.remove_discount(discount_type)
     end
 
     def apply_order_registered
-      state.with(order_placed: true)
+      state.mark_placed
     end
 
   end
@@ -128,6 +102,50 @@ module Processes
   Invoice = Data.define(:lines, :discounts, :order_placed) do
     def initialize(lines: [], discounts: [], order_placed: false)
       super(lines: lines.freeze, discounts: discounts.freeze, order_placed: order_placed)
+    end
+
+    def add_line(product_id, base_price, price)
+      with(lines: lines + [{ product_id:, base_price:, price: }])
+    end
+
+    def remove_line(product_id)
+      new_lines = lines.dup
+      index = new_lines.find_index { |line| line.fetch(:product_id) == product_id }
+      new_lines.delete_at(index)
+      with(lines: new_lines)
+    end
+
+    def set_discount(type, amount)
+      new_discounts = discounts.reject { |d| d.fetch(:type) == type } + 
+                      [{ type:, amount: }]
+      with_discounts_applied(new_discounts)
+    end
+
+    def remove_discount(type)
+      new_discounts = discounts.reject { |d| d.fetch(:type) == type }
+      with_discounts_applied(new_discounts)
+    end
+
+    def mark_placed
+      with(order_placed: true)
+    end
+
+    def placed?
+      order_placed
+    end
+
+    def apply_discounts_to_lines
+      total_discount_percentage = self.total_discount_percentage
+      final_discount_percentage = [total_discount_percentage, 100].min
+      discount_multiplier = (1 - final_discount_percentage / 100.0)
+      
+      updated_lines = lines.map do |line|
+        base_price = line.fetch(:base_price)
+        discounted_price = base_price * discount_multiplier
+        line.merge(price: discounted_price)
+      end
+      
+      with(lines: updated_lines)
     end
 
     def sub_amounts_total
@@ -138,6 +156,13 @@ module Processes
         memo[product_id][:amount] += line.fetch(:price)
         memo[product_id][:quantity] += 1
       end
+    end
+
+    private
+
+    def with_discounts_applied(new_discounts)
+      new_state = with(discounts: new_discounts)
+      new_state.apply_discounts_to_lines
     end
 
     def subtotal
@@ -154,10 +179,6 @@ module Processes
 
     def discounted_value
       subtotal * (1 - final_discount_percentage / 100.0)
-    end
-
-    def placed?
-      order_placed
     end
   end
 
