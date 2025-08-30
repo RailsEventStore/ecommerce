@@ -37,7 +37,9 @@ module ClientOrders
     end
 
     def register_product(product_id)
+      vat_rate = Infra::Types::VatRate.new(rate: 20, code: "20")
       run_command(ProductCatalog::RegisterProduct.new(product_id: product_id))
+      Rails.configuration.event_store.publish(Taxes::VatRateSet.new(data: { product_id: product_id, vat_rate: vat_rate }))
     end
 
     def name_product(product_id, name)

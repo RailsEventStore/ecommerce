@@ -2,6 +2,11 @@ module Processes
   class InvoiceGeneration
     include Infra::ProcessManager.with_state { Invoice }
 
+    def initialize(event_store, command_bus)
+      super(event_store, command_bus)
+      @vat_rate_catalog = Taxes::VatRateCatalog.new(event_store)
+    end
+
     subscribes_to(
       Pricing::PriceItemAdded,
       Pricing::PriceItemRemoved,
@@ -13,7 +18,6 @@ module Processes
 
     def act
       calculate_sub_amounts
-      determine_vat_rates if state.placed?
     end
 
     private
@@ -37,37 +41,36 @@ module Processes
         apply_percentage_discount_removed(event)
       when Fulfillment::OrderRegistered
         apply_order_registered
-      else
-        state
       end
     end
 
     def calculate_sub_amounts
+      return unless state.placed?
+      
       sub_amounts_total = state.sub_amounts_total
-
       sub_amounts_total.each_pair do |product_id, h|
-        publish_invoice_item_value_calculated(
+        create_invoice_items_for_product(
           product_id: product_id,
           quantity: h.fetch(:quantity),
-          amount: h.fetch(:base_amount),
           discounted_amount: h.fetch(:amount)
         )
       end
     end
 
-    def publish_invoice_item_value_calculated(product_id:, quantity:, amount:, discounted_amount:)
-      event_store.publish(
-        InvoiceItemValueCalculated.new(
-          data: {
-            order_id: @order_id,
+    def create_invoice_items_for_product(product_id:, quantity:, discounted_amount:)
+      vat_rate = @vat_rate_catalog.vat_rate_for(product_id)
+      unit_prices = MoneySplitter.new(discounted_amount, quantity).call
+      unit_prices.tally.each do |unit_price, quantity|
+        command_bus.call(
+          Invoicing::AddInvoiceItem.new(
+            invoice_id: @order_id,
             product_id: product_id,
+            vat_rate: vat_rate,
             quantity: quantity,
-            amount: amount,
-            discounted_amount: discounted_amount
-          }
-        ),
-        stream_name: "Processes::InvoiceGeneration$#{@order_id}"
-      )
+            unit_price: unit_price
+          )
+        )
+      end
     end
 
     def apply_price_item_added(event)
@@ -125,13 +128,6 @@ module Processes
       new_state.with(lines: updated_lines)
     end
 
-    def determine_vat_rates
-      state.sub_amounts_total.each_key do |product_id|
-        command = Taxes::DetermineVatRate.new(order_id: @order_id, product_id: product_id)
-        command_bus.call(command)
-      end
-    end
-
     def apply_order_registered
       state.with(order_placed: true)
     end
@@ -171,6 +167,32 @@ module Processes
 
     def placed?
       order_placed
+    end
+  end
+
+  class MoneySplitter
+    def initialize(amount, quantity)
+      @amount = amount
+      @weights = Array.new(quantity, 1)
+    end
+
+    def call
+      distributed_amounts = []
+      total_weight = @weights.sum.to_d
+      @weights.each do |weight|
+        if total_weight.eql?(0)
+          distributed_amounts << 0
+          next
+        end
+
+        p = weight / total_weight
+        distributed_amount = (p * @amount).round(2)
+        distributed_amounts << distributed_amount
+        total_weight -= weight
+        @amount -= distributed_amount
+      end
+
+      distributed_amounts
     end
   end
 

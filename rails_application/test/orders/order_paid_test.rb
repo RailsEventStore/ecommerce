@@ -56,9 +56,11 @@ module Orders
     private
 
     def create_product(product_id, name, price)
+      vat_rate = Infra::Types::VatRate.new(rate: 20, code: "20")
       event_store.publish(ProductCatalog::ProductRegistered.new(data: { product_id: product_id }))
       event_store.publish(ProductCatalog::ProductNamed.new(data: { product_id: product_id, name: name }))
       event_store.publish(Pricing::PriceSet.new(data: { product_id: product_id, price: price }))
+      event_store.publish(Taxes::VatRateSet.new(data: { product_id: product_id, vat_rate: vat_rate }))
     end
 
     def event_store

@@ -15,6 +15,7 @@ module Customers
       register_product(product_id)
       name_product(product_id, "Async Remote")
       set_price_to_product(product_id, 3)
+      set_vat_rate_to_product(product_id)
       add_item_to_basket(order_id, product_id, 3)
       confirm_order(customer_id, order_id, 3)
 
@@ -46,6 +47,11 @@ module Customers
 
     def set_price_to_product(product_id, price)
       run_command(Pricing::SetPrice.new(product_id: product_id, price: price))
+    end
+
+    def set_vat_rate_to_product(product_id)
+      vat_rate = Infra::Types::VatRate.new(rate: 20, code: "20")
+      event_store.publish(Taxes::VatRateSet.new(data: { product_id: product_id, vat_rate: vat_rate }))
     end
 
     def add_item_to_basket(order_id, product_id, price)

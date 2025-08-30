@@ -45,7 +45,6 @@ matcher:
     - Processes::Test*
     - Processes::ReleasePaymentProcess*
     - Processes::MoneySplitter*
-    - Processes::OrderItemInvoicingProcess#fetch_id
     - Processes::SyncShipmentFromPricing*
     - Processes::SyncInventoryFromOrdering*
     - Processes::NotifyPaymentsAboutOrderValue*

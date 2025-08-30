@@ -25,6 +25,8 @@ module Orders
         )
       )
       event_store.publish(Pricing::PriceSet.new(data: { product_id: product_id, price: 20 }))
+      vat_rate = Infra::Types::VatRate.new(rate: 20, code: "20")
+      event_store.publish(Taxes::VatRateSet.new(data: { product_id: product_id, vat_rate: vat_rate }))
       order_id = SecureRandom.uuid
       order_number = Fulfillment::FakeNumberGenerator::FAKE_NUMBER
 

@@ -16,7 +16,6 @@ module Processes
 
       enable_release_payment_process(event_store, command_bus)
       enable_shipment_process(event_store, command_bus)
-      enable_order_item_invoicing_process(event_store, command_bus)
       enable_reservation_process(event_store, command_bus)
       enable_welcome_message_process(event_store, command_bus)
       enable_total_order_value_process(event_store, command_bus)
@@ -59,17 +58,6 @@ module Processes
         ]
       )
     end
-
-    def enable_order_item_invoicing_process(event_store, command_bus)
-      event_store.subscribe(
-        OrderItemInvoicingProcess.new(event_store, command_bus),
-        to: [
-          Processes::InvoiceItemValueCalculated,
-          Taxes::VatRateDetermined
-        ]
-      )
-    end
-
 
     def enable_product_name_sync(event_store, command_bus)
       Infra::Process.new(event_store, command_bus)
