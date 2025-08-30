@@ -7,14 +7,18 @@ module Orders
       item.quantity -= 1
       item.quantity > 0 ? item.save! : item.destroy!
 
-      broadcaster.call(order_id, product_id, "quantity", item.quantity)
-      broadcaster.call(order_id, product_id, "value", ActiveSupport::NumberHelper.number_to_currency(item.value))
-      broadcaster.call(order_id, product_id, "remove_item_button", "") if item.quantity.zero?
-
+      broadcast_to_ui(item, order_id, product_id)
       event_store.link_event_to_stream(event, "Orders$all")
     end
 
     private
+
+    def broadcast_to_ui(item, order_id, product_id)
+      broadcaster.call(order_id, product_id, "quantity", item.quantity)
+      broadcaster.call(order_id, product_id, "value", ActiveSupport::NumberHelper.number_to_currency(item.value))
+      broadcaster.call(order_id, product_id, "remove_item_button", "") if item.quantity.zero?
+    end
+
     def find(order_uid, product_id)
       Order
         .find_by_uid(order_uid)

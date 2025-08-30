@@ -33,7 +33,22 @@ module Orders
       assert_equal 0, order.discounted_value
     end
 
+    def test_stream
+      customer_id = SecureRandom.uuid
+      product_id = SecureRandom.uuid
+      order_id = SecureRandom.uuid
+      customer_registered(customer_id)
+      prepare_product(product_id)
+      event = total_order_value_updated(order_id)
+      event_store.publish(event)
+      assert event_store.event_in_stream?(event.event_id, "Orders$all")
+    end
+
     private
+
+    def total_order_value_updated(order_id)
+      Processes::TotalOrderValueUpdated.new(data: { order_id: order_id, discounted_amount: 0, total_amount: 10 })
+    end
 
     def item_added_to_basket(order_id, product_id)
       event_store.publish(Pricing::PriceItemAdded.new(

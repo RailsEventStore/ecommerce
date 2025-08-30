@@ -22,6 +22,7 @@ matcher:
     - Orders::Configuration#call
     - Orders::Broadcaster*
     - Orders::AddItemToOrder#broadcast_to_ui
+    - Orders::RemoveItemFromOrder#broadcast_to_ui
     - Orders::SubmitService#submit_order
     - ClientOrders::Configuration#call
     - ClientOrders::Configuration#mark_as_submitted
@@ -33,6 +34,7 @@ matcher:
     - ClientOrders::AddItemToOrder#show_remove_item_button
     - ClientOrders::AddItemToOrder#remove_button_html
     - ClientOrders::AddItemToOrder#broadcast_to_ui
+    - ClientOrders::AddItemToOrder#broadcast_update
     - ClientOrders::AddItemToOrder#call
     - ClientOrders::ProductHandlers::ChangeProductName*
     - ClientOrders::ProductHandlers::ChangeProductPrice*
