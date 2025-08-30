@@ -20,6 +20,9 @@ matcher:
   ignore:
     - Orders::Configuration#call
     - Orders::Configuration#change_product_price
+    - Orders::Broadcaster*
+    - Orders::AddItemToOrder#broadcast_to_ui
+    - Orders::SubmitService#submit_order
     - ClientOrders::Configuration#call
     - ClientOrders::Configuration#mark_as_submitted
     - ClientOrders::Configuration#subscribe_and_link_to_stream
@@ -33,13 +36,6 @@ matcher:
     - ClientOrders::ProductHandlers::RegisterProduct*
     - ClientOrders::Rendering::ShowOrder*
     - ClientOrders::Rendering::EditOrder*
-    - Orders::Broadcaster*
-    - Orders::AddItemToOrder*
-    - Orders::RemoveItemFromOrder*
-    - Orders::UpdateOrderTotalValue*
-    - Orders::SubmitOrder*
-    - Orders::AssignCustomerToOrder*
-    - Orders::SubmitService#submit_order
     - Processes::Configuration*
     - Processes::OrderConfirmation#stream_name
     - Processes::Test*
