@@ -17,10 +17,22 @@ module Processes
     )
 
     def act
-      calculate_sub_amounts
+      create_invoice_items_for_all_products if state.placed?
     end
 
     private
+
+    def create_invoice_items_for_all_products
+      product_totals.each do |product_id, quantity, amount|
+        create_invoice_items_for_product(product_id, quantity, amount)
+      end
+    end
+
+    def product_totals
+      state.sub_amounts_total.map do |product_id, amounts|
+        [product_id, amounts.fetch(:quantity), amounts.fetch(:amount)]
+      end
+    end
 
     def fetch_id(event)
       event.data.fetch(:order_id)
@@ -30,30 +42,17 @@ module Processes
       @order_id = event.data.fetch(:order_id)
       case event
       when Pricing::PriceItemAdded
-        apply_price_item_added(event.data.fetch(:product_id), event.data.fetch(:base_price), event.data.fetch(:price))
+        state.add_line(event.data.fetch(:product_id), event.data.fetch(:base_price), event.data.fetch(:price))
       when Pricing::PriceItemRemoved
-        apply_price_item_removed(event.data.fetch(:product_id))
+        state.remove_line(event.data.fetch(:product_id))
       when Pricing::PercentageDiscountSet
-        apply_percentage_discount_set(event.data.fetch(:type), event.data.fetch(:amount))
+        state.set_discount(event.data.fetch(:type), event.data.fetch(:amount))
       when Pricing::PercentageDiscountChanged
-        apply_percentage_discount_changed(event.data.fetch(:type), event.data.fetch(:amount))
+        state.set_discount(event.data.fetch(:type), event.data.fetch(:amount))
       when Pricing::PercentageDiscountRemoved
-        apply_percentage_discount_removed(event.data.fetch(:type))
+        state.remove_discount(event.data.fetch(:type))
       when Fulfillment::OrderRegistered
-        apply_order_registered
-      end
-    end
-
-    def calculate_sub_amounts
-      return unless state.placed?
-      
-      sub_amounts_total = state.sub_amounts_total
-      sub_amounts_total.each_pair do |product_id, h|
-        create_invoice_items_for_product(
-          product_id,
-          h.fetch(:quantity),
-          h.fetch(:amount)
-        )
+        state.mark_placed
       end
     end
 
@@ -71,30 +70,6 @@ module Processes
           )
         )
       end
-    end
-
-    def apply_price_item_added(product_id, base_price, price)
-      state.add_line(product_id, base_price, price)
-    end
-
-    def apply_price_item_removed(product_id)
-      state.remove_line(product_id)
-    end
-
-    def apply_percentage_discount_set(discount_type, discount_amount)
-      state.set_discount(discount_type, discount_amount)
-    end
-
-    def apply_percentage_discount_changed(discount_type, discount_amount)
-      state.set_discount(discount_type, discount_amount)
-    end
-
-    def apply_percentage_discount_removed(discount_type)
-      state.remove_discount(discount_type)
-    end
-
-    def apply_order_registered
-      state.mark_placed
     end
 
   end
