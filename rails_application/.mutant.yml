@@ -20,7 +20,6 @@ matcher:
     - Processes*
   ignore:
     - Orders::Configuration#call
-    - Orders::Configuration#change_product_price
     - Orders::Broadcaster*
     - Orders::AddItemToOrder#broadcast_to_ui
     - Orders::SubmitService#submit_order
