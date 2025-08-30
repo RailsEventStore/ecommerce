@@ -6,6 +6,7 @@ includes:
   - test
 integration:
   name: minitest
+jobs: 4
 usage: opensource
 coverage_criteria:
   timeout: true
