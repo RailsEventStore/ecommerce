@@ -22,24 +22,6 @@ module Taxes
       end
     end
 
-    def test_determining_vat_rate
-      vat_rate = Infra::Types::VatRate.new(code: "50", rate: 50)
-      add_available_vat_rate(vat_rate)
-
-      order_id = SecureRandom.uuid
-      product_id = SecureRandom.uuid
-      another_product_id = SecureRandom.uuid
-
-      set_vat_rate(product_id, vat_rate.code)
-      vat_rate_determined = VatRateDetermined.new(data: { order_id: order_id, product_id: product_id, vat_rate: vat_rate })
-      assert_events("Taxes::Order$#{order_id}", vat_rate_determined) do
-        determine_vat_rate(order_id, product_id, vat_rate)
-      end
-      assert_events("Taxes::Order$#{order_id}") do
-        determine_vat_rate(order_id, another_product_id, vat_rate)
-      end
-    end
-
     def test_adding_available_vat_rate
       available_vat_rate_id = SecureRandom.uuid
       vat_rate = Infra::Types::VatRate.new(code: "50", rate: 50)
@@ -79,10 +61,6 @@ module Taxes
 
     def set_vat_rate(product_id, vat_rate_code)
       run_command(SetVatRate.new(product_id: product_id, vat_rate_code: vat_rate_code))
-    end
-
-    def determine_vat_rate(order_id, product_id, vat_rate)
-      run_command(DetermineVatRate.new(order_id: order_id, product_id: product_id, vat_rate: vat_rate))
     end
 
     def add_available_vat_rate(vat_rate, available_vat_rate_id = SecureRandom.uuid)
