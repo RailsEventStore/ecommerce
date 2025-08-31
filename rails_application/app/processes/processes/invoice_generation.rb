@@ -108,17 +108,15 @@ module Processes
     end
 
     def apply_discounts_to_lines
-      total_discount_percentage = self.total_discount_percentage
-      final_discount_percentage = [total_discount_percentage, 100].min
-      discount_multiplier = (1 - final_discount_percentage / 100.0)
-      
-      updated_lines = lines.map do |line|
-        base_price = line.fetch(:base_price)
-        discounted_price = base_price * discount_multiplier
-        line.merge(price: discounted_price)
-      end
-      
-      with(lines: updated_lines)
+      with(lines: lines.map { |line| apply_discount_to_line(line) })
+    end
+
+    def apply_discount_to_line(line)
+      line.merge(price: line.fetch(:base_price) * discount_multiplier)
+    end
+
+    def discount_multiplier
+      1 - (final_discount_percentage / 100.0)
     end
 
     def sub_amounts_total
