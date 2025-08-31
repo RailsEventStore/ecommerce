@@ -1,3 +1,5 @@
+require_relative 'invoices/money_splitter'
+
 module Processes
   class InvoiceGeneration
     include Infra::ProcessManager.with_state { Invoice }
@@ -58,7 +60,7 @@ module Processes
 
     def create_invoice_items_for_product(product_id, quantity, discounted_amount)
       vat_rate = @vat_rate_catalog.vat_rate_for(product_id)
-      unit_prices = MoneySplitter.new(discounted_amount, quantity).call
+      unit_prices = Invoices::MoneySplitter.new(discounted_amount, quantity).call
       unit_prices.tally.each do |unit_price, quantity|
         command_bus.call(
           Invoicing::AddInvoiceItem.new(
@@ -149,32 +151,6 @@ module Processes
 
     def discounted_value
       subtotal * (1 - final_discount_percentage / 100.0)
-    end
-  end
-
-  class MoneySplitter
-    def initialize(amount, quantity)
-      @amount = amount
-      @weights = Array.new(quantity, 1)
-    end
-
-    def call
-      distributed_amounts = []
-      total_weight = @weights.sum.to_d
-      @weights.each do |weight|
-        if total_weight.eql?(0)
-          distributed_amounts << 0
-          next
-        end
-
-        p = weight / total_weight
-        distributed_amount = (p * @amount).round(2)
-        distributed_amounts << distributed_amount
-        total_weight -= weight
-        @amount -= distributed_amount
-      end
-
-      distributed_amounts
     end
   end
 

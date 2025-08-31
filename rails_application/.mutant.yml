@@ -45,7 +45,7 @@ matcher:
     - Processes::OrderConfirmation#stream_name
     - Processes::Test*
     - Processes::ReleasePaymentProcess*
-    - Processes::MoneySplitter*
+    - Processes::Invoices::MoneySplitter*
     - Processes::SyncShipmentFromPricing*
     - Processes::SyncInventoryFromOrdering*
     - Processes::NotifyPaymentsAboutOrderValue*
