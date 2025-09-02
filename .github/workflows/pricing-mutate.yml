@@ -1,0 +1,36 @@
+name: pricing-mutate
+on:
+  pull_request:
+    paths:
+      - "ecommerce/pricing/**"
+      - ".github/workflows/pricing-mutate.yml"
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ruby-3.3.7
+          bundler-cache: true
+          working-directory: ecommerce/pricing
+      - name: Run tests
+        run: make -C ecommerce/pricing test
+  mutate:
+    needs: test
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ruby-3.3.7
+          bundler-cache: true
+          working-directory: ecommerce/pricing
+      - name: Run incremental mutation testing
+        run: make -C ecommerce/pricing mutate-changes
+        env:
+          GIT_BASE_SHA: ${{ github.event.pull_request.base.sha }}
