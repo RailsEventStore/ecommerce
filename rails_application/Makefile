@@ -31,9 +31,9 @@ endif
 	@env RAILS_ENV=test bundle exec mutant run $(ACTUAL_MUTANT_ARGS) $(SUBJECTS_TO_RUN)
 
 test: ## Run unit tests
-	@bin/rails tailwindcss:build
+	@BROWSERSLIST_IGNORE_OLD_DATA=1 bin/rails tailwindcss:build
 	@echo "Running unit tests"
-	@bin/rails test
+	@BROWSERSLIST_IGNORE_OLD_DATA=1 bin/rails test
 
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
