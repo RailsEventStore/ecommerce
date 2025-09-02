@@ -322,7 +322,6 @@ class OrdersTest < InMemoryRESIntegrationTestCase
   def assert_remove_buttons_not_visible(async_remote_id, fearless_id)
     url = request.original_url
     uri = URI.parse(url)
-    puts uri.query
     path_components = uri.path.split("/")
     order_uuid = path_components[-2]
 
