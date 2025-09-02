@@ -31,7 +31,6 @@ endif
 	@env RAILS_ENV=test bundle exec mutant run $(ACTUAL_MUTANT_ARGS) $(SUBJECTS_TO_RUN)
 
 test: ## Run unit tests
-	@BROWSERSLIST_IGNORE_OLD_DATA=1 bin/rails tailwindcss:build
 	@echo "Running unit tests"
 	@BROWSERSLIST_IGNORE_OLD_DATA=1 bin/rails test
 
