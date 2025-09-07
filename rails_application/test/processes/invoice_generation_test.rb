@@ -17,17 +17,13 @@ module Processes
     end
 
     def test_calculates_sub_amounts
-      events = [
-        price_item_added(@product_1_id, 20, 20),
-        price_item_added(@product_2_id, 30, 30),
-        price_item_added(@product_2_id, 30, 30),
-        order_placed
-      ]
-
-      events.each do |event|
-        event_store.publish(event)
-        @process.call(event)
-      end
+      publish_total_value_updated([
+        { product_id: @product_1_id, quantity: 1, amount: 20 },
+        { product_id: @product_2_id, quantity: 2, amount: 60 }
+      ])
+      event = order_placed
+      event_store.publish(event)
+      @process.call(event)
 
       expected_commands = [
         Invoicing::AddInvoiceItem.new(
@@ -53,18 +49,13 @@ module Processes
     end
 
     def test_calculates_sub_amounts_with_discount
-      events = [
-        price_item_added(@product_1_id, 20, 20),
-        price_item_added(@product_2_id, 30, 30),
-        price_item_added(@product_2_id, 30, 30),
-        percentage_discount_set("general_discount", 10),
-        order_placed
-      ]
-
-      events.each do |event|
-        event_store.publish(event)
-        @process.call(event)
-      end
+      publish_total_value_updated([
+        { product_id: @product_1_id, quantity: 1, amount: 18 },
+        { product_id: @product_2_id, quantity: 2, amount: 54 }
+      ])
+      event = order_placed
+      event_store.publish(event)
+      @process.call(event)
 
       expected_commands = [
         Invoicing::AddInvoiceItem.new(
@@ -90,16 +81,12 @@ module Processes
     end
 
     def test_calculates_sub_amounts_with_100_percent_discount
-      events = [
-        price_item_added(@product_1_id, 20, 20),
-        percentage_discount_set("general_discount", 100),
-        order_placed
-      ]
-
-      events.each do |event|
-        event_store.publish(event)
-        @process.call(event)
-      end
+      publish_total_value_updated([
+        { product_id: @product_1_id, quantity: 1, amount: 0 }
+      ])
+      event = order_placed
+      event_store.publish(event)
+      @process.call(event)
 
       assert_command(Invoicing::AddInvoiceItem.new(
         invoice_id: order_id,
@@ -111,17 +98,12 @@ module Processes
     end
 
     def test_calculates_sub_amounts_with_multiple_discounts
-      events = [
-        price_item_added(@product_1_id, 100, 100),
-        percentage_discount_set("general_discount", 10),
-        percentage_discount_set("time_promotion", 15),
-        order_placed
-      ]
-
-      events.each do |event|
-        event_store.publish(event)
-        @process.call(event)
-      end
+      publish_total_value_updated([
+        { product_id: @product_1_id, quantity: 1, amount: 75 }
+      ])
+      event = order_placed
+      event_store.publish(event)
+      @process.call(event)
 
       assert_command(Invoicing::AddInvoiceItem.new(
         invoice_id: order_id,
@@ -133,18 +115,13 @@ module Processes
     end
 
     def test_calculates_sub_amounts_after_item_removal
-      events = [
-        price_item_added(@product_1_id, 20, 20),
-        price_item_added(@product_2_id, 30, 30),
-        price_item_added(@product_2_id, 30, 30),
-        price_item_removed(@product_2_id, 30),
-        order_placed
-      ]
-
-      events.each do |event|
-        event_store.publish(event)
-        @process.call(event)
-      end
+      publish_total_value_updated([
+        { product_id: @product_1_id, quantity: 1, amount: 20 },
+        { product_id: @product_2_id, quantity: 1, amount: 30 }
+      ])
+      event = order_placed
+      event_store.publish(event)
+      @process.call(event)
 
       expected_commands = [
         Invoicing::AddInvoiceItem.new(
@@ -170,17 +147,12 @@ module Processes
     end
 
     def test_calculates_sub_amounts_with_discount_changed
-      events = [
-        price_item_added(@product_1_id, 100, 100),
-        percentage_discount_set("general_discount", 10),
-        percentage_discount_changed("general_discount", 20),
-        order_placed
-      ]
-
-      events.each do |event|
-        event_store.publish(event)
-        @process.call(event)
-      end
+      publish_total_value_updated([
+        { product_id: @product_1_id, quantity: 1, amount: 80 }
+      ])
+      event = order_placed
+      event_store.publish(event)
+      @process.call(event)
 
       assert_command(Invoicing::AddInvoiceItem.new(
         invoice_id: order_id,
@@ -192,17 +164,12 @@ module Processes
     end
 
     def test_calculates_sub_amounts_with_discount_removed
-      events = [
-        price_item_added(@product_1_id, 100, 100),
-        percentage_discount_set("general_discount", 10),
-        percentage_discount_removed("general_discount"),
-        order_placed
-      ]
-
-      events.each do |event|
-        event_store.publish(event)
-        @process.call(event)
-      end
+      publish_total_value_updated([
+        { product_id: @product_1_id, quantity: 1, amount: 100 }
+      ])
+      event = order_placed
+      event_store.publish(event)
+      @process.call(event)
 
       assert_command(Invoicing::AddInvoiceItem.new(
         invoice_id: order_id,
@@ -214,17 +181,12 @@ module Processes
     end
 
     def test_calculates_sub_amounts_with_over_100_percent_discount
-      events = [
-        price_item_added(@product_1_id, 100, 100),
-        percentage_discount_set("general_discount", 60),
-        percentage_discount_set("time_promotion", 50),
-        order_placed
-      ]
-
-      events.each do |event|
-        event_store.publish(event)
-        @process.call(event)
-      end
+      publish_total_value_updated([
+        { product_id: @product_1_id, quantity: 1, amount: 0 }
+      ])
+      event = order_placed
+      event_store.publish(event)
+      @process.call(event)
 
       assert_command(Invoicing::AddInvoiceItem.new(
         invoice_id: order_id,
@@ -236,18 +198,12 @@ module Processes
     end
 
     def test_calculates_sub_amounts_with_discount_type_replacement
-      events = [
-        price_item_added(@product_1_id, 100, 100),
-        percentage_discount_set("general_discount", 10),
-        percentage_discount_set("time_promotion", 20),
-        percentage_discount_changed("general_discount", 30),
-        order_placed
-      ]
-
-      events.each do |event|
-        event_store.publish(event)
-        @process.call(event)
-      end
+      publish_total_value_updated([
+        { product_id: @product_1_id, quantity: 1, amount: 50 }
+      ])
+      event = order_placed
+      event_store.publish(event)
+      @process.call(event)
 
       assert_command(Invoicing::AddInvoiceItem.new(
         invoice_id: order_id,
@@ -259,18 +215,12 @@ module Processes
     end
 
     def test_discount_removal_preserves_other_discounts
-      events = [
-        price_item_added(@product_1_id, 100, 100),
-        percentage_discount_set("general_discount", 10),
-        percentage_discount_set("time_promotion", 20),
-        percentage_discount_removed("general_discount"),
-        order_placed
-      ]
-
-      events.each do |event|
-        event_store.publish(event)
-        @process.call(event)
-      end
+      publish_total_value_updated([
+        { product_id: @product_1_id, quantity: 1, amount: 80 }
+      ])
+      event = order_placed
+      event_store.publish(event)
+      @process.call(event)
 
       assert_command(Invoicing::AddInvoiceItem.new(
         invoice_id: order_id,
@@ -282,17 +232,12 @@ module Processes
     end
 
     def test_discount_set_replaces_existing_discount_type
-      events = [
-        price_item_added(@product_1_id, 100, 100),
-        percentage_discount_set("general_discount", 10),
-        percentage_discount_set("general_discount", 25),
-        order_placed
-      ]
-
-      events.each do |event|
-        event_store.publish(event)
-        @process.call(event)
-      end
+      publish_total_value_updated([
+        { product_id: @product_1_id, quantity: 1, amount: 75 }
+      ])
+      event = order_placed
+      event_store.publish(event)
+      @process.call(event)
 
       assert_command(Invoicing::AddInvoiceItem.new(
         invoice_id: order_id,
@@ -305,45 +250,15 @@ module Processes
 
     private
 
-    def price_item_added(product_id = SecureRandom.uuid, base_price = 100, price = 100)
-      Pricing::PriceItemAdded.new(data: {
+    def publish_total_value_updated(items)
+      event = Processes::TotalOrderValueUpdated.new(data: {
         order_id: order_id,
-        product_id: product_id,
-        base_price: base_price,
-        price: price
+        total_amount: items.sum { |i| i[:amount] },
+        discounted_amount: items.sum { |i| i[:amount] },
+        items: items
       })
-    end
-
-    def price_item_removed(product_id, price)
-      Pricing::PriceItemRemoved.new(data: {
-        order_id: order_id,
-        product_id: product_id,
-        base_price: price,
-        price: price
-      })
-    end
-
-    def percentage_discount_set(type, amount)
-      Pricing::PercentageDiscountSet.new(data: {
-        order_id: order_id,
-        type: type,
-        amount: amount
-      })
-    end
-
-    def percentage_discount_changed(type, amount)
-      Pricing::PercentageDiscountChanged.new(data: {
-        order_id: order_id,
-        type: type,
-        amount: amount
-      })
-    end
-
-    def percentage_discount_removed(type)
-      Pricing::PercentageDiscountRemoved.new(data: {
-        order_id: order_id,
-        type: type
-      })
+      event_store.publish(event, stream_name: "Processes::TotalOrderValue$#{order_id}")
+      @process.call(event)
     end
 
     def order_placed

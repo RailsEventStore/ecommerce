@@ -4,6 +4,11 @@ module ClientOrders
   class UpdatePaidOrdersSummaryTest < InMemoryTestCase
     cover "ClientOrders*"
 
+    def setup
+      super
+      @order_products = Hash.new { |h, k| h[k] = [] }
+    end
+
     def test_update_orders_summary
       customer_id = SecureRandom.uuid
       other_customer_id = SecureRandom.uuid
@@ -56,16 +61,22 @@ module ClientOrders
     end
 
     def add_item_to_basket(order_id, product_id, price)
+      @order_products[order_id] << product_id
       run_command(Pricing::AddPriceItem.new(order_id: order_id, product_id: product_id, price: price))
     end
 
     def confirm_order(customer_id, order_id, total_amount)
+      grouped = @order_products[order_id].group_by { |pid| pid }
+      items = grouped.map do |pid, list|
+        { product_id: pid, quantity: list.size, amount: total_amount }
+      end
       event_store.publish(
         Processes::TotalOrderValueUpdated.new(
           data: {
             order_id: order_id,
             discounted_amount: total_amount,
-            total_amount: total_amount
+            total_amount: total_amount,
+            items: items
           }
         )
       )

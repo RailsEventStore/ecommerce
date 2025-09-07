@@ -19,7 +19,8 @@ module ClientOrders
           data: {
             order_id: order_id,
             discounted_amount: 30,
-            total_amount: 30
+            total_amount: 30,
+            items: [ { product_id: product_id, quantity: 1, amount: 30 } ]
           }
         )
       )

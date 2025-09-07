@@ -16,7 +16,10 @@ module Processes
           data: {
             total_amount: 100,
             discounted_amount: 100,
-            order_id: order_id
+            order_id: order_id,
+            items: [
+              { product_id: event.data[:product_id], quantity: 1, amount: 100 }
+            ]
           }
         )) do
           process.call(event)
@@ -40,7 +43,10 @@ module Processes
           data: {
             total_amount: 200,
             discounted_amount: 200,
-            order_id: order_id
+            order_id: order_id,
+            items: [
+              { product_id: product_id, quantity: 2, amount: 200 }
+            ]
           }
         )) do
         process.call(event_2)
@@ -65,7 +71,11 @@ module Processes
           data: {
             total_amount: 200,
             discounted_amount: 200,
-            order_id: order_id
+            order_id: order_id,
+            items: [
+              { product_id: product_id_1, quantity: 1, amount: 100 },
+              { product_id: product_id_2, quantity: 1, amount: 100 }
+            ]
           }
         )) do
         process.call(event_2)
@@ -97,7 +107,10 @@ module Processes
           data: {
             total_amount: 100,
             discounted_amount: 100,
-            order_id: order_id
+            order_id: order_id,
+            items: [
+              { product_id: product_id_2, quantity: 1, amount: 100 }
+            ]
           }
         )) do
         process.call(event_3)
@@ -122,7 +135,10 @@ module Processes
           data: {
             total_amount: 100,
             discounted_amount: 90,
-            order_id: order_id
+            order_id: order_id,
+            items: [
+              { product_id: product_id, quantity: 1, amount: 90 }
+            ]
           }
         )) do
         process.call(event_2)
@@ -154,7 +170,10 @@ module Processes
           data: {
             total_amount: 100,
             discounted_amount: 80,
-            order_id: order_id
+            order_id: order_id,
+            items: [
+              { product_id: product_id, quantity: 1, amount: 80 }
+            ]
           }
         )) do
         process.call(event_3)
@@ -185,7 +204,10 @@ module Processes
           data: {
             total_amount: 100,
             discounted_amount: 100,
-            order_id: order_id
+            order_id: order_id,
+            items: [
+              { product_id: product_id, quantity: 1, amount: 100 }
+            ]
           }
         )) do
         process.call(event_3)
@@ -227,7 +249,10 @@ module Processes
           data: {
             total_amount: 100,
             discounted_amount: 80,
-            order_id: order_id
+            order_id: order_id,
+            items: [
+              { product_id: product_id, quantity: 1, amount: 80 }
+            ]
           }
         )) do
         process.call(event_4)
@@ -272,7 +297,10 @@ module Processes
           data: {
             total_amount: 100,
             discounted_amount: 0,
-            order_id: order_id
+            order_id: order_id,
+            items: [
+              { product_id: product_id, quantity: 1, amount: 0 }
+            ]
           }
         )) do
         process.call(event_4)
@@ -309,7 +337,10 @@ module Processes
           data: {
             total_amount: 100,
             discounted_amount: 0,
-            order_id: order_id
+            order_id: order_id,
+            items: [
+              { product_id: product_id, quantity: 1, amount: 0 }
+            ]
           }
         )) do
         process.call(event_3)
@@ -338,7 +369,10 @@ module Processes
           data: {
             total_amount: 100,
             discounted_amount: 0,
-            order_id: order_id
+            order_id: order_id,
+            items: [
+              { product_id: product_id, quantity: 1, amount: 0 }
+            ]
           }
         )) do
         process.call(event_2)
@@ -375,7 +409,10 @@ module Processes
           data: {
             total_amount: 100,
             discounted_amount: 70,
-            order_id: order_id
+            order_id: order_id,
+            items: [
+              { product_id: product_id, quantity: 1, amount: 70 }
+            ]
           }
         )) do
         process.call(event_3)
@@ -411,7 +448,10 @@ module Processes
           data: {
             total_amount: 100,
             discounted_amount: 65,
-            order_id: order_id
+            order_id: order_id,
+            items: [
+              { product_id: product_id, quantity: 1, amount: 65 }
+            ]
           }
         )) do
         process.call(event_3)
@@ -456,7 +496,10 @@ module Processes
           data: {
             total_amount: 100,
             discounted_amount: 65,
-            order_id: order_id
+            order_id: order_id,
+            items: [
+              { product_id: product_id, quantity: 1, amount: 65 }
+            ]
           }
         )) do
         process.call(event_4)
@@ -501,7 +544,10 @@ module Processes
           data: {
             total_amount: 100,
             discounted_amount: 65,
-            order_id: order_id
+            order_id: order_id,
+            items: [
+              { product_id: product_id, quantity: 1, amount: 65 }
+            ]
           }
         )) do
         process.call(event_4)
@@ -517,8 +563,11 @@ module Processes
         Processes::TotalOrderValueUpdated.new(
           data: {
             total_amount: 100,
-            discounted_amount: 95,  # Only 5% discount remaining
-            order_id: order_id
+            discounted_amount: 95,
+            order_id: order_id,
+            items: [
+              { product_id: product_id, quantity: 1, amount: 95 }
+            ]
           }
         )) do
         process.call(event_5)

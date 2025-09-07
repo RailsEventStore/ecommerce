@@ -177,7 +177,8 @@ module Orders
           data: {
             order_id: order_1_id,
             discounted_amount: 30,
-            total_amount: 30
+            total_amount: 30,
+            items: [ { product_id: product_id, quantity: 2, amount: 30 } ]
           }
         )
       )
@@ -189,7 +190,8 @@ module Orders
           data: {
             order_id: order_id,
             discounted_amount: 30,
-            total_amount: 30
+            total_amount: 30,
+            items: [ { product_id: product_id, quantity: 1, amount: 30 } ]
           }
         )
       )

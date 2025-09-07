@@ -11,7 +11,7 @@ module Processes
     )
 
     def act
-      publish_total_order_value(state.subtotal, state.discounted_value)
+      publish_total_order_value(state.subtotal, state.discounted_value, state.per_product_discounted_totals)
     end
 
     def apply(event)
@@ -34,12 +34,13 @@ module Processes
 
     private
 
-    def publish_total_order_value(total_amount, discounted_amount)
+    def publish_total_order_value(total_amount, discounted_amount, items)
       event_store.publish(
-        TotalOrderValueUpdated.new(data: { 
-          total_amount: total_amount, 
+        TotalOrderValueUpdated.new(data: {
+          total_amount: total_amount,
           discounted_amount: discounted_amount,
-          order_id: @order_id 
+          items: items,
+          order_id: @order_id
         }),
         stream_name: "Processes::TotalOrderValue$#{@order_id}"
       )
@@ -104,6 +105,20 @@ module Processes
 
     def discounted_value
       subtotal * (1 - final_discount_percentage / 100.0)
+    end
+
+    def discount_multiplier
+      1 - (final_discount_percentage / 100.0)
+    end
+
+    def per_product_discounted_totals
+      grouped = lines.group_by { |line| line.fetch(:product_id) }
+      grouped.map do |product_id, lines_for_product|
+        quantity = lines_for_product.size
+        base_amount = lines_for_product.sum { |line| line.fetch(:price) }
+        amount = base_amount * discount_multiplier
+        { product_id: product_id, quantity: quantity, amount: amount }
+      end
     end
   end
 

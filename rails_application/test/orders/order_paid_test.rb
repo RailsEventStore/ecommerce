@@ -37,7 +37,7 @@ module Orders
         Crm::CustomerAssignedToOrder.new(data: { customer_id: customer_id, order_id: order_id })
       )
 
-      event_store.publish(Processes::TotalOrderValueUpdated.new(data: { order_id: order_id, discounted_amount: 0, total_amount: 10 }))
+      event_store.publish(Processes::TotalOrderValueUpdated.new(data: { order_id: order_id, discounted_amount: 0, total_amount: 10, items: [ { product_id: product_id, quantity: 1, amount: 10 } ] }))
       order_confirmed = Fulfillment::OrderConfirmed.new(
         data: {
           order_id: order_id
