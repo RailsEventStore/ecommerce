@@ -18,7 +18,7 @@ class Configuration
     enable_availability_read_model(event_store)
     enable_authentication_read_model(event_store)
     enable_vat_rates_read_model(event_store)
-    enable_refunds_read_model(event_store)
+    enable_returns_read_model(event_store)
     configure_processes(event_store, command_bus)
 
     Ecommerce::Configuration.new(
@@ -89,8 +89,8 @@ class Configuration
     VatRates::Configuration.new.call(event_store)
   end
 
-  def enable_refunds_read_model(event_store)
-    Refunds::Configuration.new.call(event_store)
+  def enable_returns_read_model(event_store)
+    Returns::Configuration.new.call(event_store)
   end
 
   def configure_processes(event_store, command_bus)

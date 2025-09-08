@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_05_07_182202) do
+ActiveRecord::Schema[7.2].define(version: 2025_09_08_135920) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -204,8 +204,8 @@ ActiveRecord::Schema[7.2].define(version: 2025_05_07_182202) do
     t.decimal "lowest_recent_price", precision: 8, scale: 2
   end
 
-  create_table "refund_items", force: :cascade do |t|
-    t.uuid "refund_uid", null: false
+  create_table "return_items", force: :cascade do |t|
+    t.uuid "return_uid", null: false
     t.uuid "product_uid", null: false
     t.integer "quantity", null: false
     t.decimal "price", precision: 8, scale: 2, null: false
@@ -213,7 +213,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_05_07_182202) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "refunds", force: :cascade do |t|
+  create_table "returns", force: :cascade do |t|
     t.uuid "uid", null: false
     t.uuid "order_uid", null: false
     t.string "status", null: false
