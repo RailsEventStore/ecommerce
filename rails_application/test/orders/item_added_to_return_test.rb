@@ -1,28 +1,28 @@
 require "test_helper"
 
-module Refunds
-  class ItemAddedToRefundTest < InMemoryTestCase
+module Returns
+  class ItemAddedToReturnTest < InMemoryTestCase
     cover "Orders*"
 
-    def test_add_item_to_refund
-      refund_id = SecureRandom.uuid
+    def test_add_item_to_return
+      return_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
       prepare_product(product_id, 50)
       place_order(order_id, product_id, 50)
-      create_draft_refund(refund_id, order_id)
+      create_draft_return(return_id, order_id)
 
-      AddItemToRefund.new.call(item_added_to_refund(refund_id, order_id, product_id))
+      AddItemToReturn.new.call(item_added_to_return(return_id, order_id, product_id))
 
-      assert_equal(1, Refunds::RefundItem.count)
-      refund_item = Refunds::RefundItem.find_by(refund_uid: refund_id, product_uid: product_id)
-      assert_equal(product_id, refund_item.product_uid)
-      assert_equal(1, refund_item.quantity)
-      assert_equal(50, refund_item.price)
+      assert_equal(1, Returns::ReturnItem.count)
+      return_item = Returns::ReturnItem.find_by(return_uid: return_id, product_uid: product_id)
+      assert_equal(product_id, return_item.product_uid)
+      assert_equal(1, return_item.quantity)
+      assert_equal(50, return_item.price)
 
-      assert_equal(1, Refunds::Refund.count)
-      refund = Refunds::Refund.find_by(uid: refund_id)
-      assert_equal("Draft", refund.status)
+      assert_equal(1, Returns::Return.count)
+      return_record = Returns::Return.find_by(uid: return_id)
+      assert_equal("Draft", return_record.status)
     end
 
     private
@@ -70,15 +70,15 @@ module Refunds
       )
     end
 
-    def create_draft_refund(refund_id, order_id)
-      draft_refund_created = Ordering::DraftRefundCreated.new(
-        data: { refund_id: refund_id, order_id: order_id, refundable_products: [] }
+    def create_draft_return(return_id, order_id)
+      draft_return_created = Ordering::DraftReturnCreated.new(
+        data: { return_id: return_id, order_id: order_id, returnable_products: [] }
       )
-      CreateDraftRefund.new.call(draft_refund_created)
+      CreateDraftReturn.new.call(draft_return_created)
     end
 
-    def item_added_to_refund(refund_id, order_id, product_id)
-      Ordering::ItemAddedToRefund.new(data: { refund_id: refund_id, order_id: order_id, product_id: product_id })
+    def item_added_to_return(return_id, order_id, product_id)
+      Ordering::ItemAddedToReturn.new(data: { return_id: return_id, order_id: order_id, product_id: product_id })
     end
   end
 end
