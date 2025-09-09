@@ -13,10 +13,9 @@ module Processes
     def act
       case state
       in order: :accepted
-        begin
-          reserve_stock
-        rescue SomeInventoryNotAvailable => exc
-          reject_order(exc.unavailable_products)
+        unavailable = reserve_stock
+        if unavailable.any?
+          reject_order(unavailable)
         else
           accept_order
         end
@@ -54,8 +53,8 @@ module Processes
 
       if unavailable_products.any?
         release_stock(reserved_products)
-        raise SomeInventoryNotAvailable.new(unavailable_products)
       end
+      unavailable_products
     end
 
     def release_stock(product_ids)
@@ -92,12 +91,5 @@ module Processes
       def reserved_product_ids = order_lines.keys
     end
 
-    class SomeInventoryNotAvailable < StandardError
-      attr_reader :unavailable_products
-
-      def initialize(unavailable_products)
-        @unavailable_products = unavailable_products
-      end
-    end
   end
 end
