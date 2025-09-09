@@ -125,10 +125,10 @@ class RefundToReturnEventMapperTest < ActiveSupport::TestCase
     return_id = SecureRandom.uuid
     order_id = SecureRandom.uuid
 
-    old_event = Ordering::ItemAddedToRefund.new(
+    old_event = Ordering::ItemAddedToReturn.new(
       data: { 
-        refund_id: return_id, 
-        order_id: order_id, 
+        return_id: return_id,
+        order_id: order_id,
         product_id: SecureRandom.uuid
       }
     )
@@ -136,7 +136,7 @@ class RefundToReturnEventMapperTest < ActiveSupport::TestCase
     event_store.publish(old_event, stream_name: "Return$#{return_id}")
 
     events = event_store.read.stream("Return$#{return_id}").to_a
-    
+
     assert_equal 1, events.size
     assert_equal 'Ordering::ItemAddedToReturn', events.first.class.name
     assert_equal return_id, events.first.data[:return_id]
