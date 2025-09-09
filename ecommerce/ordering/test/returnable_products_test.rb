@@ -1,10 +1,10 @@
 require_relative "test_helper"
 
 module Ordering
-  class RefundableProductsTest < Test
-    cover "Ordering::RefundableProducts"
+  class ReturnableProductsTest < Test
+    cover "Ordering::ReturnableProducts"
 
-    def test_product_quantity_available_to_refund
+    def test_product_quantity_available_to_return
       order_id = SecureRandom.uuid
       order_number = Fulfillment::FakeNumberGenerator::FAKE_NUMBER
       product_1_id = SecureRandom.uuid
@@ -42,9 +42,9 @@ module Ordering
         stream_name: "Fulfillment::Order$#{order_id}"
       )
 
-      refundable_products = RefundableProducts.new.call(event_store, order_id)
+      returnable_products = ReturnableProducts.new.call(event_store, order_id)
 
-      assert_equal([{ product_id: product_1_id, quantity: 1 }, { product_id: product_2_id, quantity: 1 }], refundable_products)
+      assert_equal([{ product_id: product_1_id, quantity: 1 }, { product_id: product_2_id, quantity: 1 }], returnable_products)
     end
 
     def test_order_have_to_be_placed
@@ -66,7 +66,7 @@ module Ordering
         ],
         stream_name: stream_name)
 
-      assert_nil(RefundableProducts.new.call(event_store, order_id))
+      assert_nil(ReturnableProducts.new.call(event_store, order_id))
     end
   end
 end

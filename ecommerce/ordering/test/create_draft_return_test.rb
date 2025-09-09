@@ -1,14 +1,14 @@
 require_relative "test_helper"
 
 module Ordering
-  class CreateDraftRefundTest < Test
-    cover "Ordering::OnCreateDraftRefund*"
+  class CreateDraftReturnTest < Test
+    cover "Ordering::OnCreateDraftReturn*"
 
-    def test_draft_refund_created
+    def test_draft_return_created
       order_id = SecureRandom.uuid
       aggregate_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
-      stream = "Ordering::Refund$#{aggregate_id}"
+      stream = "Ordering::Return$#{aggregate_id}"
 
       arrange(
         Pricing::SetPrice.new(product_id: product_id, price: 11),
@@ -19,19 +19,19 @@ module Ordering
       )
 
       expected_events = [
-        DraftRefundCreated.new(
+        DraftReturnCreated.new(
           data: {
-            refund_id: aggregate_id,
+            return_id: aggregate_id,
             order_id: order_id,
-            refundable_products: [{ product_id:, quantity: 2 }]
+            returnable_products: [{ product_id:, quantity: 2 }]
           }
         )
       ]
 
       assert_events(stream, *expected_events) do
         act(
-          CreateDraftRefund.new(
-            refund_id: aggregate_id,
+          CreateDraftReturn.new(
+            return_id: aggregate_id,
             order_id: order_id
           )
         )
