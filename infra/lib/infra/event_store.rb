@@ -32,26 +32,9 @@ module Infra
     end
 
     def self.in_memory_rails
-      if defined?(Transformations::RefundToReturnEventMapper)
-        mapper = RubyEventStore::Mappers::PipelineMapper.new(
-          RubyEventStore::Mappers::Pipeline.new(
-            Transformations::RefundToReturnEventMapper.new(
-              'Ordering::DraftRefundCreated' => 'Ordering::DraftReturnCreated',
-              'Ordering::ItemAddedToRefund' => 'Ordering::ItemAddedToReturn',
-              'Ordering::ItemRemovedFromRefund' => 'Ordering::ItemRemovedFromReturn'
-            ),
-            RubyEventStore::Mappers::Transformation::DomainEvent.new,
-            RubyEventStore::Mappers::Transformation::SymbolizeMetadataKeys.new
-          )
-        )
-      else
-        mapper = default_mapper
-      end
-      
       new(
         RailsEventStore::Client.new(
-          repository: RubyEventStore::InMemoryRepository.new,
-          mapper: mapper
+          repository: RubyEventStore::InMemoryRepository.new
         )
       )
     end

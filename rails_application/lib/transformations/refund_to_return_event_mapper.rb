@@ -9,19 +9,21 @@ module Transformations
     end
 
     def load(record)
+      return record unless record.respond_to?(:timestamp) && record.timestamp
+
       old_class_name = record.event_type
       new_class_name = @class_map.fetch(old_class_name, old_class_name)
       
       if old_class_name != new_class_name
         transformed_data = transform_payload(record.data, old_class_name)
         
-        RubyEventStore::Record.new(
+        record.class.new(
           event_id: record.event_id,
           event_type: new_class_name,
           data: transformed_data,
           metadata: record.metadata,
-          timestamp: record.timestamp || Time.now.utc,
-          valid_at: record.valid_at || Time.now.utc
+          timestamp: record.timestamp,
+          valid_at: record.valid_at
         )
       else
         record
