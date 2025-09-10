@@ -1,23 +1,27 @@
 module Infra
   class EventStore < SimpleDelegator
     def self.main
-      require_relative "../../../rails_application/lib/transformations/refund_to_return_event_mapper" rescue nil
-
-      if defined?(Transformations::RefundToReturnEventMapper)
-        mapper = RubyEventStore::Mappers::PipelineMapper.new(
-          RubyEventStore::Mappers::Pipeline.new(
-            Transformations::RefundToReturnEventMapper.new(
-              'Ordering::DraftRefundCreated' => 'Ordering::DraftReturnCreated',
-              'Ordering::ItemAddedToRefund' => 'Ordering::ItemAddedToReturn',
-              'Ordering::ItemRemovedFromRefund' => 'Ordering::ItemRemovedFromReturn'
-            ),
-            RubyEventStore::Mappers::Transformation::DomainEvent.new,
-            RubyEventStore::Mappers::Transformation::SymbolizeMetadataKeys.new,
-            RubyEventStore::Mappers::Transformation::PreserveTypes.new
-          )
-        )
-      else
+      if ENV['DISABLE_EVENT_TRANSFORMATIONS'] == 'true'
         mapper = default_mapper
+      else
+        require_relative "../../../rails_application/lib/transformations/refund_to_return_event_mapper" rescue nil
+
+        if defined?(Transformations::RefundToReturnEventMapper)
+          mapper = RubyEventStore::Mappers::PipelineMapper.new(
+            RubyEventStore::Mappers::Pipeline.new(
+              Transformations::RefundToReturnEventMapper.new(
+                'Ordering::DraftRefundCreated' => 'Ordering::DraftReturnCreated',
+                'Ordering::ItemAddedToRefund' => 'Ordering::ItemAddedToReturn',
+                'Ordering::ItemRemovedFromRefund' => 'Ordering::ItemRemovedFromReturn'
+              ),
+              RubyEventStore::Mappers::Transformation::DomainEvent.new,
+              RubyEventStore::Mappers::Transformation::SymbolizeMetadataKeys.new,
+              RubyEventStore::Mappers::Transformation::PreserveTypes.new
+            )
+          )
+        else
+          mapper = default_mapper
+        end
       end
 
       new(RailsEventStore::JSONClient.new(mapper: mapper))

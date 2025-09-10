@@ -184,6 +184,7 @@ jobs:
         working-directory: ${{ env.WORKING_DIRECTORY }}
         env:
           NUM_GROUPS_FROM_CI: ${{ needs.determine_run_parameters.outputs.num_groups }}
+          DEBUG_TRANSFORMATIONS: true
         run: |
           echo "Waiting for PostgreSQL to be ready..."
           until pg_isready -h localhost -p 5432 -U "postgres" -d "cqrs-es-sample-with-res_test"; do
@@ -193,7 +194,7 @@ jobs:
 
           RAILS_ENV=test bundle exec rails db:prepare
 
-          SUBJECT_LIST_OUTPUT=$(RAILS_ENV=test bundle exec mutant environment subject list)
+          SUBJECT_LIST_OUTPUT=$(RAILS_ENV=test DEBUG_TRANSFORMATIONS=true bundle exec mutant environment subject list)
           mapfile -t subjects_array < <( \
             echo "$SUBJECT_LIST_OUTPUT" | \
             awk 'NR == 1 {next} /Run options:/ {exit} {print}' | \

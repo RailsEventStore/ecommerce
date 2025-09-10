@@ -5,16 +5,33 @@ module Transformations
     end
 
     def dump(record)
+      if ENV['DEBUG_TRANSFORMATIONS'] == 'true'
+        puts "[TRANSFORM] dump() called with event_type: #{record.event_type}"
+        puts "[TRANSFORM] record class: #{record.class.name}"
+        puts "[TRANSFORM] record timestamp: #{record.timestamp.inspect}"
+        puts "[TRANSFORM] record valid_at: #{record.valid_at.inspect}"
+      end
       record
     end
 
     def load(record)
+      if ENV['DEBUG_TRANSFORMATIONS'] == 'true'
+        puts "[TRANSFORM] load() called with event_type: #{record.event_type}"
+        puts "[TRANSFORM] record class: #{record.class.name}"
+        puts "[TRANSFORM] record timestamp: #{record.timestamp.inspect}"
+        puts "[TRANSFORM] record valid_at: #{record.valid_at.inspect}"
+      end
+
       old_class_name = record.event_type
       new_class_name = @class_map.fetch(old_class_name, old_class_name)
 
       if old_class_name != new_class_name
+        if ENV['DEBUG_TRANSFORMATIONS'] == 'true'
+          puts "[TRANSFORM] Transforming: #{old_class_name} -> #{new_class_name}"
+        end
+
         transformed_data = transform_payload(record.data, old_class_name)
-        record.class.new(
+        new_record = record.class.new(
           event_id: record.event_id,
           event_type: new_class_name,
           data: transformed_data,
@@ -22,6 +39,12 @@ module Transformations
           timestamp: record.timestamp || Time.now.utc,
           valid_at: record.valid_at || Time.now.utc
         )
+
+        if ENV['DEBUG_TRANSFORMATIONS'] == 'true'
+          puts "[TRANSFORM] Created new record with timestamp: #{new_record.timestamp.inspect}"
+        end
+
+        new_record
       else
         record
       end
