@@ -101,7 +101,6 @@ module Infra
     def self.default_mapper
       RubyEventStore::Mappers::PipelineMapper.new(
         RubyEventStore::Mappers::Pipeline.new(
-          RubyEventStore::Mappers::Transformation::DomainEvent.new,
           RubyEventStore::Mappers::Transformation::SymbolizeMetadataKeys.new,
           RubyEventStore::Mappers::Transformation::PreserveTypes.new
         )
