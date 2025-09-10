@@ -100,7 +100,8 @@ module Infra
       RubyEventStore::Mappers::PipelineMapper.new(
         RubyEventStore::Mappers::Pipeline.new(
           RubyEventStore::Mappers::Transformation::DomainEvent.new,
-          RubyEventStore::Mappers::Transformation::SymbolizeMetadataKeys.new
+          RubyEventStore::Mappers::Transformation::SymbolizeMetadataKeys.new,
+          RubyEventStore::Mappers::Transformation::PreserveTypes.new
         )
       )
     end
