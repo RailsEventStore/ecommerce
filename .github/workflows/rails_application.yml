@@ -185,6 +185,7 @@ jobs:
         env:
           NUM_GROUPS_FROM_CI: ${{ needs.determine_run_parameters.outputs.num_groups }}
           DEBUG_TRANSFORMATIONS: true
+          DISABLE_EVENT_TRANSFORMATIONS: true
         run: |
           echo "Waiting for PostgreSQL to be ready..."
           until pg_isready -h localhost -p 5432 -U "postgres" -d "cqrs-es-sample-with-res_test"; do
