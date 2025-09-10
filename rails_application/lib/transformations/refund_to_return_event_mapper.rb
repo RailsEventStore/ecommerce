@@ -9,29 +9,19 @@ module Transformations
     end
 
     def load(record)
-      if record.is_a?(Hash)
-        old_class_name = record[:event_type]
-      else
-        old_class_name = record.event_type
-      end
-
+      old_class_name = record.event_type
       new_class_name = @class_map.fetch(old_class_name, old_class_name)
 
       if old_class_name != new_class_name
-        if record.is_a?(Hash)
-          transformed_data = transform_payload(record[:data], old_class_name)
-          record.merge(event_type: new_class_name, data: transformed_data)
-        else
-          transformed_data = transform_payload(record.data, old_class_name)
-          record.class.new(
-            event_id: record.event_id,
-            event_type: new_class_name,
-            data: transformed_data,
-            metadata: record.metadata,
-            timestamp: record.timestamp,
-            valid_at: record.valid_at
-          )
-        end
+        transformed_data = transform_payload(record.data, old_class_name)
+        record.class.new(
+          event_id: record.event_id,
+          event_type: new_class_name,
+          data: transformed_data,
+          metadata: record.metadata,
+          timestamp: record.timestamp,
+          valid_at: record.valid_at
+        )
       else
         record
       end
