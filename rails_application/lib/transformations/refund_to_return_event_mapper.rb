@@ -19,8 +19,8 @@ module Transformations
           event_type: new_class_name,
           data: transformed_data,
           metadata: record.metadata,
-          timestamp: record.timestamp,
-          valid_at: record.valid_at
+          timestamp: record.timestamp || Time.now.utc,
+          valid_at: record.valid_at || Time.now.utc
         )
       else
         record
