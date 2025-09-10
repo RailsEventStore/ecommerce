@@ -80,7 +80,9 @@ module Infra
         alias_method :original_event_to_record, :event_to_record
 
         def event_to_record(domain_event)
+          puts "[DEBUG] Before transformation - Event timestamp: #{domain_event.timestamp}"
           record = original_event_to_record(domain_event)
+          puts "[DEBUG] After transformation - Record timestamp: #{record.timestamp}"
           if record.timestamp.nil?
             puts "[ERROR] Record created with nil timestamp!"
             puts "[ERROR] Event class: #{domain_event.class.name}"
