@@ -2,10 +2,8 @@ module Infra
   class EventStore < SimpleDelegator
     def self.main
       if ENV['DISABLE_EVENT_TRANSFORMATIONS'] == 'true'
-        puts "[DEBUG] Event transformations DISABLED"
         mapper = debug_mapper
       else
-        puts "[DEBUG] Event transformations ENABLED"
         require_relative "../../../rails_application/lib/transformations/refund_to_return_event_mapper" rescue nil
 
         if defined?(Transformations::RefundToReturnEventMapper)
@@ -31,10 +29,10 @@ module Infra
       def client.publish(*events, **kwargs)
         events.each do |event|
           if event.respond_to?(:timestamp) && event.timestamp.nil?
-            puts "[ERROR] Event #{event.class.name} has nil timestamp!"
-            puts "[ERROR] Event ID: #{event.event_id}"
-            puts "[ERROR] Stack trace:"
-            puts caller[0..10].join("\n")
+            $stderr.puts "[ERROR] Event #{event.class.name} has nil timestamp!"
+            $stderr.puts "[ERROR] Event ID: #{event.event_id}"
+            $stderr.puts "[ERROR] Stack trace:"
+            $stderr.puts caller[0..10].join("\n")
           end
         end
         super(*events, **kwargs)
@@ -80,16 +78,14 @@ module Infra
         alias_method :original_event_to_record, :event_to_record
 
         def event_to_record(domain_event)
-          puts "[DEBUG] Before transformation - Event timestamp: #{domain_event.timestamp}"
           record = original_event_to_record(domain_event)
-          puts "[DEBUG] After transformation - Record timestamp: #{record.timestamp}"
           if record.timestamp.nil?
-            puts "[ERROR] Record created with nil timestamp!"
-            puts "[ERROR] Event class: #{domain_event.class.name}"
-            puts "[ERROR] Event ID: #{domain_event.event_id}"
-            puts "[ERROR] Domain event timestamp: #{domain_event.respond_to?(:timestamp) ? domain_event.timestamp : 'N/A'}"
-            puts "[ERROR] Stack trace:"
-            puts caller[0..15].join("\n")
+            $stderr.puts "[ERROR] Record created with nil timestamp!"
+            $stderr.puts "[ERROR] Event class: #{domain_event.class.name}"
+            $stderr.puts "[ERROR] Event ID: #{domain_event.event_id}"
+            $stderr.puts "[ERROR] Domain event timestamp: #{domain_event.respond_to?(:timestamp) ? domain_event.timestamp : 'N/A'}"
+            $stderr.puts "[ERROR] Stack trace:"
+            $stderr.puts caller[0..15].join("\n")
           end
           record
         end
