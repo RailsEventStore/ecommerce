@@ -49,10 +49,7 @@ module Processes
     def reserve_stock
       unavailable_products = []
       reserved_products = []
-      puts "[DEBUG] reserve_stock - state.order_lines: #{state.order_lines.inspect}"
-      puts "[DEBUG] reserve_stock - state.order_lines.class: #{state.order_lines.class}"
       state.order_lines.each do |product_id, quantity|
-        puts "[DEBUG] Processing product_id: #{product_id}, quantity: #{quantity}"
         command_bus.(Inventory::Reserve.new(product_id: product_id, quantity: quantity))
         reserved_products << product_id
       rescue Inventory::InventoryEntry::InventoryNotAvailable
