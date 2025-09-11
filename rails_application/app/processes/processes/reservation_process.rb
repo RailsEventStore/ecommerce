@@ -30,9 +30,14 @@ module Processes
     def apply(event)
       case event
       when Pricing::OfferAccepted
+        puts "[DEBUG] OfferAccepted event.data: #{event.data.inspect}"
+        puts "[DEBUG] event.data.keys: #{event.data.keys.inspect}"
+        puts "[DEBUG] event.data[:order_lines]: #{event.data[:order_lines].inspect}"
+        order_lines_hash = event.data.fetch(:order_lines).map { |ol| [ol.fetch(:product_id), ol.fetch(:quantity)] }.to_h
+        puts "[DEBUG] Created order_lines_hash: #{order_lines_hash.inspect}"
         state.with(
           order: :accepted,
-          order_lines: event.data.fetch(:order_lines).map { |ol| [ol.fetch(:product_id), ol.fetch(:quantity)] }.to_h
+          order_lines: order_lines_hash
         )
       when Fulfillment::OrderCancelled
         state.with(order: :cancelled)
@@ -44,7 +49,10 @@ module Processes
     def reserve_stock
       unavailable_products = []
       reserved_products = []
+      puts "[DEBUG] reserve_stock - state.order_lines: #{state.order_lines.inspect}"
+      puts "[DEBUG] reserve_stock - state.order_lines.class: #{state.order_lines.class}"
       state.order_lines.each do |product_id, quantity|
+        puts "[DEBUG] Processing product_id: #{product_id}, quantity: #{quantity}"
         command_bus.(Inventory::Reserve.new(product_id: product_id, quantity: quantity))
         reserved_products << product_id
       rescue Inventory::InventoryEntry::InventoryNotAvailable
