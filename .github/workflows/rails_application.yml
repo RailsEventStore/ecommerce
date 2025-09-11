@@ -216,7 +216,7 @@ jobs:
 
           echo "All db operations completed successfully"
 
-          SUBJECT_LIST_OUTPUT=$(RAILS_ENV=test DEBUG_TRANSFORMATIONS=true bundle exec mutant environment subject list)
+          SUBJECT_LIST_OUTPUT=$(RAILS_ENV=test bundle exec mutant environment subject list)
           mapfile -t subjects_array < <( \
             echo "$SUBJECT_LIST_OUTPUT" | \
             awk 'NR == 1 {next} /Run options:/ {exit} {print}' | \
