@@ -191,28 +191,7 @@ jobs:
           done
           echo "PostgreSQL is ready."
 
-          echo "Testing simple app loading first..."
-          RAILS_ENV=test bundle exec rails runner "puts 'App loads OK'" 2>&1 || {
-            echo "App loading fails"
-            exit 1
-          }
-
-          echo "Running db:create..."
-          RAILS_ENV=test bundle exec rails db:create 2>&1 || echo "db:create failed or DB already exists"
-
-          echo "Running db:schema:load..."
-          RAILS_ENV=test bundle exec rails db:schema:load 2>&1 || {
-            echo "db:schema:load failed"
-            exit 1
-          }
-
-          echo "Running db:seed..."
-          RAILS_ENV=test bundle exec rails db:seed 2>&1 || {
-            echo "db:seed failed"
-            exit 1
-          }
-
-          echo "All db operations completed successfully"
+          RAILS_ENV=test bundle exec rails db:prepare
 
           SUBJECT_LIST_OUTPUT=$(RAILS_ENV=test bundle exec mutant environment subject list)
           mapfile -t subjects_array < <( \
