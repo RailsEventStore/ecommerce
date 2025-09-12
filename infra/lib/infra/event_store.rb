@@ -1,7 +1,27 @@
 module Infra
   class EventStore < SimpleDelegator
     def self.main
-      new(RailsEventStore::JSONClient.new)
+      require_relative "../../../rails_application/lib/transformations/refund_to_return_event_mapper" rescue nil
+
+      if defined?(Transformations::RefundToReturnEventMapper)
+        mapper = RubyEventStore::Mappers::PipelineMapper.new(
+          RubyEventStore::Mappers::Pipeline.new(
+            Transformations::RefundToReturnEventMapper.new(
+              'Ordering::DraftRefundCreated' => 'Ordering::DraftReturnCreated',
+              'Ordering::ItemAddedToRefund' => 'Ordering::ItemAddedToReturn',
+              'Ordering::ItemRemovedFromRefund' => 'Ordering::ItemRemovedFromReturn'
+            ),
+            RubyEventStore::Mappers::Transformation::DomainEvent.new,
+            RubyEventStore::Mappers::Transformation::SymbolizeMetadataKeys.new,
+            RubyEventStore::Mappers::Transformation::PreserveTypes.new
+          )
+        )
+        client = RailsEventStore::JSONClient.new(mapper: mapper)
+      else
+        client = RailsEventStore::JSONClient.new
+      end
+
+      new(client)
     end
 
     def self.in_memory
@@ -31,5 +51,6 @@ module Infra
         expected_version: expected_version
       )
     end
+
   end
 end

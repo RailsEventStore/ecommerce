@@ -1,0 +1,53 @@
+<% content_for(:header) do %>
+  Return for Order <%= @order.number %>
+<% end %>
+
+<% content_for(:actions) do %>
+  <%= secondary_action_button do %>
+    <%= link_to 'Back', order_path(@order.uid) %>
+  <% end %>
+
+  <%= primary_form_action_button do %>
+    Submit Return
+  <% end %>
+<% end %>
+
+<table class="w-full">
+  <thead>
+    <tr class="border-b">
+      <th class="text-left py-2">Product</th>
+      <th class="text-left py-2">Quantity</th>
+      <th class="text-left py-2">Price</th>
+      <th class="text-left py-2">Value</th>
+      <th class="text-left py-2"></th>
+      <th class="text-left py-2"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @return_items.each do |return_item| %>
+      <tr class="border-b" id="order_line_product_<%= return_item.product_uid %>">
+        <td class="py-2"><%= return_item.product_name %></td>
+        <td class="py-2"><%= return_item.quantity %> / <%= return_item.order_quantity %></td>
+        <td class="py-2"><%= number_to_currency(return_item.price) %></td>
+        <td class="py-2"><%= number_to_currency(return_item.value) %></td>
+        <td class="py-2">
+          <% unless return_item.max_quantity? %>
+            <%= button_to "Add", add_item_order_return_path(order_id: @order.uid, id: @return.uid, product_id: return_item.product_uid), class: "hover:underline text-blue-500" %>
+          <% end %>
+        </td>
+        <td class="py-2 text-right">
+          <% unless return_item.quantity.zero? %>
+            <%= button_to "Remove", remove_item_order_return_path(order_id: @order.uid, id: @return.uid, product_id: return_item.product_uid), class: "hover:underline text-blue-500" %>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+  <tfoot class="border-t-4">
+    <tr class="border-t">
+      <td class="py-2" colspan="3">Total</td>
+      <td class="py-2 font-bold"><%= number_to_currency(@return.total_value) %></td>
+    </tr>
+  </tfoot>
+</table>

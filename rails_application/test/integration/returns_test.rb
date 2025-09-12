@@ -1,6 +1,6 @@
 require "test_helper"
 
-class RefundsTest < InMemoryRESIntegrationTestCase
+class ReturnsTest < InMemoryRESIntegrationTestCase
   def setup
     super
     add_available_vat_rate(10)
@@ -20,16 +20,16 @@ class RefundsTest < InMemoryRESIntegrationTestCase
 
     get "/orders/#{order_id}"
 
-    assert_select("button", "Refund")
+    assert_select("button", "Return")
 
-    post "/orders/#{order_id}/refunds"
+    post "/orders/#{order_id}/returns"
     follow_redirect!
 
     assert_order_line_row(async_remote_id, "Async Remote", 1)
     assert_order_line_row(fearless_id, "Fearless Refactoring", 2)
   end
 
-  def test_renders_error_when_exceeds_available_quantity_to_refund
+  def test_renders_error_when_exceeds_available_quantity_to_return
     shopify_id = register_customer("Shopify")
     order_id = SecureRandom.uuid
     async_remote_id = register_product("Async Remote", 39, 10)
@@ -38,16 +38,16 @@ class RefundsTest < InMemoryRESIntegrationTestCase
     submit_order(shopify_id, order_id)
     pay_order(order_id)
 
-    post "/orders/#{order_id}/refunds"
+    post "/orders/#{order_id}/returns"
     follow_redirect!
 
-    refund = Refunds::Refund.last
+    return_record = Returns::Return.last
 
-    add_item_to_refund(order_id, refund.uid, async_remote_id)
-    add_item_to_refund(order_id, refund.uid, async_remote_id)
+    add_item_to_return(order_id, return_record.uid, async_remote_id)
+    add_item_to_return(order_id, return_record.uid, async_remote_id)
     follow_redirect!
 
-    assert_select("#alert", "You cannot add more of this product to the refund than is in the original order.")
+    assert_select("#alert", "You cannot add more of this product to the return than is in the original order.")
   end
 
   def test_renders_error_when_trying_to_remove_not_added_product
@@ -59,15 +59,15 @@ class RefundsTest < InMemoryRESIntegrationTestCase
     submit_order(shopify_id, order_id)
     pay_order(order_id)
 
-    post "/orders/#{order_id}/refunds"
+    post "/orders/#{order_id}/returns"
     follow_redirect!
 
-    refund = Refunds::Refund.last
+    return_record = Returns::Return.last
 
-    remove_item_from_refund(order_id, refund.uid, async_remote_id)
+    remove_item_from_return(order_id, return_record.uid, async_remote_id)
     follow_redirect!
 
-    assert_select("#alert",  "This product is not added to the refund.")
+    assert_select("#alert",  "This product is not added to the return.")
   end
 
   private

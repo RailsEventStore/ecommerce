@@ -1,16 +1,16 @@
 require_relative "test_helper"
 
 module Ordering
-  class RemoveItemFromRefundTest < Test
-    cover "Ordering::OnRemoveItemFromRefund*"
+  class AddItemToReturnTest < Test
+    cover "Ordering::OnAddItemToReturn*"
 
-    def test_removing_items_from_refund
+    def test_add_item_to_return
       order_id = SecureRandom.uuid
       aggregate_id = SecureRandom.uuid
       product_1_id = SecureRandom.uuid
       product_2_id = SecureRandom.uuid
       product_3_id = SecureRandom.uuid
-      stream = "Ordering::Refund$#{aggregate_id}"
+      stream = "Ordering::Return$#{aggregate_id}"
 
       arrange(
         Pricing::SetPrice.new(product_id: product_1_id, price: 11),
@@ -22,41 +22,38 @@ module Ordering
         Pricing::AddPriceItem.new(order_id: order_id, product_id: product_3_id, price: 33),
         Pricing::AcceptOffer.new(order_id: order_id),
         Fulfillment::RegisterOrder.new(order_id: order_id),
-        CreateDraftRefund.new(
-          refund_id: aggregate_id,
-          order_id: order_id
-        ),
-        AddItemToRefund.new(
-          refund_id: aggregate_id,
-          order_id: order_id,
-          product_id: product_1_id
+        CreateDraftReturn.new(return_id: aggregate_id, order_id: order_id),
+        AddItemToReturn.new(
+            return_id: aggregate_id,
+            order_id: order_id,
+            product_id: product_2_id
+          )
         )
-      )
 
       expected_events = [
-        ItemRemovedFromRefund.new(
+        ItemAddedToReturn.new(
           data: {
-            refund_id: aggregate_id,
+            return_id: aggregate_id,
             order_id: order_id,
-            product_id: product_1_id
+            product_id: product_2_id
           }
         )
       ]
 
       assert_events(stream, *expected_events) do
         act(
-          RemoveItemFromRefund.new(
-            refund_id: aggregate_id,
+          AddItemToReturn.new(
+            return_id: aggregate_id,
             order_id: order_id,
-            product_id: product_1_id
+            product_id: product_2_id
           )
         )
       end
     end
 
-    def test_cant_remove_item_with_0_quantity
-      order_id = SecureRandom.uuid
+    def test_add_item_raises_exceeds_order_quantity_error
       aggregate_id = SecureRandom.uuid
+      order_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
 
       arrange(
@@ -64,30 +61,16 @@ module Ordering
         Pricing::AddPriceItem.new(order_id: order_id, product_id: product_id, price: 11),
         Pricing::AcceptOffer.new(order_id: order_id),
         Fulfillment::RegisterOrder.new(order_id: order_id),
-        CreateDraftRefund.new(
-          refund_id: aggregate_id,
-          order_id: order_id
-        ),
-        AddItemToRefund.new(
-          refund_id: aggregate_id,
-          order_id: order_id,
-          product_id: product_id
-        ),
-        RemoveItemFromRefund.new(
-          refund_id: aggregate_id,
+        CreateDraftReturn.new(return_id: aggregate_id, order_id: order_id),
+        AddItemToReturn.new(
+          return_id: aggregate_id,
           order_id: order_id,
           product_id: product_id
         )
       )
 
-      assert_raises(Refund::RefundHaveNotBeenRequestedForThisProductError) do
-        act(
-          RemoveItemFromRefund.new(
-            refund_id: aggregate_id,
-            order_id: order_id,
-            product_id: product_id
-          )
-        )
+      assert_raises(Ordering::Return::ExceedsOrderQuantityError) do
+        act(AddItemToReturn.new(return_id: aggregate_id, order_id: order_id, product_id: product_id))
       end
     end
   end
