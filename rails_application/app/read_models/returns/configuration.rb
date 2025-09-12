@@ -32,10 +32,6 @@ module Returns
       event_store.subscribe(CreateDraftReturn.new, to: [Ordering::DraftReturnCreated])
       event_store.subscribe(AddItemToReturn.new, to: [Ordering::ItemAddedToReturn])
       event_store.subscribe(RemoveItemFromReturn.new, to: [Ordering::ItemRemovedFromReturn])
-      
-      event_store.subscribe(CreateDraftRefund.new, to: [Ordering::DraftRefundCreated])
-      event_store.subscribe(AddItemToRefund.new, to: [Ordering::ItemAddedToRefund])
-      event_store.subscribe(RemoveItemFromRefund.new, to: [Ordering::ItemRemovedFromRefund])
     end
   end
 
