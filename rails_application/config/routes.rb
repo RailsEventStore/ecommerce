@@ -10,6 +10,7 @@ Rails.application.routes.draw do
       post :remove_item
       post :pay
       post :cancel
+      post :archive
       get :edit_discount
       post :update_discount
       post :remove_discount
@@ -34,6 +35,7 @@ Rails.application.routes.draw do
   resources :products, only: [:new, :show, :create, :index, :edit, :update] do
     resources :supplies, only: [:new, :create]
     member do
+      post :archive
       post :add_future_price, to: "product/future_price#add_future_price", as: "add_future_price"
     end
   end
