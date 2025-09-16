@@ -11,7 +11,6 @@ module Infra
               'Ordering::ItemAddedToRefund' => 'Ordering::ItemAddedToReturn',
               'Ordering::ItemRemovedFromRefund' => 'Ordering::ItemRemovedFromReturn'
             ),
-            RubyEventStore::Mappers::Transformation::DomainEvent.new,
             RubyEventStore::Mappers::Transformation::SymbolizeMetadataKeys.new,
             RubyEventStore::Mappers::Transformation::PreserveTypes.new
           )
