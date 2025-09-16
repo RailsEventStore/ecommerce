@@ -30,11 +30,7 @@ module Processes
     def apply(event)
       case event
       when Pricing::OfferAccepted
-        puts "[DEBUG] OfferAccepted event.data: #{event.data.inspect}"
-        puts "[DEBUG] event.data.keys: #{event.data.keys.inspect}"
-        puts "[DEBUG] event.data[:order_lines]: #{event.data[:order_lines].inspect}"
         order_lines_hash = event.data.fetch(:order_lines).map { |ol| [ol.fetch(:product_id), ol.fetch(:quantity)] }.to_h
-        puts "[DEBUG] Created order_lines_hash: #{order_lines_hash.inspect}"
         state.with(
           order: :accepted,
           order_lines: order_lines_hash
