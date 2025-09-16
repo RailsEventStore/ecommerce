@@ -14,14 +14,20 @@ module Transformations
 
       if old_class_name != new_class_name
         transformed_data = transform_payload(record.data, old_class_name)
-        record.class.new(
-          event_id: record.event_id,
-          event_type: new_class_name,
-          data: transformed_data,
-          metadata: record.metadata,
-          timestamp: record.timestamp || Time.now.utc,
-          valid_at: record.valid_at || Time.now.utc
-        )
+        begin
+          metadata_json = record.metadata.respond_to?(:to_json) ? record.metadata.to_json : record.metadata.to_h.to_json
+          RubyEventStore::SerializedRecord.new(
+            event_id: record.event_id,
+            event_type: new_class_name,
+            data: transformed_data.to_json,
+            metadata: metadata_json,
+            timestamp: record.timestamp,
+            valid_at: record.valid_at
+          )
+        rescue => e
+          puts "Mapper error: #{e.message}, falling back to original record"
+          record
+        end
       else
         record
       end
