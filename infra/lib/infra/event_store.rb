@@ -2,7 +2,6 @@ module Infra
   class EventStore < SimpleDelegator
     def self.main
       require_relative "../../../rails_application/lib/transformations/refund_to_return_event_mapper" rescue nil
-      require_relative "../../../rails_application/lib/transformations/symbolize_data_keys" rescue nil
 
       begin
         mapper = RubyEventStore::Mappers::PipelineMapper.new(
@@ -12,8 +11,8 @@ module Infra
               'Ordering::ItemAddedToRefund' => 'Ordering::ItemAddedToReturn',
               'Ordering::ItemRemovedFromRefund' => 'Ordering::ItemRemovedFromReturn'
             ),
-            Transformations::SymbolizeDataKeys.new,
-            RubyEventStore::Mappers::Transformation::SymbolizeMetadataKeys.new
+            RubyEventStore::Mappers::Transformation::SymbolizeMetadataKeys.new,
+            to_domain_event: RubyEventStore::Mappers::Transformation::DomainEvent.new
           )
         )
         client = RailsEventStore::JSONClient.new(mapper: mapper)

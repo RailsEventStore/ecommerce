@@ -2,7 +2,7 @@ module Processes
   module Invoices
     class MoneySplitter
       def initialize(amount, quantity)
-        @amount = BigDecimal(amount.to_s)
+        @amount = amount
         @weights = Array.new(quantity, 1)
       end
 
