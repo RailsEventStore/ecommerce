@@ -3,7 +3,7 @@ module Infra
     def self.main
       require_relative "../../../rails_application/lib/transformations/refund_to_return_event_mapper" rescue nil
 
-      if defined?(Transformations::RefundToReturnEventMapper)
+      begin
         mapper = RubyEventStore::Mappers::PipelineMapper.new(
           RubyEventStore::Mappers::Pipeline.new(
             Transformations::RefundToReturnEventMapper.new(
@@ -17,7 +17,8 @@ module Infra
           )
         )
         client = RailsEventStore::JSONClient.new(mapper: mapper)
-      else
+      rescue => e
+        puts "Mapper creation failed: #{e.message}"
         client = RailsEventStore::JSONClient.new
       end
 
