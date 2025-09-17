@@ -1,6 +1,6 @@
 require "test_helper"
 
-class RefundToReturnEventMapperTest < ActiveSupport::TestCase
+class RefundToReturnEventMapperIntegrationTest < ActiveSupport::TestCase
   def setup
     @mapper = RubyEventStore::Mappers::PipelineMapper.new(
       RubyEventStore::Mappers::Pipeline.new(
