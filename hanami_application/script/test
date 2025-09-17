@@ -1,0 +1,19 @@
+#!/bin/sh
+
+# script/test: Run test suite for application. Optionally pass in a path to an
+# individual test file to run a single test.
+
+set -e
+
+cd "$(dirname "$0")/.."
+
+[ -z "$DEBUG" ] || set -x
+
+echo "==> Running tests…"
+
+if [ -n "$1" ]; then
+  # Pass arguments to test call. This is useful for calling a single test.
+  bundle exec rspec "$1"
+else
+  bundle exec rake spec
+fi
