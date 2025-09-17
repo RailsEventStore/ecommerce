@@ -4,8 +4,11 @@ module Infra
       require_relative "../../../rails_application/lib/transformations/refund_to_return_event_mapper" rescue nil
 
       begin
+        preserve_types = create_standard_preserve_types
+
         mapper = RubyEventStore::Mappers::PipelineMapper.new(
           RubyEventStore::Mappers::Pipeline.new(
+            preserve_types,
             Transformations::RefundToReturnEventMapper.new(
               'Ordering::DraftRefundCreated' => 'Ordering::DraftReturnCreated',
               'Ordering::ItemAddedToRefund' => 'Ordering::ItemAddedToReturn',
@@ -50,6 +53,56 @@ module Infra
         stream_name: stream,
         expected_version: expected_version
       )
+    end
+
+    private
+
+    def self.create_standard_preserve_types
+      preserve_types = RubyEventStore::Mappers::Transformation::PreserveTypes.new
+
+      types_config = {
+        Symbol => {
+          serializer: ->(v) { v.to_s },
+          deserializer: ->(v) { v.to_sym }
+        },
+        Time => {
+          serializer: ->(v) { v.iso8601(RubyEventStore::TIMESTAMP_PRECISION) },
+          deserializer: ->(v) { Time.iso8601(v) }
+        },
+        Date => {
+          serializer: ->(v) { v.iso8601 },
+          deserializer: ->(v) { Date.iso8601(v) }
+        },
+        DateTime => {
+          serializer: ->(v) { v.iso8601 },
+          deserializer: ->(v) { DateTime.iso8601(v) }
+        },
+        BigDecimal => {
+          serializer: ->(v) { v.to_s },
+          deserializer: ->(v) { BigDecimal(v) }
+        }
+      }
+
+      if defined?(ActiveSupport::TimeWithZone)
+        types_config[ActiveSupport::TimeWithZone] = {
+          serializer: ->(v) { v.iso8601(RubyEventStore::TIMESTAMP_PRECISION) },
+          deserializer: ->(v) { Time.iso8601(v).in_time_zone },
+          stored_type: ->(*) { "ActiveSupport::TimeWithZone" }
+        }
+      end
+
+      if defined?(OpenStruct)
+        types_config[OpenStruct] = {
+          serializer: ->(v) { v.to_h },
+          deserializer: ->(v) { OpenStruct.new(v) }
+        }
+      end
+
+      types_config.each do |type, config|
+        preserve_types.register(type, **config)
+      end
+
+      preserve_types
     end
 
   end

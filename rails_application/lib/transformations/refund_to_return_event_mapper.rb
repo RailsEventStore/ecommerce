@@ -32,10 +32,10 @@ module Transformations
     def transform_payload(data, old_class_name)
       case old_class_name
       when 'Ordering::DraftRefundCreated'
-        data = transform_refund_to_return_payload(data, "refund_id", "return_id")
-        transform_refund_to_return_payload(data, "refundable_products", "returnable_products")
+        data = transform_refund_to_return_payload(data, :refund_id, :return_id)
+        transform_refund_to_return_payload(data, :refundable_products, :returnable_products)
       when 'Ordering::ItemAddedToRefund', 'Ordering::ItemRemovedFromRefund'
-        transform_refund_to_return_payload(data, "refund_id", "return_id")
+        transform_refund_to_return_payload(data, :refund_id, :return_id)
       else
         data
       end
