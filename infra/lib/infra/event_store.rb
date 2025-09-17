@@ -4,8 +4,6 @@ module Infra
       require_relative "../../../rails_application/lib/transformations/refund_to_return_event_mapper" rescue nil
 
       begin
-        preserve_types = create_standard_preserve_types
-
         mapper = RubyEventStore::Mappers::PipelineMapper.new(
           RubyEventStore::Mappers::Pipeline.new(
             preserve_types,
@@ -57,7 +55,7 @@ module Infra
 
     private
 
-    def self.create_standard_preserve_types
+    def self.preserve_types
       preserve_types = RubyEventStore::Mappers::Transformation::PreserveTypes.new
 
       types_config = {
