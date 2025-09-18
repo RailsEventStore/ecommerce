@@ -10,11 +10,6 @@ on:
     paths:
       - "ecommerce/pricing/Gemfile.lock"
       - ".github/workflows/pricing-coverage.yml"
-  pull_request:
-    types: [opened, synchronize, reopened]
-    paths:
-      - "ecommerce/pricing/Gemfile.lock"
-      - ".github/workflows/pricing-coverage.yml"
   schedule:
     - cron: '0 17 * * *'
 jobs:

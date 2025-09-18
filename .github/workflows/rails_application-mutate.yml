@@ -1,10 +1,8 @@
 name: rails_application-mutate
 on:
+  push:
   pull_request:
-    types: [opened, synchronize, reopened]
-    paths:
-      - "rails_application/**"
-      - ".github/workflows/rails_application-mutate.yml"
+    types: [opened, reopened]
 jobs:
   test:
     runs-on: ubuntu-24.04
