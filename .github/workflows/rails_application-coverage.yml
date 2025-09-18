@@ -11,6 +11,7 @@ on:
       - "rails_application/Gemfile.lock"
       - ".github/workflows/rails_application-coverage.yml"
   pull_request:
+    types: [opened, synchronize, reopened]
     paths:
       - "rails_application/Gemfile.lock"
       - ".github/workflows/rails_application-coverage.yml"
