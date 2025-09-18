@@ -7,6 +7,7 @@ on:
   push:
     branches:
       - master
+      - mutations-rethought
     paths:
       - "rails_application/Gemfile.lock"
       - ".github/workflows/rails_application-coverage.yml"
