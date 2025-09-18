@@ -11,6 +11,7 @@ on:
       - "ecommerce/pricing/Gemfile.lock"
       - ".github/workflows/pricing-coverage.yml"
   pull_request:
+    types: [opened, synchronize, reopened]
     paths:
       - "ecommerce/pricing/Gemfile.lock"
       - ".github/workflows/pricing-coverage.yml"

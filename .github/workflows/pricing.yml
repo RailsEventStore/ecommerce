@@ -1,6 +1,7 @@
 name: pricing
 on:
   pull_request:
+    types: [opened, synchronize, reopened]
     paths:
       - "ecommerce/pricing/**"
       - ".github/workflows/pricing.yml"
