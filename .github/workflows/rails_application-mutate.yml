@@ -55,4 +55,3 @@ jobs:
         env:
           DATABASE_URL: "postgres://postgres:secret@localhost:5432/cqrs-es-sample-with-res_test"
           RAILS_ENV: test
-          GIT_BASE_SHA: ${{ github.event.pull_request.base.sha }}

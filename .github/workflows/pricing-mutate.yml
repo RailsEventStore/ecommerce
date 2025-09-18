@@ -31,5 +31,3 @@ jobs:
           working-directory: ecommerce/pricing
       - name: Run incremental mutation testing
         run: make -C ecommerce/pricing mutate-changes
-        env:
-          GIT_BASE_SHA: ${{ github.event.pull_request.base.sha }}
