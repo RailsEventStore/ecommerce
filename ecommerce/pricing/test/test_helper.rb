@@ -1,4 +1,4 @@
-unless $PROGRAM_NAME.end_with?('/mutant')
+unless $PROGRAM_NAME.end_with?('/mutant') && ARGV.any? { |arg| arg.start_with?('--since') }
   require "minitest/autorun"
 end
 
