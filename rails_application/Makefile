@@ -18,7 +18,7 @@ test: ## Run unit tests
 	@echo "Building Tailwind CSS..."
 	@bin/rails tailwindcss:build
 	@echo "Running unit tests..."
-	@BROWSERSLIST_IGNORE_OLD_DATA=1 @bin/rails test
+	@BROWSERSLIST_IGNORE_OLD_DATA=1 bin/rails test
 
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%%-30s\033[0m %%s\n", $$1, $$2}'
