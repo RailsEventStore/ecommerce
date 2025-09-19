@@ -7,7 +7,6 @@ on:
   push:
     branches:
       - master
-      - mutations-rethought
     paths:
       - "ecommerce/pricing/Gemfile.lock"
       - ".github/workflows/pricing-coverage.yml"
