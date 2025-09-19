@@ -1,4 +1,7 @@
-require "minitest/autorun"
+unless $PROGRAM_NAME.end_with?('/mutant') && ARGV.any? { |arg| arg.start_with?('--since') }
+  require "minitest/autorun"
+end
+
 require "mutant/minitest/coverage"
 require "active_support/all"
 

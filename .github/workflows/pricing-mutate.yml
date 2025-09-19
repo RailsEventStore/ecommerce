@@ -1,0 +1,33 @@
+name: pricing-mutate
+on:
+  push:
+  pull_request:
+    types: [opened, reopened]
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ruby-3.3.7
+          bundler-cache: true
+          working-directory: ecommerce/pricing
+      - name: Run tests
+        run: make -C ecommerce/pricing test
+  mutate:
+    needs: test
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ruby-3.3.7
+          bundler-cache: true
+          working-directory: ecommerce/pricing
+      - name: Run incremental mutation testing
+        run: make -C ecommerce/pricing mutate-changes
