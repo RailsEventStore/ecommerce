@@ -1,0 +1,57 @@
+name: rails_application-mutate
+on:
+  push:
+  pull_request:
+    types: [opened, reopened]
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: cqrs-es-sample-with-res_test
+          POSTGRES_PASSWORD: secret
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ruby-3.3.7
+          bundler-cache: true
+          working-directory: rails_application
+      - name: Run tests
+        run: make -C rails_application test
+        env:
+          DATABASE_URL: "postgres://postgres:secret@localhost:5432/cqrs-es-sample-with-res_test"
+          RAILS_ENV: test
+  mutate:
+    needs: test
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: cqrs-es-sample-with-res_test
+          POSTGRES_PASSWORD: secret
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ruby-3.3.7
+          bundler-cache: true
+          working-directory: rails_application
+      - name: Run incremental mutation testing
+        run: make -C rails_application mutate-changes
+        env:
+          DATABASE_URL: "postgres://postgres:secret@localhost:5432/cqrs-es-sample-with-res_test"
+          RAILS_ENV: test

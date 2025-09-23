@@ -1,44 +1,21 @@
-MUTANT_MODE_INTERNAL := $(PASSED_MODE)
-MUTANT_SINCE_TARGET_INTERNAL := $(PASSED_SINCE_TARGET)
+GIT_BASE_SHA ?= $(shell git merge-base HEAD origin/master)
 
 install:
 	@bundle install
 
 test:
-	@echo "Running unit tests for pricing"
-	@bundle exec ruby -e "require \"rake/rake_test_loader\"" test/*_test.rb
+	@bundle exec ruby -e "require 'rake/rake_test_loader'" test/*_test.rb
 
-mutate:
-	$(eval SUBJECTS_TO_RUN := $(strip $(CI_MUTATE_SUBJECTS)))
-	$(eval TEMP_ACTUAL_MUTANT_ARGS :=)
+mutate: ## Run full mutation tests
+	@echo "Running full mutation tests..."
+	@RUBYOPT="-Ilib -Itest" bundle exec mutant run 'Pricing*'
 
-	@echo "--- Preparing Mutation Test Run for pricing ---"
-ifeq ($(MUTANT_MODE_INTERNAL),incremental)
-	@echo "  Conditional: MUTANT_MODE_INTERNAL is 'incremental'."
-	ifndef MUTANT_SINCE_TARGET_INTERNAL
-		$(error FATAL ERROR (Makefile): MUTANT_MODE_INTERNAL ('$(MUTANT_MODE_INTERNAL)') is incremental, but MUTANT_SINCE_TARGET_INTERNAL is NOT DEFINED. PASSED_SINCE_TARGET was '$(PASSED_SINCE_TARGET)'.)
-	endif
-	ifeq ($(strip $(MUTANT_SINCE_TARGET_INTERNAL)),)
-		$(error FATAL ERROR (Makefile): MUTANT_MODE_INTERNAL ('$(MUTANT_MODE_INTERNAL)') is incremental, but MUTANT_SINCE_TARGET_INTERNAL IS EMPTY. PASSED_SINCE_TARGET was '$(PASSED_SINCE_TARGET)', internal value was '[$(MUTANT_SINCE_TARGET_INTERNAL)]'.)
-	endif
+mutate-changes: ## Run incremental mutation tests on changes
+	@echo "Running incremental mutation tests against $(GIT_BASE_SHA)..."
+	@RUBYOPT="-Ilib -Itest" bundle exec mutant run --since $(GIT_BASE_SHA) 'Pricing*'
 
-	@echo "  MUTANT_SINCE_TARGET_INTERNAL appears to be set and non-empty: '[$(MUTANT_SINCE_TARGET_INTERNAL)]'"
-	$(eval TEMP_ACTUAL_MUTANT_ARGS := --since $(MUTANT_SINCE_TARGET_INTERNAL))
-	@echo "  Action: Set for Incremental Mutation."
-	@echo "  Target for --since: '$(MUTANT_SINCE_TARGET_INTERNAL)'"
-else
-	@echo "  Conditional: MUTANT_MODE_INTERNAL is NOT 'incremental' (actual value: '$(MUTANT_MODE_INTERNAL)'). Setting for Full Mutation."
-endif
+help:
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%%-30s\033[0m %%s\n", $$1, $$2}'
 
-	@echo "  Final TEMP_ACTUAL_MUTANT_ARGS: '$(TEMP_ACTUAL_MUTANT_ARGS)'"
-ifeq ($(SUBJECTS_TO_RUN),)
-	@echo "  Subjects: All relevant (within scope of full/incremental mode)"
-else
-	@echo "  Subjects: Specific group for CI - '$(SUBJECTS_TO_RUN)'" 
-endif
-	@echo "-----------------------------------------------------"
-
-	@echo "Executing: bundle exec mutant run $(TEMP_ACTUAL_MUTANT_ARGS) $(SUBJECTS_TO_RUN)"
-	@bundle exec mutant run $(TEMP_ACTUAL_MUTANT_ARGS) $(SUBJECTS_TO_RUN)
-
-.PHONY: install test mutate
+.PHONY: install test mutate mutate-changes help
+.DEFAULT_GOAL := help
