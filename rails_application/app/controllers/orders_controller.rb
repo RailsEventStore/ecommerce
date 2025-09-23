@@ -1,6 +1,6 @@
 class OrdersController < ApplicationController
   def index
-    @orders = Orders::Order.order("id DESC").page(params[:page]).per(10)
+    @orders = Orders::Order.where(archived: false).order("id DESC").page(params[:page]).per(10)
   end
 
   def show
@@ -21,7 +21,7 @@ class OrdersController < ApplicationController
     @order_id = params[:id]
     @order = Orders::Order.find_by_uid(params[:id])
     @order_lines = Orders::OrderLine.where(order_uid: params[:id])
-    @products = Products::Product.all
+    @products = Products::Product.where(archived: false)
     @customers = Customers::Customer.all
     @time_promotions = TimePromotions::TimePromotion.current
 
@@ -114,6 +114,11 @@ class OrdersController < ApplicationController
   def cancel
     command_bus.(Fulfillment::CancelOrder.new(order_id: params[:id]))
     redirect_to root_path, notice: "Order cancelled"
+  end
+
+  def archive
+    command_bus.(Fulfillment::ArchiveOrder.new(order_id: params[:id]))
+    redirect_to orders_path, notice: "Order was archived"
   end
 
   private

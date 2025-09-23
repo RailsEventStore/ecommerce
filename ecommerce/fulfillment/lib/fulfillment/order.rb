@@ -25,6 +25,10 @@ module Fulfillment
       apply OrderCancelled.new(data: { order_id: @id })
     end
 
+    def archive
+      apply OrderArchived.new(data: { order_id: @id })
+    end
+
     on OrderRegistered do |event|
       @state = :new
     end
@@ -35,6 +39,10 @@ module Fulfillment
 
     on OrderCancelled do |event|
       @state = :cancelled
+    end
+
+    on OrderArchived do |event|
+      @state = :archived
     end
   end
 end
