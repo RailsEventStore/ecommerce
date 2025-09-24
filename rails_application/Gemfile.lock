@@ -135,6 +135,14 @@ GEM
     ffi (1.15.5)
     globalid (1.2.1)
       activesupport (>= 6.1)
+    herb (0.7.3-aarch64-linux-gnu)
+    herb (0.7.3-aarch64-linux-musl)
+    herb (0.7.3-arm-linux-gnu)
+    herb (0.7.3-arm-linux-musl)
+    herb (0.7.3-arm64-darwin)
+    herb (0.7.3-x86_64-darwin)
+    herb (0.7.3-x86_64-linux-gnu)
+    herb (0.7.3-x86_64-linux-musl)
     honeybadger (5.29.1)
       logger
       ostruct
@@ -363,6 +371,7 @@ DEPENDENCIES
   bootsnap (>= 1.9.2)
   byebug
   dotenv-rails
+  herb
   honeybadger
   importmap-rails (~> 1.1)
   infra!
