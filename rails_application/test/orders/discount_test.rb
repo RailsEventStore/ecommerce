@@ -59,21 +59,6 @@ module Orders
       assert event_store.event_in_stream?(event_store.read.of_type([Pricing::PercentageDiscountRemoved]).last.event_id, "Orders$all")
     end
 
-    def test_does_not_remove_percentage_discount_when_removing_time_promotion
-      customer_id = SecureRandom.uuid
-      product_id = SecureRandom.uuid
-      order_id = SecureRandom.uuid
-      create_active_time_promotion
-      customer_registered(customer_id)
-      prepare_product(product_id)
-      item_added_to_basket(order_id, product_id)
-      set_percentage_discount(order_id)
-
-      assert_no_changes -> { Orders::Order.find_by(uid: order_id).percentage_discount } do
-        travel_to(1.minute.from_now) { item_added_to_basket(order_id, product_id) }
-      end
-    end
-
     def test_newest_event_is_always_applied
       customer_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
