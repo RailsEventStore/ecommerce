@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_09_08_135920) do
+ActiveRecord::Schema[7.2].define(version: 2025_09_15_083902) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pgcrypto"
   enable_extension "plpgsql"
@@ -173,6 +173,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_09_08_135920) do
     t.decimal "time_promotion_discount_value", precision: 8, scale: 2
     t.datetime "total_value_updated_at"
     t.datetime "discount_updated_at"
+    t.boolean "archived", default: false, null: false
     t.index ["uid"], name: "index_orders_on_uid", unique: true
   end
 
@@ -194,6 +195,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_09_08_135920) do
     t.string "vat_rate_code"
     t.text "current_prices_calendar"
     t.integer "available"
+    t.boolean "archived", default: false, null: false
   end
 
   create_table "public_offer_products", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|

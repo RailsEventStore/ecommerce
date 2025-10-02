@@ -16,7 +16,7 @@ class ProductsController < ApplicationController
   end
 
   def index
-    @products = Products::Product.all
+    @products = Products::Product.where(archived: false)
   end
 
   def show
@@ -74,6 +74,11 @@ class ProductsController < ApplicationController
       end
     end
     redirect_to products_path, notice: "Product was successfully updated"
+  end
+
+  def archive
+    command_bus.(ProductCatalog::ArchiveProduct.new(product_id: params[:id]))
+    redirect_to products_path, notice: "Product was archived"
   end
 
   private

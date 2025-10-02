@@ -54,6 +54,7 @@ module Products
       @read_model.subscribe_copy(Inventory::StockLevelChanged, :stock_level)
       @read_model.subscribe_copy(Taxes::VatRateSet, [:vat_rate, :code])
       @read_model.subscribe_copy(Inventory::AvailabilityChanged, :available)
+      @event_store.subscribe(ArchiveProduct.new, to: [ProductCatalog::ProductArchived])
       @event_store.subscribe(RefreshFuturePricesCalendar, to: [Pricing::PriceSet])
     end
   end
