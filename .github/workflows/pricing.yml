@@ -11,7 +11,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: ruby-3.3.7
+          ruby-version: ruby-3.4.6
           bundler-cache: true
           working-directory: ecommerce/pricing
       - run: make -C ecommerce/pricing test
