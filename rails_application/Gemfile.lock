@@ -227,7 +227,13 @@ GEM
     parser (3.3.4.2)
       ast (~> 2.4.1)
       racc
-    pg (1.4.5)
+    pg (1.6.2)
+    pg (1.6.2-aarch64-linux)
+    pg (1.6.2-aarch64-linux-musl)
+    pg (1.6.2-arm64-darwin)
+    pg (1.6.2-x86_64-darwin)
+    pg (1.6.2-x86_64-linux)
+    pg (1.6.2-x86_64-linux-musl)
     pp (0.6.2)
       prettyprint
     prettyprint (0.2.0)
@@ -379,7 +385,7 @@ DEPENDENCIES
   listen (~> 3.3)
   minitest (= 5.25.0)!
   mutant-minitest (= 0.13.4)!
-  pg (~> 1.4)
+  pg (~> 1.5)
   puma
   rails (~> 7.2.0)
   rails_event_store (>= 2.15.0, < 3.0)
