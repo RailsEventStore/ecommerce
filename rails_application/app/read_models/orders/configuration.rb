@@ -28,8 +28,6 @@ module Orders
   class Configuration
 
     def call(event_store)
-      @event_store = event_store
-
       Rails.configuration.broadcaster = Orders::Broadcaster.new
 
       event_store.subscribe(AddItemToOrder.new, to: [Pricing::PriceItemAdded])
@@ -49,29 +47,25 @@ module Orders
       event_store.subscribe(UpdateTimePromotionDiscountValue.new, to: [Pricing::PercentageDiscountSet])
       event_store.subscribe(RemoveTimePromotionDiscount.new, to: [Pricing::PercentageDiscountRemoved])
 
-      subscribe(
+      event_store.subscribe(
         ->(event) { broadcast_order_state_change(event.data.fetch(:order_id), 'Submitted') },
-        [Fulfillment::OrderRegistered]
+        to: [Fulfillment::OrderRegistered]
       )
-      subscribe(
+      event_store.subscribe(
         ->(event) { broadcast_order_state_change(event.data.fetch(:order_id), "Expired") },
-        [Pricing::OfferExpired]
+        to: [Pricing::OfferExpired]
       )
-      subscribe(
+      event_store.subscribe(
         ->(event) { broadcast_order_state_change(event.data.fetch(:order_id), "Paid") },
-        [Fulfillment::OrderConfirmed]
+        to: [Fulfillment::OrderConfirmed]
       )
-      subscribe(
+      event_store.subscribe(
         ->(event) { broadcast_order_state_change(event.data.fetch(:order_id), "Cancelled") },
-        [Fulfillment::OrderCancelled]
+        to: [Fulfillment::OrderCancelled]
       )
     end
 
     private
-
-    def subscribe(handler, events)
-      @event_store.subscribe(handler, to: events)
-    end
 
     def broadcast_order_state_change(order_id, new_state)
       Turbo::StreamsChannel.broadcast_update_later_to(
