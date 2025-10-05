@@ -27,6 +27,29 @@ jobs:
         env:
           DATABASE_URL: "postgres://postgres:secret@localhost:5432/cqrs-es-sample-with-res_test"
           RAILS_ENV: test
+  mutant-test:
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: cqrs-es-sample-with-res_test
+          POSTGRES_PASSWORD: secret
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ruby-3.4.6
+          bundler-cache: true
+          working-directory: rails_application
+      - name: Run mutant test runner
+        run: make -C rails_application test-mutant-runner
+        env:
+          DATABASE_URL: "postgres://postgres:secret@localhost:5432/cqrs-es-sample-with-res_test"
+          RAILS_ENV: test
   deploy:
     needs: test
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'

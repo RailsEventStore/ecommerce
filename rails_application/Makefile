@@ -29,5 +29,8 @@ css:
 web:
 	@bin/rails server -p 3000
 
-.PHONY: help install dev test mutate mutate-changes css web
+test-mutant-runner:
+	@RAILS_ENV=test bundle exec mutant test -j 4
+
+.PHONY: help install dev test mutate mutate-changes css web test-mutant-runner
 .DEFAULT_GOAL := help
