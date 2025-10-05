@@ -63,14 +63,30 @@ module Orders
       customer_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
-      create_active_time_promotion
-      customer_registered(customer_id)
-      prepare_product(product_id)
-      item_added_to_basket(order_id, product_id)
-      set_percentage_discount(order_id)
 
-      assert_no_changes -> { Orders::Order.find_by(uid: order_id).percentage_discount } do
-        travel_to(1.minute.from_now) { item_added_to_basket(order_id, product_id) }
+      base_time = Time.utc(2020, 1, 1, 12, 0, 0)
+      travel_to(base_time) do
+        event_store.publish(
+          Pricing::TimePromotionCreated.new(
+            data: {
+              time_promotion_id: SecureRandom.uuid,
+              discount: 50,
+              start_time: base_time - 1.second,
+              end_time: base_time + 1.minute,
+              label: "Last Minute"
+            }
+          )
+        )
+        customer_registered(customer_id)
+        prepare_product(product_id)
+        item_added_to_basket(order_id, product_id)
+        set_percentage_discount(order_id)
+      end
+
+      travel_to(base_time + 2.minutes) do
+        assert_no_changes -> { Orders::Order.find_by(uid: order_id).percentage_discount } do
+          item_added_to_basket(order_id, product_id)
+        end
       end
     end
 
@@ -175,20 +191,6 @@ module Orders
 
     def event_store
       Rails.configuration.event_store
-    end
-
-    def create_active_time_promotion
-      event_store.publish(
-        Pricing::TimePromotionCreated.new(
-          data: {
-            time_promotion_id: SecureRandom.uuid,
-            discount: 50,
-            start_time: Time.current - 1,
-            end_time: Time.current + 1,
-            label: "Last Minute"
-          }
-        )
-      )
     end
   end
 end

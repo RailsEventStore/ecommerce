@@ -8,12 +8,16 @@ module Orders
       customer_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
-      create_active_time_promotion
-      customer_registered(customer_id)
-      prepare_product(product_id)
-      item_added_to_basket(order_id, product_id)
 
-      travel_to(1.minute.from_now) do
+      base_time = Time.utc(2018, 1, 1, 12, 0, 0)
+      travel_to(base_time) do
+        create_active_time_promotion
+        customer_registered(customer_id)
+        prepare_product(product_id)
+        item_added_to_basket(order_id, product_id)
+      end
+
+      travel_to(base_time + 2.minutes) do
         item_added_to_basket(order_id, product_id)
         order = Orders::Order.find_by(uid: order_id)
         assert_nil order.time_promotion_discount_value
@@ -24,14 +28,17 @@ module Orders
       customer_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
-      create_active_time_promotion
-      customer_registered(customer_id)
-      prepare_product(product_id)
-      item_added_to_basket(order_id, product_id)
-      set_percentage_discount(order_id)
 
-      assert_no_changes -> { Orders::Order.find_by(uid: order_id).time_promotion_discount_value } do
-        remove_percentage_discount(order_id)
+      travel_to(Time.utc(2017, 1, 1, 12, 0, 0)) do
+        create_active_time_promotion
+        customer_registered(customer_id)
+        prepare_product(product_id)
+        item_added_to_basket(order_id, product_id)
+        set_percentage_discount(order_id)
+
+        assert_no_changes -> { Orders::Order.find_by(uid: order_id).time_promotion_discount_value } do
+          remove_percentage_discount(order_id)
+        end
       end
     end
 

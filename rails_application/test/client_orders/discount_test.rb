@@ -43,20 +43,23 @@ module ClientOrders
       customer_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
-      customer_registered(customer_id)
-      prepare_product(product_id)
-      create_active_time_promotion(50)
-      item_added_to_basket(order_id, product_id)
-      set_percentage_discount(order_id)
 
-      remove_percentage_discount(order_id)
+      travel_to(Time.utc(2016, 1, 1, 12, 0, 0)) do
+        customer_registered(customer_id)
+        prepare_product(product_id)
+        create_active_time_promotion(50)
+        item_added_to_basket(order_id, product_id)
+        set_percentage_discount(order_id)
 
-      order = Order.find_by(order_uid: order_id)
-      assert_equal(50, order.total_value)
-      assert_equal(25, order.discounted_value)
-      assert_nil(order.percentage_discount)
-      assert_equal(50, order.time_promotion_discount["discount_value"])
-      assert_equal("time_promotion_discount", order.time_promotion_discount["type"])
+        remove_percentage_discount(order_id)
+
+        order = Order.find_by(order_uid: order_id)
+        assert_equal(50, order.total_value)
+        assert_equal(25, order.discounted_value)
+        assert_nil(order.percentage_discount)
+        assert_equal(50, order.time_promotion_discount["discount_value"])
+        assert_equal("time_promotion_discount", order.time_promotion_discount["type"])
+      end
     end
 
     private

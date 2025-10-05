@@ -8,14 +8,17 @@ module Orders
       customer_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
-      create_active_time_promotion
-      customer_registered(customer_id)
-      prepare_product(product_id)
-      item_added_to_basket(order_id, product_id)
 
-      order = Orders::Order.find_by(uid: order_id)
-      assert_equal 50, order.time_promotion_discount_value
-      assert_nil order.percentage_discount
+      travel_to(Time.utc(2019, 1, 1, 12, 0, 0)) do
+        create_active_time_promotion
+        customer_registered(customer_id)
+        prepare_product(product_id)
+        item_added_to_basket(order_id, product_id)
+
+        order = Orders::Order.find_by(uid: order_id)
+        assert_equal 50, order.time_promotion_discount_value
+        assert_nil order.percentage_discount
+      end
     end
 
     private

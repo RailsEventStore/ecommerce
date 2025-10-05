@@ -8,29 +8,36 @@ module ClientOrders
       customer_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
-      customer_registered(customer_id)
-      prepare_product(product_id)
-      create_active_time_promotion(50)
-      item_added_to_basket(order_id, product_id)
 
-      order = ClientOrders::Order.find_by(order_uid: order_id)
-      assert_equal 50, order.total_value
-      assert_equal 25, order.discounted_value
-      assert_equal 50, order.time_promotion_discount["discount_value"]
-      assert_equal "time_promotion_discount", order.time_promotion_discount["type"]
-      assert_nil order.percentage_discount
+      travel_to(Time.utc(2015, 1, 1, 12, 0, 0)) do
+        customer_registered(customer_id)
+        prepare_product(product_id)
+        create_active_time_promotion(50)
+        item_added_to_basket(order_id, product_id)
+
+        order = ClientOrders::Order.find_by(order_uid: order_id)
+        assert_equal 50, order.total_value
+        assert_equal 25, order.discounted_value
+        assert_equal 50, order.time_promotion_discount["discount_value"]
+        assert_equal "time_promotion_discount", order.time_promotion_discount["type"]
+        assert_nil order.percentage_discount
+      end
     end
 
     def test_does_not_remove_percentage_discount_when_removing_time_promotion
       customer_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
-      customer_registered(customer_id)
-      prepare_product(product_id)
-      create_active_time_promotion(50)
-      set_percentage_discount(order_id)
 
-      travel_to Time.current + 1.day do
+      base_time = Time.utc(2014, 1, 1, 12, 0, 0)
+      travel_to(base_time) do
+        customer_registered(customer_id)
+        prepare_product(product_id)
+        create_active_time_promotion(50)
+        set_percentage_discount(order_id)
+      end
+
+      travel_to(base_time + 2.days) do
         item_added_to_basket(order_id, product_id)
       end
 
