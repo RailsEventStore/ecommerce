@@ -13,7 +13,7 @@ module Pricing
       create_active_time_promotion(30)
 
       assert_events_contain(stream_name(order_id), percentage_discount_set_event(order_id, 50)) do
-        Pricing::ApplyTimePromotion.new.call(item_added_to_basket_event(order_id, product_id))
+        Pricing::ApplyTimePromotion.new(command_bus, event_store).call(item_added_to_basket_event(order_id, product_id))
       end
     end
 
@@ -25,7 +25,7 @@ module Pricing
 
       Timecop.travel(1.minute.from_now) do
         assert_events_contain(stream_name(order_id), percentage_discount_removed_event(order_id)) do
-          Pricing::ApplyTimePromotion.new.call(item_added_to_basket_event(order_id, product_id))
+          Pricing::ApplyTimePromotion.new(command_bus, event_store).call(item_added_to_basket_event(order_id, product_id))
         end
       end
     end
