@@ -11,26 +11,9 @@ require_relative "pricing/promotions_calendar"
 require_relative "pricing/apply_time_promotion"
 
 module Pricing
-  def self.command_bus=(value)
-    @command_bus = value
-  end
-
-  def self.command_bus
-    @command_bus
-  end
-
-  def self.event_store=(value)
-    @event_store = value
-  end
-
-  def self.event_store
-    @event_store
-  end
 
   class Configuration
     def call(event_store, command_bus)
-      Pricing.event_store = event_store
-      Pricing.command_bus = command_bus
 
       command_bus.register(
         AddPriceItem,
@@ -100,7 +83,7 @@ module Pricing
         RemoveTimePromotionDiscount,
         RemoveTimePromotionDiscountHandler.new(event_store)
       )
-      event_store.subscribe(ApplyTimePromotion, to: [
+      event_store.subscribe(ApplyTimePromotion.new(command_bus, event_store), to: [
         PriceItemAdded,
         PriceItemRemoved,
         PercentageDiscountSet,
