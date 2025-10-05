@@ -30,6 +30,7 @@ web:
 	@bin/rails server -p 3000
 
 test-mutant-runner:
+	@bin/rails tailwindcss:build
 	@RAILS_ENV=test bundle exec mutant test -j 4
 
 .PHONY: help install dev test mutate mutate-changes css web test-mutant-runner
