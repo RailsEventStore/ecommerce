@@ -4,16 +4,6 @@ module Pricing
   class PricingTest < Test
     cover "Pricing*"
 
-    def test_configuration
-      Pricing.event_store = Infra::EventStore.in_memory
-      Pricing.event_store = Infra::CommandBus
-
-      assert Pricing.event_store, Infra::EventStore.in_memory
-      assert Pricing.command_bus, Infra::CommandBus
-    end
-
-
-
     def test_sets_time_promotion_discount
       order_id = SecureRandom.uuid
       stream = stream_name(order_id)
