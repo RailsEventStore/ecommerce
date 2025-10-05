@@ -1,12 +1,7 @@
 module Processes
   class Configuration
-    class << self
-      attr_accessor :event_store, :command_bus
-    end
 
     def call(event_store, command_bus)
-      self.class.event_store = event_store
-      self.class.command_bus = command_bus
       enable_coupon_discount_process(event_store, command_bus)
       notify_payments_about_order_total_value(event_store, command_bus)
       enable_shipment_sync(event_store, command_bus)
