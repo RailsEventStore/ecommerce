@@ -1,0 +1,67 @@
+name: stores
+on:
+  push:
+  pull_request:
+    types: [opened, reopened]
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+    env:
+      WORKING_DIRECTORY: ecommerce/stores
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ruby-3.4.6
+          bundler-cache: true
+          working-directory: ${{ env.WORKING_DIRECTORY }}
+      - run: make test
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+      - uses: 8398a7/action-slack@v3
+        with:
+          status: custom
+          fields: workflow,job,commit,repo,ref,author,took
+          custom_payload: |
+            {
+              attachments: [{
+                color: '${{ job.status }}' === 'success' ? 'good' : '${{ job.status }}' === 'failure' ? 'danger' : 'warning',
+                text: `${process.env.AS_WORKFLOW}/${process.env.AS_JOB} ${{ job.status }} in ${process.env.AS_TOOK}\n${process.env.AS_COMMIT} in ${process.env.AS_REF}`,
+              }]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.CI_WEBHOOK }}
+        if: always()
+        continue-on-error: true
+
+  mutate:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+    env:
+      WORKING_DIRECTORY: ecommerce/stores
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ruby-3.4.6
+          bundler-cache: true
+          working-directory: ${{ env.WORKING_DIRECTORY }}
+      - run: make mutate
+        working-directory: ${{ env.WORKING_DIRECTORY }}
+      - uses: 8398a7/action-slack@v3
+        with:
+          status: custom
+          fields: workflow,job,commit,repo,ref,author,took
+          custom_payload: |
+            {
+              attachments: [{
+                color: '${{ job.status }}' === 'success' ? 'good' : '${{ job.status }}' === 'failure' ? 'danger' : 'warning',
+                text: `${process.env.AS_WORKFLOW}/${process.env.AS_JOB} ${{ job.status }} in ${process.env.AS_TOOK}\n${process.env.AS_COMMIT} in ${process.env.AS_REF}`,
+              }]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.CI_WEBHOOK }}
+        if: always()
+        continue-on-error: true
