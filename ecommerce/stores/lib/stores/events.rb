@@ -9,4 +9,9 @@ module Stores
     attribute :name, Infra::Types::String
   end
 
+  class ProductRegistered < Infra::Event
+    attribute :store_id, Infra::Types::UUID
+    attribute :product_id, Infra::Types::UUID
+  end
+
 end
