@@ -19,6 +19,7 @@ class Configuration
     enable_authentication_read_model(event_store)
     enable_vat_rates_read_model(event_store)
     enable_returns_read_model(event_store)
+    enable_admin_read_model(event_store)
     configure_processes(event_store, command_bus)
 
     Ecommerce::Configuration.new(
@@ -91,6 +92,10 @@ class Configuration
 
   def enable_returns_read_model(event_store)
     Returns::Configuration.new.call(event_store)
+  end
+
+  def enable_admin_read_model(event_store)
+    Admin::Configuration.new.call(event_store)
   end
 
   def configure_processes(event_store, command_bus)

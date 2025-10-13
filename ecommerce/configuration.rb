@@ -10,6 +10,7 @@ require_relative "invoicing/lib/invoicing"
 require_relative "taxes/lib/taxes"
 require_relative "fulfillment/lib/fulfillment"
 require_relative "communication/lib/communication"
+require_relative "stores/lib/stores"
 
 module Ecommerce
   class Configuration
@@ -39,6 +40,7 @@ module Ecommerce
         ProductCatalog::Configuration.new,
         Fulfillment::Configuration.new(@number_generator),
         Communication::Configuration.new,
+        Stores::Configuration.new,
       ].each { |c| c.call(event_store, command_bus) }
     end
   end
