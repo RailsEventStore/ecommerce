@@ -59,6 +59,8 @@ Rails.application.routes.draw do
     resources :stores, only: [:index, :new, :create, :edit, :update]
   end
 
+  post :switch_store, to: "stores#switch"
+
   post :login, to: "client/clients#login"
   get :logout, to: "client/clients#logout"
   get "clients", to: "client/clients#index"

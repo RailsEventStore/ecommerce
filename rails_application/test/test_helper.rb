@@ -228,4 +228,10 @@ class InMemoryRESIntegrationTestCase < ActionDispatch::IntegrationTest
   def run_command(command)
     Rails.configuration.command_bus.call(command)
   end
+
+  def register_store(name)
+    store_id = SecureRandom.uuid
+    post "/admin/stores", params: { store_id: store_id, name: name }
+    store_id
+  end
 end

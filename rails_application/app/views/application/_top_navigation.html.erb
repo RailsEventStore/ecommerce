@@ -20,6 +20,17 @@
           </div>
         </div>
       </div>
+      <% if available_stores.any? %>
+        <div class="flex items-center">
+          <%= form_with url: switch_store_path, method: :post, class: "inline-flex items-center" do |f| %>
+            <%= f.select :store_id,
+                         options_from_collection_for_select(available_stores, :id, :name, current_store_id),
+                         {},
+                         class: "bg-gray-700 text-white border-gray-600 rounded-md px-3 py-1 text-sm focus:ring-blue-500 focus:border-blue-500",
+                         onchange: "this.form.submit()" %>
+          <% end %>
+        </div>
+      <% end %>
     </div>
   </div>
 </nav>
