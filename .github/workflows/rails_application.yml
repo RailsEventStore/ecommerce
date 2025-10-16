@@ -50,13 +50,35 @@ jobs:
         env:
           DATABASE_URL: "postgres://postgres:secret@localhost:5432/cqrs-es-sample-with-res_test"
           RAILS_ENV: test
-  deploy:
-    needs: test
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-    uses: ./.github/workflows/infra.yml
-    with:
-      app_name: rails_application
-    secrets:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_REGION: ${{ secrets.AWS_REGION }}
+  release:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+    env:
+      WORKING_DIRECTORY: rails_application
+    needs: [ test ]
+    if: ${{ github.ref == 'refs/heads/master' }}
+    steps:
+      - name: Install Heroku CLI
+        run: curl https://cli-assets.heroku.com/install.sh | sh
+      - uses: actions/checkout@v3
+      - uses: akhileshns/heroku-deploy@v3.14.15
+        with:
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_app_name: "res-ecommerce-rails"
+          heroku_email: "dev@arkency.com"
+      - uses: 8398a7/action-slack@v3
+        with:
+          status: custom
+          fields: workflow,job,commit,repo,ref,author,took
+          custom_payload: |
+            {
+              attachments: [{
+                color: '${{ job.status }}' === 'success' ? 'good' : '${{ job.status }}' === 'failure' ? 'danger' : 'warning',
+                text: `${process.env.AS_WORKFLOW}/${{ github.job }} ${{ job.status }} in ${process.env.AS_TOOK}\n${process.env.AS_COMMIT} in ${process.env.AS_REF}`,
+              }]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.RELEASE_WEBHOOK }}
+        if: always()
+        continue-on-error: true
