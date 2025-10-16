@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_15_235753) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_16_150053) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -209,6 +209,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_15_235753) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.decimal "lowest_recent_price", precision: 8, scale: 2
+    t.uuid "store_id"
   end
 
   create_table "return_items", force: :cascade do |t|

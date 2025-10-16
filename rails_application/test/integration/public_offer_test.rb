@@ -35,4 +35,28 @@ class PublicOfferTest < InMemoryRESIntegrationTestCase
     assert_equal info_icon.attributes.fetch("title").value,
                  "Lowest recent price: $25.00"
   end
+
+  def test_products_are_filtered_by_current_store
+    client_id = register_customer("Arkency")
+    store_1_id = register_store("Store 1")
+    store_2_id = register_store("Store 2")
+
+    post switch_store_path, params: { store_id: store_1_id }
+    register_product("Product 1", 10, "10")
+
+    post switch_store_path, params: { store_id: store_2_id }
+    register_product("Product 2", 20, "10")
+
+    get "/clients"
+    login(client_id)
+
+    get "/client/products"
+    assert_select "td", "Product 2"
+    assert_select "td", { text: "Product 1", count: 0 }
+
+    post switch_store_path, params: { store_id: store_1_id }
+    get "/client/products"
+    assert_select "td", "Product 1"
+    assert_select "td", { text: "Product 2", count: 0 }
+  end
 end

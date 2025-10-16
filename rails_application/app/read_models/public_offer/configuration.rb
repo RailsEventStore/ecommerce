@@ -1,8 +1,9 @@
 module PublicOffer
   class ProductsList < Arbre::Component
 
-    def self.build(view_context)
-      new(Arbre::Context.new(nil, view_context)).build(Product.all)
+    def self.build(view_context, store_id)
+      products = Product.where(store_id: store_id)
+      new(Arbre::Context.new(nil, view_context)).build(products)
     end
 
     def build(products, attributes = {})
@@ -70,6 +71,7 @@ module PublicOffer
       @read_model.subscribe_create(ProductCatalog::ProductRegistered)
       @read_model.subscribe_copy(ProductCatalog::ProductNamed, :name)
       @read_model.subscribe_copy(Pricing::PriceSet, :price)
+      @read_model.subscribe_copy(Stores::ProductRegistered, :store_id)
       @event_store.subscribe(RegisterLowestPrice, to: [Pricing::PriceSet])
     end
   end
