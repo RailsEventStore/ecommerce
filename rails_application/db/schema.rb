@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_13_100204) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_15_235753) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -200,6 +200,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_13_100204) do
     t.string "vat_rate_code"
     t.text "current_prices_calendar"
     t.integer "available"
+    t.uuid "store_id"
   end
 
   create_table "public_offer_products", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|

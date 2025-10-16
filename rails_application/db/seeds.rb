@@ -1,5 +1,8 @@
 command_bus = Rails.configuration.command_bus
 
+store_id = SecureRandom.uuid
+command_bus.call(Stores::RegisterStore.new(store_id: store_id, name: "Main Store"))
+
 [
   ["BigCorp Ltd", "bigcorp", "12345"],
   ["MegaTron Gmbh", "megatron", "qwerty"],
@@ -59,7 +62,8 @@ end
     ProductCatalog::RegisterProduct.new(product_id: product_id),
     ProductCatalog::NameProduct.new(product_id: product_id, name: name_price_tuple[0]),
     Pricing::SetPrice.new(product_id: product_id, price: name_price_tuple[1]),
-    Taxes::SetVatRate.new(product_id: product_id, vat_rate_code: "20")
+    Taxes::SetVatRate.new(product_id: product_id, vat_rate_code: "20"),
+    Stores::RegisterProduct.new(product_id: product_id, store_id: store_id)
   ].each do |command|
     command_bus.call(command)
   end

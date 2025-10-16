@@ -139,6 +139,7 @@ class InMemoryRESIntegrationTestCase < ActionDispatch::IntegrationTest
     Rails.configuration.command_bus = Arkency::CommandBus.new
 
     Configuration.new.call(Rails.configuration.event_store, Rails.configuration.command_bus)
+    @default_store_id = register_store("Default Store")
     result
   end
 

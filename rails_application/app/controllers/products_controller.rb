@@ -16,7 +16,7 @@ class ProductsController < ApplicationController
   end
 
   def index
-    @products = Products::Product.all
+    @products = Products::Product.where(store_id: current_store_id)
   end
 
   def show
@@ -81,6 +81,7 @@ class ProductsController < ApplicationController
   def create_product(product_id, name)
     command_bus.(create_product_cmd(product_id))
     command_bus.(name_product_cmd(product_id, name))
+    command_bus.(register_product_in_store_cmd(product_id))
   end
 
   def set_product_price(product_id, price)
@@ -121,6 +122,10 @@ class ProductsController < ApplicationController
       price: price,
       valid_since: valid_since
     )
+  end
+
+  def register_product_in_store_cmd(product_id)
+    Stores::RegisterProduct.new(product_id: product_id, store_id: current_store_id)
   end
 
   def product_params

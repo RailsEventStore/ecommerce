@@ -8,7 +8,7 @@ class StoreSwitchingTest < InMemoryRESIntegrationTestCase
     get products_path
 
     assert_response :success
-    assert_equal store_1_id, cookies[:current_store_id]
+    assert_equal(@default_store_id, cookies[:current_store_id])
   end
 
   def test_cookie_is_preserved_across_requests
@@ -16,13 +16,13 @@ class StoreSwitchingTest < InMemoryRESIntegrationTestCase
     store_2_id = register_store("Store B")
 
     get products_path
-    assert_equal store_1_id, cookies[:current_store_id]
+    assert_equal(@default_store_id, cookies[:current_store_id])
 
     post switch_store_path, params: { store_id: store_2_id }
-    assert_equal store_2_id, cookies[:current_store_id]
+    assert_equal(store_2_id, cookies[:current_store_id])
 
     get products_path
-    assert_equal store_2_id, cookies[:current_store_id]
+    assert_equal(store_2_id, cookies[:current_store_id])
   end
 
   def test_fallback_to_first_store_when_cookie_points_to_nonexistent_store
@@ -35,7 +35,7 @@ class StoreSwitchingTest < InMemoryRESIntegrationTestCase
     get products_path
 
     assert_response :success
-    assert_equal store_1_id, cookies[:current_store_id]
+    assert_equal(@default_store_id, cookies[:current_store_id])
   end
 
   def test_switching_stores_updates_cookie
@@ -43,12 +43,12 @@ class StoreSwitchingTest < InMemoryRESIntegrationTestCase
     store_2_id = register_store("Store B")
 
     get products_path
-    assert_equal store_1_id, cookies[:current_store_id]
+    assert_equal(@default_store_id, cookies[:current_store_id])
 
     post switch_store_path, params: { store_id: store_2_id }
     follow_redirect!
 
-    assert_equal store_2_id, cookies[:current_store_id]
+    assert_equal(store_2_id, cookies[:current_store_id])
     assert_response :success
   end
 

@@ -101,4 +101,25 @@ class ProductsTest < InMemoryRESIntegrationTestCase
     assert_response :unprocessable_entity
     assert_select "span", "Name can't be blank"
   end
+
+  def test_products_are_filtered_by_current_store
+    store_1_id = register_store("Store 1")
+    store_2_id = register_store("Store 2")
+    add_available_vat_rate(10)
+
+    post switch_store_path, params: { store_id: store_1_id }
+    register_product("Product 1", 10, "10")
+
+    post switch_store_path, params: { store_id: store_2_id }
+    register_product("Product 2", 20, "10")
+
+    get products_path
+    assert_select "td", "Product 2"
+    assert_select "td", { text: "Product 1", count: 0 }
+
+    post switch_store_path, params: { store_id: store_1_id }
+    get products_path
+    assert_select "td", "Product 1"
+    assert_select "td", { text: "Product 2", count: 0 }
+  end
 end
