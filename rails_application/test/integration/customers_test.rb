@@ -58,6 +58,17 @@ class CustomersTest < InMemoryRESIntegrationTestCase
     assert_customer_orders_table order.number, "Paid", "$4.00", "$4.00"
   end
 
+  def test_customer_can_be_registered_in_store
+    store_id = register_store("Test Store")
+    customer_id = register_customer("Customer Shop")
+
+    run_command(Stores::RegisterCustomer.new(store_id: store_id, customer_id: customer_id))
+
+    get("/customers")
+    assert_response(:success)
+    assert_select("td", "Customer Shop")
+  end
+
   private
 
   def order_and_pay(customer_id, order_id, *product_ids)

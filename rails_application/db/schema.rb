@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_16_150053) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_25_144006) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -103,6 +103,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_16_150053) do
     t.boolean "vip", default: false, null: false
     t.decimal "paid_orders_summary", precision: 8, scale: 2, default: "0.0"
     t.uuid "account_id"
+    t.uuid "store_id"
   end
 
   create_table "event_store_events", id: :serial, force: :cascade do |t|
