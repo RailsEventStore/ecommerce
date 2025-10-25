@@ -9,16 +9,17 @@ command_bus.call(Stores::RegisterStore.new(store_id: store_2_id))
 command_bus.call(Stores::NameStore.new(store_id: store_2_id, name: Stores::StoreName.new(value: "E-Learning Platform")))
 
 [
-  ["BigCorp Ltd", "bigcorp", "12345"],
-  ["MegaTron Gmbh", "megatron", "qwerty"],
-  ["Arkency", 'arkency', 'qwe123']
-].each do |name, login, password|
+  ["BigCorp Ltd", "bigcorp", "12345", store_1_id],
+  ["MegaTron Gmbh", "megatron", "qwerty", store_1_id],
+  ["Arkency", 'arkency', 'qwe123', store_2_id]
+].each do |name, login, password, store_id|
   account_id = SecureRandom.uuid
   customer_id = SecureRandom.uuid
   password_hash = Digest::SHA256.hexdigest(password)
 
   [
     Crm::RegisterCustomer.new(customer_id: customer_id, name: name),
+    Stores::RegisterCustomer.new(customer_id: customer_id, store_id: store_id),
     Authentication::RegisterAccount.new(account_id: account_id),
     Authentication::SetLogin.new(account_id: account_id, login: login),
     Authentication::SetPasswordHash.new(account_id: account_id, password_hash: password_hash),
