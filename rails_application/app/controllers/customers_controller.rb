@@ -8,7 +8,9 @@ class CustomersController < ApplicationController
   end
 
   def create
-    create_customer(params[:customer_id], params[:name])
+    ActiveRecord::Base.transaction do
+      create_customer(params[:customer_id], params[:name])
+    end
   rescue Crm::Customer::AlreadyRegistered
     flash[:notice] = "Customer was already registered"
     render "new"
@@ -35,6 +37,7 @@ class CustomersController < ApplicationController
 
   def create_customer(customer_id, name)
     command_bus.(create_customer_cmd(customer_id, name))
+    command_bus.(register_customer_in_store_cmd(customer_id))
   end
 
   def promote_to_vip(customer_id)
@@ -43,6 +46,10 @@ class CustomersController < ApplicationController
 
   def create_customer_cmd(customer_id, name)
     Crm::RegisterCustomer.new(customer_id: customer_id, name: name)
+  end
+
+  def register_customer_in_store_cmd(customer_id)
+    Stores::RegisterCustomer.new(customer_id: customer_id, store_id: current_store_id)
   end
 
   def promote_to_vip_cmd(customer_id)

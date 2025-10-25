@@ -59,10 +59,8 @@ class CustomersTest < InMemoryRESIntegrationTestCase
   end
 
   def test_customer_can_be_registered_in_store
-    store_id = register_store("Test Store")
-    customer_id = register_customer("Customer Shop")
-
-    run_command(Stores::RegisterCustomer.new(store_id: store_id, customer_id: customer_id))
+    register_store("Test Store")
+    register_customer("Customer Shop")
 
     get("/customers")
     assert_response(:success)
