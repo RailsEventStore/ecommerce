@@ -14,4 +14,9 @@ module Stores
     attribute :product_id, Infra::Types::UUID
   end
 
+  class CustomerRegistered < Infra::Event
+    attribute :store_id, Infra::Types::UUID
+    attribute :customer_id, Infra::Types::UUID
+  end
+
 end
