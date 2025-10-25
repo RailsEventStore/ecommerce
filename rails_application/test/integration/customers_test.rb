@@ -67,6 +67,54 @@ class CustomersTest < InMemoryRESIntegrationTestCase
     assert_select("td", "Customer Shop")
   end
 
+  def test_index_only_shows_customers_from_current_store
+    store_1_id = register_store("Store 1")
+    store_2_id = register_store("Store 2")
+
+    post(switch_store_path, params: { store_id: store_1_id })
+    customer_1_id = register_customer("Customer in Store 1")
+
+    post(switch_store_path, params: { store_id: store_2_id })
+    customer_2_id = register_customer("Customer in Store 2")
+
+    get("/customers")
+    assert_response(:success)
+    assert_select("td", "Customer in Store 2")
+    assert_select("td", {count: 0, text: "Customer in Store 1"})
+
+    post(switch_store_path, params: { store_id: store_1_id })
+    get("/customers")
+    assert_response(:success)
+    assert_select("td", "Customer in Store 1")
+    assert_select("td", {count: 0, text: "Customer in Store 2"})
+  end
+
+  def test_show_prevents_access_to_customer_from_another_store
+    store_1_id = register_store("Store 1")
+    store_2_id = register_store("Store 2")
+
+    post(switch_store_path, params: { store_id: store_1_id })
+    customer_1_id = register_customer("Customer in Store 1")
+
+    post(switch_store_path, params: { store_id: store_2_id })
+
+    get("/customers/#{customer_1_id}")
+    assert_response(:not_found)
+  end
+
+  def test_update_prevents_access_to_customer_from_another_store
+    store_1_id = register_store("Store 1")
+    store_2_id = register_store("Store 2")
+
+    post(switch_store_path, params: { store_id: store_1_id })
+    customer_1_id = register_customer("Customer in Store 1")
+
+    post(switch_store_path, params: { store_id: store_2_id })
+
+    patch("/customers/#{customer_1_id}")
+    assert_response(:not_found)
+  end
+
   private
 
   def order_and_pay(customer_id, order_id, *product_ids)
