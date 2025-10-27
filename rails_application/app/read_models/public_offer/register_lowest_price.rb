@@ -41,7 +41,7 @@ module PublicOffer
     end
 
     def find_border_event(price_changes)
-      price_changes.reverse.find { |price_change| !recent_event?(price_change) }
+      price_changes.reverse.find { |price_change| !recent_event?(price_change) && !future_event?(price_change) }
     end
 
     def recent_event?(price_change)
