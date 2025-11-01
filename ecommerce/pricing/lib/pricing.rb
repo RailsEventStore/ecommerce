@@ -16,6 +16,10 @@ module Pricing
     def call(event_store, command_bus)
 
       command_bus.register(
+        DraftOffer,
+        DraftOfferHandler.new(event_store)
+      )
+      command_bus.register(
         AddPriceItem,
         OnAddItemToBasket.new(event_store)
       )

@@ -14,6 +14,18 @@ module Pricing
   class FreeProductNotExists < StandardError
   end
 
+  class DraftOfferHandler
+    def initialize(event_store)
+      @repository = Infra::AggregateRootRepository.new(event_store)
+    end
+
+    def call(cmd)
+      @repository.with_aggregate(Offer, cmd.aggregate_id) do |offer|
+        offer.draft
+      end
+    end
+  end
+
   class SetPercentageDiscountHandler
     def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)

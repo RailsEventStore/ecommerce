@@ -12,6 +12,10 @@ module Pricing
       @state = :draft
     end
 
+    def draft
+      apply OfferDrafted.new(data: { order_id: @id })
+    end
+
     def add_item(product_id, base_price)
       price = @discounts.inject(Discounts::NoPercentageDiscount.new, :add).apply(base_price)
       apply PriceItemAdded.new(
@@ -124,6 +128,9 @@ module Pricing
     end
 
     private
+
+    on OfferDrafted do |event|
+    end
 
     on PriceItemAdded do |event|
       @list.add_item(event.data.fetch(:product_id), event.data.fetch(:base_price), event.data.fetch(:price))

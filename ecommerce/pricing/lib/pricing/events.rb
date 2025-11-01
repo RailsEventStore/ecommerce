@@ -1,4 +1,8 @@
 module Pricing
+  class OfferDrafted < Infra::Event
+    attribute :order_id, Infra::Types::UUID
+  end
+
   class CouponRegistered < Infra::Event
     attribute :coupon_id, Infra::Types::UUID
     attribute :name, Infra::Types::String
