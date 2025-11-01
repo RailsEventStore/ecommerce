@@ -19,4 +19,9 @@ module Stores
     attribute :customer_id, Infra::Types::UUID
   end
 
+  class OfferRegistered < Infra::Event
+    attribute :store_id, Infra::Types::UUID
+    attribute :order_id, Infra::Types::UUID
+  end
+
 end
