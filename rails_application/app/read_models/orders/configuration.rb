@@ -30,6 +30,8 @@ module Orders
     def call(event_store)
       Rails.configuration.broadcaster = Orders::Broadcaster.new
 
+      event_store.subscribe(DraftOrder.new, to: [Pricing::OfferDrafted])
+      event_store.subscribe(AssignStoreToOrder.new, to: [Stores::OfferRegistered])
       event_store.subscribe(AddItemToOrder.new, to: [Pricing::PriceItemAdded])
       event_store.subscribe(RemoveItemFromOrder.new, to: [Pricing::PriceItemRemoved])
       event_store.subscribe(UpdateDiscount.new, to: [Pricing::PercentageDiscountSet, Pricing::PercentageDiscountChanged])

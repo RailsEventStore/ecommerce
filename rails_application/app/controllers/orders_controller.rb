@@ -14,7 +14,12 @@ class OrdersController < ApplicationController
   end
 
   def new
-    redirect_to edit_order_path(SecureRandom.uuid)
+    order_id = SecureRandom.uuid
+    ActiveRecord::Base.transaction do
+      command_bus.(Pricing::DraftOffer.new(order_id: order_id))
+      command_bus.(Stores::RegisterOffer.new(order_id: order_id, store_id: current_store_id))
+    end
+    redirect_to edit_order_path(order_id)
   end
 
   def edit

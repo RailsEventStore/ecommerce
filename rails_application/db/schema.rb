@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_25_144006) do
+ActiveRecord::Schema[8.0].define(version: 2025_11_01_151254) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -180,6 +180,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_25_144006) do
     t.decimal "time_promotion_discount_value", precision: 8, scale: 2
     t.datetime "total_value_updated_at"
     t.datetime "discount_updated_at"
+    t.uuid "store_id"
     t.index ["uid"], name: "index_orders_on_uid", unique: true
   end
 
