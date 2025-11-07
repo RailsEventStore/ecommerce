@@ -8,7 +8,7 @@ class OrdersController < ApplicationController
 
     return not_found unless @order
 
-    @order_lines = Orders::OrderLine.where(order_uid: @order.uid)
+    @order_lines = Orders.order_lines_for(@order.uid)
     @shipment = Shipments::Shipment.find_by(order_uid: @order.uid)
     @invoice = Invoices::Invoice.find_or_initialize_by(order_uid: @order.uid)
   end
@@ -25,7 +25,7 @@ class OrdersController < ApplicationController
   def edit
     @order_id = params[:id]
     @order = Orders::Order.find_by_uid(params[:id])
-    @order_lines = Orders::OrderLine.where(order_uid: params[:id])
+    @order_lines = Orders.order_lines_for(params[:id])
     @products = Products::Product.all
     @customers = Customers::Customer.all
     @time_promotions = TimePromotions::TimePromotion.current
@@ -62,7 +62,7 @@ class OrdersController < ApplicationController
   end
 
   def add_item
-    read_model = Orders::OrderLine.where(order_uid: params[:id], product_id: params[:product_id]).first
+    read_model = Orders.find_order_line(order_uid: params[:id], product_id: params[:product_id])
     unless Availability.approximately_available?(params[:product_id], (read_model&.quantity || 0) + 1)
       redirect_to edit_order_path(params[:id]),
                   alert: "Product not available in requested quantity!" and return
