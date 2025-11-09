@@ -3,7 +3,7 @@ module Shipments
     def call(event)
       product_id = event.data.fetch(:product_id)
       order_id = event.data.fetch(:order_id)
-      product = Orders::Product.find_by_uid!(product_id)
+      product = Orders.find_product(product_id)
 
       item = find_or_create_item(order_id, product)
       item.quantity += 1

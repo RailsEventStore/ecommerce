@@ -13,6 +13,8 @@ module Orders
     self.table_name = "orders_products"
   end
 
+  private_constant :Product
+
   class Customer < ApplicationRecord
     self.table_name = "orders_customers"
   end
@@ -33,6 +35,10 @@ module Orders
 
   def self.find_order_line(order_uid:, product_id:)
     OrderLine.where(order_uid: order_uid, product_id: product_id).first
+  end
+
+  def self.find_product(product_id)
+    Product.find_by_uid!(product_id)
   end
 
   class Configuration
