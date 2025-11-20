@@ -19,6 +19,8 @@ module Orders
     self.table_name = "orders_customers"
   end
 
+  private_constant :Customer
+
   class OrderLine < ApplicationRecord
     self.table_name = "order_lines"
 
