@@ -10,7 +10,6 @@ class OrdersTest < InMemoryRESIntegrationTestCase
   def test_happy_path
     shopify_id = register_customer("Shopify")
 
-    order_id = SecureRandom.uuid
     another_order_id = SecureRandom.uuid
 
     async_remote_id = register_product("Async Remote", 39, 10)
@@ -27,6 +26,7 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     get "/"
     get "/orders/new"
     follow_redirect!
+    order_id = retrieve_order_id_from_url
 
     assert_remove_buttons_not_visible(async_remote_id, fearless_id)
 
@@ -63,8 +63,11 @@ class OrdersTest < InMemoryRESIntegrationTestCase
   end
 
   def test_expiring_orders
-    order_id = SecureRandom.uuid
     async_remote_id = register_product("Async Remote", 39, 10)
+
+    get "/orders/new"
+    follow_redirect!
+    order_id = retrieve_order_id_from_url
 
     post "/orders/#{order_id}/add_item?product_id=#{async_remote_id}"
     get "/orders"
@@ -99,11 +102,13 @@ class OrdersTest < InMemoryRESIntegrationTestCase
   def test_confirmed_order_doesnt_show_cancel_button
     shopify_id = register_customer("Shopify")
 
-    order_id = SecureRandom.uuid
     async_remote_id = register_product("Async Remote", 39, 10)
 
     get "/"
     get "/orders/new"
+    follow_redirect!
+    order_id = retrieve_order_id_from_url
+
     post "/orders/#{order_id}/add_item?product_id=#{async_remote_id}"
 
     get "/orders/#{order_id}"
@@ -307,6 +312,10 @@ class OrdersTest < InMemoryRESIntegrationTestCase
 
 
   private
+
+  def retrieve_order_id_from_url
+    request.path.split('/')[2]
+  end
 
   def assert_remove_buttons_visible(async_remote_id, fearless_id, order_id)
     assert_match(

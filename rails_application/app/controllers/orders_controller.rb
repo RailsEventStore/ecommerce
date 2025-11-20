@@ -1,6 +1,6 @@
 class OrdersController < ApplicationController
   def index
-    @orders = Orders.paginated_orders(params[:page])
+    @orders = Orders.paginated_orders(params[:page], current_store_id)
   end
 
   def show

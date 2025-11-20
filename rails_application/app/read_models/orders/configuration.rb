@@ -45,8 +45,8 @@ module Orders
     Order.all
   end
 
-  def self.paginated_orders(page)
-    Order.order("id DESC").page(page).per(10)
+  def self.paginated_orders(page, store_id)
+    Order.where(store_id: store_id).order("id DESC").page(page).per(10)
   end
 
   def self.find_order(uid)

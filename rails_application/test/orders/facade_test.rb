@@ -78,45 +78,74 @@ module Orders
     end
 
     def test_paginated_orders_returns_paginated_results
+      store_id = SecureRandom.uuid
       order_ids = 15.times.map { SecureRandom.uuid }
-      order_ids.each { |id| draft_order(id) }
+      order_ids.each { |id| draft_order_in_store(id, store_id) }
 
-      result = Orders.paginated_orders(1)
+      result = Orders.paginated_orders(1, store_id)
 
       assert_equal(10, result.size)
     end
 
     def test_paginated_orders_returns_orders_in_reverse_id_order
+      store_id = SecureRandom.uuid
       order_id_1 = SecureRandom.uuid
       order_id_2 = SecureRandom.uuid
       order_id_3 = SecureRandom.uuid
 
-      draft_order(order_id_1)
-      draft_order(order_id_2)
-      draft_order(order_id_3)
+      draft_order_in_store(order_id_1, store_id)
+      draft_order_in_store(order_id_2, store_id)
+      draft_order_in_store(order_id_3, store_id)
 
-      result = Orders.paginated_orders(0)
+      result = Orders.paginated_orders(0, store_id)
 
       assert_equal(order_id_3, result.first.uid)
       assert_equal(order_id_1, result.last.uid)
     end
 
     def test_paginated_orders_returns_second_page
+      store_id = SecureRandom.uuid
       order_ids = 15.times.map { SecureRandom.uuid }
-      order_ids.each { |id| draft_order(id) }
+      order_ids.each { |id| draft_order_in_store(id, store_id) }
 
-      result = Orders.paginated_orders(2)
+      result = Orders.paginated_orders(2, store_id)
 
       assert_equal(5, result.size)
     end
 
     def test_paginated_orders_limits_to_10_per_page
+      store_id = SecureRandom.uuid
       order_ids = 12.times.map { SecureRandom.uuid }
-      order_ids.each { |id| draft_order(id) }
+      order_ids.each { |id| draft_order_in_store(id, store_id) }
 
-      result = Orders.paginated_orders(1)
+      result = Orders.paginated_orders(1, store_id)
 
       assert_equal(10, result.size)
+    end
+
+    def test_paginated_orders_filters_by_store_id
+      store_id_1 = SecureRandom.uuid
+      store_id_2 = SecureRandom.uuid
+      order_id_1 = SecureRandom.uuid
+      order_id_2 = SecureRandom.uuid
+      order_id_3 = SecureRandom.uuid
+
+      draft_order_in_store(order_id_1, store_id_1)
+      draft_order_in_store(order_id_2, store_id_1)
+      draft_order_in_store(order_id_3, store_id_2)
+
+      result = Orders.paginated_orders(0, store_id_1)
+
+      assert_equal(2, result.size)
+      assert_equal([order_id_1, order_id_2].sort, result.pluck(:uid).sort)
+    end
+
+    def test_paginated_orders_returns_empty_when_no_orders_in_store
+      store_id = SecureRandom.uuid
+
+      result = Orders.paginated_orders(0, store_id)
+
+      assert_equal(0, result.count)
     end
 
     def test_all_orders_returns_empty_when_no_orders
@@ -259,6 +288,13 @@ module Orders
     def draft_order(order_id)
       event_store.publish(
         Pricing::OfferDrafted.new(data: { order_id: order_id })
+      )
+    end
+
+    def draft_order_in_store(order_id, store_id)
+      draft_order(order_id)
+      event_store.publish(
+        Stores::OfferRegistered.new(data: { order_id: order_id, store_id: store_id })
       )
     end
 
