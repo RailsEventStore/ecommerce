@@ -7,6 +7,7 @@ require_relative "stores/naming"
 require_relative "stores/product_registration"
 require_relative "stores/customer_registration"
 require_relative "stores/offer_registration"
+require_relative "stores/time_promotion_registration"
 
 module Stores
 
@@ -17,6 +18,7 @@ module Stores
       command_bus.register(RegisterProduct, ProductRegistration.new(event_store))
       command_bus.register(RegisterCustomer, CustomerRegistration.new(event_store))
       command_bus.register(RegisterOffer, OfferRegistration.new(event_store))
+      command_bus.register(RegisterTimePromotion, TimePromotionRegistration.new(event_store))
     end
   end
 end
