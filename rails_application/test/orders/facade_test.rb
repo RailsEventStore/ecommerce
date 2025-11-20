@@ -205,6 +205,39 @@ module Orders
       end
     end
 
+    def test_find_order_in_store_returns_order_in_correct_store
+      store_id = SecureRandom.uuid
+      order_id = SecureRandom.uuid
+
+      draft_order_in_store(order_id, store_id)
+
+      result = Orders.find_order_in_store(order_id, store_id)
+
+      assert_equal(order_id, result.uid)
+      assert_equal(store_id, result.store_id)
+    end
+
+    def test_find_order_in_store_returns_nil_when_order_in_different_store
+      store_id_1 = SecureRandom.uuid
+      store_id_2 = SecureRandom.uuid
+      order_id = SecureRandom.uuid
+
+      draft_order_in_store(order_id, store_id_1)
+
+      result = Orders.find_order_in_store(order_id, store_id_2)
+
+      assert_nil(result)
+    end
+
+    def test_find_order_in_store_returns_nil_when_order_not_found
+      store_id = SecureRandom.uuid
+      order_id = SecureRandom.uuid
+
+      result = Orders.find_order_in_store(order_id, store_id)
+
+      assert_nil(result)
+    end
+
     def test_find_or_create_order_returns_existing_order
       order_id = SecureRandom.uuid
 

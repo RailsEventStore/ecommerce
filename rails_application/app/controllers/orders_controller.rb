@@ -23,16 +23,19 @@ class OrdersController < ApplicationController
 
   def edit
     @order_id = params[:id]
-    @order = Orders.find_order(params[:id])
+    @order = Orders.find_order_in_store(params[:id], current_store_id)
+
+    return not_found unless @order
+
     @products = Products.products_for_store(current_store_id)
     @customers = Customers.customers_for_store(current_store_id)
     @time_promotions = TimePromotions::TimePromotion.current
 
     render :edit,
            locals: {
-             discounted_value: @order&.discounted_value || 0,
-             total_value: @order&.total_value || 0,
-             percentage_discount: @order&.percentage_discount
+             discounted_value: @order.discounted_value || 0,
+             total_value: @order.total_value || 0,
+             percentage_discount: @order.percentage_discount
            }
   end
 

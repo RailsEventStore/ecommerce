@@ -8,12 +8,14 @@ class DiscountTest < InMemoryRESIntegrationTestCase
 
   def test_remove_discount
     register_customer("Shopify")
-    order_id = SecureRandom.uuid
 
     async_remote_id = register_product("Async Remote", 137, 10)
 
     get "/"
     get "/orders/new"
+    follow_redirect!
+    order_id = retrieve_order_id_from_url
+
     post "/orders/#{order_id}/add_item?product_id=#{async_remote_id}"
     get "/orders/#{order_id}/edit"
     assert_select("td", "$137.00")
@@ -29,6 +31,10 @@ class DiscountTest < InMemoryRESIntegrationTestCase
   end
 
   private
+
+  def retrieve_order_id_from_url
+    request.path.split('/')[2]
+  end
 
   def apply_discount_10_percent(order_id)
     assert_select("a", "Edit discount")

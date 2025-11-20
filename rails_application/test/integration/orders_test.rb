@@ -190,8 +190,11 @@ class OrdersTest < InMemoryRESIntegrationTestCase
   end
 
   def test_empty_order_cannot_be_submitted
-    order_id = SecureRandom.uuid
     shopify_id = register_customer("Shopify")
+
+    get "/orders/new"
+    follow_redirect!
+    order_id = retrieve_order_id_from_url
 
     assert_no_changes -> { Orders.all_orders.count } do
       post "/orders",
@@ -275,7 +278,6 @@ class OrdersTest < InMemoryRESIntegrationTestCase
   def test_unable_to_pay_for_not_submitted_order
     shopify_id = register_customer("Shopify")
 
-    order_id = SecureRandom.uuid
     another_order_id = SecureRandom.uuid
 
     async_remote_id = register_product("Async Remote", 39, 10)
@@ -292,6 +294,7 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     get "/"
     get "/orders/new"
     follow_redirect!
+    order_id = retrieve_order_id_from_url
 
     assert_remove_buttons_not_visible(async_remote_id, fearless_id)
 
@@ -310,6 +313,24 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     assert_select("td", text: "Not submitted")
   end
 
+  def test_cannot_edit_order_from_different_store
+    store_id_a = SecureRandom.uuid
+    store_id_b = SecureRandom.uuid
+    order_id_in_store_b = SecureRandom.uuid
+
+    cookies[:current_store_id] = store_id_a
+
+    event_store.publish(
+      Pricing::OfferDrafted.new(data: { order_id: order_id_in_store_b })
+    )
+    event_store.publish(
+      Stores::OfferRegistered.new(data: { order_id: order_id_in_store_b, store_id: store_id_b })
+    )
+
+    get "/orders/#{order_id_in_store_b}/edit"
+
+    assert_response(:not_found)
+  end
 
   private
 
@@ -432,5 +453,9 @@ class OrdersTest < InMemoryRESIntegrationTestCase
       start_time: Time.current - 1,
       end_time: Time.current + 1.minute
     }
+  end
+
+  def event_store
+    Rails.configuration.event_store
   end
 end
