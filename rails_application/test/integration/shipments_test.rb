@@ -10,7 +10,7 @@ class ShipmentsTest < InMemoryRESIntegrationTestCase
   def test_list_shipments
     store_id = SecureRandom.uuid
     post "/admin/stores", params: { store_id: store_id, name: "Test Store" }
-    cookies[:current_store_id] = store_id
+    post "/switch_store", params: { store_id: store_id }
 
     shopify_id = register_customer("Shopify")
     async_remote_id = register_product("Async Remote", 39, 10)
@@ -26,7 +26,7 @@ class ShipmentsTest < InMemoryRESIntegrationTestCase
   def test_shipment_page
     store_id = SecureRandom.uuid
     post "/admin/stores", params: { store_id: store_id, name: "Test Store" }
-    cookies[:current_store_id] = store_id
+    post "/switch_store", params: { store_id: store_id }
 
     shopify_id = register_customer("Shopify")
     async_remote_id = register_product("Async Remote", 39, 10)
@@ -59,7 +59,7 @@ class ShipmentsTest < InMemoryRESIntegrationTestCase
     create_shipment_in_store(shopify_id, async_remote_id, store_a_id, "123 Store A St")
     create_shipment_in_store(shopify_id, async_remote_id, store_b_id, "456 Store B Ave")
 
-    cookies[:current_store_id] = store_a_id
+    post "/switch_store", params: { store_id: store_a_id }
     get "/shipments"
 
     assert_response :success
@@ -70,7 +70,7 @@ class ShipmentsTest < InMemoryRESIntegrationTestCase
   private
 
   def create_shipment_in_store(customer_id, product_id, store_id, address_line_1)
-    cookies[:current_store_id] = store_id
+    post "/switch_store", params: { store_id: store_id }
 
     get "/orders/new"
     follow_redirect!

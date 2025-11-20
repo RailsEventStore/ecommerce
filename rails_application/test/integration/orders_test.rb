@@ -316,17 +316,16 @@ class OrdersTest < InMemoryRESIntegrationTestCase
   def test_cannot_edit_order_from_different_store
     store_id_a = SecureRandom.uuid
     store_id_b = SecureRandom.uuid
-    order_id_in_store_b = SecureRandom.uuid
 
-    cookies[:current_store_id] = store_id_a
+    post "/admin/stores", params: { store_id: store_id_a, name: "Store A" }
+    post "/admin/stores", params: { store_id: store_id_b, name: "Store B" }
 
-    event_store.publish(
-      Pricing::OfferDrafted.new(data: { order_id: order_id_in_store_b })
-    )
-    event_store.publish(
-      Stores::OfferRegistered.new(data: { order_id: order_id_in_store_b, store_id: store_id_b })
-    )
+    post "/switch_store", params: { store_id: store_id_b }
+    get "/orders/new"
+    follow_redirect!
+    order_id_in_store_b = retrieve_order_id_from_url
 
+    post "/switch_store", params: { store_id: store_id_a }
     get "/orders/#{order_id_in_store_b}/edit"
 
     assert_response(:not_found)
@@ -453,9 +452,5 @@ class OrdersTest < InMemoryRESIntegrationTestCase
       start_time: Time.current - 1,
       end_time: Time.current + 1.minute
     }
-  end
-
-  def event_store
-    Rails.configuration.event_store
   end
 end

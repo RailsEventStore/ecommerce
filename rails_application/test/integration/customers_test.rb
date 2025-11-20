@@ -49,13 +49,16 @@ class CustomersTest < InMemoryRESIntegrationTestCase
     order_uid = SecureRandom.uuid
 
     order_and_pay(customer_id, order_uid, product_id)
-    visit_customer_page(customer_id)
 
-    order = ClientOrders::Order.find_by(order_uid: order_uid)
+    get "/orders/#{order_uid}"
+    header_text = css_select("header h1").first.text
+    order_number = header_text.gsub("Order ", "").strip
+
+    visit_customer_page(customer_id)
 
     assert_select "h1", "Customer Page"
     assert_customer_details "Customer Shop", "No"
-    assert_customer_orders_table order.number, "Paid", "$4.00", "$4.00"
+    assert_customer_orders_table order_number, "Paid", "$4.00", "$4.00"
   end
 
   def test_customer_can_be_registered_in_store
