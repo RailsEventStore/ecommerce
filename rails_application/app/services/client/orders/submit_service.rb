@@ -23,7 +23,7 @@ module Client
         event_store
           .within { submit_order }
           .subscribe(to: Pricing::OfferRejected) do |event|
-            unavailable_products = Products::Product.where(id: event.data.fetch(:unavailable_product_ids)).pluck(:name)
+            unavailable_products = Products.product_names_for_ids(event.data.fetch(:unavailable_product_ids))
           end
           .call
 

@@ -16,11 +16,11 @@ class ProductsController < ApplicationController
   end
 
   def index
-    @products = Products::Product.where(store_id: current_store_id)
+    @products = Products.products_for_store(current_store_id)
   end
 
   def show
-    @product = Products::Product.find(params[:id])
+    @product = Products.find_product(params[:id])
   end
 
   def new
@@ -28,7 +28,7 @@ class ProductsController < ApplicationController
   end
 
   def edit
-    @product = Products::Product.find(params[:id])
+    @product = Products.find_product(params[:id])
   end
 
   def create

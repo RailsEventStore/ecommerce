@@ -31,8 +31,8 @@ class ReadModelHandlerTest < InMemoryTestCase
   def test_copy_nested_attribute
     event = vat_rate_set
     event_store.append(event)
-    CopyEventAttribute.new(event_store, Products::Product, :product_id, [:vat_rate, :code], :vat_rate_code).call(event)
-    assert_equal available_vat_rate.code, Products::Product.find_by(id: product_id).vat_rate_code
+    CopyEventAttribute.new(event_store, Products.const_get(:Product), :product_id, [:vat_rate, :code], :vat_rate_code).call(event)
+    assert_equal available_vat_rate.code, Products.find_by(id: product_id).vat_rate_code
   end
 
   def test_no_specific_order_expected

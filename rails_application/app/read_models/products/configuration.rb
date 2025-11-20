@@ -42,6 +42,24 @@ module Products
     end
   end
 
+  private_constant :Product
+
+  def self.products_for_store(store_id)
+    Product.where(store_id: store_id)
+  end
+
+  def self.find_product(product_id)
+    Product.find(product_id)
+  end
+
+  def self.product_names_for_ids(product_ids)
+    Product.where(id: product_ids).pluck(:name)
+  end
+
+  def self.find_by(attributes)
+    Product.find_by(attributes)
+  end
+
   class Configuration
     def initialize(event_store)
       @read_model = SingleTableReadModel.new(event_store, Product, :product_id)

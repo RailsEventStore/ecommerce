@@ -24,7 +24,7 @@ class OrdersController < ApplicationController
   def edit
     @order_id = params[:id]
     @order = Orders.find_order(params[:id])
-    @products = Products::Product.all
+    @products = Products.products_for_store(current_store_id)
     @customers = Customers::Customer.all
     @time_promotions = TimePromotions::TimePromotion.current
 
@@ -65,7 +65,7 @@ class OrdersController < ApplicationController
       redirect_to edit_order_path(params[:id]),
                   alert: "Product not available in requested quantity!" and return
     end
-    price = Products::Product.find(params[:product_id]).price
+    price = Products.find_product(params[:product_id]).price
     ActiveRecord::Base.transaction do
       command_bus.(Pricing::AddPriceItem.new(order_id: params[:id], product_id: params[:product_id], price:))
     end

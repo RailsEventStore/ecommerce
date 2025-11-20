@@ -26,7 +26,7 @@ class ProductsTest < InMemoryRESIntegrationTestCase
 
     assert_equal "20.01",
                  number_to_currency(
-                   Products::Product.find(product_id).price,
+                   Products.find_product(product_id).price,
                    unit: ""
                  )
 
@@ -42,7 +42,7 @@ class ProductsTest < InMemoryRESIntegrationTestCase
 
     assert_equal "20.02",
                  number_to_currency(
-                   Products::Product.find(product_id).price,
+                   Products.find_product(product_id).price,
                    unit: ""
                  )
   end
