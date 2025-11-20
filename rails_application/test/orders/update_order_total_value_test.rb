@@ -13,7 +13,7 @@ module Orders
 
       event_store.publish(Processes::TotalOrderValueUpdated.new(data: { order_id: order_id, discounted_amount: 0, total_amount: 10, items: [] }))
 
-      order = Orders::Order.find_by(uid: order_id)
+      order = Orders.find_order( order_id)
       assert_equal "Draft", order.state
     end
 
@@ -28,7 +28,7 @@ module Orders
       event_store.publish(Processes::TotalOrderValueUpdated.new(data: { order_id: order_id, discounted_amount: 0, total_amount: 10, items: [] }, metadata: { timestamp: Time.current }))
       event_store.publish(Processes::TotalOrderValueUpdated.new(data: { order_id: order_id, discounted_amount: 10, total_amount: 20, items: [] }, metadata: { timestamp: 1.minute.ago }))
 
-      order = Orders::Order.find_by(uid: order_id)
+      order = Orders.find_order( order_id)
       assert_equal 10, order.total_value
       assert_equal 0, order.discounted_value
     end

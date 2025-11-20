@@ -15,7 +15,7 @@ module Orders
         prepare_product(product_id)
         item_added_to_basket(order_id, product_id)
 
-        order = Orders::Order.find_by(uid: order_id)
+        order = Orders.find_order( order_id)
         assert_equal 50, order.time_promotion_discount_value
         assert_nil order.percentage_discount
       end

@@ -90,6 +90,108 @@ module Orders
       end
     end
 
+    def test_all_orders_returns_all_orders
+      order_id_1 = SecureRandom.uuid
+      order_id_2 = SecureRandom.uuid
+
+      draft_order(order_id_1)
+      draft_order(order_id_2)
+
+      result = Orders.all_orders
+
+      assert_equal(2, result.to_a.size)
+      assert_equal([order_id_1, order_id_2].sort, result.pluck(:uid).sort)
+    end
+
+    def test_all_orders_returns_empty_when_no_orders
+      result = Orders.all_orders
+
+      assert_equal(0, result.count)
+    end
+
+    def test_find_order_returns_order_by_uid
+      order_id = SecureRandom.uuid
+
+      draft_order(order_id)
+
+      result = Orders.find_order(order_id)
+
+      assert_equal(order_id, result.uid)
+    end
+
+    def test_find_order_returns_nil_when_not_found
+      order_id = SecureRandom.uuid
+
+      result = Orders.find_order(order_id)
+
+      assert_nil(result)
+    end
+
+    def test_find_order_bang_returns_order_by_uid
+      order_id = SecureRandom.uuid
+
+      draft_order(order_id)
+
+      result = Orders.find_order!(order_id)
+
+      assert_equal(order_id, result.uid)
+    end
+
+    def test_find_order_bang_raises_when_not_found
+      order_id = SecureRandom.uuid
+
+      assert_raises(ActiveRecord::RecordNotFound) do
+        Orders.find_order!(order_id)
+      end
+    end
+
+    def test_find_or_create_order_returns_existing_order
+      order_id = SecureRandom.uuid
+
+      draft_order(order_id)
+
+      result = Orders.find_or_create_order(order_id)
+
+      assert_equal(order_id, result.uid)
+      assert_equal(false, result.new_record?)
+    end
+
+    def test_find_or_create_order_creates_new_order_when_not_found
+      order_id = SecureRandom.uuid
+
+      result = Orders.find_or_create_order(order_id)
+
+      assert_equal(order_id, result.uid)
+      assert_equal(false, result.new_record?)
+    end
+
+    def test_draft_orders_returns_only_draft_orders
+      draft_order_id_1 = SecureRandom.uuid
+      draft_order_id_2 = SecureRandom.uuid
+      submitted_order_id = SecureRandom.uuid
+
+      draft_order(draft_order_id_1)
+      draft_order(draft_order_id_2)
+      draft_order(submitted_order_id)
+      submit_order(submitted_order_id)
+
+      result = Orders.draft_orders
+
+      assert_equal(2, result.count)
+      assert_equal([draft_order_id_1, draft_order_id_2].sort, result.pluck(:uid).sort)
+    end
+
+    def test_draft_orders_returns_empty_when_no_draft_orders
+      order_id = SecureRandom.uuid
+
+      draft_order(order_id)
+      submit_order(order_id)
+
+      result = Orders.draft_orders
+
+      assert_equal(0, result.count)
+    end
+
     private
 
     def register_product(product_id, name, price)
@@ -120,6 +222,18 @@ module Orders
             total_value: price,
           }
         )
+      )
+    end
+
+    def draft_order(order_id)
+      event_store.publish(
+        Pricing::OfferDrafted.new(data: { order_id: order_id })
+      )
+    end
+
+    def submit_order(order_id)
+      event_store.publish(
+        Fulfillment::OrderRegistered.new(data: { order_id: order_id, order_number: "2024/01/123" })
       )
     end
 

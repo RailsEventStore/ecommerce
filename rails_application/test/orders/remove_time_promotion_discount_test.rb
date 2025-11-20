@@ -19,7 +19,7 @@ module Orders
 
       travel_to(base_time + 2.minutes) do
         item_added_to_basket(order_id, product_id)
-        order = Orders::Order.find_by(uid: order_id)
+        order = Orders.find_order( order_id)
         assert_nil order.time_promotion_discount_value
       end
     end
@@ -36,7 +36,7 @@ module Orders
         item_added_to_basket(order_id, product_id)
         set_percentage_discount(order_id)
 
-        assert_no_changes -> { Orders::Order.find_by(uid: order_id).time_promotion_discount_value } do
+        assert_no_changes -> { Orders.find_order( order_id).time_promotion_discount_value } do
           remove_percentage_discount(order_id)
         end
       end

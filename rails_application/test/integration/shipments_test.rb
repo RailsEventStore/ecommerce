@@ -24,7 +24,7 @@ class ShipmentsTest < InMemoryRESIntegrationTestCase
         }
     submit_order(shopify_id, order_id)
 
-    order = Orders::Order.find_by(uid: order_id)
+    order = Orders.find_order(order_id)
 
     get "/shipments"
 
@@ -51,7 +51,7 @@ class ShipmentsTest < InMemoryRESIntegrationTestCase
     submit_order(shopify_id, order_id)
 
     shipment = Shipments::Shipment.find_by(order_uid: order_id)
-    order = Orders::Order.find_by(uid: order_id)
+    order = Orders.find_order(order_id)
 
     get "/shipments/#{shipment.id}"
     assert_response :success

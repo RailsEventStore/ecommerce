@@ -1,10 +1,10 @@
 class OrdersController < ApplicationController
   def index
-    @orders = Orders::Order.order("id DESC").page(params[:page]).per(10)
+    @orders = Orders.all_orders.order("id DESC").page(params[:page]).per(10)
   end
 
   def show
-    @order = Orders::Order.find_by_uid(params[:id])
+    @order = Orders.find_order(params[:id])
 
     return not_found unless @order
 
@@ -24,7 +24,7 @@ class OrdersController < ApplicationController
 
   def edit
     @order_id = params[:id]
-    @order = Orders::Order.find_by_uid(params[:id])
+    @order = Orders.find_order(params[:id])
     @order_lines = Orders.order_lines_for(params[:id])
     @products = Products::Product.all
     @customers = Customers::Customer.all
@@ -44,7 +44,7 @@ class OrdersController < ApplicationController
 
   def update_discount
     @order_id = params[:id]
-    order = Orders::Order.find_or_create_by!(uid: params[:id])
+    order = Orders.find_or_create_order(params[:id])
     if order.percentage_discount
       command_bus.(Pricing::ChangePercentageDiscount.new(order_id: @order_id, amount: params[:amount]))
     else
@@ -93,9 +93,7 @@ class OrdersController < ApplicationController
   end
 
   def expire
-    Orders::Order
-      .where(state: "Draft")
-      .find_each { |order| command_bus.(Pricing::ExpireOffer.new(order_id: order.uid)) }
+    Orders.draft_orders.find_each { |order| command_bus.(Pricing::ExpireOffer.new(order_id: order.uid)) }
     redirect_to root_path
   end
 

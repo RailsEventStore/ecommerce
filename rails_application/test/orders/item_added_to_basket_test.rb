@@ -172,7 +172,7 @@ module Orders
         )
       )
 
-      order = Orders::Order.find_by(uid: order_id)
+      order = Orders.find_order( order_id)
       assert_equal(order.order_lines.count, 2)
       order_lines = order.order_lines
       assert_equal(

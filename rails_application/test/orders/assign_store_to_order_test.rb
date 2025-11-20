@@ -10,9 +10,9 @@ module Orders
       event_store.publish(offer_drafted)
       event_store.publish(offer_registered_in_store)
 
-      order = Orders::Order.find_by(uid: order_id)
+      order = Orders.find_order( order_id)
       assert_equal(store_id, order.store_id)
-      other_order = Orders::Order.find_by(uid: other_order_id)
+      other_order = Orders.find_order( other_order_id)
       assert_nil(other_order.store_id)
     end
 

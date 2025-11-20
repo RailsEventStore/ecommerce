@@ -84,7 +84,7 @@ module Orders
       end
 
       travel_to(base_time + 2.minutes) do
-        assert_no_changes -> { Orders::Order.find_by(uid: order_id).percentage_discount } do
+        assert_no_changes -> { Orders.find_order( order_id).percentage_discount } do
           item_added_to_basket(order_id, product_id)
         end
       end
@@ -119,7 +119,7 @@ module Orders
         })
       )
 
-      assert_equal 30, Orders::Order.find_by(uid: order_id).percentage_discount
+      assert_equal 30, Orders.find_order( order_id).percentage_discount
     end
 
     private

@@ -38,7 +38,7 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
     submit_order_for_customer(arkency_id, order_id)
     get "/client_orders"
     order_price =
-      number_to_currency(Orders::Order.find_by(uid: order_id).discounted_value)
+      number_to_currency(Orders.find_order(order_id).discounted_value)
 
     assert_select("td", "Submitted")
     assert_select("td", order_price)
@@ -70,7 +70,7 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
     as_client_submit_order_for_customer(order_id)
     get "/client_orders"
     order_price =
-      number_to_currency(Orders::Order.find_by(uid: order_id).discounted_value)
+      number_to_currency(Orders.find_order(order_id).discounted_value)
     assert_select("td", "Submitted")
     assert_select("td", order_price)
   end

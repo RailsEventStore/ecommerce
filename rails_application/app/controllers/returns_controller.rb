@@ -1,7 +1,7 @@
 class ReturnsController < ApplicationController
   def edit
     @return = Returns::Return.find_by_uid!(params[:id])
-    @order = Orders::Order.find_by_uid!(@return.order_uid)
+    @order = Orders.find_order!(@return.order_uid)
     @return_items = build_return_items_list(@order.order_lines, @return.return_items)
   end
 

@@ -188,7 +188,7 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     order_id = SecureRandom.uuid
     shopify_id = register_customer("Shopify")
 
-    assert_no_changes -> { Orders::Order.count } do
+    assert_no_changes -> { Orders.all_orders.count } do
       post "/orders",
             params: {
               "authenticity_token" => "[FILTERED]",

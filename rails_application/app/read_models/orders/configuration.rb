@@ -9,6 +9,8 @@ module Orders
              primary_key: :uid
   end
 
+  private_constant :Order
+
   class Product < ApplicationRecord
     self.table_name = "orders_products"
   end
@@ -41,6 +43,26 @@ module Orders
 
   def self.find_product(product_id)
     Product.find_by_uid!(product_id)
+  end
+
+  def self.all_orders
+    Order.all
+  end
+
+  def self.find_order(uid)
+    Order.find_by_uid(uid)
+  end
+
+  def self.find_order!(uid)
+    Order.find_by_uid!(uid)
+  end
+
+  def self.find_or_create_order(uid)
+    Order.find_or_create_by!(uid: uid)
+  end
+
+  def self.draft_orders
+    Order.where(state: "Draft")
   end
 
   class Configuration
