@@ -86,7 +86,7 @@
   </thead>
 
   <tbody>
-  <% @order_lines.each do |item| %>
+  <% @order.order_lines.each do |item| %>
     <tr class="border-t">
       <td class="py-2"><%= item.product_name %></td>
       <td class="py-2"><%= item.quantity %></td>

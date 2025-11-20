@@ -33,10 +33,6 @@ module Orders
 
   private_constant :OrderLine
 
-  def self.order_lines_for(order_uid)
-    OrderLine.where(order_uid: order_uid)
-  end
-
   def self.find_order_line(order_uid:, product_id:)
     OrderLine.where(order_uid: order_uid, product_id: product_id).first
   end

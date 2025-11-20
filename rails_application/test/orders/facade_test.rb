@@ -51,23 +51,10 @@ module Orders
       register_product(product_id_3, "Product 3", 30)
       add_item_to_order(order_id_2, product_id_3, 30)
 
-      result = Orders.order_lines_for(order_id_1)
+      result = Orders.find_order(order_id_1).order_lines
 
       assert_equal(2, result.count)
       assert_equal([product_id_1, product_id_2].sort, result.pluck(:product_id).sort)
-    end
-
-    def test_order_lines_for_returns_empty_when_no_lines
-      order_id_without_lines = SecureRandom.uuid
-      order_id_with_lines = SecureRandom.uuid
-      product_id = SecureRandom.uuid
-
-      register_product(product_id, "Product", 10)
-      add_item_to_order(order_id_with_lines, product_id, 10)
-
-      result = Orders.order_lines_for(order_id_without_lines)
-
-      assert_equal(0, result.count)
     end
 
     def test_find_product_returns_product_by_uid

@@ -8,7 +8,6 @@ class OrdersController < ApplicationController
 
     return not_found unless @order
 
-    @order_lines = Orders.order_lines_for(@order.uid)
     @shipment = Shipments::Shipment.find_by(order_uid: @order.uid)
     @invoice = Invoices::Invoice.find_or_initialize_by(order_uid: @order.uid)
   end
@@ -25,7 +24,6 @@ class OrdersController < ApplicationController
   def edit
     @order_id = params[:id]
     @order = Orders.find_order(params[:id])
-    @order_lines = Orders.order_lines_for(params[:id])
     @products = Products::Product.all
     @customers = Customers::Customer.all
     @time_promotions = TimePromotions::TimePromotion.current
