@@ -26,6 +26,12 @@ module Shipments
     belongs_to :shipment
   end
 
+  def self.shipments_for_store(store_id)
+    Shipment
+      .joins(:order)
+      .where(orders: { store_id: store_id })
+  end
+
   class Configuration
     def call(event_store)
       event_store.subscribe(SetShippingAddress, to: [Shipping::ShippingAddressAddedToShipment])

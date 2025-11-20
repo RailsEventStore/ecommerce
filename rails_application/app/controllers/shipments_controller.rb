@@ -1,9 +1,7 @@
 class ShipmentsController < ApplicationController
   def index
     @shipments =
-      Shipments::Shipment
-        .joins(:order)
-        .includes(:order)
+      Shipments.shipments_for_store(current_store_id)
         .with_full_address
         .order(id: :desc)
         .page(params[:page])

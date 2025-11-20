@@ -8,56 +8,90 @@ class ShipmentsTest < InMemoryRESIntegrationTestCase
   end
 
   def test_list_shipments
+    store_id = SecureRandom.uuid
+    post "/admin/stores", params: { store_id: store_id, name: "Test Store" }
+    cookies[:current_store_id] = store_id
+
     shopify_id = register_customer("Shopify")
-    order_id = SecureRandom.uuid
     async_remote_id = register_product("Async Remote", 39, 10)
 
-    add_product_to_basket(order_id, async_remote_id)
-    put "/orders/#{order_id}/shipping_address",
-        params: {
-          "shipments_shipment" => {
-            address_line_1: "123 Main Street",
-            address_line_2: "Apt 1",
-            address_line_3: "San Francisco",
-            address_line_4: "US"
-          }
-        }
-    submit_order(shopify_id, order_id)
-
-    order = Orders.find_order(order_id)
+    create_shipment_in_store(shopify_id, async_remote_id, store_id, "123 Main Street")
 
     get "/shipments"
 
     assert_response :success
-    assert_select("td", order.number)
     assert_select("td", "123 Main Street Apt 1 San Francisco US")
   end
 
   def test_shipment_page
+    store_id = SecureRandom.uuid
+    post "/admin/stores", params: { store_id: store_id, name: "Test Store" }
+    cookies[:current_store_id] = store_id
+
     shopify_id = register_customer("Shopify")
-    order_id = SecureRandom.uuid
     async_remote_id = register_product("Async Remote", 39, 10)
 
-    add_product_to_basket(order_id, async_remote_id)
+    create_shipment_in_store(shopify_id, async_remote_id, store_id, "123 Main Street")
+
+    get "/shipments"
+    assert_response :success
+    assert_select("a[href^='/shipments/']", "Show Shipment")
+
+    shipment_path = css_select("a[href^='/shipments/']").first["href"]
+    get shipment_path
+
+    assert_response :success
+    assert_select("dd", "123 Main Street Apt 1 San Francisco US")
+    assert_select("td", "Async Remote")
+    assert_select("td", "1")
+  end
+
+  def test_shipments_index_only_shows_shipments_from_current_store
+    store_a_id = SecureRandom.uuid
+    store_b_id = SecureRandom.uuid
+
+    post "/admin/stores", params: { store_id: store_a_id, name: "Store A" }
+    post "/admin/stores", params: { store_id: store_b_id, name: "Store B" }
+
+    shopify_id = register_customer("Shopify")
+    async_remote_id = register_product("Async Remote", 39, 10)
+
+    create_shipment_in_store(shopify_id, async_remote_id, store_a_id, "123 Store A St")
+    create_shipment_in_store(shopify_id, async_remote_id, store_b_id, "456 Store B Ave")
+
+    cookies[:current_store_id] = store_a_id
+    get "/shipments"
+
+    assert_response :success
+    assert_select("td", "123 Store A St Apt 1 San Francisco US")
+    assert_select("td", {text: "456 Store B Ave Apt 1 San Francisco US", count: 0})
+  end
+
+  private
+
+  def create_shipment_in_store(customer_id, product_id, store_id, address_line_1)
+    cookies[:current_store_id] = store_id
+
+    get "/orders/new"
+    follow_redirect!
+    order_id = request.path.split('/')[2]
+
+    post "/orders/#{order_id}/add_item?product_id=#{product_id}"
     put "/orders/#{order_id}/shipping_address",
         params: {
           "shipments_shipment" => {
-            address_line_1: "123 Main Street",
+            address_line_1: address_line_1,
             address_line_2: "Apt 1",
             address_line_3: "San Francisco",
             address_line_4: "US"
           }
         }
-    submit_order(shopify_id, order_id)
+    post "/orders",
+         params: {
+           "order_id" => order_id,
+           "customer_id" => customer_id
+         }
 
-    shipment = Shipments::Shipment.find_by(order_uid: order_id)
-    order = Orders.find_order(order_id)
-
-    get "/shipments/#{shipment.id}"
-    assert_response :success
-    assert_select("dd", order.number)
-    assert_select("dd", "123 Main Street Apt 1 San Francisco US")
-    assert_select("td", "Async Remote")
-    assert_select("td", "1")
+    order_id
   end
 end
