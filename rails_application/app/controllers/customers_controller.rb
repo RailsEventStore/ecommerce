@@ -1,6 +1,6 @@
 class CustomersController < ApplicationController
   def index
-    @customers = Customers::Customer.where(store_id: current_store_id)
+    @customers = Customers.customers_for_store(current_store_id)
   end
 
   def new
@@ -19,7 +19,7 @@ class CustomersController < ApplicationController
   end
 
   def update
-    customer = Customers::Customer.where(store_id: current_store_id).find(params[:id])
+    customer = Customers.find_customer_in_store(params[:id], current_store_id)
     promote_to_vip(customer.id)
   rescue Crm::Customer::AlreadyVip
     redirect_to customers_path, notice: "Customer was marked as vip"
@@ -28,7 +28,7 @@ class CustomersController < ApplicationController
   end
 
   def show
-    @customer = Customers::Customer.where(store_id: current_store_id).find(params[:id])
+    @customer = Customers.find_customer_in_store(params[:id], current_store_id)
     @customer_orders = ClientOrders::Order.where(client_uid: params[:id])
                                           .order(created_at: :desc)
                                           .page(params[:page]).per(10)

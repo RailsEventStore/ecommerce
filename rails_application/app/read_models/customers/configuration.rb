@@ -3,6 +3,16 @@ module Customers
     self.table_name = "customers"
   end
 
+  private_constant :Customer
+
+  def self.customers_for_store(store_id)
+    Customer.where(store_id: store_id)
+  end
+
+  def self.find_customer_in_store(customer_id, store_id)
+    Customer.where(store_id: store_id).find(customer_id)
+  end
+
   class Configuration
     def call(event_store)
       event_store.subscribe(RegisterCustomer.new, to: [Crm::CustomerRegistered])

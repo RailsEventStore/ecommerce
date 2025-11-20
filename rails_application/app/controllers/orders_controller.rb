@@ -25,7 +25,7 @@ class OrdersController < ApplicationController
     @order_id = params[:id]
     @order = Orders.find_order(params[:id])
     @products = Products.products_for_store(current_store_id)
-    @customers = Customers::Customer.all
+    @customers = Customers.customers_for_store(current_store_id)
     @time_promotions = TimePromotions::TimePromotion.current
 
     render :edit,
