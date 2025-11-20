@@ -49,6 +49,10 @@ module Orders
     Order.all
   end
 
+  def self.paginated_orders(page)
+    Order.order("id DESC").page(page).per(10)
+  end
+
   def self.find_order(uid)
     Order.find_by_uid(uid)
   end

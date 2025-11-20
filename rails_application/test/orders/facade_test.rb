@@ -90,23 +90,67 @@ module Orders
       end
     end
 
-    def test_all_orders_returns_all_orders
+    def test_paginated_orders_returns_paginated_results
+      order_ids = 15.times.map { SecureRandom.uuid }
+      order_ids.each { |id| draft_order(id) }
+
+      result = Orders.paginated_orders(1)
+
+      assert_equal(10, result.size)
+    end
+
+    def test_paginated_orders_returns_orders_in_reverse_id_order
       order_id_1 = SecureRandom.uuid
       order_id_2 = SecureRandom.uuid
+      order_id_3 = SecureRandom.uuid
 
       draft_order(order_id_1)
       draft_order(order_id_2)
+      draft_order(order_id_3)
 
-      result = Orders.all_orders
+      result = Orders.paginated_orders(0)
 
-      assert_equal(2, result.to_a.size)
-      assert_equal([order_id_1, order_id_2].sort, result.pluck(:uid).sort)
+      assert_equal(order_id_3, result.first.uid)
+      assert_equal(order_id_1, result.last.uid)
+    end
+
+    def test_paginated_orders_returns_second_page
+      order_ids = 15.times.map { SecureRandom.uuid }
+      order_ids.each { |id| draft_order(id) }
+
+      result = Orders.paginated_orders(2)
+
+      assert_equal(5, result.size)
+    end
+
+    def test_paginated_orders_limits_to_10_per_page
+      order_ids = 12.times.map { SecureRandom.uuid }
+      order_ids.each { |id| draft_order(id) }
+
+      result = Orders.paginated_orders(1)
+
+      assert_equal(10, result.size)
     end
 
     def test_all_orders_returns_empty_when_no_orders
       result = Orders.all_orders
 
       assert_equal(0, result.count)
+    end
+
+    def test_all_orders_returns_all_orders_not_scoped
+      order_id_1 = SecureRandom.uuid
+      order_id_2 = SecureRandom.uuid
+
+      draft_order(order_id_1)
+      draft_order(order_id_2)
+      submit_order(order_id_1)
+
+      result = Orders.all_orders
+
+      assert_equal(2, result.size)
+      assert_includes(result.pluck(:uid), order_id_1)
+      assert_includes(result.pluck(:uid), order_id_2)
     end
 
     def test_find_order_returns_order_by_uid
