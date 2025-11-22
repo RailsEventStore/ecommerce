@@ -95,6 +95,22 @@ module PublicOffer
       assert_equal 45, Product.find(product_id).lowest_recent_price
     end
 
+    def test_future_price_not_selected_as_border_event_even_when_lowest
+      product_id = SecureRandom.uuid
+      run_command(
+        ProductCatalog::RegisterProduct.new(
+          product_id: product_id,
+        )
+      )
+
+      # Set an old price (will be border event candidate)
+      set_past_price(product_id, 100, 35.days.ago)
+      # Set a very low future price that should not be used as border event
+      set_future_price(product_id, 5, 10.days.from_now)
+
+      assert_equal 50, Product.find(product_id).lowest_recent_price
+    end
+
     private
 
     def prepare_product
