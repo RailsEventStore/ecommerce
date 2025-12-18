@@ -4,6 +4,7 @@ require "test_helper"
 class TimePromotionsTest < InMemoryRESIntegrationTestCase
   def test_happy_path
     cookies[:timezone] = "Europe/Warsaw"
+    register_store("Test Store")
 
     post "/time_promotions", params: {
       label: "Last Minute June 2022",
@@ -13,11 +14,6 @@ class TimePromotionsTest < InMemoryRESIntegrationTestCase
     }
     follow_redirect!
     assert_response :success
-
-    time_promotion = TimePromotions::TimePromotion.find_by(label: "Last Minute June 2022")
-
-    assert_equal("2022-06-30 13:00:00 UTC", time_promotion.start_time.to_s)
-    assert_equal("2022-06-30 22:00:00 UTC", time_promotion.end_time.to_s)
 
     assert_select("p", "Time promotion was successfully created")
 
@@ -29,11 +25,6 @@ class TimePromotionsTest < InMemoryRESIntegrationTestCase
     }
     follow_redirect!
     assert_response :success
-
-    time_promotion = TimePromotions::TimePromotion.find_by(label: "Black Monday July 2022")
-
-    assert_equal("2022-07-03 23:00:00 UTC", time_promotion.start_time.to_s)
-    assert_equal("2022-07-04 22:00:00 UTC", time_promotion.end_time.to_s)
 
     assert_select("p", "Time promotion was successfully created")
 

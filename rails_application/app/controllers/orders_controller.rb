@@ -29,7 +29,7 @@ class OrdersController < ApplicationController
 
     @products = Products.products_for_store(current_store_id)
     @customers = Customers.customers_for_store(current_store_id)
-    @time_promotions = TimePromotions::TimePromotion.current
+    @time_promotions = TimePromotions.current_time_promotions_for_store(current_store_id)
 
     render :edit,
            locals: {

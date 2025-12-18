@@ -8,11 +8,14 @@ module ClientOrders
       customer_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
+      store_id = SecureRandom.uuid
 
       travel_to(Time.utc(2015, 1, 1, 12, 0, 0)) do
+        register_store(store_id)
         customer_registered(customer_id)
         prepare_product(product_id)
-        create_active_time_promotion(50)
+        create_active_time_promotion(50, store_id)
+        register_offer(order_id, store_id)
         item_added_to_basket(order_id, product_id)
 
         order = ClientOrders::Order.find_by(order_uid: order_id)
@@ -28,12 +31,15 @@ module ClientOrders
       customer_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
+      store_id = SecureRandom.uuid
 
       base_time = Time.utc(2014, 1, 1, 12, 0, 0)
       travel_to(base_time) do
+        register_store(store_id)
         customer_registered(customer_id)
         prepare_product(product_id)
-        create_active_time_promotion(50)
+        create_active_time_promotion(50, store_id)
+        register_offer(order_id, store_id)
         set_percentage_discount(order_id)
       end
 
@@ -50,14 +56,21 @@ module ClientOrders
 
     private
 
-    def create_active_time_promotion(discount)
+    def create_active_time_promotion(discount, store_id)
+      time_promotion_id = SecureRandom.uuid
       run_command(
         Pricing::CreateTimePromotion.new(
-          time_promotion_id: SecureRandom.uuid,
+          time_promotion_id: time_promotion_id,
           discount: discount,
           start_time: Time.current - 1,
           end_time: Time.current + 1,
           label: "Last Minute"
+        )
+      )
+      run_command(
+        Stores::RegisterTimePromotion.new(
+          time_promotion_id: time_promotion_id,
+          store_id: store_id
         )
       )
     end
@@ -91,6 +104,15 @@ module ClientOrders
 
     def event_store
       Rails.configuration.event_store
+    end
+
+    def register_store(store_id)
+      run_command(Stores::RegisterStore.new(store_id: store_id))
+    end
+
+    def register_offer(order_id, store_id)
+      run_command(Pricing::DraftOffer.new(order_id: order_id))
+      run_command(Stores::RegisterOffer.new(order_id: order_id, store_id: store_id))
     end
   end
 end

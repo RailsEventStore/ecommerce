@@ -1,6 +1,6 @@
 class TimePromotionsController < ApplicationController
   def index
-    @time_promotions = TimePromotions::TimePromotion.all
+    @time_promotions = TimePromotions.time_promotions_for_store(current_store_id)
   end
 
   def new; end
@@ -8,7 +8,7 @@ class TimePromotionsController < ApplicationController
   def create
     id = SecureRandom.uuid
 
-    TimePromotions::TimePromotion.transaction do
+    ActiveRecord::Base.transaction do
       create_time_promotion(id)
     end
   rescue ActiveRecord::RecordNotUnique => error
@@ -31,6 +31,12 @@ class TimePromotionsController < ApplicationController
         start_time: Time.zone.parse(params[:start_time]),
         end_time: Time.zone.parse(params[:end_time]),
         label: params[:label]
+      )
+    )
+    command_bus.(
+      Stores::RegisterTimePromotion.new(
+        time_promotion_id: id,
+        store_id: current_store_id
       )
     )
   end

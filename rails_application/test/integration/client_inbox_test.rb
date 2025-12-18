@@ -3,19 +3,21 @@ require_relative "../test_helper"
 class ClientInboxTest < InMemoryRESIntegrationTestCase
 
   def test_customer_sees_inbox_messages
+    register_store("Test Store")
     customer_id = register_customer
     login(customer_id)
     get "/client/inbox"
     assert_response :success
     assert_select "h1", "Your Inbox"
     assert_message_unread("Welcome to our platform!", /minute ago/)
-    message_id = ClientInbox::Message.last.id
+    message_id = ClientInbox::Message.find_by(client_uid: customer_id).id
     post "/client/inbox/mark_as_read", params: { message_id: message_id }
     follow_redirect!
     assert_message_read("Welcome to our platform!", /minute ago/)
   end
 
   def test_another_customer_cant_mark_my_message_as_read_even_when_know_the_id
+    register_store("Test Store")
     another_customer_id = register_customer("Another Customer")
     customer_id = register_customer
     login(another_customer_id)

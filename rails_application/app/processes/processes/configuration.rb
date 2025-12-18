@@ -8,6 +8,7 @@ module Processes
       set_invoice_payment_date_when_order_confirmed(event_store, command_bus)
       enable_product_name_sync(event_store, command_bus)
       confirm_order_on_payment_captured(event_store, command_bus)
+      enable_apply_time_promotion_process(event_store, command_bus)
 
       enable_release_payment_process(event_store, command_bus)
       enable_shipment_process(event_store, command_bus)
@@ -112,6 +113,21 @@ module Processes
       event_store.subscribe(
         InvoiceGeneration.new(event_store, command_bus),
         to: InvoiceGeneration.subscribed_events
+      )
+    end
+
+    def enable_apply_time_promotion_process(event_store, command_bus)
+      event_store.subscribe(
+        ApplyTimePromotion.new(command_bus, event_store),
+        to: [
+          Pricing::PriceItemAdded,
+          Pricing::PriceItemRemoved,
+          Pricing::PercentageDiscountSet,
+          Pricing::PercentageDiscountRemoved,
+          Pricing::PercentageDiscountChanged,
+          Pricing::ProductMadeFreeForOrder,
+          Pricing::FreeProductRemovedFromOrder
+        ]
       )
     end
   end

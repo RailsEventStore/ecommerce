@@ -87,6 +87,51 @@ module Pricing
       end
     end
 
+    def test_cannot_set_time_promotion_discount_twice
+      order_id = SecureRandom.uuid
+      run_command(SetTimePromotionDiscount.new(order_id: order_id, amount: 50))
+
+      assert_raises(Pricing::NotPossibleToAssignDiscountTwice) do
+        run_command(SetTimePromotionDiscount.new(order_id: order_id, amount: 30))
+      end
+    end
+
+    def test_cannot_remove_nonexistent_time_promotion_discount
+      order_id = SecureRandom.uuid
+
+      assert_raises(Pricing::NotPossibleToRemoveWithoutDiscount) do
+        run_command(RemoveTimePromotionDiscount.new(order_id: order_id))
+      end
+    end
+
+    def test_cannot_set_coupon_discount_twice
+      order_id = SecureRandom.uuid
+      run_command(SetPercentageDiscount.new(order_id: order_id, amount: 10))
+
+      assert_raises(Pricing::NotPossibleToAssignDiscountTwice) do
+        run_command(SetPercentageDiscount.new(order_id: order_id, amount: 20))
+      end
+    end
+
+    def test_cannot_remove_nonexistent_percentage_discount
+      order_id = SecureRandom.uuid
+
+      assert_raises(Pricing::NotPossibleToRemoveWithoutDiscount) do
+        run_command(RemovePercentageDiscount.new(order_id: order_id))
+      end
+    end
+
+    def test_can_have_both_discounts_simultaneously
+      order_id = SecureRandom.uuid
+      run_command(SetPercentageDiscount.new(order_id: order_id, amount: 10))
+      run_command(SetTimePromotionDiscount.new(order_id: order_id, amount: 50))
+
+      run_command(RemovePercentageDiscount.new(order_id: order_id))
+
+      assert_raises(Pricing::NotPossibleToAssignDiscountTwice) do
+        run_command(SetTimePromotionDiscount.new(order_id: order_id, amount: 30))
+      end
+    end
 
     private
 

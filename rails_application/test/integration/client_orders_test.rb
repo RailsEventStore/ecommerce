@@ -7,6 +7,7 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
     super
     Rails.configuration.payment_gateway.call.reset
     add_available_vat_rate(10)
+    register_store("Test Store")
   end
 
   def test_happy_path
@@ -17,7 +18,7 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
     get "/clients"
     assert_select("button", { count: 0, text: "Log out" })
     assert_select("button", "Login")
-    assert_select("select", "Arkency")
+    assert_select("select#client option[value='#{arkency_id}']", "Arkency")
 
     login(arkency_id)
     assert_select("h1", "Arkency")
@@ -55,7 +56,7 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
     get "/logout"
     follow_redirect!
     assert_select("button", "Login")
-    assert_select("select", "Arkency")
+    assert_select("select#client option[value='#{arkency_id}']", "Arkency")
   end
 
   def test_creating_order_as_client
@@ -193,7 +194,10 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
     login(customer_id)
     visit_client_orders
 
-    order_id = SecureRandom.uuid
+    get "/client_orders/new"
+    follow_redirect!
+    order_id = retrieve_order_id_from_url
+
     as_client_add_item_to_basket_for_order(product_id, order_id)
     as_client_submit_order_for_customer(order_id)
 
@@ -261,7 +265,10 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
     login(customer_id)
     visit_client_orders
 
-    order_id = SecureRandom.uuid
+    get "/client_orders/new"
+    follow_redirect!
+    order_id = retrieve_order_id_from_url
+
     as_client_add_item_to_basket_for_order(product_id, order_id)
     as_client_use_coupon(order_id, "COUPON10")
 
@@ -355,5 +362,9 @@ class ClientOrdersTests < InMemoryRESIntegrationTestCase
       start_time: start_time,
       end_time: end_time
     }
+  end
+
+  def retrieve_order_id_from_url
+    request.path.split('/')[2]
   end
 end

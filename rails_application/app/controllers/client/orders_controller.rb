@@ -7,6 +7,10 @@ module Client
 
     def new
       order_id = SecureRandom.uuid
+      ActiveRecord::Base.transaction do
+        command_bus.(Pricing::DraftOffer.new(order_id: order_id))
+        command_bus.(Stores::RegisterOffer.new(order_id: order_id, store_id: current_store_id))
+      end
       redirect_to edit_client_order_path(order_id)
     end
 
@@ -27,7 +31,7 @@ module Client
 
     def edit
       order_id = params[:id]
-      render html: ClientOrders::Rendering::EditOrder.build(view_context, order_id), layout: true
+      render html: ClientOrders::Rendering::EditOrder.build(view_context, order_id, current_store_id), layout: true
     end
 
     def add_item

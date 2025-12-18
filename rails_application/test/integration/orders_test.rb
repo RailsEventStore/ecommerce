@@ -254,11 +254,15 @@ class OrdersTest < InMemoryRESIntegrationTestCase
   end
 
   def test_current_time_promotion_is_applied
-    order_id = SecureRandom.uuid
+    register_store("Test Store")
     async_remote_id = register_product("Async Remote", 39, 10)
     shopify_id = register_customer("Shopify")
 
     create_active_time_promotion(50)
+    get "/orders/new"
+    follow_redirect!
+    order_id = retrieve_order_id_from_url
+
     post "/orders/#{order_id}/add_item?product_id=#{async_remote_id}"
 
     post "/orders",

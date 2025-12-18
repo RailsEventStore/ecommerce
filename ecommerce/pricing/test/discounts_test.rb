@@ -55,6 +55,11 @@ module Pricing
 
         assert_equal(0, combined.apply(100))
       end
+
+      def test_exists_returns_true
+        discount = PercentageDiscount.new(10)
+        assert_equal(true, discount.exists?)
+      end
     end
 
     class NoPercentageDiscountTest < Test
@@ -62,6 +67,27 @@ module Pricing
 
       def test_doesnt_change_total
         assert_equal(100, NoPercentageDiscount.new.apply(100))
+      end
+
+      def test_exists_returns_nil
+        discount = NoPercentageDiscount.new
+        assert_nil(discount.exists?)
+      end
+    end
+
+    class DiscountBuildTest < Test
+      cover "Pricing::Discounts*"
+
+      def test_builds_no_discount_when_zero
+        discount = Discount.build(0)
+        assert_instance_of(NoPercentageDiscount, discount)
+        assert_equal(100, discount.apply(100))
+      end
+
+      def test_builds_percentage_discount_when_nonzero
+        discount = Discount.build(10)
+        assert_instance_of(PercentageDiscount, discount)
+        assert_equal(90, discount.apply(100))
       end
     end
   end

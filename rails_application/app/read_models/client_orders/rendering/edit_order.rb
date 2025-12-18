@@ -5,14 +5,14 @@ module ClientOrders
       include ActionView::Helpers::FormTagHelper
       include ActionView::Helpers::UrlHelper
 
-      def self.build(view_context, order_id)
+      def self.build(view_context, order_id, store_id)
         order = ClientOrders::Order.find_or_initialize_by(order_uid: order_id) do |order|
           order.total_value = 0
           order.discounted_value = 0
         end
         order_lines = ClientOrders::OrderLine.where(order_uid: order_id)
         products = ClientOrders::Product.all
-        time_promotions = TimePromotions::TimePromotion.current
+        time_promotions = TimePromotions.current_time_promotions_for_store(store_id)
         new(Arbre::Context.new(nil, view_context)).build(order, order_lines, products, time_promotions)
       end
 

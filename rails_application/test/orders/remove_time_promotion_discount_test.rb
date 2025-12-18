@@ -28,17 +28,55 @@ module Orders
       customer_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
+      store_id = SecureRandom.uuid
 
       travel_to(Time.utc(2017, 1, 1, 12, 0, 0)) do
-        create_active_time_promotion
+        create_active_time_promotion(store_id)
         customer_registered(customer_id)
         prepare_product(product_id)
+        register_offer(order_id, store_id)
         item_added_to_basket(order_id, product_id)
-        set_percentage_discount(order_id)
 
-        assert_no_changes -> { Orders.find_order( order_id).time_promotion_discount_value } do
-          remove_percentage_discount(order_id)
-        end
+        assert_equal(50, Orders.find_order(order_id).time_promotion_discount_value)
+
+        event_store.publish(
+          Pricing::PercentageDiscountRemoved.new(
+            data: {
+              order_id: order_id,
+              type: Pricing::Discounts::GENERAL_DISCOUNT
+            }
+          )
+        )
+
+        assert_equal(50, Orders.find_order(order_id).time_promotion_discount_value)
+      end
+    end
+
+    def test_removes_time_promotion_discount_when_event_published
+      customer_id = SecureRandom.uuid
+      product_id = SecureRandom.uuid
+      order_id = SecureRandom.uuid
+      store_id = SecureRandom.uuid
+
+      travel_to(Time.utc(2019, 1, 1, 12, 0, 0)) do
+        create_active_time_promotion(store_id)
+        customer_registered(customer_id)
+        prepare_product(product_id)
+        register_offer(order_id, store_id)
+        item_added_to_basket(order_id, product_id)
+
+        assert_equal(50, Orders.find_order(order_id).time_promotion_discount_value)
+
+        event_store.publish(
+          Pricing::PercentageDiscountRemoved.new(
+            data: {
+              order_id: order_id,
+              type: Pricing::Discounts::TIME_PROMOTION_DISCOUNT
+            }
+          )
+        )
+
+        assert_nil(Orders.find_order(order_id).time_promotion_discount_value)
       end
     end
 
@@ -72,17 +110,49 @@ module Orders
       event_store.publish(Crm::CustomerRegistered.new(data: { customer_id: customer_id, name: "Arkency" }))
     end
 
-    def create_active_time_promotion
+    def create_active_time_promotion(store_id = nil)
+      time_promotion_id = SecureRandom.uuid
       event_store.publish(
         Pricing::TimePromotionCreated.new(
           data: {
-            time_promotion_id: SecureRandom.uuid,
+            time_promotion_id: time_promotion_id,
             discount: 50,
             start_time: Time.current - 1,
             end_time: Time.current + 1,
             label: "Last Minute"
           }
+        ),
+        stream_name: "Pricing::TimePromotion$#{time_promotion_id}"
+      )
+      if store_id
+        event_store.publish(
+          Stores::TimePromotionRegistered.new(
+            data: {
+              time_promotion_id: time_promotion_id,
+              store_id: store_id
+            }
+          ),
+          stream_name: "Stores::Store$#{store_id}"
         )
+      end
+    end
+
+    def register_offer(order_id, store_id)
+      event_store.publish(
+        Pricing::OfferDrafted.new(
+          data: {
+            order_id: order_id
+          }
+        )
+      )
+      event_store.publish(
+        Stores::OfferRegistered.new(
+          data: {
+            order_id: order_id,
+            store_id: store_id
+          }
+        ),
+        stream_name: "Stores::Store$#{store_id}"
       )
     end
 

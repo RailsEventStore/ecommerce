@@ -7,8 +7,6 @@ require_relative "pricing/services"
 require_relative "pricing/offer"
 require_relative "pricing/price_change"
 require_relative "pricing/time_promotion"
-require_relative "pricing/promotions_calendar"
-require_relative "pricing/apply_time_promotion"
 
 module Pricing
 
@@ -87,15 +85,6 @@ module Pricing
         RemoveTimePromotionDiscount,
         RemoveTimePromotionDiscountHandler.new(event_store)
       )
-      event_store.subscribe(ApplyTimePromotion.new(command_bus, event_store), to: [
-        PriceItemAdded,
-        PriceItemRemoved,
-        PercentageDiscountSet,
-        PercentageDiscountRemoved,
-        PercentageDiscountChanged,
-        ProductMadeFreeForOrder,
-        FreeProductRemovedFromOrder
-      ])
     end
   end
 end

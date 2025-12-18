@@ -65,6 +65,10 @@ module Orders
     Order.find_or_create_by!(uid: uid)
   end
 
+  def self.store_id_for_order(order_id)
+    Order.find_by!(uid: order_id).store_id
+  end
+
   def self.draft_orders
     Order.where(state: "Draft")
   end
