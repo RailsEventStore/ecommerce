@@ -1,6 +1,6 @@
 class CouponsController < ApplicationController
   def index
-    @coupons = Coupons::Coupon.all
+    @coupons = Coupons.coupons_for_store(current_store_id)
   end
 
   def new
@@ -8,7 +8,11 @@ class CouponsController < ApplicationController
   end
 
   def create
-    create_coupon(params[:coupon_id], params[:name], params[:code], params[:discount])
+    coupon_id = params[:coupon_id]
+
+    ActiveRecord::Base.transaction do
+      create_coupon(coupon_id)
+    end
   rescue Pricing::Coupon::AlreadyRegistered
     flash[:notice] = "Coupon is already registered"
     render "new"
@@ -18,12 +22,21 @@ class CouponsController < ApplicationController
 
   private
 
-  def create_coupon(coupon_id, name, code, discount)
-    command_bus.(create_coupon_cmd(coupon_id, name, code, discount))
-  end
-
-  def create_coupon_cmd(coupon_id, name, code, discount)
-    Pricing::RegisterCoupon.new(coupon_id: coupon_id, name: name, code: code, discount: discount)
+  def create_coupon(coupon_id)
+    command_bus.(
+      Pricing::RegisterCoupon.new(
+        coupon_id: coupon_id,
+        name: params[:name],
+        code: params[:code],
+        discount: params[:discount]
+      )
+    )
+    command_bus.(
+      Stores::RegisterCoupon.new(
+        coupon_id: coupon_id,
+        store_id: current_store_id
+      )
+    )
   end
 
 end

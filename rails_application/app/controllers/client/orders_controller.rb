@@ -62,7 +62,7 @@ module Client
     end
 
     def use_coupon
-      coupon = Coupons::Coupon.find_by!("lower(code) = ?", params[:coupon_code].downcase)
+      coupon = Coupons.find_by_code_for_store(params[:coupon_code], current_store_id)
       ActiveRecord::Base.transaction do
         command_bus.(use_coupon_cmd(params[:id], coupon.uid, coupon.discount))
       end

@@ -15,10 +15,12 @@ requires:
   - ./config/environment
 matcher:
   subjects:
+    - Coupons*
     - Orders*
     - ClientOrders*
     - Processes*
   ignore:
+    - Coupons::Configuration#call
     - Orders::Configuration#call
     - Orders::Broadcaster*
     - Orders::AddItemToOrder#broadcast_to_ui

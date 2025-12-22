@@ -3,6 +3,7 @@ require "test_helper"
 
 class CouponsTest < InMemoryRESIntegrationTestCase
   def test_list_coupons
+    register_store("Test Store")
     register_coupon("Coupon Number Uno", "enterme", "0.01")
 
     get "/coupons"
@@ -13,6 +14,7 @@ class CouponsTest < InMemoryRESIntegrationTestCase
   end
 
   def test_creation
+    register_store("Test Store")
     register_coupon("Coupon Number Two", "fair_price", "6.69")
     assert_response :success
     assert_select("p", "Coupon was successfully created")

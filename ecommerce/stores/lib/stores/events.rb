@@ -29,4 +29,9 @@ module Stores
     attribute :time_promotion_id, Infra::Types::UUID
   end
 
+  class CouponRegistered < Infra::Event
+    attribute :store_id, Infra::Types::UUID
+    attribute :coupon_id, Infra::Types::UUID
+  end
+
 end
