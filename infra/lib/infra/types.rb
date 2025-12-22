@@ -1,3 +1,6 @@
+require 'dry-types'
+require 'dry-struct'
+
 module Infra
   module Types
     include Dry.Types

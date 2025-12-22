@@ -1,0 +1,6 @@
+format: progress
+ignore:
+  - 'lib/hanami/**/*'
+  - '**/*':
+    - Style/LambdaCall
+    - Style/ColonMethodCall

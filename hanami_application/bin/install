@@ -1,0 +1,187 @@
+#!/usr/bin/env ruby
+
+require "find"
+require "tempfile"
+require "fileutils"
+require "pathname"
+require 'open3'
+
+class Installer
+  class << self
+    def call(app_name)
+      return unless rename_app(app_name)
+      install_readme
+      bundle_install
+      generate_cli_binstub
+      self_destruct
+
+      puts "Your app is ready to go!"
+    end
+
+    private
+
+    def rename_app(app_name)
+      if /[A-Z]/.match(app_name)
+        puts "Capital letters can lead to unexpected results."
+        puts "Underscore your app name instead (i.e. #{app_name.downcase})."
+        return false
+      end
+      rename_file_contents(app_name)
+      rename_file_names(app_name)
+    end
+
+    def rename_file_contents(app_name)
+      dash_name = app_name.tr("_", "-")
+      snake_name = app_name.tr("-", "_")
+      camel_name = camelize(snake_name)
+      title_name = titleize(snake_name)
+      replacements = {
+        "AppPrototype" => camel_name,
+        "app-prototype" => dash_name,
+        "app_prototype" => snake_name,
+        "App Prototype" => title_name
+      }
+
+      find_files_for_gsub.each do |fname|
+        file_edit(fname, replacements)
+      end
+    end
+
+    def rename_file_names(app_name)
+      files, dirs = find_files_for_rename.partition{ |f| File.file? f }
+      files.each do |orig_name|
+        new_name = orig_name.sub("app_prototype", app_name)
+        FileUtils.mv(orig_name, new_name, force: true, verbose: true) unless orig_name == new_name
+      end
+      dirs.reverse.each do |orig_name|
+        new_name = orig_name.sub("app_prototype", app_name)
+        FileUtils.mv(orig_name, new_name, force: true, verbose: true) unless orig_name == new_name
+      end
+    end
+
+    def find_files_for_gsub(d = Pathname(__dir__).parent)
+      files_or_dirs = []
+      Find.find(d) do |path|
+        if File.directory?(path)
+          if File.basename(path) == ".git"
+            Find.prune
+          else
+            next
+          end
+        else
+          next if path == File.expand_path(__FILE__)
+
+          if block_given?
+            yield path
+          else
+            files_or_dirs << path
+          end
+        end
+      end
+      return files_or_dirs unless block_given?
+    end
+
+    def find_files_for_rename(d = Pathname(__dir__).parent)
+      files_and_dirs = []
+      Find.find(d) do |path|
+        regexp = /app_prototype/
+        bname = File.basename(path)
+        if File.directory?(path)
+          case bname
+          when ".git"
+            Find.prune
+          when regexp
+            if block_given?
+              yield path
+            else
+              files_and_dirs << path
+            end
+          else
+            next
+          end
+        else
+          next unless bname =~ regexp
+
+          if block_given?
+            yield path
+          else
+            files_and_dirs << path
+          end
+        end
+      end
+      files_and_dirs unless block_given?
+    end
+
+    def file_edit(filename, replacements)
+      puts "changing filename #{filename}"
+      tempfile = Tempfile.new
+      File.open(filename).each do |line|
+        replacements.each do |proto_name, new_name|
+          line = line.gsub(proto_name, new_name)
+        end
+
+        tempfile.puts line
+      end
+      tempfile.fdatasync unless RUBY_PLATFORM =~ /mswin|mingw|windows/
+      tempfile.close
+      if RUBY_PLATFORM =~ /mswin|mingw|windows/
+      # FIXME: apply perms on windows
+      else
+        stat = File.stat(filename)
+        FileUtils.chown stat.uid, stat.gid, tempfile.path
+        FileUtils.chmod stat.mode, tempfile.path
+      end
+      FileUtils.mv tempfile.path, filename
+    end
+
+    def bundle_install
+      puts "Running bundle install - this may take a few minutes"
+      shell "bundle install"
+    end
+
+    def generate_cli_binstub
+      shell "bundle binstubs hanami-cli"
+    end
+
+    def install_readme
+      FileUtils.mv("README.app.md", "README.md") rescue nil
+    end
+
+    def self_destruct
+      FileUtils.rm(".github/FUNDING.yml", force: true, verbose: true)
+      FileUtils.rm("rm bin/install", force: true, verbose: true)
+    end
+
+    def camelize(string)
+      result = string.sub(/^[a-z\d]*/) { $&.capitalize }
+      result.gsub(%r{(?:_|(/))([a-z\d]*)}) { "#{Regexp.last_match(1)}#{Regexp.last_match(2).capitalize}" }
+    end
+
+    def titleize(underscored_string)
+      result = underscored_string.tr("_", " ")
+      result.gsub(/\b('?[a-z])/) { Regexp.last_match(1).capitalize }
+    end
+
+    def shell(command, env = {})
+      Open3.popen2e(command) do |stdin, stdout_err, wait_thr|
+        while line = stdout_err.gets
+          puts line
+        end
+
+        exit_status = wait_thr.value
+        unless exit_status.success?
+          raise "#{command} failed with status #{exit_status}\n"
+        end
+      end
+    end
+
+  end
+end
+
+project_name = ARGV[0]
+
+unless project_name
+  raise "Please provide a snake_cased project name, e.g.\n\n./bin/install my_app"
+end
+
+Installer.(project_name)
