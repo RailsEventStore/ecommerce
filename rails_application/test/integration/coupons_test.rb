@@ -23,6 +23,27 @@ class CouponsTest < InMemoryRESIntegrationTestCase
     assert_select("td", "6.69")
   end
 
+  def test_creation_with_negative_discount_is_rejected
+    register_store("Test Store")
+
+    get "/coupons/new"
+    coupon_id = css_select("input[name='coupon_id']").first["value"]
+
+    post "/coupons", params: {
+      coupon_id: coupon_id,
+      name: "Bad Coupon",
+      code: "NEG",
+      discount: "-150"
+    }
+
+    assert_response :unprocessable_entity
+
+    get "/coupons"
+    assert_response :success
+    assert_select("td", text: "Bad Coupon", count: 0)
+    assert_select("td", text: "NEG", count: 0)
+  end
+
   private
 
   def register_coupon(name, code, discount)

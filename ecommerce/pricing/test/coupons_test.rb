@@ -36,5 +36,19 @@ module Pricing
     def test_0_01_is_ok
       register_coupon(@uid, fake_name, @code, "0.01")
     end
+
+    def test_negative_discount_is_rejected
+      assert_raises(Infra::Command::Invalid) do
+        register_coupon(@uid, fake_name, @code, -0.01)
+      end
+    end
+
+    def test_negative_discount_string_is_rejected
+      assert_raises(Infra::Command::Invalid) do
+        register_coupon(@uid, fake_name, @code, "-150")
+      end
+    end
+
+
   end
 end
