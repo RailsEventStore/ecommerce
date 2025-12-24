@@ -21,6 +21,7 @@ matcher:
     - Processes*
     - Invoices*
     - Shipments*
+    - VatRates*
   ignore:
     - Coupons::Configuration#call
     - Orders::Configuration#call

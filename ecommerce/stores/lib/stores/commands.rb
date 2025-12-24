@@ -42,4 +42,9 @@ module Stores
     attribute :store_id, Infra::Types::UUID
     attribute :shipment_id, Infra::Types::UUID
   end
+
+  class RegisterVatRate < Infra::Command
+    attribute :store_id, Infra::Types::UUID
+    attribute :vat_rate_id, Infra::Types::UUID
+  end
 end

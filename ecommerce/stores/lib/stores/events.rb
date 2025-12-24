@@ -44,4 +44,9 @@ module Stores
     attribute :shipment_id, Infra::Types::UUID
   end
 
+  class VatRateRegistered < Infra::Event
+    attribute :store_id, Infra::Types::UUID
+    attribute :vat_rate_id, Infra::Types::UUID
+  end
+
 end

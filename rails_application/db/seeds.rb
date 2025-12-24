@@ -52,7 +52,8 @@ end
   command_bus.call(
     Taxes::AddAvailableVatRate.new(
       available_vat_rate_id: SecureRandom.uuid,
-      vat_rate: Infra::Types::VatRate.new(code: vat_rate[0], rate: vat_rate[1])
+      vat_rate: Infra::Types::VatRate.new(code: vat_rate[0], rate: vat_rate[1]),
+      store_id: store_1_id
     )
   )
 end

@@ -53,7 +53,8 @@ class AvailableVatRatesController < ApplicationController
   def add_available_vat_rate_cmd(code, rate, available_vat_rate_id)
     Taxes::AddAvailableVatRate.new(
       available_vat_rate_id: available_vat_rate_id,
-      vat_rate: Infra::Types::VatRate.new(code: code, rate: rate)
+      vat_rate: Infra::Types::VatRate.new(code: code, rate: rate),
+      store_id: current_store_id
     )
   end
 
