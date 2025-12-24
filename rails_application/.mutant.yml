@@ -19,9 +19,11 @@ matcher:
     - Orders*
     - ClientOrders*
     - Processes*
+    - Invoices*
   ignore:
     - Coupons::Configuration#call
     - Orders::Configuration#call
+    - Invoices::Configuration#call
     - Orders::Broadcaster*
     - Orders::AddItemToOrder#broadcast_to_ui
     - Orders::RemoveItemFromOrder#broadcast_to_ui
