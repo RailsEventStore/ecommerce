@@ -34,10 +34,16 @@ class AvailableVatRatesController < ApplicationController
   end
 
   def index
-    @available_vat_rates = VatRates::AvailableVatRate.all
+    @available_vat_rates = VatRates.available_vat_rates_for_store(current_store_id)
   end
 
   def destroy
+    vat_rate = VatRates::AvailableVatRate.find_by(code: params[:vat_rate_code], store_id: current_store_id)
+
+    unless vat_rate
+      return redirect_to available_vat_rates_path, alert: "VAT rate does not exist"
+    end
+
     remove_available_vat_rate(params[:vat_rate_code])
     redirect_to available_vat_rates_path, notice: "VAT rate was successfully removed"
   rescue Taxes::VatRateNotExists
