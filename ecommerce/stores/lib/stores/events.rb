@@ -34,4 +34,9 @@ module Stores
     attribute :coupon_id, Infra::Types::UUID
   end
 
+  class InvoiceRegistered < Infra::Event
+    attribute :store_id, Infra::Types::UUID
+    attribute :invoice_id, Infra::Types::UUID
+  end
+
 end

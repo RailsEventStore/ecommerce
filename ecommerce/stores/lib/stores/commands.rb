@@ -32,4 +32,9 @@ module Stores
     attribute :store_id, Infra::Types::UUID
     attribute :coupon_id, Infra::Types::UUID
   end
+
+  class RegisterInvoice < Infra::Command
+    attribute :store_id, Infra::Types::UUID
+    attribute :invoice_id, Infra::Types::UUID
+  end
 end

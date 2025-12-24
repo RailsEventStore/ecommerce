@@ -248,7 +248,29 @@ module Processes
       ))
     end
 
+    def test_registers_invoice_with_store
+      store_id = SecureRandom.uuid
+      publish_offer_registered(store_id)
+      publish_total_value_updated([
+        { product_id: @product_1_id, quantity: 1, amount: 20 }
+      ])
+      event = order_placed
+      event_store.publish(event)
+      @process.call(event)
+
+      assert(@command_bus.all_received.any? { |cmd| cmd == Stores::RegisterInvoice.new(invoice_id: order_id, store_id: store_id) })
+    end
+
     private
+
+    def publish_offer_registered(store_id)
+      event = Stores::OfferRegistered.new(data: {
+        order_id: order_id,
+        store_id: store_id
+      })
+      event_store.publish(event, stream_name: "Stores::Store$#{store_id}")
+      @process.call(event)
+    end
 
     def publish_total_value_updated(items)
       event = Processes::TotalOrderValueUpdated.new(data: {

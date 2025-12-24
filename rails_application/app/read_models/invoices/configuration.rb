@@ -28,6 +28,7 @@ module Invoices
       event_store.subscribe(SetPaymentDate.new, to: [Invoicing::InvoicePaymentDateSet])
       event_store.subscribe(MarkAsIssued.new, to: [Invoicing::InvoiceIssued])
       event_store.subscribe(MarkOrderPlaced.new, to: [Fulfillment::OrderRegistered])
+      event_store.subscribe(AssignStoreToInvoice.new, to: [Stores::InvoiceRegistered])
     end
   end
 end

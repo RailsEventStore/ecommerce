@@ -11,14 +11,29 @@ module Processes
 
     subscribes_to(
       Processes::TotalOrderValueUpdated,
-      Fulfillment::OrderRegistered
+      Fulfillment::OrderRegistered,
+      Stores::OfferRegistered
     )
 
     def act
-      create_invoice_items_for_all_products if state.placed?
+      if state.placed?
+        register_invoice
+        create_invoice_items_for_all_products
+      end
     end
 
     private
+
+    def register_invoice
+      return unless state.store_id
+
+      command_bus.call(
+        Stores::RegisterInvoice.new(
+          invoice_id: @order_id,
+          store_id: state.store_id
+        )
+      )
+    end
 
     def create_invoice_items_for_all_products
       state.items.each do |item|
@@ -37,6 +52,8 @@ module Processes
         state.set_items(event.data.fetch(:items))
       when Fulfillment::OrderRegistered
         state.mark_placed
+      when Stores::OfferRegistered
+        state.set_store_id(event.data.fetch(:store_id))
       end
     end
 
@@ -58,9 +75,9 @@ module Processes
 
   end
 
-  Invoice = Data.define(:items, :order_placed) do
-    def initialize(items: [], order_placed: false)
-      super(items: items.freeze, order_placed: order_placed)
+  Invoice = Data.define(:items, :order_placed, :store_id) do
+    def initialize(items: [], order_placed: false, store_id: nil)
+      super(items: items.freeze, order_placed: order_placed, store_id: store_id)
     end
 
     def set_items(new_items)
@@ -69,6 +86,10 @@ module Processes
 
     def mark_placed
       with(order_placed: true)
+    end
+
+    def set_store_id(new_store_id)
+      with(store_id: new_store_id)
     end
 
     def placed?
