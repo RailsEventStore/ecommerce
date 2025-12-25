@@ -27,6 +27,7 @@ module Invoices
       customer_id = register_customer("Test Customer")
 
       order_id = SecureRandom.uuid
+      draft_order(order_id)
       add_product_to_basket(order_id, product_id)
       submit_order(customer_id, order_id)
 
@@ -35,6 +36,7 @@ module Invoices
       assert_invoice_product_name(order_id, initial_product_name)
 
       new_order_id = SecureRandom.uuid
+      draft_order(new_order_id)
       add_product_to_basket(new_order_id, product_id)
       submit_order(customer_id, new_order_id)
 
@@ -47,6 +49,7 @@ module Invoices
       customer_id = register_customer("Test Customer")
 
       order_id = SecureRandom.uuid
+      draft_order(order_id)
       add_product_to_basket(order_id, product_id)
       submit_order(customer_id, order_id)
 

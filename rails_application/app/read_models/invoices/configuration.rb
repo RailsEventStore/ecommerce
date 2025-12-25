@@ -21,6 +21,10 @@ module Invoices
     self.table_name = "invoices_orders"
   end
 
+  def self.find_invoice_in_store(order_uid, store_id)
+    Invoice.where(store_id: store_id).find_by_order_uid(order_uid)
+  end
+
   class Configuration
     def call(event_store)
       event_store.subscribe(CreateInvoiceItem.new, to: [Invoicing::InvoiceItemAdded])

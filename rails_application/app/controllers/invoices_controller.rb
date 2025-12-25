@@ -1,6 +1,6 @@
 class InvoicesController < ApplicationController
   def show
-    @invoice = Invoices::Invoice.find_by_order_uid(params[:id])
+    @invoice = Invoices.find_invoice_in_store(params[:id], current_store_id)
     not_found unless @invoice
   end
 
