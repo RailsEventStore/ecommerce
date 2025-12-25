@@ -25,5 +25,20 @@ module VatRates
 
       assert_equal(store_id, AvailableVatRate.find_by!(uid: vat_rate_id).store_id)
     end
+
+    def test_assigns_store_to_correct_vat_rate_by_uid
+      event_store = Rails.configuration.event_store
+      store_id = SecureRandom.uuid
+      vat_rate_1_id = SecureRandom.uuid
+      vat_rate_2_id = SecureRandom.uuid
+
+      AvailableVatRate.create!(uid: vat_rate_1_id, code: "standard", rate: 20)
+      AvailableVatRate.create!(uid: vat_rate_2_id, code: "reduced", rate: 10)
+
+      event_store.publish(Stores::VatRateRegistered.new(data: { store_id: store_id, vat_rate_id: vat_rate_1_id }))
+
+      assert_equal(store_id, AvailableVatRate.find_by!(uid: vat_rate_1_id).store_id)
+      assert_nil(AvailableVatRate.find_by!(uid: vat_rate_2_id).store_id)
+    end
   end
 end

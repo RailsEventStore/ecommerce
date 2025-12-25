@@ -165,6 +165,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_24_213558) do
     t.date "disposal_date"
     t.date "payment_date"
     t.decimal "total_value", precision: 8, scale: 2
+    t.uuid "store_id"
   end
 
   create_table "invoices_orders", force: :cascade do |t|

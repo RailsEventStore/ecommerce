@@ -2,8 +2,8 @@ require "test_helper"
 
 class StoreSwitchingTest < InMemoryRESIntegrationTestCase
   def test_first_store_selected_by_default_when_no_cookie
-    store_1_id = register_store("Store A")
-    store_2_id = register_store("Store B")
+    register_store("Store A")
+    register_store("Store B")
 
     get products_path
 
@@ -12,7 +12,6 @@ class StoreSwitchingTest < InMemoryRESIntegrationTestCase
   end
 
   def test_cookie_is_preserved_across_requests
-    store_1_id = register_store("Store A")
     store_2_id = register_store("Store B")
 
     get products_path
@@ -26,8 +25,8 @@ class StoreSwitchingTest < InMemoryRESIntegrationTestCase
   end
 
   def test_fallback_to_first_store_when_cookie_points_to_nonexistent_store
-    store_1_id = register_store("Store A")
-    store_2_id = register_store("Store B")
+    register_store("Store A")
+    register_store("Store B")
     nonexistent_store_id = SecureRandom.uuid
 
     cookies[:current_store_id] = nonexistent_store_id
@@ -39,7 +38,6 @@ class StoreSwitchingTest < InMemoryRESIntegrationTestCase
   end
 
   def test_switching_stores_updates_cookie
-    store_1_id = register_store("Store A")
     store_2_id = register_store("Store B")
 
     get products_path
