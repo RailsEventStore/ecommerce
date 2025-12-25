@@ -68,18 +68,29 @@ module Shipments
     end
 
     def prepare_product(product_id, name, price)
-      run_command(
-        ProductCatalog::RegisterProduct.new(
-          product_id: product_id,
+      event_store.publish(
+        ProductCatalog::ProductRegistered.new(
+          data: {
+            product_id: product_id
+          }
         )
       )
-      run_command(
-        ProductCatalog::NameProduct.new(
-          product_id: product_id,
-          name: name
+      event_store.publish(
+        ProductCatalog::ProductNamed.new(
+          data: {
+            product_id: product_id,
+            name: name
+          }
         )
       )
-      run_command(Pricing::SetPrice.new(product_id: product_id, price: price))
+      event_store.publish(
+        Pricing::PriceSet.new(
+          data: {
+            product_id: product_id,
+            price: price
+          }
+        )
+      )
     end
 
     def item_added_to_shipment_picking_list(order_id, product_id)
