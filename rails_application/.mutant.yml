@@ -20,6 +20,7 @@ matcher:
     - ClientOrders*
     - Processes*
     - Invoices*
+    - Shipments*
   ignore:
     - Coupons::Configuration#call
     - Orders::Configuration#call

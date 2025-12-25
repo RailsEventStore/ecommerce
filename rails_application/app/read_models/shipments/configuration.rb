@@ -12,7 +12,7 @@ module Shipments
     scope :with_full_address, -> { where.not(address_line_1: nil, address_line_2: nil, address_line_3: nil, address_line_4: nil) }
 
     def full_address
-      [self.address_line_1, self.address_line_2, self.address_line_3, self.address_line_4].join(" ")
+      [address_line_1, address_line_2, address_line_3, address_line_4].join(" ")
     end
   end
 
@@ -42,7 +42,7 @@ module Shipments
       event_store.subscribe(MarkOrderPlaced, to: [Fulfillment::OrderRegistered])
       event_store.subscribe(AddItemToShipment, to: [Shipping::ItemAddedToShipmentPickingList])
       event_store.subscribe(RemoveItemFromShipment, to: [Shipping::ItemRemovedFromShipmentPickingList])
-      event_store.subscribe(AssignStoreToShipment.new, to: [Stores::ShipmentRegistered])
+      event_store.subscribe(AssignStoreToShipment, to: [Stores::ShipmentRegistered])
     end
   end
 end
