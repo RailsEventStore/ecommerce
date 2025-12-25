@@ -5,7 +5,8 @@ module Processes
     subscribes_to(
       Shipping::ShippingAddressAddedToShipment,
       Fulfillment::OrderRegistered,
-      Fulfillment::OrderConfirmed
+      Fulfillment::OrderConfirmed,
+      Stores::OfferRegistered
     )
 
     private
@@ -13,8 +14,10 @@ module Processes
     def act
       case state
       in { shipment: :address_set, order: :placed }
+        register_shipment
         submit_shipment
       in { shipment: :address_set, order: :confirmed }
+        register_shipment
         submit_shipment
         authorize_shipment
       else
@@ -29,7 +32,20 @@ module Processes
         state.with(order: :placed)
       when Fulfillment::OrderConfirmed
         state.with(order: :confirmed)
+      when Stores::OfferRegistered
+        state.with(store_id: event.data.fetch(:store_id))
       end
+    end
+
+    def register_shipment
+      return unless state.store_id
+
+      command_bus.call(
+        Stores::RegisterShipment.new(
+          shipment_id: id,
+          store_id: state.store_id
+        )
+      )
     end
 
     def submit_shipment
@@ -44,8 +60,8 @@ module Processes
       event.data.fetch(:order_id)
     end
 
-    ProcessState = Data.define(:order, :shipment) do
-      def initialize(order: nil, shipment: nil) = super
+    ProcessState = Data.define(:order, :shipment, :store_id) do
+      def initialize(order: nil, shipment: nil, store_id: nil) = super
     end
   end
 end

@@ -39,4 +39,9 @@ module Stores
     attribute :invoice_id, Infra::Types::UUID
   end
 
+  class ShipmentRegistered < Infra::Event
+    attribute :store_id, Infra::Types::UUID
+    attribute :shipment_id, Infra::Types::UUID
+  end
+
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_24_193023) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_24_212823) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -259,6 +259,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_24_193023) do
     t.string "address_line_2"
     t.string "address_line_3"
     t.string "address_line_4"
+    t.uuid "store_id"
   end
 
   create_table "shipments_orders", force: :cascade do |t|

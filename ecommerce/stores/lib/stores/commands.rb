@@ -37,4 +37,9 @@ module Stores
     attribute :store_id, Infra::Types::UUID
     attribute :invoice_id, Infra::Types::UUID
   end
+
+  class RegisterShipment < Infra::Command
+    attribute :store_id, Infra::Types::UUID
+    attribute :shipment_id, Infra::Types::UUID
+  end
 end

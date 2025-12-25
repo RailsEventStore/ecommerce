@@ -9,7 +9,10 @@ class ShipmentsController < ApplicationController
   end
 
   def show
-    @shipment = Shipments::Shipment.find(params[:id])
+    @shipment = Shipments.find_shipment_in_store(params[:id], current_store_id)
+
+    return not_found unless @shipment
+
     @shipment_items = @shipment.shipment_items.page(params[:page]).per(25)
   end
 end

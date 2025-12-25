@@ -32,12 +32,17 @@ module Shipments
       .where(orders: { store_id: store_id })
   end
 
+  def self.find_shipment_in_store(id, store_id)
+    Shipment.where(store_id: store_id).find_by_id(id)
+  end
+
   class Configuration
     def call(event_store)
       event_store.subscribe(SetShippingAddress, to: [Shipping::ShippingAddressAddedToShipment])
       event_store.subscribe(MarkOrderPlaced, to: [Fulfillment::OrderRegistered])
       event_store.subscribe(AddItemToShipment, to: [Shipping::ItemAddedToShipmentPickingList])
       event_store.subscribe(RemoveItemFromShipment, to: [Shipping::ItemRemovedFromShipmentPickingList])
+      event_store.subscribe(AssignStoreToShipment.new, to: [Stores::ShipmentRegistered])
     end
   end
 end
