@@ -53,13 +53,22 @@ class AvailableVatRatesController < ApplicationController
   private
 
   def add_available_vat_rate(code, rate, available_vat_rate_id)
-    command_bus.(add_available_vat_rate_cmd(code, rate, available_vat_rate_id))
+    ActiveRecord::Base.transaction do
+      command_bus.(add_available_vat_rate_cmd(code, rate, available_vat_rate_id))
+      command_bus.(register_vat_rate_cmd(available_vat_rate_id))
+    end
   end
 
   def add_available_vat_rate_cmd(code, rate, available_vat_rate_id)
     Taxes::AddAvailableVatRate.new(
       available_vat_rate_id: available_vat_rate_id,
-      vat_rate: Infra::Types::VatRate.new(code: code, rate: rate),
+      vat_rate: Infra::Types::VatRate.new(code: code, rate: rate)
+    )
+  end
+
+  def register_vat_rate_cmd(available_vat_rate_id)
+    Stores::RegisterVatRate.new(
+      vat_rate_id: available_vat_rate_id,
       store_id: current_store_id
     )
   end

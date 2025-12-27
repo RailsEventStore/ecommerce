@@ -20,9 +20,8 @@ module Taxes
   class AddAvailableVatRateHandler
     include Infra::Retry
 
-    def initialize(event_store, command_bus)
+    def initialize(event_store)
       @event_store = event_store
-      @command_bus = command_bus
     end
 
     def call(cmd)
@@ -32,13 +31,12 @@ module Taxes
 
         expected_version = event ? event_store.position_in_stream(event.event_id, stream_name(cmd)) : -1
         event_store.publish(available_vat_rate_added_event(cmd), stream_name: stream_name(cmd), expected_version: expected_version)
-        command_bus.call(Stores::RegisterVatRate.new(store_id: cmd.store_id, vat_rate_id: cmd.available_vat_rate_id))
       end
     end
 
     private
 
-    attr_reader :event_store, :command_bus
+    attr_reader :event_store
 
     def last_available_vat_rate_event(vat_rate_code)
       event_store

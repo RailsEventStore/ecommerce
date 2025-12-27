@@ -49,10 +49,16 @@ end
   ["20", 20],
   ["10", 10]
 ].each do |vat_rate|
+  vat_rate_id = SecureRandom.uuid
   command_bus.call(
     Taxes::AddAvailableVatRate.new(
-      available_vat_rate_id: SecureRandom.uuid,
-      vat_rate: Infra::Types::VatRate.new(code: vat_rate[0], rate: vat_rate[1]),
+      available_vat_rate_id: vat_rate_id,
+      vat_rate: Infra::Types::VatRate.new(code: vat_rate[0], rate: vat_rate[1])
+    )
+  )
+  command_bus.call(
+    Stores::RegisterVatRate.new(
+      vat_rate_id: vat_rate_id,
       store_id: store_1_id
     )
   )
