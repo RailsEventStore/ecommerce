@@ -62,7 +62,7 @@ ecommerce/
 
 ## Application
 
-Order management application lives at [rails_application](/rails_application) directory.
+Order management application lives at [rails_application](/apps/rails_application) directory.
 
 This application simulates a process of managing orders.
 
@@ -87,7 +87,7 @@ The customer perspective is "simulated" only - via using the select box.
 Read models are application specific so they live at the application level. 
 In our case it's in the main ecommerce Rails app:
 
-[Read models](https://github.com/RailsEventStore/ecommerce/tree/master/rails_application/app/read_models)
+[Read models](https://github.com/RailsEventStore/ecommerce/tree/master/apps/rails_application/app/read_models)
 
 Additionally, we have created the Pricing Catalog application that is a separate Rails application. 
 It's a good example of how to create a separate application that uses the same domains, but has different read models.
@@ -98,7 +98,7 @@ It's a good example of how to create a separate application that uses the same d
 Processes are application specific so they live at the application level.
 In our case it's in the main ecommerce Rails app:
 
-[Processes](https://github.com/RailsEventStore/ecommerce/tree/master/rails_application/app/processes)
+[Processes](https://github.com/RailsEventStore/ecommerce/tree/master/apps/rails_application/app/processes)
 
 
 # Contributing guide
@@ -139,7 +139,7 @@ As for the local dev setup:
 
 - we use Makefile, so `make install` should simplify a lot
 - to start the web application and all the workers type `make dev`
-- there's docker-compose in the rails_application, if you're into Docker
+- there's docker-compose in the apps/rails_application, if you're into Docker
 - Ruby version, it's best to use the same, which we use for CI/production: [as defined in this file](https://github.com/RailsEventStore/ecommerce/blob/master/.github/workflows/rails_application.yml#L31)
 
 **Bundler note**
