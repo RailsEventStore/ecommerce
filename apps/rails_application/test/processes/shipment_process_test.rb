@@ -41,6 +41,23 @@ module Processes
       assert_no_command
     end
 
+    def test_submit_and_authorize_shipment_with_store_registration
+      given([offer_registered, order_placed, order_confirmed, shipping_address_added], process:)
+      assert_all_commands(
+        Stores::RegisterShipment.new(shipment_id: order_id, store_id: store_id),
+        Shipping::SubmitShipment.new(order_id:),
+        Shipping::AuthorizeShipment.new(order_id:),
+      )
+    end
+
+    def test_submit_shipment_with_store_registration_when_order_placed
+      given([offer_registered, order_placed, shipping_address_added], process:)
+      assert_all_commands(
+        Stores::RegisterShipment.new(shipment_id: order_id, store_id: store_id),
+        Shipping::SubmitShipment.new(order_id:),
+      )
+    end
+
     private
 
     def process
@@ -54,6 +71,19 @@ module Processes
           postal_address: { line_1: "123 Some Street", line_2: "", line_3: "", line_4: "" },
         }
       )
+    end
+
+    def offer_registered
+      Stores::OfferRegistered.new(
+        data: {
+          order_id: order_id,
+          store_id: store_id
+        }
+      )
+    end
+
+    def store_id
+      @store_id ||= SecureRandom.uuid
     end
   end
 end

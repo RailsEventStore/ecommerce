@@ -12,7 +12,10 @@ module VatRates
       event_store.publish(Taxes::AvailableVatRateAdded.new(data: { available_vat_rate_id: vat_rate_id, vat_rate: { code: "standard", rate: 20 } }))
       event_store.publish(Stores::VatRateRegistered.new(data: { store_id: store_id, vat_rate_id: vat_rate_id }))
 
-      assert_equal(store_id, AvailableVatRate.find_by!(uid: vat_rate_id).store_id)
+      vat_rates = VatRates.available_vat_rates_for_store(store_id)
+      assert_equal(1, vat_rates.count)
+      assert_equal(store_id, vat_rates.first.store_id)
+      assert_equal(vat_rate_id, vat_rates.first.uid)
     end
 
     def test_assign_store_to_existing_available_vat_rate
@@ -23,7 +26,9 @@ module VatRates
 
       event_store.publish(Stores::VatRateRegistered.new(data: { store_id: store_id, vat_rate_id: vat_rate_id }))
 
-      assert_equal(store_id, AvailableVatRate.find_by!(uid: vat_rate_id).store_id)
+      vat_rates = VatRates.available_vat_rates_for_store(store_id)
+      assert_equal(1, vat_rates.count)
+      assert_equal(store_id, vat_rates.first.store_id)
     end
 
     def test_assigns_store_to_correct_vat_rate_by_uid
@@ -37,8 +42,9 @@ module VatRates
 
       event_store.publish(Stores::VatRateRegistered.new(data: { store_id: store_id, vat_rate_id: vat_rate_1_id }))
 
-      assert_equal(store_id, AvailableVatRate.find_by!(uid: vat_rate_1_id).store_id)
-      assert_nil(AvailableVatRate.find_by!(uid: vat_rate_2_id).store_id)
+      vat_rates_for_store = VatRates.available_vat_rates_for_store(store_id)
+      assert_equal(1, vat_rates_for_store.count)
+      assert_equal(vat_rate_1_id, vat_rates_for_store.first.uid)
     end
   end
 end

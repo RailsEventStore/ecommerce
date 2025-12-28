@@ -159,6 +159,29 @@ module Processes
       assert_equal(40, discount.value)
     end
 
+    def test_ignores_other_event_types_in_promotion_stream
+      store_id = SecureRandom.uuid
+      time_promotion_id = SecureRandom.uuid
+
+      event_store.publish(
+        Pricing::PriceSet.new(data: { product_id: SecureRandom.uuid, price: 100 }),
+        stream_name: "Pricing::TimePromotion$#{time_promotion_id}"
+      )
+
+      event_store.publish(
+        Stores::TimePromotionRegistered.new(data: {
+          store_id: store_id,
+          time_promotion_id: time_promotion_id
+        }),
+        stream_name: "Stores::Store$#{store_id}"
+      )
+
+      calendar = PromotionsCalendar.new(event_store, store_id)
+      discount = calendar.current_time_promotions_discount
+
+      assert_instance_of(Pricing::Discounts::NoPercentageDiscount, discount)
+    end
+
     private
 
     def create_time_promotion(store_id, discount, start_time, end_time)
