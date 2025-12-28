@@ -1,7 +1,7 @@
 module Infra
   class EventStore < SimpleDelegator
     def self.main
-      require_relative "../../../rails_application/lib/transformations/refund_to_return_event_mapper" rescue nil
+      require_relative "../../../apps/rails_application/lib/transformations/refund_to_return_event_mapper" rescue nil
 
       begin
         mapper = RubyEventStore::Mappers::PipelineMapper.new(

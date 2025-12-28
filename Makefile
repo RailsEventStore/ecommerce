@@ -10,13 +10,13 @@ $(addprefix mutate-, $(CONTEXTS)):
 	@make -C ecommerce/$(subst mutate-,,$@) mutate
 
 install-rails:
-	@make -C rails_application install
+	@make -C apps/rails_application install
 
 test-rails:
-	@make -C rails_application test
+	@make -C apps/rails_application test
 
 mutate-rails:
-	@make -C rails_application mutate
+	@make -C apps/rails_application mutate
 
 install-infra:
 	@make -C infra install
@@ -28,7 +28,7 @@ mutate-infra:
 	@make -C infra mutate
 
 dev:
-	@make -C rails_application dev
+	@make -C apps/rails_application dev
 
 install: install-infra install-rails $(addprefix install-, $(CONTEXTS)) ## Install all dependencies
 

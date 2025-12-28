@@ -1,5 +1,5 @@
 PATH
-  remote: ../infra
+  remote: ../../infra
   specs:
     infra (1.0.0)
       aggregate_root (~> 2.15)

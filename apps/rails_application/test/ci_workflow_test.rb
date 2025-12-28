@@ -3,7 +3,7 @@ require "yaml"
 
 class CiWorkflowTest < ActiveSupport::TestCase
   def workflow_file_path
-    Rails.root.join("../.github/workflows/rails_application.yml")
+    Rails.root.join("../../.github/workflows/rails_application.yml")
   end
 
   def workflow_config
@@ -48,7 +48,7 @@ class CiWorkflowTest < ActiveSupport::TestCase
     assert(workflow_config["jobs"], "Workflow must have jobs")
     if workflow_config["jobs"].key?("deploy")
       if workflow_config["jobs"].dig("deploy", "uses")&.start_with?("./")
-        assert(File.exist?(Rails.root.join("../.github/workflows", workflow_config["jobs"].dig("deploy", "uses").sub("./", ""))), "Deploy job references non-existent workflow file: #{Rails.root.join("../.github/workflows", workflow_config["jobs"].dig("deploy", "uses").sub("./", ""))}")
+        assert(File.exist?(Rails.root.join("../../.github/workflows", workflow_config["jobs"].dig("deploy", "uses").sub("./", ""))), "Deploy job references non-existent workflow file: #{Rails.root.join("../../.github/workflows", workflow_config["jobs"].dig("deploy", "uses").sub("./", ""))}")
       end
     end
   end

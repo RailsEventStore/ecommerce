@@ -29,9 +29,9 @@ group :development, :test do
 end
 
 group :test do
-  eval_gemfile "../infra/Gemfile.test"
+  eval_gemfile "../../infra/Gemfile.test"
 end
 
-gem "infra", path: "../infra"
+gem "infra", path: "../../infra"
 
 gem "tzinfo-data"

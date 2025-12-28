@@ -21,9 +21,9 @@ jobs:
         with:
           ruby-version: ruby-3.4.6
           bundler-cache: true
-          working-directory: rails_application
+          working-directory: apps/rails_application
       - name: Run tests
-        run: make -C rails_application test
+        run: make -C apps/rails_application test
         env:
           DATABASE_URL: "postgres://postgres:secret@localhost:5432/cqrs-es-sample-with-res_test"
           RAILS_ENV: test
@@ -44,9 +44,9 @@ jobs:
         with:
           ruby-version: ruby-3.4.6
           bundler-cache: true
-          working-directory: rails_application
+          working-directory: apps/rails_application
       - name: Run mutant test runner
-        run: make -C rails_application test-mutant-runner
+        run: make -C apps/rails_application test-mutant-runner
         env:
           DATABASE_URL: "postgres://postgres:secret@localhost:5432/cqrs-es-sample-with-res_test"
           RAILS_ENV: test
@@ -55,7 +55,7 @@ jobs:
     strategy:
       fail-fast: false
     env:
-      WORKING_DIRECTORY: rails_application
+      WORKING_DIRECTORY: apps/rails_application
     needs: [ test ]
     if: ${{ github.ref == 'refs/heads/master' }}
     steps:

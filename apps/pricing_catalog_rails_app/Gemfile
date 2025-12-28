@@ -44,4 +44,4 @@ group :test do
   gem "selenium-webdriver"
 end
 gem "rails_event_store", "~> 2.15"
-gem "infra", path: "../infra"
+gem "infra", path: "../../infra"

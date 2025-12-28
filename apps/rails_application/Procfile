@@ -1,0 +1,2 @@
+release: bundle exec rake db:migrate
+web: bin/puma -C apps/rails_application/config/puma.rb --dir apps/rails_application
