@@ -59,6 +59,26 @@ module Orders
       assert event_store.event_in_stream?(event_store.read.of_type([Pricing::PercentageDiscountRemoved]).last.event_id, "Orders$all")
     end
 
+    def test_does_not_remove_general_discount_when_removing_non_general_discount
+      customer_id = SecureRandom.uuid
+      product_id = SecureRandom.uuid
+      order_id = SecureRandom.uuid
+      customer_registered(customer_id)
+      prepare_product(product_id)
+      item_added_to_basket(order_id, product_id)
+      set_percentage_discount(order_id)
+
+      event_store.publish(Pricing::PercentageDiscountRemoved.new(
+        data: {
+          order_id: order_id,
+          type: Pricing::Discounts::TIME_PROMOTION_DISCOUNT
+        }
+      ))
+
+      order = Order.find_by(uid: order_id)
+      assert_equal(10, order.percentage_discount)
+    end
+
     def test_does_not_remove_percentage_discount_when_removing_time_promotion
       customer_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
