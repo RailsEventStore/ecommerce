@@ -22,6 +22,10 @@ mutate-orders: ## Run mutation tests for Orders namespace
 	@echo "Running mutation tests for Orders..."
 	@RAILS_ENV=test bundle exec mutant run "Orders*"
 
+mutate-order-header: ## Run mutation tests for OrderHeader namespace
+	@echo "Running mutation tests for OrderHeader..."
+	@RAILS_ENV=test bundle exec mutant run "OrderHeader*"
+
 mutate-client-orders: ## Run mutation tests for ClientOrders namespace
 	@echo "Running mutation tests for ClientOrders..."
 	@RAILS_ENV=test bundle exec mutant run "ClientOrders*"
@@ -101,5 +105,5 @@ test-mutant-runner:
 	@bin/rails tailwindcss:build
 	@RAILS_ENV=test bundle exec mutant test -j 4
 
-.PHONY: help install dev test mutate mutate-changes mutate-processes mutate-orders mutate-client-orders mutate-invoices mutate-shipments mutate-vat-rates mutate-coupons mutate-products mutate-public-offer mutate-customers mutate-admin mutate-time-promotions mutate-returns mutate-availability mutate-client-inbox mutate-authorization mutate-client-authentication css web test-mutant-runner
+.PHONY: help install dev test mutate mutate-changes mutate-processes mutate-orders mutate-order-header mutate-client-orders mutate-invoices mutate-shipments mutate-vat-rates mutate-coupons mutate-products mutate-public-offer mutate-customers mutate-admin mutate-time-promotions mutate-returns mutate-availability mutate-client-inbox mutate-authorization mutate-client-authentication css web test-mutant-runner
 .DEFAULT_GOAL := help

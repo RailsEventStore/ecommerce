@@ -4,12 +4,10 @@ class OrdersController < ApplicationController
   end
 
   def show
+    @order_header = OrderHeader.find_by_uid(params[:id])
     @order = Orders.find_order(params[:id])
 
-    return not_found unless @order
-
-    @shipment = Shipments::Shipment.find_by(order_uid: @order.uid)
-    @invoice = Invoices::Invoice.find_or_initialize_by(order_uid: @order.uid)
+    return not_found unless @order_header && @order
   end
 
   def new

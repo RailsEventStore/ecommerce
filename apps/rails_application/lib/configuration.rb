@@ -6,6 +6,7 @@ class Configuration
     enable_res_infra_event_linking(event_store)
 
     enable_orders_read_model(event_store)
+    enable_order_header_read_model(event_store)
     enable_products_read_model(event_store)
     enable_public_offer_products_read_model(event_store)
     enable_customers_read_model(event_store)
@@ -52,6 +53,10 @@ class Configuration
 
   def enable_orders_read_model(event_store)
     Orders::Configuration.new.call(event_store)
+  end
+
+  def enable_order_header_read_model(event_store)
+    OrderHeader::Configuration.new.call(event_store)
   end
 
   def enable_invoices_read_model(event_store)

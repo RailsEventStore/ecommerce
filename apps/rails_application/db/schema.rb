@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_24_213558) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_29_231410) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -171,6 +171,20 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_24_213558) do
   create_table "invoices_orders", force: :cascade do |t|
     t.uuid "uid", null: false
     t.boolean "submitted", default: false
+  end
+
+  create_table "order_headers", force: :cascade do |t|
+    t.uuid "uid", null: false
+    t.string "number"
+    t.string "customer"
+    t.string "state", null: false
+    t.boolean "shipping_address_present", default: false
+    t.boolean "billing_address_present", default: false
+    t.boolean "invoice_issued", default: false
+    t.string "invoice_number"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["uid"], name: "index_order_headers_on_uid", unique: true
   end
 
   create_table "order_lines", force: :cascade do |t|
