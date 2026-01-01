@@ -335,6 +335,24 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     assert_response(:not_found)
   end
 
+  def test_cannot_show_order_from_different_store
+    store_id_a = SecureRandom.uuid
+    store_id_b = SecureRandom.uuid
+
+    post "/admin/stores", params: { store_id: store_id_a, name: "Store A" }
+    post "/admin/stores", params: { store_id: store_id_b, name: "Store B" }
+
+    post "/switch_store", params: { store_id: store_id_b }
+    get "/orders/new"
+    follow_redirect!
+    order_id_in_store_b = retrieve_order_id_from_url
+
+    post "/switch_store", params: { store_id: store_id_a }
+    get "/orders/#{order_id_in_store_b}"
+
+    assert_response(:not_found)
+  end
+
   private
 
   def retrieve_order_id_from_url

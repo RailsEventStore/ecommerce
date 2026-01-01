@@ -4,10 +4,12 @@ class OrdersController < ApplicationController
   end
 
   def show
-    @order_header = OrderHeader.find_by_uid(params[:id])
     @order = Orders.find_order(params[:id])
 
-    return not_found unless @order_header && @order
+    return not_found unless @order
+    return not_found if @order.store_id && @order.store_id != current_store_id
+
+    @order_header = OrderHeader.find_by_uid(params[:id])
   end
 
   def new
