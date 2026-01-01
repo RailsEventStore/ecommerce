@@ -79,7 +79,7 @@ class OrdersController < ApplicationController
   end
 
   def create
-    Orders::SubmitService.call(order_id: params[:order_id], customer_id: params[:customer_id])
+    Orders::SubmitService.new(params[:order_id], params[:customer_id]).call
   rescue Orders::OrderHasUnavailableProducts => e
     unavailable_products = e.unavailable_products.join(", ")
     redirect_to edit_order_path(params[:order_id]), alert: "Order can not be submitted! #{unavailable_products} not available in requested quantity!"
@@ -92,7 +92,7 @@ class OrdersController < ApplicationController
   end
 
   def expire
-    Orders.draft_orders.find_each { |order| command_bus.(Pricing::ExpireOffer.new(order_id: order.uid)) }
+    OrderHeader.draft_orders.find_each { |order| command_bus.(Pricing::ExpireOffer.new(order_id: order.uid)) }
     redirect_to root_path
   end
 

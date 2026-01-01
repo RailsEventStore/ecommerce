@@ -193,6 +193,36 @@ module Shipments
       assert_equal(true, order.submitted)
     end
 
+    def test_mark_order_placed_sets_order_number_on_shipment
+      order_id = SecureRandom.uuid
+      order_number = "2024/12/456"
+      store_id = SecureRandom.uuid
+
+      shipment_registered(order_id, store_id)
+      order_registered(order_id, order_number)
+
+      shipment = Shipment.find_by(order_uid: order_id)
+
+      assert_equal(order_number, shipment.order_number)
+    end
+
+    def test_mark_order_placed_updates_correct_shipment
+      order_id_1 = SecureRandom.uuid
+      order_id_2 = SecureRandom.uuid
+      order_number_1 = "2024/12/111"
+      store_id = SecureRandom.uuid
+
+      shipment_registered(order_id_1, store_id)
+      shipment_registered(order_id_2, store_id)
+      order_registered(order_id_1, order_number_1)
+
+      shipment_1 = Shipment.find_by(order_uid: order_id_1)
+      shipment_2 = Shipment.find_by(order_uid: order_id_2)
+
+      assert_equal(order_number_1, shipment_1.order_number)
+      assert_nil(shipment_2.order_number)
+    end
+
     def test_shipments_for_store
       store_id_1 = SecureRandom.uuid
       store_id_2 = SecureRandom.uuid

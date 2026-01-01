@@ -4,24 +4,6 @@ module Orders
   class CustomerRegisteredTest < InMemoryTestCase
     cover "Orders*"
 
-    def test_customer_registered
-      event_store = Rails.configuration.event_store
-
-      customer_id = SecureRandom.uuid
-
-      event_store.publish(Crm::CustomerRegistered.new(
-        data: {
-          customer_id: customer_id,
-          name: "John Doe"
-        }
-      ))
-
-      client = Customer.find_by(uid: customer_id)
-      assert_not_nil(client)
-      assert_equal("John Doe", client.name)
-      assert_equal(customer_id, client.uid)
-    end
-
     def test_customer_assigned_to_order
       event_store = Rails.configuration.event_store
 
@@ -43,7 +25,7 @@ module Orders
       ))
 
       order = Order.find_by(uid: order_id)
-      assert_equal "Draft", order.state
+      assert(order)
     end
 
   end

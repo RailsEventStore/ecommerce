@@ -2,7 +2,7 @@ module Orders
   class UpdateOrderTotalValue
     def call(event)
       order_id = event.data.fetch(:order_id)
-      order = Order.find_or_create_by!(uid: order_id) { |order| order.state = "Draft" }
+      order = Order.find_or_create_by!(uid: order_id)
 
       if is_newest_value?(event, order)
         order.discounted_value = event.data.fetch(:discounted_amount)

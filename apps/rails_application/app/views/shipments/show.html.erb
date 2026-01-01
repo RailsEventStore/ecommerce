@@ -4,7 +4,7 @@
 
   <dl class="mb-8">
     <dt class="font-bold">Order Number</dt>
-    <dd class="mb-2"><%= link_to @shipment.order.number, order_path(@shipment.order.uid), class: "text-blue-500 hover:underline" %></dd>
+    <dd class="mb-2"><%= link_to @shipment.order_number, order_path(@shipment.order_uid), class: "text-blue-500 hover:underline" %></dd>
     <dt class="font-bold">Address</dt>
     <dd class="mb-2">
       <%= @shipment&.full_address %>

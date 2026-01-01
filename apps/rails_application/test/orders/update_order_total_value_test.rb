@@ -4,7 +4,7 @@ module Orders
   class UpdateOrderTotalValueTest < InMemoryTestCase
     cover "Orders*"
 
-    def test_order_created_has_draft_state
+    def test_order_created_when_total_value_updated
       customer_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
@@ -14,7 +14,7 @@ module Orders
       event_store.publish(Processes::TotalOrderValueUpdated.new(data: { order_id: order_id, discounted_amount: 0, total_amount: 10, items: [] }))
 
       order = Orders.find_order( order_id)
-      assert_equal "Draft", order.state
+      assert(order)
     end
 
     def test_newest_event_is_always_applied

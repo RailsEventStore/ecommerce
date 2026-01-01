@@ -6,7 +6,7 @@ module OrderHeader
   private_constant :Header
 
   class Customer < ApplicationRecord
-    self.table_name = "orders_customers"
+    self.table_name = "order_header_customers"
   end
 
   private_constant :Customer
@@ -15,8 +15,13 @@ module OrderHeader
     Header.find_by_uid(uid)
   end
 
+  def self.draft_orders
+    Header.where(state: "Draft")
+  end
+
   class Configuration
     def call(event_store)
+      event_store.subscribe(CreateCustomer.new, to: [Crm::CustomerRegistered])
       event_store.subscribe(
         ->(event) { draft_order_header(event) },
         to: [Pricing::OfferDrafted]
@@ -70,7 +75,7 @@ module OrderHeader
 
     def assign_customer(event)
       customer_id = event.data.fetch(:customer_id)
-      customer_name = Customer.find_by_uid(customer_id).name
+      customer_name = Customer.find_by(customer_id: customer_id).name
       find_or_create_header(event.data.fetch(:order_id)).update!(customer: customer_name)
     end
 

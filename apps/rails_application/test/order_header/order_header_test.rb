@@ -14,6 +14,25 @@ module OrderHeader
       assert_equal("Draft", header.state)
     end
 
+    def test_draft_orders_returns_only_draft_orders
+      draft_order_1 = SecureRandom.uuid
+      draft_order_2 = SecureRandom.uuid
+      submitted_order = SecureRandom.uuid
+
+      event_store.publish(Pricing::OfferDrafted.new(data: { order_id: draft_order_1 }))
+      event_store.publish(Pricing::OfferDrafted.new(data: { order_id: draft_order_2 }))
+      event_store.publish(Pricing::OfferDrafted.new(data: { order_id: submitted_order }))
+      event_store.publish(Fulfillment::OrderRegistered.new(data: { order_id: submitted_order, order_number: "2024/12/001" }))
+
+      draft_orders = OrderHeader.draft_orders
+      draft_order_uids = draft_orders.map(&:uid)
+
+      assert_equal(2, draft_orders.count)
+      assert_includes(draft_order_uids, draft_order_1)
+      assert_includes(draft_order_uids, draft_order_2)
+      refute_includes(draft_order_uids, submitted_order)
+    end
+
     def test_assigns_customer_to_header
       order_id = SecureRandom.uuid
       customer_id = create_customer("John Doe")

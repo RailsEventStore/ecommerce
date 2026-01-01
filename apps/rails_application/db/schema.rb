@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_29_231410) do
+ActiveRecord::Schema[8.0].define(version: 2026_01_01_164747) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -173,6 +173,14 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_29_231410) do
     t.boolean "submitted", default: false
   end
 
+  create_table "order_header_customers", force: :cascade do |t|
+    t.uuid "customer_id"
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["customer_id"], name: "index_order_header_customers_on_customer_id", unique: true
+  end
+
   create_table "order_headers", force: :cascade do |t|
     t.uuid "uid", null: false
     t.string "number"
@@ -197,9 +205,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_29_231410) do
 
   create_table "orders", force: :cascade do |t|
     t.uuid "uid", null: false
-    t.string "number"
-    t.string "customer"
-    t.string "state"
     t.decimal "percentage_discount", precision: 8, scale: 2
     t.decimal "total_value", precision: 8, scale: 2
     t.decimal "discounted_value", precision: 8, scale: 2
@@ -256,6 +261,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_29_231410) do
     t.decimal "total_value", precision: 8, scale: 2, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "order_number"
   end
 
   create_table "shipment_items", force: :cascade do |t|
@@ -275,6 +281,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_29_231410) do
     t.string "address_line_3"
     t.string "address_line_4"
     t.uuid "store_id"
+    t.string "order_number"
   end
 
   create_table "shipments_orders", force: :cascade do |t|

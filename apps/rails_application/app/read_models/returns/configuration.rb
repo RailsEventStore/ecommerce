@@ -32,6 +32,7 @@ module Returns
       event_store.subscribe(CreateDraftReturn.new, to: [Ordering::DraftReturnCreated])
       event_store.subscribe(AddItemToReturn.new, to: [Ordering::ItemAddedToReturn])
       event_store.subscribe(RemoveItemFromReturn.new, to: [Ordering::ItemRemovedFromReturn])
+      event_store.subscribe(SetOrderNumber.new, to: [Fulfillment::OrderRegistered])
     end
   end
 

@@ -258,33 +258,6 @@ module Orders
       assert_equal(false, result.new_record?)
     end
 
-    def test_draft_orders_returns_only_draft_orders
-      draft_order_id_1 = SecureRandom.uuid
-      draft_order_id_2 = SecureRandom.uuid
-      submitted_order_id = SecureRandom.uuid
-
-      draft_order(draft_order_id_1)
-      draft_order(draft_order_id_2)
-      draft_order(submitted_order_id)
-      submit_order(submitted_order_id)
-
-      result = Orders.draft_orders
-
-      assert_equal(2, result.count)
-      assert_equal([draft_order_id_1, draft_order_id_2].sort, result.pluck(:uid).sort)
-    end
-
-    def test_draft_orders_returns_empty_when_no_draft_orders
-      order_id = SecureRandom.uuid
-
-      draft_order(order_id)
-      submit_order(order_id)
-
-      result = Orders.draft_orders
-
-      assert_equal(0, result.count)
-    end
-
     private
 
     def register_product(product_id, name, price)

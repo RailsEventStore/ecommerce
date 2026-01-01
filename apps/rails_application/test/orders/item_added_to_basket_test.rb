@@ -46,10 +46,6 @@ module Orders
       assert event_store.event_in_stream?(item_added_to_basket.event_id, "Orders$all")
 
       assert_equal(Order.count, 1)
-      order = Order.find_by(uid: order_id)
-      assert_equal(order.state, "Draft")
-      assert_nil(order.customer)
-      assert_nil(order.number)
     end
 
     def test_add_the_same_item_2nd_time
@@ -107,9 +103,7 @@ module Orders
 
       assert_equal(Order.count, 1)
       order = Order.find_by(uid: order_id)
-      assert_equal(order.state, "Draft")
-      assert_nil(order.customer)
-      assert_nil(order.number)
+      assert(order)
     end
 
     def test_add_another_item
@@ -189,9 +183,7 @@ module Orders
 
       assert_equal(Order.count, 1)
       order = Order.find_by(uid: order_id)
-      assert_equal(order.state, "Draft")
-      assert_nil(order.customer)
-      assert_nil(order.number)
+      assert(order)
     end
   end
 end

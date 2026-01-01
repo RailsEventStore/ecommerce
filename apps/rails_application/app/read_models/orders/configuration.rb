@@ -17,12 +17,6 @@ module Orders
 
   private_constant :Product
 
-  class Customer < ApplicationRecord
-    self.table_name = "orders_customers"
-  end
-
-  private_constant :Customer
-
   class OrderLine < ApplicationRecord
     self.table_name = "order_lines"
 
@@ -69,10 +63,6 @@ module Orders
     Order.find_by!(uid: order_id).store_id
   end
 
-  def self.draft_orders
-    Order.where(state: "Draft")
-  end
-
   class Configuration
 
     def call(event_store)
@@ -80,6 +70,7 @@ module Orders
 
       event_store.subscribe(DraftOrder.new, to: [Pricing::OfferDrafted])
       event_store.subscribe(AssignStoreToOrder.new, to: [Stores::OfferRegistered])
+      event_store.subscribe(AssignCustomerToOrder.new, to: [Crm::CustomerAssignedToOrder])
       event_store.subscribe(AddItemToOrder.new, to: [Pricing::PriceItemAdded])
       event_store.subscribe(RemoveItemFromOrder.new, to: [Pricing::PriceItemRemoved])
       event_store.subscribe(UpdateDiscount.new, to: [Pricing::PercentageDiscountSet, Pricing::PercentageDiscountChanged])
@@ -88,29 +79,35 @@ module Orders
       event_store.subscribe(RegisterProduct.new, to: [ProductCatalog::ProductRegistered])
       event_store.subscribe(ChangeProductName.new, to: [ProductCatalog::ProductNamed])
       event_store.subscribe(ChangeProductPrice.new, to: [Pricing::PriceSet])
-      event_store.subscribe(CreateCustomer.new, to: [Crm::CustomerRegistered])
-      event_store.subscribe(AssignCustomerToOrder.new, to: [Crm::CustomerAssignedToOrder])
-      event_store.subscribe(SubmitOrder.new, to: [Fulfillment::OrderRegistered])
-      event_store.subscribe(ExpireOrder.new, to: [Pricing::OfferExpired])
-      event_store.subscribe(ConfirmOrder.new, to: [Fulfillment::OrderConfirmed])
-      event_store.subscribe(CancelOrder.new, to: [Fulfillment::OrderCancelled])
       event_store.subscribe(UpdateTimePromotionDiscountValue.new, to: [Pricing::PercentageDiscountSet])
       event_store.subscribe(RemoveTimePromotionDiscount.new, to: [Pricing::PercentageDiscountRemoved])
 
       event_store.subscribe(
-        ->(event) { broadcast_order_state_change(event.data.fetch(:order_id), 'Submitted') },
+        ->(event) {
+          broadcast_order_state_change(event.data.fetch(:order_id), 'Submitted')
+          event_store.link_event_to_stream(event, "Orders$all")
+        },
         to: [Fulfillment::OrderRegistered]
       )
       event_store.subscribe(
-        ->(event) { broadcast_order_state_change(event.data.fetch(:order_id), "Expired") },
+        ->(event) {
+          broadcast_order_state_change(event.data.fetch(:order_id), "Expired")
+          event_store.link_event_to_stream(event, "Orders$all")
+        },
         to: [Pricing::OfferExpired]
       )
       event_store.subscribe(
-        ->(event) { broadcast_order_state_change(event.data.fetch(:order_id), "Paid") },
+        ->(event) {
+          broadcast_order_state_change(event.data.fetch(:order_id), "Paid")
+          event_store.link_event_to_stream(event, "Orders$all")
+        },
         to: [Fulfillment::OrderConfirmed]
       )
       event_store.subscribe(
-        ->(event) { broadcast_order_state_change(event.data.fetch(:order_id), "Cancelled") },
+        ->(event) {
+          broadcast_order_state_change(event.data.fetch(:order_id), "Cancelled")
+          event_store.link_event_to_stream(event, "Orders$all")
+        },
         to: [Fulfillment::OrderCancelled]
       )
     end

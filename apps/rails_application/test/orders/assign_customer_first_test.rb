@@ -15,7 +15,6 @@ module Orders
       )
       assert_equal(Order.count, 1)
       assert event_store.event_in_stream?(customer_assigned_to_order.event_id, "Orders$all")
-      assert event_store.event_in_stream?(customer_registered.event_id, "Orders$all")
     end
   end
 end

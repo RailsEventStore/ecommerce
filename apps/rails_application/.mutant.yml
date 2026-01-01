@@ -17,6 +17,7 @@ matcher:
   subjects:
     - Coupons*
     - Orders*
+    - OrderHeader*
     - ClientOrders*
     - Processes*
     - Invoices*
@@ -25,6 +26,8 @@ matcher:
   ignore:
     - Coupons::Configuration#call
     - Orders::Configuration#call
+    - Orders::Configuration#broadcast_order_state_change
+    - OrderHeader::Configuration#call
     - Invoices::Configuration#call
     - Orders::Broadcaster*
     - Orders::AddItemToOrder#broadcast_to_ui

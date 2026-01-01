@@ -9,7 +9,6 @@ module Orders
 
       order = Order.find_by(uid: order_id)
       assert(order)
-      assert_equal("Draft", order.state)
     end
 
     private

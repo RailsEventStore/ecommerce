@@ -6,7 +6,7 @@ module Orders
 
     def call(event)
       order_id = event.data.fetch(:order_id)
-      Order.find_or_create_by!(uid: order_id) { |order| order.state = "Draft" }
+      Order.find_or_create_by!(uid: order_id)
       product_id = event.data.fetch(:product_id)
       item =
         find(order_id, product_id) ||
