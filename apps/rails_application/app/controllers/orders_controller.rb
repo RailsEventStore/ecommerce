@@ -65,6 +65,9 @@ class OrdersController < ApplicationController
   end
 
   def add_item
+    order = Orders.find_order(params.fetch(:id))
+    return not_found if order && order_belongs_to_different_store_for?(order)
+
     read_model = Orders.find_order_line(order_uid: params[:id], product_id: params[:product_id])
     unless Availability.approximately_available?(params[:product_id], (read_model&.quantity || 0) + 1)
       redirect_to edit_order_path(params[:id]),
@@ -78,11 +81,17 @@ class OrdersController < ApplicationController
   end
 
   def remove_item
+    order = Orders.find_order(params.fetch(:id))
+    return not_found if order && order_belongs_to_different_store_for?(order)
+
     command_bus.(Pricing::RemovePriceItem.new(order_id: params[:id], product_id: params[:product_id]))
     head :ok
   end
 
   def create
+    order = Orders.find_order(params.fetch(:order_id))
+    return not_found if order && order_belongs_to_different_store_for?(order)
+
     Orders::SubmitService.new(params[:order_id], params[:customer_id]).call
   rescue Orders::OrderHasUnavailableProducts => e
     unavailable_products = e.unavailable_products.join(", ")
@@ -127,6 +136,11 @@ class OrdersController < ApplicationController
   def order_belongs_to_different_store?
     return false unless @order.store_id
     !(@order.store_id == current_store_id)
+  end
+
+  def order_belongs_to_different_store_for?(order)
+    return false unless order.store_id
+    !(order.store_id == current_store_id)
   end
 
   def authorize_payment(order_id)

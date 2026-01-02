@@ -26,7 +26,11 @@ matcher:
     - Shipments*
     - VatRates*
     - OrdersController#show
+    - OrdersController#add_item
+    - OrdersController#remove_item
+    - OrdersController#create
     - OrdersController#order_belongs_to_different_store?
+    - OrdersController#order_belongs_to_different_store_for?
   ignore:
     - Coupons::Configuration#call
     - Orders::Configuration#call
