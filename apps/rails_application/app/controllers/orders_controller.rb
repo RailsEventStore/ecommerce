@@ -46,22 +46,25 @@ class OrdersController < ApplicationController
   end
 
   def update_discount
-    @order_id = params[:id]
-    order = Orders.find_or_create_order(params[:id])
+    order = Orders.find_or_create_order(params.fetch(:id))
+    return not_found if order_belongs_to_different_store_for?(order)
+
     if order.percentage_discount
-      command_bus.(Pricing::ChangePercentageDiscount.new(order_id: @order_id, amount: params[:amount]))
+      command_bus.(Pricing::ChangePercentageDiscount.new(order_id: params[:id], amount: params[:amount]))
     else
-      command_bus.(Pricing::SetPercentageDiscount.new(order_id: @order_id, amount: params[:amount]))
+      command_bus.(Pricing::SetPercentageDiscount.new(order_id: params[:id], amount: params[:amount]))
     end
 
-    redirect_to edit_order_path(@order_id)
+    redirect_to edit_order_path(params[:id])
   end
 
   def remove_discount
-    @order_id = params[:id]
-    command_bus.(Pricing::RemovePercentageDiscount.new(order_id: @order_id))
+    order = Orders.find_order(params.fetch(:id))
+    return not_found if order && order_belongs_to_different_store_for?(order)
 
-    redirect_to edit_order_path(@order_id)
+    command_bus.(Pricing::RemovePercentageDiscount.new(order_id: params[:id]))
+
+    redirect_to edit_order_path(params[:id])
   end
 
   def add_item
@@ -110,6 +113,9 @@ class OrdersController < ApplicationController
   end
 
   def pay
+    order = Orders.find_order(params.fetch(:id))
+    return not_found if order && order_belongs_to_different_store_for?(order)
+
     ActiveRecord::Base.transaction do
       authorize_payment(params[:id])
       capture_payment(params[:id])
@@ -127,6 +133,9 @@ class OrdersController < ApplicationController
   end
 
   def cancel
+    order = Orders.find_order(params.fetch(:id))
+    return not_found if order && order_belongs_to_different_store_for?(order)
+
     command_bus.(Fulfillment::CancelOrder.new(order_id: params[:id]))
     redirect_to root_path, notice: "Order cancelled"
   end

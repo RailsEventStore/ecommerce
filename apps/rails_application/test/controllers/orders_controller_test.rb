@@ -5,6 +5,10 @@ class OrdersControllerTest < ActionDispatch::IntegrationTest
   cover "OrdersController#add_item"
   cover "OrdersController#remove_item"
   cover "OrdersController#create"
+  cover "OrdersController#update_discount"
+  cover "OrdersController#remove_discount"
+  cover "OrdersController#pay"
+  cover "OrdersController#cancel"
 
   def setup
     @store_id_a = SecureRandom.uuid
@@ -147,6 +151,119 @@ class OrdersControllerTest < ActionDispatch::IntegrationTest
     post "/orders", params: { order_id: order_id, customer_id: customer_id }
 
     assert_redirected_to order_path(order_id)
+  end
+
+  def test_update_discount_returns_not_found_when_order_belongs_to_different_store
+    post "/switch_store", params: { store_id: @store_id_b }
+    get "/orders/new"
+    follow_redirect!
+    order_id = request.path.split('/')[2]
+
+    post "/switch_store", params: { store_id: @store_id_a }
+    post "/orders/#{order_id}/update_discount?amount=10"
+
+    assert_response(:not_found)
+  end
+
+  def test_update_discount_allows_access_to_order_in_current_store
+    post "/switch_store", params: { store_id: @store_id_a }
+    get "/orders/new"
+    follow_redirect!
+    order_id = request.path.split('/')[2]
+
+    post "/orders/#{order_id}/update_discount?amount=10"
+
+    assert_redirected_to edit_order_path(order_id)
+  end
+
+  def test_remove_discount_returns_not_found_when_order_belongs_to_different_store
+    post "/switch_store", params: { store_id: @store_id_b }
+    get "/orders/new"
+    follow_redirect!
+    order_id = request.path.split('/')[2]
+
+    post "/switch_store", params: { store_id: @store_id_a }
+    post "/orders/#{order_id}/remove_discount"
+
+    assert_response(:not_found)
+  end
+
+  def test_remove_discount_allows_access_to_order_in_current_store
+    post "/switch_store", params: { store_id: @store_id_a }
+    get "/orders/new"
+    follow_redirect!
+    order_id = request.path.split('/')[2]
+    post "/orders/#{order_id}/update_discount?amount=10"
+
+    post "/orders/#{order_id}/remove_discount"
+
+    assert_redirected_to edit_order_path(order_id)
+  end
+
+  def test_pay_returns_not_found_when_order_belongs_to_different_store
+    customer_id = register_customer("Test Customer")
+    product_id = register_product("Test Product", 100, 10)
+
+    post "/switch_store", params: { store_id: @store_id_b }
+    get "/orders/new"
+    follow_redirect!
+    order_id = request.path.split('/')[2]
+    post "/orders/#{order_id}/add_item?product_id=#{product_id}"
+    post "/orders", params: { order_id: order_id, customer_id: customer_id }
+
+    post "/switch_store", params: { store_id: @store_id_a }
+    post "/orders/#{order_id}/pay"
+
+    assert_response(:not_found)
+  end
+
+  def test_pay_allows_access_to_order_in_current_store
+    customer_id = register_customer("Test Customer")
+    product_id = register_product("Test Product", 100, 10)
+
+    post "/switch_store", params: { store_id: @store_id_a }
+    get "/orders/new"
+    follow_redirect!
+    order_id = request.path.split('/')[2]
+    post "/orders/#{order_id}/add_item?product_id=#{product_id}"
+    post "/orders", params: { order_id: order_id, customer_id: customer_id }
+
+    post "/orders/#{order_id}/pay"
+
+    assert_redirected_to orders_path
+  end
+
+  def test_cancel_returns_not_found_when_order_belongs_to_different_store
+    customer_id = register_customer("Test Customer")
+    product_id = register_product("Test Product", 100, 10)
+
+    post "/switch_store", params: { store_id: @store_id_b }
+    get "/orders/new"
+    follow_redirect!
+    order_id = request.path.split('/')[2]
+    post "/orders/#{order_id}/add_item?product_id=#{product_id}"
+    post "/orders", params: { order_id: order_id, customer_id: customer_id }
+
+    post "/switch_store", params: { store_id: @store_id_a }
+    post "/orders/#{order_id}/cancel"
+
+    assert_response(:not_found)
+  end
+
+  def test_cancel_allows_access_to_order_in_current_store
+    customer_id = register_customer("Test Customer")
+    product_id = register_product("Test Product", 100, 10)
+
+    post "/switch_store", params: { store_id: @store_id_a }
+    get "/orders/new"
+    follow_redirect!
+    order_id = request.path.split('/')[2]
+    post "/orders/#{order_id}/add_item?product_id=#{product_id}"
+    post "/orders", params: { order_id: order_id, customer_id: customer_id }
+
+    post "/orders/#{order_id}/cancel"
+
+    assert_redirected_to root_path
   end
 
   private
