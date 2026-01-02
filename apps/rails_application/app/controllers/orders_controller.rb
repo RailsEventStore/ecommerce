@@ -4,12 +4,14 @@ class OrdersController < ApplicationController
   end
 
   def show
-    @order = Orders.find_order(params[:id])
-
+    @order = Orders.find_order(params.fetch(:id))
     return not_found unless @order
-    return not_found if @order.store_id && @order.store_id != current_store_id
 
-    @order_header = OrderHeader.find_by_uid(params[:id])
+    if order_belongs_to_different_store?
+      not_found
+    else
+      @order_header = OrderHeader.find_by_uid(params.fetch(:id))
+    end
   end
 
   def new
@@ -121,6 +123,11 @@ class OrdersController < ApplicationController
   end
 
   private
+
+  def order_belongs_to_different_store?
+    return false unless @order.store_id
+    !(@order.store_id == current_store_id)
+  end
 
   def authorize_payment(order_id)
     command_bus.call(authorize_payment_cmd(order_id))

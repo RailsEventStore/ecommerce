@@ -23,6 +23,8 @@ matcher:
     - Invoices*
     - Shipments*
     - VatRates*
+    - OrdersController#show
+    - OrdersController#order_belongs_to_different_store?
   ignore:
     - Coupons::Configuration#call
     - Orders::Configuration#call
