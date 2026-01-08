@@ -5,6 +5,28 @@ require "mutant/minitest/coverage"
 
 ActiveJob::Base.logger = Logger.new(nil)
 
+# Shared test store UUID for parallel mutant workers
+DEFAULT_TEST_STORE_ID = "00000000-0000-4000-8000-000000000001"
+
+# Global hook to ensure default store exists before ANY test runs
+# This runs once per test process, after DB is prepared but before tests start
+module EnsureDefaultStore
+  def before_setup
+    unless defined?(@@default_store_created)
+      ActiveRecord::Base.connection.execute(<<-SQL)
+        INSERT INTO admin_stores (id, name, created_at, updated_at)
+        VALUES ('#{DEFAULT_TEST_STORE_ID}', 'Default Test Store', NOW(), NOW())
+        ON CONFLICT (id) DO NOTHING
+      SQL
+      @@default_store_created = true
+    end
+    super
+  end
+end
+
+# Prepend to all integration tests
+ActionDispatch::IntegrationTest.prepend(EnsureDefaultStore)
+
 class InMemoryTestCase < ActiveSupport::TestCase
 
   def before_setup
@@ -130,9 +152,6 @@ class ProcessTest < Minitest::Test
 end
 
 class InMemoryRESIntegrationTestCase < ActionDispatch::IntegrationTest
-  # Shared test store UUID - used by all parallel workers to avoid transaction isolation issues
-  DEFAULT_TEST_STORE_ID = "00000000-0000-4000-8000-000000000001"
-
   def before_setup
     result = super
     @previous_event_store = Rails.configuration.event_store
@@ -141,7 +160,7 @@ class InMemoryRESIntegrationTestCase < ActionDispatch::IntegrationTest
     Rails.configuration.command_bus = Arkency::CommandBus.new
 
     Configuration.new.call(Rails.configuration.event_store, Rails.configuration.command_bus)
-    @default_store_id = ensure_default_store
+    @default_store_id = DEFAULT_TEST_STORE_ID
     result
   end
 
@@ -235,17 +254,6 @@ class InMemoryRESIntegrationTestCase < ActionDispatch::IntegrationTest
 
   def run_command(command)
     Rails.configuration.command_bus.call(command)
-  end
-
-  def ensure_default_store
-    # Create default test store directly in DB, outside of transaction
-    # This ensures it's visible to all parallel mutant workers
-    ActiveRecord::Base.connection.execute(<<-SQL)
-      INSERT INTO admin_stores (id, name, created_at, updated_at)
-      VALUES ('#{DEFAULT_TEST_STORE_ID}', 'Default Test Store', NOW(), NOW())
-      ON CONFLICT (id) DO NOTHING
-    SQL
-    DEFAULT_TEST_STORE_ID
   end
 
   def register_store(name)
