@@ -9,6 +9,7 @@ on:
       - master
     paths:
       - "apps/rails_application/Gemfile.lock"
+      - "apps/rails_application/test/test_helper.rb"
       - ".github/workflows/rails_application-coverage.yml"
   pull_request:
     paths:
