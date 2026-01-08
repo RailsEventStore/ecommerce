@@ -65,3 +65,4 @@ jobs:
         env:
           DATABASE_URL: "postgres://postgres:secret@localhost:5432/cqrs-es-sample-with-res_test"
           RAILS_ENV: test
+          MUTANT_JOBS: 1
