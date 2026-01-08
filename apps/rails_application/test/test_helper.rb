@@ -8,18 +8,16 @@ ActiveJob::Base.logger = Logger.new(nil)
 # Shared test store UUID for parallel mutant workers
 DEFAULT_TEST_STORE_ID = "00000000-0000-4000-8000-000000000001"
 
-# Global hook to ensure default store exists before ANY test runs
-# This runs once per test process, after DB is prepared but before tests start
+# Global hook to ensure default store exists before ANY integration test runs
+# Executes INSERT in every test to ensure store is present even if DB is cleaned between tests
 module EnsureDefaultStore
   def before_setup
-    unless defined?(@@default_store_created)
-      ActiveRecord::Base.connection.execute(<<-SQL)
-        INSERT INTO admin_stores (id, name, created_at, updated_at)
-        VALUES ('#{DEFAULT_TEST_STORE_ID}', 'Default Test Store', NOW(), NOW())
-        ON CONFLICT (id) DO NOTHING
-      SQL
-      @@default_store_created = true
-    end
+    # Always ensure store exists (ON CONFLICT prevents duplicates)
+    ActiveRecord::Base.connection.execute(<<-SQL)
+      INSERT INTO admin_stores (id, name, created_at, updated_at)
+      VALUES ('#{DEFAULT_TEST_STORE_ID}', 'Default Test Store', NOW(), NOW())
+      ON CONFLICT (id) DO NOTHING
+    SQL
     super
   end
 end
