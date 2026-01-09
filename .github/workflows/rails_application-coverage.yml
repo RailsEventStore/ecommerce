@@ -9,7 +9,6 @@ on:
       - master
     paths:
       - "apps/rails_application/Gemfile.lock"
-      - "apps/rails_application/test/test_helper.rb"
       - ".github/workflows/rails_application-coverage.yml"
   pull_request:
     paths:
@@ -65,4 +64,3 @@ jobs:
         env:
           DATABASE_URL: "postgres://postgres:secret@localhost:5432/cqrs-es-sample-with-res_test"
           RAILS_ENV: test
-          MUTANT_JOBS: 1

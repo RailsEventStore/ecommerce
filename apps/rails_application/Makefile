@@ -8,7 +8,7 @@ dev:
 
 mutate: ## Run full mutation tests
 	@echo "Running full mutation tests..."
-	@RAILS_ENV=test bundle exec mutant run $(if $(MUTANT_JOBS),--jobs $(MUTANT_JOBS),)
+	@RAILS_ENV=test bundle exec mutant run
 
 mutate-changes: ## Run incremental mutation tests on changes
 	@echo "Running incremental mutation tests against $(GIT_BASE_SHA)..."
