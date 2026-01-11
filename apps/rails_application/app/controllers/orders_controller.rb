@@ -1,10 +1,13 @@
 class OrdersController < ApplicationController
+  before_action :verify_order_ownership, only: [:show, :add_item, :remove_item, :remove_discount, :pay, :cancel]
+  before_action :verify_order_ownership_for_update_discount, only: [:update_discount]
+  before_action :verify_order_ownership_for_submit, only: [:create]
+
   def index
     @orders = Orders.paginated_orders(params[:page], current_store_id)
   end
 
   def show
-    @order = Orders.find_order(params.fetch(:id))
     return not_found unless @order
 
     if order_belongs_to_different_store?
@@ -46,10 +49,7 @@ class OrdersController < ApplicationController
   end
 
   def update_discount
-    order = Orders.find_or_create_order(params.fetch(:id))
-    return not_found if order_belongs_to_different_store_for?(order)
-
-    if order.percentage_discount
+    if @order.percentage_discount
       command_bus.(Pricing::ChangePercentageDiscount.new(order_id: params[:id], amount: params[:amount]))
     else
       command_bus.(Pricing::SetPercentageDiscount.new(order_id: params[:id], amount: params[:amount]))
@@ -59,18 +59,12 @@ class OrdersController < ApplicationController
   end
 
   def remove_discount
-    order = Orders.find_order(params.fetch(:id))
-    return not_found if order && order_belongs_to_different_store_for?(order)
-
     command_bus.(Pricing::RemovePercentageDiscount.new(order_id: params[:id]))
 
     redirect_to edit_order_path(params[:id])
   end
 
   def add_item
-    order = Orders.find_order(params.fetch(:id))
-    return not_found if order && order_belongs_to_different_store_for?(order)
-
     read_model = Orders.find_order_line(order_uid: params[:id], product_id: params[:product_id])
     unless Availability.approximately_available?(params[:product_id], (read_model&.quantity || 0) + 1)
       redirect_to edit_order_path(params[:id]),
@@ -84,17 +78,11 @@ class OrdersController < ApplicationController
   end
 
   def remove_item
-    order = Orders.find_order(params.fetch(:id))
-    return not_found if order && order_belongs_to_different_store_for?(order)
-
     command_bus.(Pricing::RemovePriceItem.new(order_id: params[:id], product_id: params[:product_id]))
     head :ok
   end
 
   def create
-    order = Orders.find_order(params.fetch(:order_id))
-    return not_found if order && order_belongs_to_different_store_for?(order)
-
     Orders::SubmitService.new(params[:order_id], params[:customer_id]).call
   rescue Orders::OrderHasUnavailableProducts => e
     unavailable_products = e.unavailable_products.join(", ")
@@ -113,9 +101,6 @@ class OrdersController < ApplicationController
   end
 
   def pay
-    order = Orders.find_order(params.fetch(:id))
-    return not_found if order && order_belongs_to_different_store_for?(order)
-
     ActiveRecord::Base.transaction do
       authorize_payment(params[:id])
       capture_payment(params[:id])
@@ -133,14 +118,26 @@ class OrdersController < ApplicationController
   end
 
   def cancel
-    order = Orders.find_order(params.fetch(:id))
-    return not_found if order && order_belongs_to_different_store_for?(order)
-
     command_bus.(Fulfillment::CancelOrder.new(order_id: params[:id]))
     redirect_to root_path, notice: "Order cancelled"
   end
 
   private
+
+  def verify_order_ownership
+    @order = Orders.find_order(params.fetch(:id))
+    return not_found if @order && order_belongs_to_different_store_for?(@order)
+  end
+
+  def verify_order_ownership_for_update_discount
+    @order = Orders.find_or_create_order(params.fetch(:id))
+    return not_found if order_belongs_to_different_store_for?(@order)
+  end
+
+  def verify_order_ownership_for_submit
+    @order = Orders.find_order(params.fetch(:order_id))
+    return not_found if @order && order_belongs_to_different_store_for?(@order)
+  end
 
   def order_belongs_to_different_store?
     return false unless @order.store_id
