@@ -91,5 +91,37 @@ module Invoices
       assert_equal(store_id_1, invoice_1.store_id)
       assert_equal(store_id_2, invoice_2.store_id)
     end
+
+    def test_returns_nil_when_invoice_exists_in_different_store
+      event_store = Rails.configuration.event_store
+      store_id_1 = SecureRandom.uuid
+      store_id_2 = SecureRandom.uuid
+      invoice_id = SecureRandom.uuid
+
+      event_store.publish(
+        Invoicing::InvoiceItemAdded.new(
+          data: {
+            invoice_id: invoice_id,
+            product_id: SecureRandom.uuid,
+            title: "Test Product",
+            quantity: 1,
+            unit_price: 100,
+            vat_rate: { rate: 20, code: "VAT" }
+          }
+        )
+      )
+
+      event_store.publish(
+        Stores::InvoiceRegistered.new(
+          data: {
+            store_id: store_id_1,
+            invoice_id: invoice_id
+          }
+        )
+      )
+
+      assert_nil Invoices.find_invoice_in_store(invoice_id, store_id_2)
+      assert_not_nil Invoices.find_invoice_in_store(invoice_id, store_id_1)
+    end
   end
 end
