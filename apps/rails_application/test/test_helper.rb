@@ -142,6 +142,7 @@ class InMemoryRESIntegrationTestCase < ActionDispatch::IntegrationTest
 
     Configuration.new.call(Rails.configuration.event_store, Rails.configuration.command_bus)
     @default_store_id = ensure_default_store
+    cookies[:current_store_id] = @default_store_id
     result
   end
 
