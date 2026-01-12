@@ -14,6 +14,7 @@ on:
     paths:
       - "apps/rails_application/Gemfile.lock"
       - ".github/workflows/rails_application-coverage.yml"
+      - "apps/rails_application/test/test_helper.rb"
   schedule:
     - cron: '0 17 * * *'
 jobs:
