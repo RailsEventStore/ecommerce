@@ -9,10 +9,12 @@ on:
       - master
     paths:
       - "apps/rails_application/Gemfile.lock"
+      - "apps/rails_application/.mutant.yml"
       - ".github/workflows/rails_application-coverage.yml"
   pull_request:
     paths:
       - "apps/rails_application/Gemfile.lock"
+      - "apps/rails_application/.mutant.yml"
       - ".github/workflows/rails_application-coverage.yml"
   schedule:
     - cron: '0 17 * * *'
