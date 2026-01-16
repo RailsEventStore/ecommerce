@@ -7,6 +7,8 @@ dev:
 	@$(MAKE) -j 2 web css
 
 mutate: ## Run full mutation tests
+	@echo "Preparing test database..."
+	@RAILS_ENV=test bin/rails db:test:prepare
 	@echo "Running full mutation tests..."
 	@RAILS_ENV=test bundle exec mutant run
 
