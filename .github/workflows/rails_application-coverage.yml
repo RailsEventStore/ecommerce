@@ -14,6 +14,7 @@ on:
     paths:
       - "apps/rails_application/Gemfile.lock"
       - ".github/workflows/rails_application-coverage.yml"
+      - "apps/rails_application/test/test_helper.rb"
   schedule:
     - cron: '0 17 * * *'
 jobs:
@@ -59,8 +60,15 @@ jobs:
           ruby-version: ruby-3.4.6
           bundler-cache: true
           working-directory: apps/rails_application
+      - name: Prepare test database
+        run: bin/rails db:test:prepare
+        working-directory: apps/rails_application
+        env:
+          DATABASE_URL: "postgres://postgres:secret@localhost:5432/cqrs-es-sample-with-res_test"
+          RAILS_ENV: test
       - name: Run full mutation testing
-        run: make -C apps/rails_application mutate
+        run: RAILS_ENV=test bundle exec mutant run --jobs 1
+        working-directory: apps/rails_application
         env:
           DATABASE_URL: "postgres://postgres:secret@localhost:5432/cqrs-es-sample-with-res_test"
           RAILS_ENV: test
