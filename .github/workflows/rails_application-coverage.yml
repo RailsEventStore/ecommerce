@@ -67,7 +67,8 @@ jobs:
           DATABASE_URL: "postgres://postgres:secret@localhost:5432/cqrs-es-sample-with-res_test"
           RAILS_ENV: test
       - name: Run full mutation testing
-        run: make -C apps/rails_application mutate
+        run: RAILS_ENV=test bundle exec mutant run --jobs 1
+        working-directory: apps/rails_application
         env:
           DATABASE_URL: "postgres://postgres:secret@localhost:5432/cqrs-es-sample-with-res_test"
           RAILS_ENV: test
