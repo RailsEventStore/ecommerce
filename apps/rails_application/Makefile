@@ -10,7 +10,7 @@ build-tailwind:
 	@echo "Building Tailwind CSS..."
 	@bin/rails tailwindcss:build
 
-mutate: ## Run full mutation tests
+mutate: build-tailwind
 	@echo "Running full mutation tests..."
 	@RAILS_ENV=test bundle exec mutant run
 
