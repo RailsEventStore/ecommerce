@@ -13,10 +13,10 @@ build-tailwind:
 mutate: build-tailwind
 ifdef MUTANT_SUBJECT
 	@echo "Running mutation tests for subject: '$(MUTANT_SUBJECT)'"
-	@bundle exec mutant run -- '$(MUTANT_SUBJECT)'
+	@bundle exec mutant run $(MUTANT_OPTS) -- '$(MUTANT_SUBJECT)'
 else
 	@echo "Running full mutation tests..."
-	@bundle exec mutant run
+	@bundle exec mutant run $(MUTANT_OPTS)
 endif
 
 mutate-changes: ## Run incremental mutation tests on changes
