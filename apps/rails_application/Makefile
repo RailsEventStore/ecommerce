@@ -90,9 +90,7 @@ mutate-client-authentication: ## Run mutation tests for ClientAuthentication nam
 	@echo "Running mutation tests for ClientAuthentication..."
 	@RAILS_ENV=test bundle exec mutant run "ClientAuthentication*"
 
-test: ## Run unit tests
-	@echo "Building Tailwind CSS..."
-	@bin/rails tailwindcss:build
+test: build-tailwind
 	@echo "Running unit tests..."
 	@BROWSERSLIST_IGNORE_OLD_DATA=1 bin/rails test
 
@@ -105,8 +103,7 @@ css:
 web:
 	@bin/rails server -p 3000
 
-test-mutant-runner:
-	@bin/rails tailwindcss:build
+test-mutant-runner: build-tailwind
 	@RAILS_ENV=test bundle exec mutant test -j 4
 
 .PHONY: help install dev build-tailwind test mutate mutate-changes mutate-processes mutate-orders mutate-order-header mutate-client-orders mutate-invoices mutate-shipments mutate-vat-rates mutate-coupons mutate-products mutate-public-offer mutate-customers mutate-admin mutate-time-promotions mutate-returns mutate-availability mutate-client-inbox mutate-authorization mutate-client-authentication css web test-mutant-runner
