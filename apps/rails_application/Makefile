@@ -11,8 +11,13 @@ build-tailwind:
 	@bin/rails tailwindcss:build
 
 mutate: build-tailwind
+ifdef MUTANT_SUBJECT
+	@echo "Running mutation tests for subject: '$(MUTANT_SUBJECT)'"
+	@bundle exec mutant run -- '$(MUTANT_SUBJECT)'
+else
 	@echo "Running full mutation tests..."
 	@bundle exec mutant run
+endif
 
 mutate-changes: ## Run incremental mutation tests on changes
 	@echo "Running incremental mutation tests against $(GIT_BASE_SHA)..."
