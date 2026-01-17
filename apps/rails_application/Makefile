@@ -12,7 +12,7 @@ build-tailwind:
 
 mutate: build-tailwind
 	@echo "Running full mutation tests..."
-	@RAILS_ENV=test bundle exec mutant run
+	@bundle exec mutant run
 
 mutate-changes: ## Run incremental mutation tests on changes
 	@echo "Running incremental mutation tests against $(GIT_BASE_SHA)..."
