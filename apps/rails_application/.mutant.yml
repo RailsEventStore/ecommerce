@@ -1,4 +1,6 @@
 ---
+environment_variables:
+  RAILS_ENV: test
 mutation:
   operators: light
   timeout: 10.0
