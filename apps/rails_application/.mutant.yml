@@ -25,19 +25,6 @@ matcher:
     - Invoices*
     - Shipments*
     - VatRates*
-    - OrdersController#show
-    - OrdersController#add_item
-    - OrdersController#remove_item
-    - OrdersController#create
-    - OrdersController#update_discount
-    - OrdersController#remove_discount
-    - OrdersController#pay
-    - OrdersController#cancel
-    - OrdersController#verify_order_ownership
-    - OrdersController#verify_order_ownership_for_update_discount
-    - OrdersController#verify_order_ownership_for_submit
-    - OrdersController#order_belongs_to_different_store?
-    - OrdersController#order_belongs_to_different_store_for?
   ignore:
     - Coupons::Configuration#call
     - Orders::Configuration#call
