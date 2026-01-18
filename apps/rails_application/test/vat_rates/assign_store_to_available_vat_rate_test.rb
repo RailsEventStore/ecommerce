@@ -1,7 +1,7 @@
 require "test_helper"
 
 module VatRates
-  class AssignStoreToAvailableVatRateTest < InMemoryRESIntegrationTestCase
+  class AssignStoreToAvailableVatRateTest < InMemoryTestCase
     cover "VatRates*"
 
     def test_assign_store_to_available_vat_rate
