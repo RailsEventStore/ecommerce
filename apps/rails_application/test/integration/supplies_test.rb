@@ -3,6 +3,7 @@ require "test_helper"
 class SuppliesTest < InMemoryRESIntegrationTestCase
   def setup
     super
+    register_store("Store A")
     add_available_vat_rate(10)
   end
 

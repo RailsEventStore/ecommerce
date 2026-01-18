@@ -2,6 +2,7 @@ require "test_helper"
 
 class AvailableVatRatesTest < InMemoryRESIntegrationTestCase
   def test_happy_path
+    register_store("Store 1")
     get "/available_vat_rates/new"
     assert_select "h1", "New VAT Rate"
 
@@ -26,6 +27,7 @@ class AvailableVatRatesTest < InMemoryRESIntegrationTestCase
   end
 
   def test_validation_blank_errors
+    register_store("Store 1")
     post "/available_vat_rates",
          params: {
            "authenticity_token" => "[FILTERED]",
@@ -40,6 +42,7 @@ class AvailableVatRatesTest < InMemoryRESIntegrationTestCase
   end
 
   def test_validation_rate_must_be_numeric
+    register_store("Store 1")
     post "/available_vat_rates",
          params: {
            "authenticity_token" => "[FILTERED]",
@@ -51,6 +54,7 @@ class AvailableVatRatesTest < InMemoryRESIntegrationTestCase
   end
 
   def test_vat_rate_already_exists
+    register_store("Store 1")
     post "/available_vat_rates",
         params: {
           "authenticity_token" => "[FILTERED]",

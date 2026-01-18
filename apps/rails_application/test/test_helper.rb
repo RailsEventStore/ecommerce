@@ -130,8 +130,6 @@ class ProcessTest < Minitest::Test
 end
 
 class InMemoryRESIntegrationTestCase < ActionDispatch::IntegrationTest
-  # Shared test store UUID - used by all parallel workers to avoid transaction isolation issues
-  DEFAULT_TEST_STORE_ID = "00000000-0000-4000-8000-000000000001"
 
   def before_setup
     result = super
@@ -141,8 +139,6 @@ class InMemoryRESIntegrationTestCase < ActionDispatch::IntegrationTest
     Rails.configuration.command_bus = Arkency::CommandBus.new
 
     Configuration.new.call(Rails.configuration.event_store, Rails.configuration.command_bus)
-    @default_store_id = ensure_default_store
-    cookies[:current_store_id] = @default_store_id
     result
   end
 
@@ -233,22 +229,8 @@ class InMemoryRESIntegrationTestCase < ActionDispatch::IntegrationTest
     Rails.configuration.command_bus.call(command)
   end
 
-  def ensure_default_store
-    # Create default test store directly in DB, outside of transaction
-    # This ensures it's visible to all parallel mutant workers
-    ActiveRecord::Base.connection.execute(<<-SQL)
-      INSERT INTO admin_stores (id, name, created_at, updated_at)
-      VALUES ('#{DEFAULT_TEST_STORE_ID}', 'Default Test Store', NOW(), NOW())
-      ON CONFLICT (id) DO NOTHING
-    SQL
-    DEFAULT_TEST_STORE_ID
-  end
 
   def register_store(name)
-    # For "Default Store", return the shared test store ID
-    return DEFAULT_TEST_STORE_ID if name == "Default Store" || name == "Default Test Store"
-
-    # For other stores, create normally
     store_id = SecureRandom.uuid
     post "/admin/stores", params: { store_id: store_id, name: name }
     store_id

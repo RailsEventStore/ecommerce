@@ -7,11 +7,13 @@ class CustomersTest < InMemoryRESIntegrationTestCase
   end
 
   def test_list_customers
+    register_store("Store 1")
     get "/customers"
     assert_response :success
   end
 
   def test_vips
+    register_store("Store 1")
     customer_id = register_customer("Customer Shop")
 
     patch "/customers/#{customer_id}"
@@ -20,6 +22,7 @@ class CustomersTest < InMemoryRESIntegrationTestCase
   end
 
   def test_paid_orders_summary
+    register_store("Store 1")
     register_customer("BigCorp Ltd")
     customer_id = register_customer("Customer Shop")
     product_1_id = register_product("Fearless Refactoring", 4, 10)
@@ -43,6 +46,7 @@ class CustomersTest < InMemoryRESIntegrationTestCase
   end
 
   def test_customer_details
+    register_store("Store 1")
     customer_id = register_customer("Customer Shop")
     product_id = register_product("Fearless Refactoring", 4, 10)
 

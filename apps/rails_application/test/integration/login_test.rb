@@ -1,6 +1,12 @@
 require "test_helper"
 
 class LoginTest < InMemoryRESIntegrationTestCase
+
+  def setup
+    super
+    register_store("Store 1")
+  end
+
   def test_login
     password = "1234qwer"
     customer_id = register_customer("Arkency")

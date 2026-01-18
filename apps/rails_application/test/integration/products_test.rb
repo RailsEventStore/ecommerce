@@ -8,6 +8,7 @@ class ProductsTest < InMemoryRESIntegrationTestCase
   end
 
   def test_happy_path
+    register_store("Store 1")
     add_available_vat_rate(10, "10S")
     register_customer("Arkency")
     product_id = SecureRandom.uuid
@@ -48,6 +49,7 @@ class ProductsTest < InMemoryRESIntegrationTestCase
   end
 
   def test_does_not_crash_when_setting_products_price_to_0
+    register_store("Store 1")
     register_customer("Arkency")
     product_id = SecureRandom.uuid
 
@@ -67,6 +69,7 @@ class ProductsTest < InMemoryRESIntegrationTestCase
   end
 
   def test_does_not_crash_when_vat_rate_is_absent
+    register_store("Store 1")
     register_customer("Arkency")
     product_id = SecureRandom.uuid
 
@@ -85,6 +88,7 @@ class ProductsTest < InMemoryRESIntegrationTestCase
   end
 
   def test_does_not_crash_when_name_is_not_present
+    register_store("Store 1")
     register_customer("Arkency")
     product_id = SecureRandom.uuid
 

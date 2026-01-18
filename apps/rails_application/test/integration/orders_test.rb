@@ -4,6 +4,7 @@ class OrdersTest < InMemoryRESIntegrationTestCase
   def setup
     super
     Rails.configuration.payment_gateway.call.reset
+    register_store("Store 1")
     add_available_vat_rate(10)
   end
 
