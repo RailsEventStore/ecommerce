@@ -1,7 +1,7 @@
 require "test_helper"
 
 module Invoices
-  class MarkAsIssuedTest < InMemoryRESIntegrationTestCase
+  class MarkAsIssuedTest < InMemoryTestCase
     cover "Invoices*"
 
     def test_marks_invoice_as_issued_with_all_fields

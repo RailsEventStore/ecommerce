@@ -1,7 +1,7 @@
 require "test_helper"
 
 module Invoices
-  class CreateInvoiceItemTest < InMemoryRESIntegrationTestCase
+  class CreateInvoiceItemTest < InMemoryTestCase
     cover "Invoices*"
 
     def test_creates_invoice_item_with_all_fields
@@ -28,6 +28,7 @@ module Invoices
 
       invoice = Invoice.find_by!(order_uid: invoice_id)
       assert_equal(200, invoice.total_value)
+      assert_equal(240, invoice.total_value_with_tax)
 
       item = InvoiceItem.find_by!(invoice: invoice)
       assert_equal(title, item.name)
@@ -35,6 +36,8 @@ module Invoices
       assert_equal(unit_price, item.unit_price)
       assert_equal(vat_rate, item.vat_rate)
       assert_equal(200, item.value)
+      assert_equal(240, item.value_with_tax)
+
     end
 
     def test_accumulates_total_value_for_multiple_items

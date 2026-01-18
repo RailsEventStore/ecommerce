@@ -1,7 +1,7 @@
 require "test_helper"
 
 module Invoices
-  class SetPaymentDateTest < InMemoryRESIntegrationTestCase
+  class SetPaymentDateTest < InMemoryTestCase
     cover "Invoices*"
 
     def test_sets_payment_date_on_invoice

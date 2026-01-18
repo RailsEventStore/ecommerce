@@ -1,7 +1,7 @@
 require "test_helper"
 
 module Invoices
-  class SetBillingAddressTest < InMemoryRESIntegrationTestCase
+  class SetBillingAddressTest < InMemoryTestCase
     cover "Invoices*"
 
     def test_sets_billing_address_with_all_fields

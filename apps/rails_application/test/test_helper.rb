@@ -191,11 +191,6 @@ class InMemoryRESIntegrationTestCase < ActionDispatch::IntegrationTest
     follow_redirect!
   end
 
-  def draft_order(order_id)
-    run_command(Pricing::DraftOffer.new(order_id: order_id))
-    run_command(Stores::RegisterOffer.new(order_id: order_id, store_id: @default_store_id))
-  end
-
   def submit_order(customer_id, order_id)
     post "/orders",
          params: {

@@ -1,7 +1,7 @@
 require "test_helper"
 
 module Invoices
-  class MarkOrderPlacedTest < InMemoryRESIntegrationTestCase
+  class MarkOrderPlacedTest < InMemoryTestCase
     cover "Invoices*"
 
     def test_creates_invoice_and_marks_order_as_submitted

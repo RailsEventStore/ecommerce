@@ -1,13 +1,22 @@
 require "test_helper"
 
 module Invoices
-  class AssignStoreToInvoiceTest < InMemoryRESIntegrationTestCase
+  class AssignStoreToInvoiceTest < InMemoryTestCase
     cover "Invoices*"
 
     def test_assigns_store_to_invoice
       event_store = Rails.configuration.event_store
       store_id = SecureRandom.uuid
       invoice_id = SecureRandom.uuid
+
+      event_store.publish(
+        Stores::InvoiceRegistered.new(
+          data: {
+            store_id: store_id,
+            invoice_id: invoice_id
+          }
+        )
+      )
 
       event_store.publish(
         Invoicing::InvoiceItemAdded.new(
@@ -18,15 +27,6 @@ module Invoices
             quantity: 1,
             unit_price: 100,
             vat_rate: { rate: 20, code: "VAT" }
-          }
-        )
-      )
-
-      event_store.publish(
-        Stores::InvoiceRegistered.new(
-          data: {
-            store_id: store_id,
-            invoice_id: invoice_id
           }
         )
       )
@@ -42,6 +42,23 @@ module Invoices
       invoice_id_1 = SecureRandom.uuid
       invoice_id_2 = SecureRandom.uuid
 
+      event_store.publish(
+        Stores::InvoiceRegistered.new(
+          data: {
+            store_id: store_id_1,
+            invoice_id: invoice_id_1
+          }
+        )
+      )
+
+      event_store.publish(
+        Stores::InvoiceRegistered.new(
+          data: {
+            store_id: store_id_2,
+            invoice_id: invoice_id_2
+          }
+        )
+      )
       event_store.publish(
         Invoicing::InvoiceItemAdded.new(
           data: {
@@ -68,24 +85,6 @@ module Invoices
         )
       )
 
-      event_store.publish(
-        Stores::InvoiceRegistered.new(
-          data: {
-            store_id: store_id_1,
-            invoice_id: invoice_id_1
-          }
-        )
-      )
-
-      event_store.publish(
-        Stores::InvoiceRegistered.new(
-          data: {
-            store_id: store_id_2,
-            invoice_id: invoice_id_2
-          }
-        )
-      )
-
       invoice_1 = Invoice.find_by!(order_uid: invoice_id_1)
       invoice_2 = Invoice.find_by!(order_uid: invoice_id_2)
       assert_equal(store_id_1, invoice_1.store_id)
@@ -99,6 +98,15 @@ module Invoices
       invoice_id = SecureRandom.uuid
 
       event_store.publish(
+        Stores::InvoiceRegistered.new(
+          data: {
+            store_id: store_id_1,
+            invoice_id: invoice_id
+          }
+        )
+      )
+
+      event_store.publish(
         Invoicing::InvoiceItemAdded.new(
           data: {
             invoice_id: invoice_id,
@@ -107,15 +115,6 @@ module Invoices
             quantity: 1,
             unit_price: 100,
             vat_rate: { rate: 20, code: "VAT" }
-          }
-        )
-      )
-
-      event_store.publish(
-        Stores::InvoiceRegistered.new(
-          data: {
-            store_id: store_id_1,
-            invoice_id: invoice_id
           }
         )
       )
