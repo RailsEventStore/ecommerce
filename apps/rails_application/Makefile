@@ -1,5 +1,3 @@
-GIT_BASE_SHA ?= $(shell git merge-base HEAD origin/master)
-
 install: ## Installs dependencies, runs migrations, creates db & seeds if necessary
 	@bin/setup
 
@@ -19,6 +17,8 @@ else
 	@echo "Running full mutation tests..."
 	@bundle exec mutant run $(MUTANT_OPTS)
 endif
+
+GIT_BASE_SHA ?= $(shell git merge-base HEAD origin/master)
 
 mutate-changes: ## Run incremental mutation tests on changes
 	@echo "Running incremental mutation tests against $(GIT_BASE_SHA)..."
