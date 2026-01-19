@@ -3,7 +3,7 @@ GIT_BASE_SHA ?= $(shell git merge-base HEAD origin/master)
 install: ## Installs dependencies, runs migrations, creates db & seeds if necessary
 	@bin/setup
 
-dev:
+dev: ## Start development environment with web server and CSS watcher
 	@$(MAKE) -j 2 web css
 
 build-tailwind:
@@ -11,6 +11,7 @@ build-tailwind:
 	@bin/rails tailwindcss:build
 
 mutate: build-tailwind
+mutate: tailwind ## Run mutation tests. Narrow to MUTANT_SUBJECT if set. Use MUTANT_OPTS for additional mutant options.
 ifdef MUTANT_SUBJECT
 	@echo "Running mutation tests for subject: '$(MUTANT_SUBJECT)'"
 	@bundle exec mutant run $(MUTANT_OPTS) -- '$(MUTANT_SUBJECT)'
@@ -25,6 +26,8 @@ mutate-changes: ## Run incremental mutation tests on changes
 
 test: build-tailwind
 	@echo "Running unit tests..."
+test: ## Run all tests
+	@echo "Running all tests..."
 	@BROWSERSLIST_IGNORE_OLD_DATA=1 bin/rails test
 
 help:
@@ -36,7 +39,7 @@ css:
 web:
 	@bin/rails server -p 3000
 
-test-mutant-runner: build-tailwind
+test-mutant-runner: build-tailwind ## Run tests with parallel jobs using mutant test runner. Use MUTANT_OPTS for additional mutant options.
 	@RAILS_ENV=test bundle exec mutant test -j 4
 
 .PHONY: help install dev build-tailwind test mutate mutate-changes css web test-mutant-runner
