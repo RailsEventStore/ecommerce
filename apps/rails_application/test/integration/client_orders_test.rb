@@ -1,6 +1,6 @@
 require_relative "../test_helper"
 
-class ClientOrdersTests < InMemoryRESIntegrationTestCase
+class ClientOrdersTest < InMemoryRESIntegrationTestCase
   include ActionView::Helpers::NumberHelper
 
   def setup
