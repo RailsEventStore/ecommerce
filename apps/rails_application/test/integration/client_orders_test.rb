@@ -6,8 +6,8 @@ class ClientOrdersTest < InMemoryRESIntegrationTestCase
   def setup
     super
     Rails.configuration.payment_gateway.call.reset
-    add_available_vat_rate(10)
     register_store("Test Store")
+    add_available_vat_rate(10)
   end
 
   def test_happy_path
