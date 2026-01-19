@@ -24,8 +24,6 @@ mutate-changes: ## Run incremental mutation tests on changes
 	@echo "Running incremental mutation tests against $(GIT_BASE_SHA)..."
 	@RAILS_ENV=test bundle exec mutant run --since $(GIT_BASE_SHA)
 
-test: build-tailwind
-	@echo "Running unit tests..."
 test: ## Run all tests
 	@echo "Running all tests..."
 	@BROWSERSLIST_IGNORE_OLD_DATA=1 bin/rails test
