@@ -238,7 +238,7 @@ GEM
     pg (1.6.2-x86_64-darwin)
     pg (1.6.2-x86_64-linux)
     pg (1.6.2-x86_64-linux-musl)
-    pp (0.6.2)
+    pp (0.6.3)
       prettyprint
     prettyprint (0.2.0)
     prism (1.4.0)
@@ -333,7 +333,7 @@ GEM
       sprockets (>= 3.0.0)
     stimulus-rails (1.2.1)
       railties (>= 6.0.0)
-    stringio (3.1.7)
+    stringio (3.2.0)
     tailwindcss-rails (2.6.0-aarch64-linux)
       railties (>= 7.0.0)
     tailwindcss-rails (2.6.0-arm-linux)
