@@ -4,11 +4,20 @@ install: ## Installs dependencies, runs migrations, creates db & seeds if necess
 dev: ## Start development environment with web server and CSS watcher
 	@$(MAKE) -j 2 web css
 
-build-tailwind:
-	@echo "Building Tailwind CSS..."
+TAILWIND_SRC    := app/assets/stylesheets/application.tailwind.css
+TAILWIND_CONFIG := config/tailwind.config.js
+TAILWIND_BUILD  := app/assets/builds
+TAILWIND_OUT    := $(TAILWIND_BUILD)/tailwind.css
+
+$(TAILWIND_OUT): $(TAILWIND_SRC) $(TAILWIND_CONFIG) | $(TAILWIND_BUILD)
+	@echo "Building Tailwind CSS…"
 	@bin/rails tailwindcss:build
 
-mutate: build-tailwind
+$(TAILWIND_BUILD):
+	mkdir -p $(TAILWIND_BUILD)
+
+tailwind: $(TAILWIND_OUT) ## Build Tailwind CSS
+
 mutate: tailwind ## Run mutation tests. Narrow to MUTANT_SUBJECT if set. Use MUTANT_OPTS for additional mutant options.
 ifdef MUTANT_SUBJECT
 	@echo "Running mutation tests for subject: '$(MUTANT_SUBJECT)'"
@@ -37,7 +46,7 @@ css:
 web:
 	@bin/rails server -p 3000
 
-test-mutant-runner: build-tailwind ## Run tests with parallel jobs using mutant test runner. Use MUTANT_OPTS for additional mutant options.
+test-mutant-runner: tailwind ## Run tests with parallel jobs using mutant test runner. Use MUTANT_OPTS for additional mutant options.
 	@RAILS_ENV=test bundle exec mutant test $(MUTANT_OPTS)
 
 .PHONY: help install dev build-tailwind test mutate mutate-changes css web test-mutant-runner
