@@ -167,6 +167,7 @@ class InMemoryRESIntegrationTestCase < ActionDispatch::IntegrationTest
 
   def add_available_vat_rate(rate, code = rate.to_s)
     post "/available_vat_rates", params: { code: code, rate: rate }
+    assert_response :redirect
   end
 
   def supply_product(product_id, quantity)
