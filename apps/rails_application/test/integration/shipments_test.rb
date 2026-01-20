@@ -2,15 +2,10 @@
 require "test_helper"
 
 class ShipmentsTest < InMemoryRESIntegrationTestCase
-  def setup
-    super
-    add_available_vat_rate(10)
-  end
 
   def test_list_shipments
-    store_id = SecureRandom.uuid
-    post "/admin/stores", params: { store_id: store_id, name: "Test Store" }
-    post "/switch_store", params: { store_id: store_id }
+    store_id = register_store("Test Store")
+    add_available_vat_rate(10)
 
     shopify_id = register_customer("Shopify")
     async_remote_id = register_product("Async Remote", 39, 10)
@@ -24,9 +19,8 @@ class ShipmentsTest < InMemoryRESIntegrationTestCase
   end
 
   def test_shipment_page
-    store_id = SecureRandom.uuid
-    post "/admin/stores", params: { store_id: store_id, name: "Test Store" }
-    post "/switch_store", params: { store_id: store_id }
+    store_id = register_store("Test Store")
+    add_available_vat_rate(10)
 
     shopify_id = register_customer("Shopify")
     async_remote_id = register_product("Async Remote", 39, 10)
@@ -47,24 +41,22 @@ class ShipmentsTest < InMemoryRESIntegrationTestCase
   end
 
   def test_shipments_index_only_shows_shipments_from_current_store
-    store_a_id = SecureRandom.uuid
-    store_b_id = SecureRandom.uuid
+    store_a_id = register_store("Store A")
+    store_b_id = register_store("Store B")
 
-    post "/admin/stores", params: { store_id: store_a_id, name: "Store A" }
-    post "/admin/stores", params: { store_id: store_b_id, name: "Store B" }
+    add_available_vat_rate(10)
 
     shopify_id = register_customer("Shopify")
     async_remote_id = register_product("Async Remote", 39, 10)
 
-    create_shipment_in_store(shopify_id, async_remote_id, store_a_id, "123 Store A St")
     create_shipment_in_store(shopify_id, async_remote_id, store_b_id, "456 Store B Ave")
+    create_shipment_in_store(shopify_id, async_remote_id, store_a_id, "123 Store A St")
 
-    post "/switch_store", params: { store_id: store_a_id }
     get "/shipments"
 
     assert_response :success
     assert_select("td", "123 Store A St Apt 1 San Francisco US")
-    assert_select("td", {text: "456 Store B Ave Apt 1 San Francisco US", count: 0})
+    refute_select("td", "456 Store B Ave Apt 1 San Francisco US")
   end
 
   private
