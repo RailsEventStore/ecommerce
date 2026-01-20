@@ -47,7 +47,7 @@ web:
 	@bin/rails server -p 3000
 
 test-mutant-runner: tailwind ## Run tests with parallel jobs using mutant test runner. Use MUTANT_OPTS for additional mutant options.
-	@RAILS_ENV=test bundle exec mutant test $(MUTANT_OPTS)
+	@bundle exec mutant test $(MUTANT_OPTS)
 
 .DEFAULT_GOAL := help
 .PHONY: install dev tailwind mutate mutate-changes test help css web test-mutant-runner
