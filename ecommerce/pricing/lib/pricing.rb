@@ -1,5 +1,6 @@
 require "infra"
 require_relative "pricing/discounts"
+require_relative "pricing/coupon_discount"
 require_relative "pricing/coupon"
 require_relative "pricing/commands"
 require_relative "pricing/events"

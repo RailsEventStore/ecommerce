@@ -92,12 +92,14 @@ module Pricing
       )
     end
 
-    def use_coupon(coupon_id, discount)
+    def use_coupon(coupon_id, discount_raw)
+      discount = discount_raw.is_a?(CouponDiscount) ? discount_raw : CouponDiscount.parse(discount_raw)
+
       apply CouponUsed.new(
         data: {
           order_id: @id,
           coupon_id: coupon_id,
-          discount: discount
+          discount: discount.to_d
         }
       )
     end

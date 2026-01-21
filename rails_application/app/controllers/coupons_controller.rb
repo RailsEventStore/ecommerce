@@ -9,29 +9,34 @@ class CouponsController < ApplicationController
 
   def create
     @coupon_id = params[:coupon_id].presence || SecureRandom.uuid
-    
-    discount = validated_discount(params[:discount])
-    return render_invalid_discount unless discount
+
+    discount = Pricing::CouponDiscount.parse(params[:discount])
 
     ActiveRecord::Base.transaction do
       create_coupon(@coupon_id, discount)
     end
+  rescue Pricing::CouponDiscount::UnacceptableRange, Pricing::CouponDiscount::Unparseable
+    flash.now[:alert] = "Discount must be greater than 0 and less than or equal to 100"
+    render "new", status: :unprocessable_entity
   rescue Pricing::Coupon::AlreadyRegistered
-    flash[:notice] = "Coupon is already registered"
-    render "new"
+    flash.now[:alert] = "Coupon is already registered"
+    render "new", status: :unprocessable_entity
+  rescue Infra::Command::Invalid
+    flash.now[:alert] = "Invalid coupon data"
+    render "new", status: :unprocessable_entity
   else
     redirect_to coupons_path, notice: "Coupon was successfully created"
   end
 
   private
 
-  def create_coupon(coupon_id,discount)
+  def create_coupon(coupon_id, discount)
     command_bus.(
       Pricing::RegisterCoupon.new(
         coupon_id: coupon_id,
         name: params[:name],
         code: params[:code],
-        discount: discount
+        discount: discount.to_d
       )
     )
     command_bus.(
@@ -41,21 +46,4 @@ class CouponsController < ApplicationController
       )
     )
   end
-
-  def validated_discount(raw)
-      return nil if raw.blank?
-
-      value = BigDecimal(raw.to_s)
-      return nil unless value > 0 && value <= 100
-
-      value
-  rescue ArgumentError
-      nil
-  end
-
-  def render_invalid_discount
-    flash.now[:alert] = "Discount must be greater than 0 and less than or equal to 100"
-    render "new", status: :unprocessable_entity
-  end
-
 end
