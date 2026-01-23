@@ -1,0 +1,21 @@
+includes:
+  - test
+requires:
+  - ./config/environment
+integration: minitest
+usage: opensource
+coverage_criteria:
+  timeout: true
+  process_abort: true
+matcher:
+  subjects:
+    - AllTodos*
+  ignore:
+    - AllTodos::Todo
+    - AllTodos::Configuration#call
+    - AllTodos::SetDescription#call
+    - AllTodos::UpdateDescription#call
+    - AllTodos::MarkCompleted#call
+    - AllTodos::MarkUncompleted#call
+    - AllTodos.active
+    - AllTodos.completed

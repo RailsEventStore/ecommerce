@@ -1,0 +1,77 @@
+<section class="todoapp">
+  <header class="header">
+    <h1>todos</h1>
+    <%= form_with url: todos_path, method: :post do |f| %>
+      <%= f.text_field :description,
+          placeholder: "What needs to be done?",
+          class: "new-todo",
+          autofocus: true %>
+    <% end %>
+  </header>
+
+  <% if @todos.any? %>
+    <section class="main">
+      <ul class="todo-list">
+        <% @todos.each do |todo| %>
+          <li class="<%= 'completed' if todo.completed %>" data-controller="todo" data-todo-target="li">
+            <div class="view">
+              <%= form_with url: todo.completed ? uncomplete_todo_path(todo.uid) : complete_todo_path(todo.uid), method: :post, class: "toggle-form" do %>
+                <input class="toggle" type="checkbox" <%= 'checked' if todo.completed %> onchange="this.form.requestSubmit()">
+              <% end %>
+
+              <label data-todo-target="label" data-action="dblclick->todo#startEditing"><%= todo.description %></label>
+
+              <%= button_to "", todo_path(todo.uid),
+                  method: :delete,
+                  class: "destroy",
+                  form: { data: { turbo_confirm: "Delete this todo?" } } %>
+            </div>
+
+            <%= form_with url: todo_path(todo.uid), method: :patch, data: { todo_target: "editForm" } do |f| %>
+              <%= f.text_field :description,
+                  value: todo.description,
+                  class: "edit",
+                  data: {
+                    todo_target: "edit",
+                    action: "blur->todo#save keydown->todo#save"
+                  } %>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+    </section>
+  <% end %>
+
+  <% if @has_todos %>
+    <footer class="footer">
+      <span class="todo-count">
+        <strong><%= @active_count %></strong>
+        <%= @active_count == 1 ? 'item' : 'items' %> left
+      </span>
+
+      <ul class="filters">
+        <li>
+          <%= link_to "All", root_path, class: @filter == 'all' ? 'selected' : '' %>
+        </li>
+        <li>
+          <%= link_to "Active", active_path, class: @filter == 'active' ? 'selected' : '' %>
+        </li>
+        <li>
+          <%= link_to "Completed", completed_path, class: @filter == 'completed' ? 'selected' : '' %>
+        </li>
+      </ul>
+
+      <% if @has_completed %>
+        <%= button_to "Clear completed", clear_completed_todos_path,
+            method: :delete,
+            class: "clear-completed" %>
+      <% end %>
+    </footer>
+  <% end %>
+</section>
+
+<footer class="info">
+  <p>Double-click to edit a todo</p>
+  <p>Created by <a href="https://arkency.com">Arkency</a></p>
+  <p>Influenced by <a href="http://todomvc.com">TodoMVC</a></p>
+</footer>
