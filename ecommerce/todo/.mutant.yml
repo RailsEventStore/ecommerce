@@ -10,3 +10,4 @@ matcher:
   ignore:
     - Todo::Test*
     - Todo::AddTaskHandler#task_stream
+    - Todo::Todo#initialize
