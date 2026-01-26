@@ -1,4 +1,4 @@
-require_relative "../../../ecommerce/configuration"
+require_relative "../../../domains/configuration"
 require_relative "../../../infra/lib/infra"
 
 class Configuration

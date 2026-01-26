@@ -1,13 +1,13 @@
-CONTEXTS = $(shell find ecommerce -maxdepth 1 -mindepth 1 -type d -exec basename {} \;)
+CONTEXTS = $(shell find domains -maxdepth 1 -mindepth 1 -type d -exec basename {} \;)
 
 $(addprefix install-, $(CONTEXTS)):
-	@make -C ecommerce/$(subst install-,,$@) install
+	@make -C domains/$(subst install-,,$@) install
 
 $(addprefix test-, $(CONTEXTS)):
-	@make -C ecommerce/$(subst test-,,$@) test
+	@make -C domains/$(subst test-,,$@) test
 
 $(addprefix mutate-, $(CONTEXTS)):
-	@make -C ecommerce/$(subst mutate-,,$@) mutate
+	@make -C domains/$(subst mutate-,,$@) mutate
 
 install-rails:
 	@make -C apps/rails_application install

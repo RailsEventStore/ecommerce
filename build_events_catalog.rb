@@ -2,7 +2,7 @@ require 'fileutils'
 
 class BuildEventsCatalog
   PATH = "./"
-  SOURCE_PATH = "./ecommerce/"
+  SOURCE_PATH = "./domains/"
   EVENTS_CATALOG_DIRECTORY_NAME = "events_catalog"
   EVENT_TYPE = "Infra::Event"
   CONFIG_FILE = "./eventcatalog.config.js"

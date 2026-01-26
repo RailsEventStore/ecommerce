@@ -1,5 +1,5 @@
-require_relative "../../../../ecommerce/pricing/lib/pricing"
-require_relative "../../../../ecommerce/product_catalog//lib/product_catalog"
+require_relative "../../../../domains/pricing/lib/pricing"
+require_relative "../../../../domains/product_catalog//lib/product_catalog"
 require_relative "../../../../infra/lib/infra"
 require "rails_event_store"
 require "arkency/command_bus"

@@ -8,11 +8,11 @@ on:
     branches:
       - master
     paths:
-      - "ecommerce/pricing/Gemfile.lock"
+      - "domains/pricing/Gemfile.lock"
       - ".github/workflows/pricing-coverage.yml"
   pull_request:
     paths:
-      - "ecommerce/pricing/Gemfile.lock"
+      - "domains/pricing/Gemfile.lock"
       - ".github/workflows/pricing-coverage.yml"
   schedule:
     - cron: '0 17 * * *'
@@ -25,9 +25,9 @@ jobs:
         with:
           ruby-version: ruby-3.4.6
           bundler-cache: true
-          working-directory: ecommerce/pricing
+          working-directory: domains/pricing
       - name: Run tests
-        run: make -C ecommerce/pricing test
+        run: make -C domains/pricing test
   mutate:
     needs: test
     runs-on: ubuntu-24.04
@@ -37,6 +37,6 @@ jobs:
         with:
           ruby-version: ruby-3.4.6
           bundler-cache: true
-          working-directory: ecommerce/pricing
+          working-directory: domains/pricing
       - name: Run full mutation testing
-        run: make -C ecommerce/pricing mutate
+        run: make -C domains/pricing mutate

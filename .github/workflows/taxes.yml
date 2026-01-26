@@ -9,7 +9,7 @@ jobs:
     strategy:
       fail-fast: false
     env:
-      WORKING_DIRECTORY: ecommerce/taxes
+      WORKING_DIRECTORY: domains/taxes
     steps:
       - uses: actions/checkout@v3
       - uses: ruby/setup-ruby@v1
@@ -40,7 +40,7 @@ jobs:
     strategy:
       fail-fast: false
     env:
-      WORKING_DIRECTORY: ecommerce/taxes
+      WORKING_DIRECTORY: domains/taxes
     steps:
       - uses: actions/checkout@v3
       - uses: ruby/setup-ruby@v1

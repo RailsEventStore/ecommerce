@@ -33,10 +33,10 @@ This project has several high-level goals:
 
 Event storming (events and commands) - [Miro documentation](https://miro.com/app/board/o9J_l7eqFP0=/)
 
-Domains exist in directories starting at [ecommerce](/ecommerce).
+Domains exist in directories starting at [domains](/domains).
 
 ```
-ecommerce/
+domains/
 ├── crm
 ├── inventory
 ├── invoicing
@@ -50,15 +50,15 @@ ecommerce/
 
 (almost) Each one has a README introduction:
 
-* [CRM](ecommerce/crm/README.md)
-* [Inventory](ecommerce/inventory/README.md)
-* [Invoicing](ecommerce/invoicing/README.md)
-* [Ordering](ecommerce/ordering/README.md)
-* [Payments](ecommerce/payments/README.md)
-* [Pricing](ecommerce/pricing/README.md)
-* [Product Catalog](ecommerce/product_catalog/README.md)
-* [Shipping](ecommerce/shipping/README.md)
-* [Taxes](ecommerce/taxes/README.md)
+* [CRM](domains/crm/README.md)
+* [Inventory](domains/inventory/README.md)
+* [Invoicing](domains/invoicing/README.md)
+* [Ordering](domains/ordering/README.md)
+* [Payments](domains/payments/README.md)
+* [Pricing](domains/pricing/README.md)
+* [Product Catalog](domains/product_catalog/README.md)
+* [Shipping](domains/shipping/README.md)
+* [Taxes](domains/taxes/README.md)
 
 ## Application
 
