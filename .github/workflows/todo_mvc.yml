@@ -1,0 +1,30 @@
+name: todo_mvc
+on:
+  push:
+  pull_request:
+    types: [opened, reopened]
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: todo_mvc_test
+          POSTGRES_PASSWORD: secret
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ruby-3.4.6
+          bundler-cache: true
+          working-directory: apps/todo_mvc
+      - name: Run tests
+        run: bundle exec rails test
+        working-directory: apps/todo_mvc
+        env:
+          DATABASE_URL: "postgres://postgres:secret@localhost:5432/todo_mvc_test"
+          RAILS_ENV: test
