@@ -1,28 +1,19 @@
 module Infra
   class EventStore < SimpleDelegator
-    def self.main
-      require_relative "../../../apps/rails_application/lib/transformations/refund_to_return_event_mapper" rescue nil
-
-      begin
-        mapper = RubyEventStore::Mappers::PipelineMapper.new(
-          RubyEventStore::Mappers::Pipeline.new(
-            preserve_types,
-            Transformations::RefundToReturnEventMapper.new(
-              'Ordering::DraftRefundCreated' => 'Ordering::DraftReturnCreated',
-              'Ordering::ItemAddedToRefund' => 'Ordering::ItemAddedToReturn',
-              'Ordering::ItemRemovedFromRefund' => 'Ordering::ItemRemovedFromReturn'
-            ),
-            RubyEventStore::Mappers::Transformation::SymbolizeMetadataKeys.new,
-            to_domain_event: RubyEventStore::Mappers::Transformation::DomainEvent.new
-          )
-        )
-        client = RailsEventStore::JSONClient.new(mapper: mapper)
-      rescue => e
-        puts "Mapper creation failed: #{e.message}"
-        client = RailsEventStore::JSONClient.new
-      end
-
+    def self.main(mapper: nil)
+      mapper ||= default_mapper
+      client = RailsEventStore::JSONClient.new(mapper: mapper)
       new(client)
+    end
+
+    def self.default_mapper
+      RubyEventStore::Mappers::PipelineMapper.new(
+        RubyEventStore::Mappers::Pipeline.new(
+          preserve_types,
+          RubyEventStore::Mappers::Transformation::SymbolizeMetadataKeys.new,
+          to_domain_event: RubyEventStore::Mappers::Transformation::DomainEvent.new
+        )
+      )
     end
 
     def self.in_memory
@@ -52,8 +43,6 @@ module Infra
         expected_version: expected_version
       )
     end
-
-    private
 
     def self.preserve_types
       preserve_types = RubyEventStore::Mappers::Transformation::PreserveTypes.new
