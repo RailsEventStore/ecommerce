@@ -67,3 +67,21 @@ jobs:
           DATABASE_URL: "postgres://postgres:secret@localhost:5432/cqrs-es-sample-with-res_test"
           RAILS_ENV: test
           MUTANT_OPTS: --jobs 4
+  notify:
+    needs: [test, mutate]
+    runs-on: ubuntu-24.04
+    if: ${{ always() && github.event_name == 'schedule' }}
+    steps:
+      - uses: 8398a7/action-slack@v3
+        with:
+          status: custom
+          fields: workflow,job,commit,repo,ref,author,took
+          custom_payload: |
+            {
+              attachments: [{
+                color: '${{ needs.mutate.result }}' === 'success' && '${{ needs.test.result }}' === 'success' ? 'good' : 'danger',
+                text: `${process.env.AS_WORKFLOW} ${ '${{ needs.mutate.result }}' === 'success' && '${{ needs.test.result }}' === 'success' ? 'succeeded' : 'failed' }\ntest: ${{ needs.test.result }}, mutate: ${{ needs.mutate.result }}`,
+              }]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.COVERAGE_SLACK_WEBHOOK_URL }}
