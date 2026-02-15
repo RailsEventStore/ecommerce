@@ -4,6 +4,14 @@ module PublicOffer
   class ProductPriceChangedTest < InMemoryTestCase
     cover "PublicOffer*"
 
+    def configure(event_store, command_bus)
+      PublicOffer::Configuration.new(event_store).call
+      Ecommerce::Configuration.new(
+        number_generator: Rails.configuration.number_generator,
+        payment_gateway: Rails.configuration.payment_gateway
+      ).call(event_store, command_bus)
+    end
+
     def test_reflects_change
       product_id = prepare_product
       unchanged_product_id = prepare_product

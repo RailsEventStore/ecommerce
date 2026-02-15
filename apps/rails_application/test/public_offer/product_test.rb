@@ -4,6 +4,10 @@ module PublicOffer
   class ProductTest < InMemoryTestCase
     cover "PublicOffer*"
 
+    def configure(event_store, _command_bus)
+      PublicOffer::Configuration.new(event_store).call
+    end
+
     def test_store_id_is_set_when_product_registered_in_store
       event_store.publish(product_registered)
       event_store.publish(product_registered_in_store)
