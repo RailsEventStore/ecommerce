@@ -4,6 +4,14 @@ module ClientOrders
   class ItemRemovedFromBasketTest < InMemoryTestCase
     cover "ClientOrders*"
 
+    def configure(event_store, command_bus)
+      ClientOrders::Configuration.new.call(event_store)
+      Ecommerce::Configuration.new(
+        number_generator: Rails.configuration.number_generator,
+        payment_gateway: Rails.configuration.payment_gateway
+      ).call(event_store, command_bus)
+    end
+
     def test_remove_item_when_quantity_gt_1
       event_store = Rails.configuration.event_store
 

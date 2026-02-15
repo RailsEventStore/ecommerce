@@ -4,6 +4,14 @@ module ClientOrders
   class ItemAddedToBasketTest < InMemoryTestCase
     cover "ClientOrders*"
 
+    def configure(event_store, command_bus)
+      ClientOrders::Configuration.new.call(event_store)
+      Ecommerce::Configuration.new(
+        number_generator: Rails.configuration.number_generator,
+        payment_gateway: Rails.configuration.payment_gateway
+      ).call(event_store, command_bus)
+    end
+
     def test_add_new_item
       event_store = Rails.configuration.event_store
 
