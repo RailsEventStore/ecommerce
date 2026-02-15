@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_01_01_164747) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_06_120001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -115,6 +115,26 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_01_164747) do
     t.decimal "paid_orders_summary", precision: 8, scale: 2, default: "0.0"
     t.uuid "account_id"
     t.uuid "store_id"
+  end
+
+  create_table "deals", force: :cascade do |t|
+    t.uuid "uid", null: false
+    t.string "order_number"
+    t.string "customer_name"
+    t.string "stage", default: "Draft", null: false
+    t.decimal "value", precision: 8, scale: 2
+    t.uuid "store_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["uid"], name: "index_deals_on_uid", unique: true
+  end
+
+  create_table "deals_customers", force: :cascade do |t|
+    t.uuid "customer_id", null: false
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["customer_id"], name: "index_deals_customers_on_customer_id", unique: true
   end
 
   create_table "event_store_events", id: :serial, force: :cascade do |t|

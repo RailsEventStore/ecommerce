@@ -1,0 +1,15 @@
+<% content_for(:header) do %>
+  CRM
+<% end %>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+  <%= link_to customers_path, class: "block p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-50" do %>
+    <h2 class="mb-2 text-2xl font-bold tracking-tight text-gray-900">Customers</h2>
+    <p class="text-gray-600">Manage customers and VIP promotions</p>
+  <% end %>
+
+  <%= link_to deals_path, class: "block p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-50" do %>
+    <h2 class="mb-2 text-2xl font-bold tracking-tight text-gray-900">Deals</h2>
+    <p class="text-gray-600">Track and manage deals pipeline</p>
+  <% end %>
+</div>

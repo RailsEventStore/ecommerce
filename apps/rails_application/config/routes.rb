@@ -25,6 +25,10 @@ Rails.application.routes.draw do
     end
   end
 
+  get "crm", to: "crm#index"
+
+  resources :deals, only: [:index]
+
   resources :shipments, only: [:index, :show]
 
   resources :events_catalog, only: [:index]

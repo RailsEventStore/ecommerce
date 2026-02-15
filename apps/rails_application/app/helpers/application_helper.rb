@@ -1,11 +1,25 @@
 module ApplicationHelper
   def navigation_link(label, path)
+    active = current_page?(path) || (label == "CRM" && crm_section?)
     current_link_to label, path,
       class: class_names(
         "px-3 py-2 rounded-md text-sm font-medium",
-        "bg-gray-900 text-white" => current_page?(path),
-        "text-gray-300 hover:bg-gray-700 hover:text-white" => !current_page?(path)
+        "bg-gray-900 text-white" => active,
+        "text-gray-300 hover:bg-gray-700 hover:text-white" => !active
       )
+  end
+
+  def crm_tab_link(label, path)
+    link_to label, path,
+      class: class_names(
+        "whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm",
+        "border-blue-500 text-blue-600" => current_page?(path),
+        "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" => !current_page?(path)
+      )
+  end
+
+  def crm_section?
+    request.path.start_with?("/customers", "/deals", "/crm")
   end
 
   def action_button(css_classes, type: "button", form: nil, data: {})

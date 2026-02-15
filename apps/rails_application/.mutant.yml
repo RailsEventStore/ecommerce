@@ -24,6 +24,7 @@ matcher:
     - Invoices*
     - Shipments*
     - VatRates*
+    - Deals*
   ignore:
     - Coupons::Configuration#call
     - Orders::Configuration#call
@@ -63,3 +64,5 @@ matcher:
     - Processes::TotalOrderValue#fetch_id
     - Processes::InvoiceGeneration#fetch_id
     - Processes::ApplyTimePromotion#initialize
+    - Deals::Configuration#call
+    - Deals::Rendering::DealsBoard*

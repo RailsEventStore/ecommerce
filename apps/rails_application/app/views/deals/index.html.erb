@@ -1,0 +1,7 @@
+<% content_for(:header) do %>
+  Deals
+<% end %>
+
+<%= render "crm_sub_navigation" %>
+
+<%= Deals::Rendering::DealsBoard.build(self, @deals).to_s.html_safe %>
