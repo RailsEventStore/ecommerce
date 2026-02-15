@@ -14,9 +14,7 @@ class InMemoryTestCase < ActiveSupport::TestCase
     Rails.configuration.event_store = Infra::EventStore.in_memory
     Rails.configuration.command_bus = Arkency::CommandBus.new
 
-    Configuration.new.call(
-      Rails.configuration.event_store, Rails.configuration.command_bus
-    )
+    configure(Rails.configuration.event_store, Rails.configuration.command_bus)
     result
   end
 
@@ -25,6 +23,10 @@ class InMemoryTestCase < ActiveSupport::TestCase
     Rails.configuration.event_store = @previous_event_store
     Rails.configuration.command_bus = @previous_command_bus
     result
+  end
+
+  def configure(event_store, command_bus)
+    Configuration.new.call(event_store, command_bus)
   end
 
   def run_command(command)
