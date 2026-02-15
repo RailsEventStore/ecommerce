@@ -4,16 +4,11 @@ module ClientOrders
   class OrderCancelledTest < InMemoryTestCase
     cover "ClientOrders*"
 
-    def configure(event_store, command_bus)
+    def configure(event_store, _command_bus)
       ClientOrders::Configuration.new.call(event_store)
-      Ecommerce::Configuration.new(
-        number_generator: Rails.configuration.number_generator,
-        payment_gateway: Rails.configuration.payment_gateway
-      ).call(event_store, command_bus)
     end
 
     def test_order_confirmed
-      event_store = Rails.configuration.event_store
       customer_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
@@ -25,9 +20,31 @@ module ClientOrders
         }
       ))
 
-      create_product(product_id, "Async Remote", 30)
-      run_command(Pricing::AddPriceItem.new(order_id: order_id, product_id: product_id, price: 30))
-      run_command(Pricing::AcceptOffer.new(order_id: order_id))
+      event_store.publish(ProductCatalog::ProductRegistered.new(data: { product_id: product_id }))
+      event_store.publish(ProductCatalog::ProductNamed.new(data: { product_id: product_id, name: "Async Remote" }))
+      event_store.publish(Pricing::PriceSet.new(data: { product_id: product_id, price: 30 }))
+
+      event_store.publish(
+        Pricing::PriceItemAdded.new(
+          data: {
+            order_id: order_id,
+            product_id: product_id,
+            base_price: 30,
+            price: 30,
+            base_total_value: 30,
+            total_value: 30,
+          }
+        )
+      )
+
+      event_store.publish(
+        Pricing::OfferAccepted.new(
+          data: {
+            order_id: order_id,
+            order_lines: [{ product_id: product_id, quantity: 1 }]
+          }
+        )
+      )
 
       event_store.publish(
         Fulfillment::OrderCancelled.new(
@@ -45,12 +62,8 @@ module ClientOrders
 
     private
 
-    def create_product(product_id, name, price)
-      vat_rate = Infra::Types::VatRate.new(rate: 20, code: "20")
-      run_command(ProductCatalog::RegisterProduct.new(product_id: product_id))
-      run_command(ProductCatalog::NameProduct.new(product_id: product_id, name: name))
-      run_command(Pricing::SetPrice.new(product_id: product_id, price: price))
-      Rails.configuration.event_store.publish(Taxes::VatRateSet.new(data: { product_id: product_id, vat_rate: vat_rate }))
+    def event_store
+      Rails.configuration.event_store
     end
   end
 end

@@ -4,31 +4,17 @@ module ClientOrders
   class OrderExpiredTest < InMemoryTestCase
     cover "ClientOrders*"
 
-    def configure(event_store, command_bus)
+    def configure(event_store, _command_bus)
       ClientOrders::Configuration.new.call(event_store)
-      Ecommerce::Configuration.new(
-        number_generator: Rails.configuration.number_generator,
-        payment_gateway: Rails.configuration.payment_gateway
-      ).call(event_store, command_bus)
     end
 
     def test_order_expired
-      event_store = Rails.configuration.event_store
       customer_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
-      run_command(
-        ProductCatalog::RegisterProduct.new(
-          product_id: product_id
-        )
-      )
-      run_command(
-        ProductCatalog::NameProduct.new(
-          product_id: product_id,
-          name: "Async Remote"
-        )
-      )
-      run_command(Pricing::SetPrice.new(product_id: product_id, price: 39))
+      event_store.publish(ProductCatalog::ProductRegistered.new(data: { product_id: product_id }))
+      event_store.publish(ProductCatalog::ProductNamed.new(data: { product_id: product_id, name: "Async Remote" }))
+      event_store.publish(Pricing::PriceSet.new(data: { product_id: product_id, price: 39 }))
 
       event_store.publish(Crm::CustomerRegistered.new(
         data: {
@@ -62,6 +48,12 @@ module ClientOrders
       assert_not_empty(orders)
       assert_equal(1, orders.count)
       assert_equal("Expired", orders.first.state)
+    end
+
+    private
+
+    def event_store
+      Rails.configuration.event_store
     end
   end
 end

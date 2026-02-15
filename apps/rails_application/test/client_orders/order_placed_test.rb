@@ -4,17 +4,11 @@ module ClientOrders
   class OrderPlacedTest < InMemoryTestCase
     cover "ClientOrders*"
 
-    def configure(event_store, command_bus)
+    def configure(event_store, _command_bus)
       ClientOrders::Configuration.new.call(event_store)
-      Ecommerce::Configuration.new(
-        number_generator: Rails.configuration.number_generator,
-        payment_gateway: Rails.configuration.payment_gateway
-      ).call(event_store, command_bus)
-      Processes::Configuration.new.call(event_store, command_bus)
     end
 
     def test_order_placed
-      event_store = Rails.configuration.event_store
       customer_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
@@ -28,18 +22,18 @@ module ClientOrders
       ))
 
       event_store.publish(
-        Pricing::OfferAccepted.new(
-          data: {
-            order_id: order_id,
-            order_lines: [{ product_id: product_id, quantity: 1 }]
-          }
-        )
-      )
-      event_store.publish(
         Crm::CustomerAssignedToOrder.new(
           data: {
             order_id: order_id,
             customer_id: customer_id,
+          }
+        )
+      )
+      event_store.publish(
+        Fulfillment::OrderRegistered.new(
+          data: {
+            order_id: order_id,
+            order_number: order_number
           }
         )
       )
@@ -54,7 +48,6 @@ module ClientOrders
     end
 
     def test_assign_customer_first
-      event_store = Rails.configuration.event_store
       customer_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
       order_number = Fulfillment::FakeNumberGenerator::FAKE_NUMBER
@@ -65,12 +58,6 @@ module ClientOrders
           data: {
             customer_id: customer_id,
             order_id: order_id
-          }
-        ),
-        Pricing::OfferAccepted.new(
-          data: {
-            order_id: order_id,
-            order_lines: [{ product_id: SecureRandom.uuid, quantity: 1 }]
           }
         ),
         Fulfillment::OrderRegistered.new(
@@ -96,6 +83,10 @@ module ClientOrders
       assert_equal(1, links_to_orders.size)
       assert_equal("/client_orders/#{order_id}", links_to_orders.first.attributes["href"].value)
       assert_equal(order_number, links_to_orders.first.text)
+    end
+
+    def event_store
+      Rails.configuration.event_store
     end
   end
 end

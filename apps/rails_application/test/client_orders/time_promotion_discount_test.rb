@@ -4,58 +4,44 @@ module ClientOrders
   class TimePromotionDiscountTest < InMemoryTestCase
     cover "ClientOrders*"
 
-    def configure(event_store, command_bus)
+    def configure(event_store, _command_bus)
       ClientOrders::Configuration.new.call(event_store)
-      Ecommerce::Configuration.new(
-        number_generator: Rails.configuration.number_generator,
-        payment_gateway: Rails.configuration.payment_gateway
-      ).call(event_store, command_bus)
-      Orders::Configuration.new.call(event_store)
-      Processes::Configuration.new.call(event_store, command_bus)
     end
 
     def test_time_promotion_set
       customer_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
-      store_id = SecureRandom.uuid
 
-      travel_to(Time.utc(2015, 1, 1, 12, 0, 0)) do
-        register_store(store_id)
-        customer_registered(customer_id)
-        prepare_product(product_id)
-        create_active_time_promotion(50, store_id)
-        register_offer(order_id, store_id)
-        item_added_to_basket(order_id, product_id)
+      customer_registered(customer_id)
+      prepare_product(product_id)
+      item_added_to_basket(order_id, product_id)
+      set_time_promotion_discount(order_id, 50)
+      update_order_total_value(order_id, 50, 25)
 
-        order = ClientOrders::Order.find_by(order_uid: order_id)
-        assert_equal 50, order.total_value
-        assert_equal 25, order.discounted_value
-        assert_equal 50, order.time_promotion_discount["discount_value"]
-        assert_equal "time_promotion_discount", order.time_promotion_discount["type"]
-        assert_nil order.percentage_discount
-      end
+      order = ClientOrders::Order.find_by(order_uid: order_id)
+      assert_equal(50, order.total_value)
+      assert_equal(25, order.discounted_value)
+      assert_equal(50, order.time_promotion_discount["discount_value"])
+      assert_equal("time_promotion_discount", order.time_promotion_discount["type"])
+      assert_nil(order.percentage_discount)
     end
 
     def test_does_not_remove_percentage_discount_when_removing_time_promotion
       customer_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
-      store_id = SecureRandom.uuid
 
-      base_time = Time.utc(2014, 1, 1, 12, 0, 0)
-      travel_to(base_time) do
-        register_store(store_id)
-        customer_registered(customer_id)
-        prepare_product(product_id)
-        create_active_time_promotion(50, store_id)
-        register_offer(order_id, store_id)
-        set_percentage_discount(order_id)
-      end
+      customer_registered(customer_id)
+      prepare_product(product_id)
+      item_added_to_basket(order_id, product_id)
+      update_order_total_value(order_id, 50, 50)
+      set_percentage_discount(order_id)
+      set_time_promotion_discount(order_id, 50)
+      update_order_total_value(order_id, 50, 25)
 
-      travel_to(base_time + 2.days) do
-        item_added_to_basket(order_id, product_id)
-      end
+      remove_time_promotion_discount(order_id)
+      update_order_total_value(order_id, 50, 45)
 
       order = ClientOrders::Order.find_by(order_uid: order_id)
       assert_equal(50, order.total_value)
@@ -66,46 +52,73 @@ module ClientOrders
 
     private
 
-    def create_active_time_promotion(discount, store_id)
-      time_promotion_id = SecureRandom.uuid
-      run_command(
-        Pricing::CreateTimePromotion.new(
-          time_promotion_id: time_promotion_id,
-          discount: discount,
-          start_time: Time.current - 1,
-          end_time: Time.current + 1,
-          label: "Last Minute"
-        )
-      )
-      run_command(
-        Stores::RegisterTimePromotion.new(
-          time_promotion_id: time_promotion_id,
-          store_id: store_id
-        )
-      )
+    def set_time_promotion_discount(order_id, amount)
+      event_store.publish(Pricing::PercentageDiscountSet.new(
+        data: {
+          order_id: order_id,
+          type: Pricing::Discounts::TIME_PROMOTION_DISCOUNT,
+          amount: amount
+        }
+      ))
+    end
+
+    def remove_time_promotion_discount(order_id)
+      event_store.publish(Pricing::PercentageDiscountRemoved.new(
+        data: {
+          order_id: order_id,
+          type: Pricing::Discounts::TIME_PROMOTION_DISCOUNT
+        }
+      ))
     end
 
     def set_percentage_discount(order_id)
-      run_command(Pricing::SetPercentageDiscount.new(order_id: order_id, amount: 10))
+      event_store.publish(Pricing::PercentageDiscountSet.new(
+        data: {
+          order_id: order_id,
+          type: Pricing::Discounts::GENERAL_DISCOUNT,
+          amount: 10
+        }
+      ))
     end
 
     def item_added_to_basket(order_id, product_id)
-      run_command(Pricing::AddPriceItem.new(product_id: product_id, order_id: order_id, price: 50))
+      event_store.publish(Pricing::PriceItemAdded.new(
+        data: {
+          order_id: order_id,
+          product_id: product_id,
+          base_price: 50,
+          price: 50
+        }
+      ))
+    end
+
+    def update_order_total_value(order_id, total_amount, discounted_amount)
+      event_store.publish(Processes::TotalOrderValueUpdated.new(
+        data: {
+          order_id: order_id,
+          total_amount: total_amount,
+          discounted_amount: discounted_amount
+        }
+      ))
     end
 
     def prepare_product(product_id)
-      run_command(
-        ProductCatalog::RegisterProduct.new(
-          product_id: product_id,
+      event_store.publish(
+        ProductCatalog::ProductRegistered.new(
+          data: {
+            product_id: product_id
+          }
         )
       )
-      run_command(
-        ProductCatalog::NameProduct.new(
-          product_id: product_id,
-          name: "Async Remote"
+      event_store.publish(
+        ProductCatalog::ProductNamed.new(
+          data: {
+            product_id: product_id,
+            name: "Async Remote"
+          }
         )
       )
-      run_command(Pricing::SetPrice.new(product_id: product_id, price: 50))
+      event_store.publish(Pricing::PriceSet.new(data: { product_id: product_id, price: 50 }))
     end
 
     def customer_registered(customer_id)
@@ -114,15 +127,6 @@ module ClientOrders
 
     def event_store
       Rails.configuration.event_store
-    end
-
-    def register_store(store_id)
-      run_command(Stores::RegisterStore.new(store_id: store_id))
-    end
-
-    def register_offer(order_id, store_id)
-      run_command(Pricing::DraftOffer.new(order_id: order_id))
-      run_command(Stores::RegisterOffer.new(order_id: order_id, store_id: store_id))
     end
   end
 end

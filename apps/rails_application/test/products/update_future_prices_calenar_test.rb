@@ -6,20 +6,13 @@ module Products
 
     def configure(event_store, command_bus)
       Products::Configuration.new(event_store).call
-      Ecommerce::Configuration.new(
-        number_generator: Rails.configuration.number_generator,
-        payment_gateway: Rails.configuration.payment_gateway
-      ).call(event_store, command_bus)
     end
 
     def test_add_future_price
       product_id = SecureRandom.uuid
-      product_registered = ProductCatalog::ProductRegistered.new(data: { product_id: product_id })
-      product_named = ProductCatalog::ProductNamed.new(data: { product_id: product_id, name: "Async Remote" })
-      set_price = Pricing::PriceSet.new(data: { product_id: product_id, price: 10 })
-      event_store.publish(product_registered)
-      event_store.publish(product_named)
-      event_store.publish(set_price)
+      event_store.publish(ProductCatalog::ProductRegistered.new(data: { product_id: product_id }))
+      event_store.publish(ProductCatalog::ProductNamed.new(data: { product_id: product_id, name: "Async Remote" }))
+      event_store.publish(Pricing::PriceSet.new(data: { product_id: product_id, price: 10 }))
 
       date_1 = 1.hour.from_now
       date_2 = 2.hours.from_now
@@ -28,9 +21,9 @@ module Products
       product = Product.find_by_id(product_id)
       assert_equal [], product.future_prices_calendar
 
-      run_command(Pricing::SetFuturePrice.new(product_id: product_id, price: BigDecimal("12.01"), valid_since: date_3 ))
-      run_command(Pricing::SetFuturePrice.new(product_id: product_id, price: BigDecimal("1.0"), valid_since: date_1 ))
-      run_command(Pricing::SetFuturePrice.new(product_id: product_id, price: BigDecimal("2.0"), valid_since: date_2 ))
+      publish_price_set(product_id, BigDecimal("12.01"), date_3)
+      publish_price_set(product_id, BigDecimal("1.0"), date_1)
+      publish_price_set(product_id, BigDecimal("2.0"), date_2)
 
       product.reload
       assert_equal 4, product.current_prices_calendar.length
@@ -43,6 +36,15 @@ module Products
     end
 
     private
+
+    def publish_price_set(product_id, price, valid_since)
+      event_store.publish(
+        Pricing::PriceSet.new(
+          data: { product_id: product_id, price: price },
+          metadata: { valid_at: valid_since }
+        )
+      )
+    end
 
     def event_store
       Rails.configuration.event_store

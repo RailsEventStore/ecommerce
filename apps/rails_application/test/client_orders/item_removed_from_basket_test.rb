@@ -4,34 +4,17 @@ module ClientOrders
   class ItemRemovedFromBasketTest < InMemoryTestCase
     cover "ClientOrders*"
 
-    def configure(event_store, command_bus)
+    def configure(event_store, _command_bus)
       ClientOrders::Configuration.new.call(event_store)
-      Ecommerce::Configuration.new(
-        number_generator: Rails.configuration.number_generator,
-        payment_gateway: Rails.configuration.payment_gateway
-      ).call(event_store, command_bus)
     end
 
     def test_remove_item_when_quantity_gt_1
-      event_store = Rails.configuration.event_store
-
       product_id = SecureRandom.uuid
-      run_command(
-        ProductCatalog::RegisterProduct.new(
-          product_id: product_id
-        )
-      )
-      run_command(
-        ProductCatalog::NameProduct.new(
-          product_id: product_id,
-          name: "something"
-        )
-      )
-      run_command(Pricing::SetPrice.new(product_id: product_id, price: 20))
+      event_store.publish(ProductCatalog::ProductRegistered.new(data: { product_id: product_id }))
+      event_store.publish(ProductCatalog::ProductNamed.new(data: { product_id: product_id, name: "something" }))
+      event_store.publish(Pricing::PriceSet.new(data: { product_id: product_id, price: 20 }))
       customer_id = SecureRandom.uuid
-      run_command(
-        Crm::RegisterCustomer.new(customer_id: customer_id, name: "dummy")
-      )
+      event_store.publish(Crm::CustomerRegistered.new(data: { customer_id: customer_id, name: "dummy" }))
       order_id = SecureRandom.uuid
       event_store.publish(
         Pricing::PriceItemAdded.new(
@@ -78,25 +61,12 @@ module ClientOrders
     end
 
     def test_remove_item_when_quantity_eq_1
-      event_store = Rails.configuration.event_store
-
       product_id = SecureRandom.uuid
-      run_command(
-        ProductCatalog::RegisterProduct.new(
-          product_id: product_id
-        )
-      )
-      run_command(
-        ProductCatalog::NameProduct.new(
-          product_id: product_id,
-          name: "Async Remote"
-        )
-      )
-      run_command(Pricing::SetPrice.new(product_id: product_id, price: 20))
+      event_store.publish(ProductCatalog::ProductRegistered.new(data: { product_id: product_id }))
+      event_store.publish(ProductCatalog::ProductNamed.new(data: { product_id: product_id, name: "Async Remote" }))
+      event_store.publish(Pricing::PriceSet.new(data: { product_id: product_id, price: 20 }))
       customer_id = SecureRandom.uuid
-      run_command(
-        Crm::RegisterCustomer.new(customer_id: customer_id, name: "dummy")
-      )
+      event_store.publish(Crm::CustomerRegistered.new(data: { customer_id: customer_id, name: "dummy" }))
       order_id = SecureRandom.uuid
       event_store.publish(
         Pricing::PriceItemAdded.new(
@@ -127,41 +97,17 @@ module ClientOrders
     end
 
     def test_remove_item_when_there_is_another_item
-      event_store = Rails.configuration.event_store
-
       product_id = SecureRandom.uuid
-      run_command(
-        ProductCatalog::RegisterProduct.new(
-          product_id: product_id
-        )
-      )
-      run_command(
-        ProductCatalog::NameProduct.new(
-          product_id: product_id,
-          name: "test"
-        )
-      )
-      run_command(Pricing::SetPrice.new(product_id: product_id, price: 20))
+      event_store.publish(ProductCatalog::ProductRegistered.new(data: { product_id: product_id }))
+      event_store.publish(ProductCatalog::ProductNamed.new(data: { product_id: product_id, name: "test" }))
+      event_store.publish(Pricing::PriceSet.new(data: { product_id: product_id, price: 20 }))
 
       another_product_id = SecureRandom.uuid
-      run_command(
-        ProductCatalog::RegisterProduct.new(
-          product_id: another_product_id
-        )
-      )
-      run_command(
-        ProductCatalog::NameProduct.new(
-          product_id: another_product_id,
-          name: "test2"
-        )
-      )
-      run_command(
-        Pricing::SetPrice.new(product_id: another_product_id, price: 20)
-      )
+      event_store.publish(ProductCatalog::ProductRegistered.new(data: { product_id: another_product_id }))
+      event_store.publish(ProductCatalog::ProductNamed.new(data: { product_id: another_product_id, name: "test2" }))
+      event_store.publish(Pricing::PriceSet.new(data: { product_id: another_product_id, price: 20 }))
       customer_id = SecureRandom.uuid
-      run_command(
-        Crm::RegisterCustomer.new(customer_id: customer_id, name: "dummy")
-      )
+      event_store.publish(Crm::CustomerRegistered.new(data: { customer_id: customer_id, name: "dummy" }))
       order_id = SecureRandom.uuid
       event_store.publish(
         Pricing::PriceItemAdded.new(
@@ -217,6 +163,12 @@ module ClientOrders
       assert_equal(product_id, order_lines[0].product_id)
       assert_equal("test", order_lines[0].product_name)
       assert_equal(2, order_lines[0].product_quantity)
+    end
+
+    private
+
+    def event_store
+      Rails.configuration.event_store
     end
   end
 end

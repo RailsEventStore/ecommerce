@@ -6,10 +6,6 @@ module Customers
 
     def configure(event_store, command_bus)
       Customers::Configuration.new.call(event_store)
-      Ecommerce::Configuration.new(
-        number_generator: Rails.configuration.number_generator,
-        payment_gateway: Rails.configuration.payment_gateway
-      ).call(event_store, command_bus)
     end
 
     def test_first_register_then_connect
@@ -17,9 +13,7 @@ module Customers
       account_id = SecureRandom.uuid
 
       register_customer(customer_id)
-      run_command(
-        Authentication::ConnectAccountToClient.new(account_id: account_id, client_id: customer_id)
-      )
+      connect_account(account_id, customer_id)
 
       customer = Customer.find(customer_id)
       assert_equal account_id, customer.account_id
@@ -29,9 +23,7 @@ module Customers
       customer_id = SecureRandom.uuid
       account_id = SecureRandom.uuid
 
-      run_command(
-        Authentication::ConnectAccountToClient.new(account_id: account_id, client_id: customer_id)
-      )
+      connect_account(account_id, customer_id)
       register_customer(customer_id)
 
       customer = Customer.find(customer_id)
@@ -42,7 +34,11 @@ module Customers
     private
 
     def register_customer(customer_id)
-      run_command(Crm::RegisterCustomer.new(customer_id: customer_id, name: "John Doe"))
+      event_store.publish(Crm::CustomerRegistered.new(data: { customer_id: customer_id, name: "John Doe" }))
+    end
+
+    def connect_account(account_id, client_id)
+      event_store.publish(Authentication::AccountConnectedToClient.new(data: { account_id: account_id, client_id: client_id }))
     end
 
     def event_store

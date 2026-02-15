@@ -4,30 +4,15 @@ module ClientOrders
   class ItemAddedToBasketTest < InMemoryTestCase
     cover "ClientOrders*"
 
-    def configure(event_store, command_bus)
+    def configure(event_store, _command_bus)
       ClientOrders::Configuration.new.call(event_store)
-      Ecommerce::Configuration.new(
-        number_generator: Rails.configuration.number_generator,
-        payment_gateway: Rails.configuration.payment_gateway
-      ).call(event_store, command_bus)
     end
 
     def test_add_new_item
-      event_store = Rails.configuration.event_store
-
       product_id = SecureRandom.uuid
-      run_command(
-        ProductCatalog::RegisterProduct.new(
-          product_id: product_id,
-        )
-      )
-      run_command(
-        ProductCatalog::NameProduct.new(
-          product_id: product_id,
-          name: "test"
-        )
-      )
-      run_command(Pricing::SetPrice.new(product_id: product_id, price: 49))
+      event_store.publish(ProductCatalog::ProductRegistered.new(data: { product_id: product_id }))
+      event_store.publish(ProductCatalog::ProductNamed.new(data: { product_id: product_id, name: "test" }))
+      event_store.publish(Pricing::PriceSet.new(data: { product_id: product_id, price: 49 }))
 
       order_id = SecureRandom.uuid
 
@@ -60,21 +45,10 @@ module ClientOrders
     end
 
     def test_add_the_same_item_2nd_time
-      event_store = Rails.configuration.event_store
-
       product_id = SecureRandom.uuid
-      run_command(
-        ProductCatalog::RegisterProduct.new(
-          product_id: product_id,
-        )
-      )
-      run_command(
-        ProductCatalog::NameProduct.new(
-          product_id: product_id,
-          name: "test"
-        )
-      )
-      run_command(Pricing::SetPrice.new(product_id: product_id, price: 49))
+      event_store.publish(ProductCatalog::ProductRegistered.new(data: { product_id: product_id }))
+      event_store.publish(ProductCatalog::ProductNamed.new(data: { product_id: product_id, name: "test" }))
+      event_store.publish(Pricing::PriceSet.new(data: { product_id: product_id, price: 49 }))
 
       order_id = SecureRandom.uuid
       event_store.publish(
@@ -119,37 +93,15 @@ module ClientOrders
     end
 
     def test_add_another_item
-      event_store = Rails.configuration.event_store
-
       product_id = SecureRandom.uuid
-      run_command(
-        ProductCatalog::RegisterProduct.new(
-          product_id: product_id,
-        )
-      )
-      run_command(
-        ProductCatalog::NameProduct.new(
-          product_id: product_id,
-          name: "test"
-        )
-      )
-      run_command(Pricing::SetPrice.new(product_id: product_id, price: 20))
+      event_store.publish(ProductCatalog::ProductRegistered.new(data: { product_id: product_id }))
+      event_store.publish(ProductCatalog::ProductNamed.new(data: { product_id: product_id, name: "test" }))
+      event_store.publish(Pricing::PriceSet.new(data: { product_id: product_id, price: 20 }))
 
       another_product_id = SecureRandom.uuid
-      run_command(
-        ProductCatalog::RegisterProduct.new(
-          product_id: another_product_id,
-        )
-      )
-      run_command(
-        ProductCatalog::NameProduct.new(
-          product_id: another_product_id,
-          name: "2nd one"
-        )
-      )
-      run_command(
-        Pricing::SetPrice.new(product_id: another_product_id, price: 20)
-      )
+      event_store.publish(ProductCatalog::ProductRegistered.new(data: { product_id: another_product_id }))
+      event_store.publish(ProductCatalog::ProductNamed.new(data: { product_id: another_product_id, name: "2nd one" }))
+      event_store.publish(Pricing::PriceSet.new(data: { product_id: another_product_id, price: 20 }))
 
       order_id = SecureRandom.uuid
       event_store.publish(
@@ -198,6 +150,12 @@ module ClientOrders
       assert_equal(order.state, "Draft")
       assert_nil(order.client_uid)
       assert_nil(order.number)
+    end
+
+    private
+
+    def event_store
+      Rails.configuration.event_store
     end
   end
 end

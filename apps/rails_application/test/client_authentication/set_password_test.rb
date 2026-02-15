@@ -6,10 +6,6 @@ module ClientAuthentication
 
     def configure(event_store, command_bus)
       ClientAuthentication::Configuration.new.call(event_store)
-      Ecommerce::Configuration.new(
-        number_generator: Rails.configuration.number_generator,
-        payment_gateway: Rails.configuration.payment_gateway
-      ).call(event_store, command_bus)
     end
 
     def test_set_password
@@ -18,15 +14,8 @@ module ClientAuthentication
       password = "1234qwer"
       password_hash = Digest::SHA256.hexdigest(password)
 
-      register_customer(customer_id)
       connect_to_account(customer_id, account_id)
-
-      run_command(
-        Authentication::SetPasswordHash.new(
-          account_id: account_id,
-          password_hash: password_hash
-        )
-      )
+      set_password(account_id, password_hash)
 
       account = Account.find_by(client_id: customer_id, account_id: account_id)
       assert_equal password_hash, account.password
@@ -38,13 +27,7 @@ module ClientAuthentication
       password = "1234qwer"
       password_hash = Digest::SHA256.hexdigest(password)
 
-      register_customer(customer_id)
-      run_command(
-        Authentication::SetPasswordHash.new(
-          account_id: account_id,
-          password_hash: password_hash
-        )
-      )
+      set_password(account_id, password_hash)
       connect_to_account(customer_id, account_id)
 
       account = Account.find_by(client_id: customer_id, account_id: account_id)
@@ -53,17 +36,24 @@ module ClientAuthentication
 
     private
 
-    def register_customer(customer_id)
-      run_command(
-        Crm::RegisterCustomer.new(customer_id: customer_id, name: "John Doe")
+    def connect_to_account(customer_id, account_id)
+      event_store.publish(
+        Authentication::AccountConnectedToClient.new(
+          data: {
+            account_id: account_id,
+            client_id: customer_id
+          }
+        )
       )
     end
 
-    def connect_to_account(customer_id, account_id)
-      run_command(
-        Authentication::ConnectAccountToClient.new(
-          account_id: account_id,
-          client_id: customer_id
+    def set_password(account_id, password_hash)
+      event_store.publish(
+        Authentication::PasswordHashSet.new(
+          data: {
+            account_id: account_id,
+            password_hash: password_hash
+          }
         )
       )
     end

@@ -6,10 +6,6 @@ module PublicOffer
 
     def configure(event_store, command_bus)
       PublicOffer::Configuration.new(event_store).call
-      Ecommerce::Configuration.new(
-        number_generator: Rails.configuration.number_generator,
-        payment_gateway: Rails.configuration.payment_gateway
-      ).call(event_store, command_bus)
     end
 
     def test_reflects_change
@@ -90,9 +86,9 @@ module PublicOffer
 
     def test_takes_last_event_when_no_events_in_last_30_days
       product_id = SecureRandom.uuid
-      run_command(
-        ProductCatalog::RegisterProduct.new(
-          product_id: product_id,
+      event_store.publish(
+        ProductCatalog::ProductRegistered.new(
+          data: { product_id: product_id }
         )
       )
 
@@ -107,29 +103,36 @@ module PublicOffer
 
     def prepare_product
       product_id = SecureRandom.uuid
-      run_command(
-        ProductCatalog::RegisterProduct.new(
-          product_id: product_id,
-          )
-      )
-      run_command(
-        ProductCatalog::NameProduct.new(
-          product_id: product_id,
-          name: "test"
+      event_store.publish(
+        ProductCatalog::ProductRegistered.new(
+          data: { product_id: product_id }
         )
       )
-      run_command(Pricing::SetPrice.new(product_id: product_id, price: 50))
-
+      event_store.publish(
+        ProductCatalog::ProductNamed.new(
+          data: { product_id: product_id, name: "test" }
+        )
+      )
+      event_store.publish(Pricing::PriceSet.new(data: { product_id: product_id, price: 50 }))
       product_id
     end
 
     def set_price(product_id, amount)
-      run_command(Pricing::SetPrice.new(product_id: product_id, price: amount))
+      event_store.publish(Pricing::PriceSet.new(data: { product_id: product_id, price: amount }))
     end
 
     def set_future_price(product_id, amount, valid_since)
-      run_command(Pricing::SetFuturePrice.new(product_id: product_id, price: amount, valid_since: valid_since))
+      event_store.publish(
+        Pricing::PriceSet.new(
+          data: { product_id: product_id, price: amount },
+          metadata: { valid_at: valid_since }
+        )
+      )
     end
     alias set_past_price set_future_price
+
+    def event_store
+      Rails.configuration.event_store
+    end
   end
 end

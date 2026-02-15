@@ -4,12 +4,8 @@ module ClientOrders
   class UpdateProductAvailabilityTest < InMemoryTestCase
      cover "ClientOrders*"
 
-    def configure(event_store, command_bus)
+    def configure(event_store, _command_bus)
       ClientOrders::Configuration.new.call(event_store)
-      Ecommerce::Configuration.new(
-        number_generator: Rails.configuration.number_generator,
-        payment_gateway: Rails.configuration.payment_gateway
-      ).call(event_store, command_bus)
     end
 
     def test_reflects_change
@@ -35,28 +31,18 @@ module ClientOrders
 
     def prepare_product
       product_id = SecureRandom.uuid
-      run_command(
-        ProductCatalog::RegisterProduct.new(
-          product_id: product_id,
-          )
-      )
-      run_command(
-        ProductCatalog::NameProduct.new(
-          product_id: product_id,
-          name: "test"
-        )
-      )
-      run_command(Pricing::SetPrice.new(product_id: product_id, price: 50))
-
+      event_store.publish(ProductCatalog::ProductRegistered.new(data: { product_id: product_id }))
+      event_store.publish(ProductCatalog::ProductNamed.new(data: { product_id: product_id, name: "test" }))
+      event_store.publish(Pricing::PriceSet.new(data: { product_id: product_id, price: 50 }))
       product_id
-    end
-
-    def supply_product(product_id, quantity)
-      run_command(Inventory::Supply.new(product_id: product_id, quantity: quantity))
     end
 
     def availability_changed_event(product_id, available)
       Inventory::AvailabilityChanged.new(data: { product_id: product_id, available: available })
+    end
+
+    def event_store
+      Rails.configuration.event_store
     end
   end
 end
