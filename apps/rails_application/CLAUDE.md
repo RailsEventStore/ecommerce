@@ -6,8 +6,9 @@
 - Dont use named params in method calls, unless required
 - Dont add defensive checks if right params are passed, instead make sure with tests that the code is called correctly
 
-# Process of working during refactoring
+# Process of working
 
+- Always suggest the right architectural approach, even if it involves significant work. Avoid workarounds that spread complexity across the codebase.
 - Aim for smallest possible code transformations
 - Make sure tests are always green (make test - runs both unit and integration tests)
 - During refactoring it's crucial that integration tests are always working, don't make changes which fail them
@@ -22,14 +23,15 @@
 
 - Process managers are tested via asserting that specific commands are issued, when certain events input is given
 
-# Read models 
+# Read models
 
 - Testing read models should be done via calling event_store.publish(event)
 - Use Arbre for implementing read models. Example is ClientInbox
 - Each type of event should have separate event handler. This way we avoid if statements in handlers.
 - Read model should have private_contant for ActiveRecord classes and expose facade methods
 - In read model tests, we should not test against the ActiveRecord. Use the facade methods for that.
-- Read models should not access other read models. 
+- Read models should not access other read models.
+- Read model unit tests should only wire up their own handlers, not the full Configuration. Override `configure` in the test class to load only the relevant Configuration.
 
 # Other
 
@@ -75,4 +77,5 @@
 
 # Git
 
-Don't mention Claude in the git commit messages.
+- Don't mention Claude in the git commit messages.
+- Always use the /commit skill when committing.
