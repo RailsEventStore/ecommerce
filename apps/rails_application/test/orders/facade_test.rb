@@ -4,6 +4,10 @@ module Orders
   class FacadeTest < InMemoryTestCase
     cover "Orders*"
 
+    def configure(event_store, _command_bus)
+      Orders::Configuration.new.call(event_store)
+    end
+
     def test_find_order_line_returns_first_matching_line
       order_id_1 = SecureRandom.uuid
       order_id_2 = SecureRandom.uuid
