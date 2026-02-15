@@ -4,6 +4,10 @@ module Invoices
   class CreateInvoiceItemTest < InMemoryTestCase
     cover "Invoices*"
 
+    def configure(event_store, _command_bus)
+      Invoices::Configuration.new.call(event_store)
+    end
+
     def test_creates_invoice_item_with_all_fields
       event_store = Rails.configuration.event_store
       invoice_id = SecureRandom.uuid

@@ -4,6 +4,10 @@ module Invoices
   class MarkOrderPlacedTest < InMemoryTestCase
     cover "Invoices*"
 
+    def configure(event_store, _command_bus)
+      Invoices::Configuration.new.call(event_store)
+    end
+
     def test_creates_invoice_and_marks_order_as_submitted
       event_store = Rails.configuration.event_store
       order_id = SecureRandom.uuid

@@ -4,6 +4,10 @@ module Invoices
   class AssignStoreToInvoiceTest < InMemoryTestCase
     cover "Invoices*"
 
+    def configure(event_store, _command_bus)
+      Invoices::Configuration.new.call(event_store)
+    end
+
     def test_assigns_store_to_invoice
       event_store = Rails.configuration.event_store
       store_id = SecureRandom.uuid

@@ -4,6 +4,10 @@ module Invoices
   class SetPaymentDateTest < InMemoryTestCase
     cover "Invoices*"
 
+    def configure(event_store, _command_bus)
+      Invoices::Configuration.new.call(event_store)
+    end
+
     def test_sets_payment_date_on_invoice
       event_store = Rails.configuration.event_store
       invoice_id = SecureRandom.uuid

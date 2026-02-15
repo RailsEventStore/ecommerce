@@ -4,6 +4,10 @@ module Invoices
   class SetBillingAddressTest < InMemoryTestCase
     cover "Invoices*"
 
+    def configure(event_store, _command_bus)
+      Invoices::Configuration.new.call(event_store)
+    end
+
     def test_sets_billing_address_with_all_fields
       event_store = Rails.configuration.event_store
       invoice_id = SecureRandom.uuid
