@@ -4,6 +4,10 @@ module Products
   class FacadeTest < InMemoryTestCase
     cover "Products*"
 
+    def configure(event_store, _command_bus)
+      Products::Configuration.new(event_store).call
+    end
+
     def test_products_for_store_returns_only_products_from_given_store
       store_id_1 = SecureRandom.uuid
       store_id_2 = SecureRandom.uuid

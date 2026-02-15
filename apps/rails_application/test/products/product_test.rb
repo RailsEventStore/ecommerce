@@ -4,6 +4,10 @@ module Products
   class ProductTest < InMemoryTestCase
     cover "Products*"
 
+    def configure(event_store, _command_bus)
+      Products::Configuration.new(event_store).call
+    end
+
     def test_unavailable
       product = Product.new(available: nil)
       refute product.unavailable?
