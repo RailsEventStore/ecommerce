@@ -30,13 +30,13 @@ class CustomersTest < InMemoryRESIntegrationTestCase
     assert_customer_summary("Customer Shop", "$0.00")
     assert_customer_summary("BigCorp Ltd", "$0.00")
 
-    order_and_pay(customer_id, SecureRandom.uuid, product_1_id, product_2_id)
+    order_and_pay(customer_id, product_1_id, product_2_id)
     visit_customers_index
 
     assert_customer_summary("Customer Shop", "$7.00")
     assert_customer_summary("BigCorp Ltd", "$0.00")
 
-    order_and_pay(customer_id, SecureRandom.uuid, product_1_id)
+    order_and_pay(customer_id, product_1_id)
     visit_customers_index
 
     assert_customer_summary("Customer Shop", "$11.00")
@@ -47,9 +47,7 @@ class CustomersTest < InMemoryRESIntegrationTestCase
     customer_id = register_customer("Customer Shop")
     product_id = register_product("Fearless Refactoring", 4, 10)
 
-    order_uid = SecureRandom.uuid
-
-    order_and_pay(customer_id, order_uid, product_id)
+    order_uid = order_and_pay(customer_id, product_id)
 
     get "/orders/#{order_uid}"
     header_text = css_select("header h1").first.text
@@ -120,12 +118,14 @@ class CustomersTest < InMemoryRESIntegrationTestCase
 
   private
 
-  def order_and_pay(customer_id, order_id, *product_ids)
+  def order_and_pay(customer_id, *product_ids)
+    order_id = create_order
     product_ids.each do |product_id|
       add_product_to_basket(order_id, product_id)
     end
     submit_order(customer_id, order_id)
     pay_order(order_id)
+    order_id
   end
 
   def assert_customer_summary(customer_name, summary)

@@ -9,9 +9,9 @@ class ReturnsTest < InMemoryRESIntegrationTestCase
 
   def test_happy_path
     shopify_id = register_customer("Shopify")
-    order_id = SecureRandom.uuid
     async_remote_id = register_product("Async Remote", 39, 10)
     fearless_id = register_product("Fearless Refactoring", 49, 10)
+    order_id = create_order
 
     add_product_to_basket(order_id, async_remote_id)
     add_product_to_basket(order_id, fearless_id)
@@ -32,8 +32,8 @@ class ReturnsTest < InMemoryRESIntegrationTestCase
 
   def test_renders_error_when_exceeds_available_quantity_to_return
     shopify_id = register_customer("Shopify")
-    order_id = SecureRandom.uuid
     async_remote_id = register_product("Async Remote", 39, 10)
+    order_id = create_order
 
     add_product_to_basket(order_id, async_remote_id)
     submit_order(shopify_id, order_id)
@@ -53,8 +53,8 @@ class ReturnsTest < InMemoryRESIntegrationTestCase
 
   def test_renders_error_when_trying_to_remove_not_added_product
     shopify_id = register_customer("Shopify")
-    order_id = SecureRandom.uuid
     async_remote_id = register_product("Async Remote", 39, 10)
+    order_id = create_order
 
     add_product_to_basket(order_id, async_remote_id)
     submit_order(shopify_id, order_id)

@@ -11,10 +11,10 @@ class OrdersTest < InMemoryRESIntegrationTestCase
   def test_happy_path
     shopify_id = register_customer("Shopify")
 
-    another_order_id = SecureRandom.uuid
-
     async_remote_id = register_product("Async Remote", 39, 10)
     fearless_id = register_product("Fearless Refactoring", 49, 10)
+
+    another_order_id = create_order
 
     post "/orders",
          params: {
@@ -25,9 +25,7 @@ class OrdersTest < InMemoryRESIntegrationTestCase
          }
 
     get "/"
-    get "/orders/new"
-    follow_redirect!
-    order_id = retrieve_order_id_from_url
+    order_id = create_order
 
     assert_remove_buttons_not_visible(async_remote_id, fearless_id)
 
@@ -81,11 +79,10 @@ class OrdersTest < InMemoryRESIntegrationTestCase
   def test_cancel
     shopify_id = register_customer("Shopify")
 
-    order_id = SecureRandom.uuid
     async_remote_id = register_product("Async Remote", 39, 10)
 
     get "/"
-    get "/orders/new"
+    order_id = create_order
     post "/orders/#{order_id}/add_item?product_id=#{async_remote_id}"
     post "/orders",
          params: {
@@ -139,11 +136,10 @@ class OrdersTest < InMemoryRESIntegrationTestCase
   def test_order_value_doesnt_change_after_changing_price
     shopify_id = register_customer("Shopify")
 
-    order_id = SecureRandom.uuid
     async_remote_id = register_product("Async Remote", 39, 10)
 
     get "/"
-    get "/orders/new"
+    order_id = create_order
     post "/orders/#{order_id}/add_item?product_id=#{async_remote_id}"
     post "/orders/#{order_id}/add_item?product_id=#{async_remote_id}"
 
@@ -166,11 +162,11 @@ class OrdersTest < InMemoryRESIntegrationTestCase
   end
 
   def test_discount_is_applied_for_new_order
-    order_id = SecureRandom.uuid
     async_remote_id = register_product("Async Remote", 39, 10)
     fearless_id = register_product("Fearless Refactoring", 49, 10)
     shopify_id = register_customer("Shopify")
 
+    order_id = create_order
     assert_nothing_raised { apply_discount_10_percent(order_id) }
 
     post "/orders/#{order_id}/add_item?product_id=#{async_remote_id}"
@@ -216,8 +212,8 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     shopify_id = register_customer("Shopify")
 
     supply_product(product_id, 1)
-    order_1_id = SecureRandom.uuid
-    order_2_id = SecureRandom.uuid
+    order_1_id = create_order
+    order_2_id = create_order
     post "/orders/#{order_1_id}/add_item?product_id=#{product_id}"
     post "/orders/#{order_2_id}/add_item?product_id=#{product_id}"
 
@@ -229,13 +225,11 @@ class OrdersTest < InMemoryRESIntegrationTestCase
 
   def test_shows_out_of_stock_badge
     shopify_id = register_customer("Shopify")
-    order_id = SecureRandom.uuid
     async_remote_id = register_product("Async Remote", 39, 10)
 
     supply_product(async_remote_id, 1)
 
-    get "/orders/new"
-    follow_redirect!
+    order_id = create_order
 
     assert_select "td span", "1"
 
@@ -283,10 +277,10 @@ class OrdersTest < InMemoryRESIntegrationTestCase
   def test_unable_to_pay_for_not_submitted_order
     shopify_id = register_customer("Shopify")
 
-    another_order_id = SecureRandom.uuid
-
     async_remote_id = register_product("Async Remote", 39, 10)
     fearless_id = register_product("Fearless Refactoring", 49, 10)
+
+    another_order_id = create_order
 
     post "/orders",
          params: {
@@ -297,9 +291,7 @@ class OrdersTest < InMemoryRESIntegrationTestCase
          }
 
     get "/"
-    get "/orders/new"
-    follow_redirect!
-    order_id = retrieve_order_id_from_url
+    order_id = create_order
 
     assert_remove_buttons_not_visible(async_remote_id, fearless_id)
 

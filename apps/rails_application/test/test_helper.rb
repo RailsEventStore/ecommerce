@@ -226,10 +226,21 @@ class InMemoryRESIntegrationTestCase < ActionDispatch::IntegrationTest
     post "/orders/#{order_id}/returns/#{return_id}/remove_item?product_id=#{product_id}"
   end
 
+  def create_order
+    get "/orders/new"
+    follow_redirect!
+    request.path.split("/")[2]
+  end
+
+  def create_client_order
+    get "/client_orders/new"
+    follow_redirect!
+    request.path.split("/")[2]
+  end
+
   def run_command(command)
     Rails.configuration.command_bus.call(command)
   end
-
 
   def register_store(name)
     store_id = SecureRandom.uuid

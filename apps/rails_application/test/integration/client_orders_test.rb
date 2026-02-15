@@ -24,7 +24,7 @@ class ClientOrdersTest < InMemoryRESIntegrationTestCase
     assert_select("h1", "Arkency")
     assert_select("p", "No orders to display.")
 
-    order_id = SecureRandom.uuid
+    order_id = create_order
     add_item_to_basket_for_order(async_remote_id, order_id)
     get "/client_orders/#{order_id}/edit"
     assert_match(
@@ -65,8 +65,7 @@ class ClientOrdersTest < InMemoryRESIntegrationTestCase
 
     get "/clients"
     login(arkency_id)
-    order_id = SecureRandom.uuid
-    get "/client_orders/new"
+    order_id = create_client_order
     as_client_add_item_to_basket_for_order(async_remote_id, order_id)
     as_client_submit_order_for_customer(order_id)
     get "/client_orders"
@@ -85,12 +84,12 @@ class ClientOrdersTest < InMemoryRESIntegrationTestCase
     visit_client_orders
     assert_select "Total paid orders", false
 
-    order_and_pay(customer_id, SecureRandom.uuid, product_1_id, product_2_id)
+    order_and_pay(customer_id, product_1_id, product_2_id)
     visit_client_orders
 
     assert_orders_summary("$7.00")
 
-    order_and_pay(customer_id, SecureRandom.uuid, product_1_id)
+    order_and_pay(customer_id, product_1_id)
     visit_client_orders
 
     assert_orders_summary("$11.00")
@@ -103,7 +102,7 @@ class ClientOrdersTest < InMemoryRESIntegrationTestCase
     login(customer_id)
     visit_client_orders
 
-    order_id = SecureRandom.uuid
+    order_id = create_client_order
     as_client_add_item_to_basket_for_order(product_id, order_id)
     as_client_add_item_to_basket_for_order(product_id, order_id)
     assert_equal(204, response.status)
@@ -121,11 +120,16 @@ class ClientOrdersTest < InMemoryRESIntegrationTestCase
     session_1.get "/client_orders"
     session_2.get "/client_orders"
 
-    order_1_id = SecureRandom.uuid
+    session_1.get "/client_orders/new"
+    session_1.follow_redirect!
+    order_1_id = session_1.request.path.split("/")[2]
     session_1.post "/client_orders/#{order_1_id}/add_item?product_id=#{product_id}"
-    order_and_pay(customer_1_id, order_1_id, product_id)
+    submit_order_for_customer(customer_1_id, order_1_id)
+    pay_order(order_1_id)
 
-    order_2_id = SecureRandom.uuid
+    session_2.get "/client_orders/new"
+    session_2.follow_redirect!
+    order_2_id = session_2.request.path.split("/")[2]
     session_2.post "/client_orders/#{order_2_id}/add_item?product_id=#{product_id}"
 
     assert session_2.redirect?
@@ -144,7 +148,7 @@ class ClientOrdersTest < InMemoryRESIntegrationTestCase
     login(customer_id)
     visit_client_orders
 
-    order_id = SecureRandom.uuid
+    order_id = create_client_order
     as_client_add_item_to_basket_for_order(product_id, order_id)
     as_client_add_item_to_basket_for_order(product_id, order_id)
 
@@ -158,7 +162,7 @@ class ClientOrdersTest < InMemoryRESIntegrationTestCase
     login(customer_id)
     visit_client_orders
 
-    order_id = SecureRandom.uuid
+    order_id = create_client_order
     assert_no_changes -> { ClientOrders::Order.count } do
       as_client_submit_order_for_customer(order_id)
     end
@@ -168,12 +172,11 @@ class ClientOrdersTest < InMemoryRESIntegrationTestCase
 
   def test_shows_out_of_stock_badge
     shopify_id = register_customer("Shopify")
-    order_id = SecureRandom.uuid
     async_remote_id = register_product("Async Remote", 39, 10)
 
     supply_product(async_remote_id, 1)
     login(shopify_id)
-    get "/client_orders/new"
+    order_id = create_client_order
 
     assert_select "td span", text: "out of stock", count: 0
 
@@ -213,7 +216,7 @@ class ClientOrdersTest < InMemoryRESIntegrationTestCase
     login(customer_id)
     visit_client_orders
 
-    order_id = SecureRandom.uuid
+    order_id = create_client_order
     as_client_add_item_to_basket_for_order(product_id, order_id)
     as_client_use_coupon(order_id, "COUPON10")
 
@@ -232,7 +235,7 @@ class ClientOrdersTest < InMemoryRESIntegrationTestCase
     login(customer_id)
     visit_client_orders
 
-    order_id = SecureRandom.uuid
+    order_id = create_client_order
     as_client_add_item_to_basket_for_order(product_id, order_id)
     as_client_use_coupon(order_id, "WRONGCODE")
 
@@ -247,7 +250,7 @@ class ClientOrdersTest < InMemoryRESIntegrationTestCase
     login(customer_id)
     visit_client_orders
 
-    order_id = SecureRandom.uuid
+    order_id = create_client_order
     as_client_add_item_to_basket_for_order(product_id, order_id)
     as_client_use_coupon(order_id, "COUPON10")
     as_client_use_coupon(order_id, "COUPON10")
@@ -305,8 +308,8 @@ class ClientOrdersTest < InMemoryRESIntegrationTestCase
   end
 
   def cancel_submitted_order_for_customer(customer_id)
-    order_id = SecureRandom.uuid
     anti_if = register_product("Anti If", 99, 10)
+    order_id = create_order
 
     add_item_to_basket_for_order(anti_if, order_id)
     add_item_to_basket_for_order(anti_if, order_id)
@@ -314,7 +317,8 @@ class ClientOrdersTest < InMemoryRESIntegrationTestCase
     cancel_order(order_id)
   end
 
-  def order_and_pay(customer_id, order_id, *product_ids)
+  def order_and_pay(customer_id, *product_ids)
+    order_id = create_client_order
     product_ids.each do |product_id|
       as_client_add_item_to_basket_for_order(product_id, order_id)
     end
