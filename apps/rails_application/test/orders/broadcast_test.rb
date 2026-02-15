@@ -4,6 +4,15 @@ module Orders
   class BroadcastTest < InMemoryTestCase
     cover "Orders*"
 
+    def configure(event_store, command_bus)
+      Orders::Configuration.new.call(event_store)
+      Ecommerce::Configuration.new(
+        number_generator: Rails.configuration.number_generator,
+        payment_gateway: Rails.configuration.payment_gateway
+      ).call(event_store, command_bus)
+      Processes::Configuration.new.call(event_store, command_bus)
+    end
+
     def setup
       @prev = Rails.configuration.broadcaster
       Rails.configuration.broadcaster = InMemoryBroadcaster.new
