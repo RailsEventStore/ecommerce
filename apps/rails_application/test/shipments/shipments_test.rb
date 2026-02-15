@@ -4,6 +4,11 @@ module Shipments
   class ShipmentsTest < InMemoryTestCase
     cover "Shipments*"
 
+    def configure(event_store, _command_bus)
+      Shipments::Configuration.new.call(event_store)
+      Orders::Configuration.new.call(event_store)
+    end
+
     def test_add_new_item
       product_id = SecureRandom.uuid
       prepare_product(product_id, "Async Remote", 49)
@@ -186,6 +191,7 @@ module Shipments
     def test_mark_order_placed
       order_id = SecureRandom.uuid
 
+      offer_drafted(order_id)
       order_registered(order_id, "2024/12/123")
 
       order = Order.find_by(uid: order_id)
@@ -198,6 +204,7 @@ module Shipments
       order_number = "2024/12/456"
       store_id = SecureRandom.uuid
 
+      offer_drafted(order_id)
       shipment_registered(order_id, store_id)
       order_registered(order_id, order_number)
 
@@ -212,6 +219,8 @@ module Shipments
       order_number_1 = "2024/12/111"
       store_id = SecureRandom.uuid
 
+      offer_drafted(order_id_1)
+      offer_drafted(order_id_2)
       shipment_registered(order_id_1, store_id)
       shipment_registered(order_id_2, store_id)
       order_registered(order_id_1, order_number_1)

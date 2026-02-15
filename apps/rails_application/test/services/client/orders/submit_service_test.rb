@@ -5,6 +5,17 @@ module Client
     class SubmitServiceTest < InMemoryTestCase
       cover Client::Orders::SubmitService
 
+      def configure(event_store, command_bus)
+        ClientOrders::Configuration.new.call(event_store)
+        Products::Configuration.new(event_store).call
+        Ecommerce::Configuration.new(
+          number_generator: Rails.configuration.number_generator,
+          payment_gateway: Rails.configuration.payment_gateway
+        ).call(event_store, command_bus)
+        ::Orders::Configuration.new.call(event_store)
+        Processes::Configuration.new.call(event_store, command_bus)
+      end
+
       def test_successful_order_submission
         order_id = SecureRandom.uuid
         customer_id = SecureRandom.uuid
