@@ -4,6 +4,10 @@ module Returns
   class ItemRemovedFromReturnTest < InMemoryTestCase
     cover "Orders*"
 
+    def configure(event_store, _command_bus)
+      Orders::Configuration.new.call(event_store)
+    end
+
     def test_remove_item_from_return
       return_id = SecureRandom.uuid
       product_id = SecureRandom.uuid

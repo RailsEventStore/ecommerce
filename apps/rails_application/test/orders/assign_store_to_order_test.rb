@@ -4,6 +4,10 @@ module Orders
   class AssignStoreToOrderTest < InMemoryTestCase
     cover "Orders*"
 
+    def configure(event_store, _command_bus)
+      Orders::Configuration.new.call(event_store)
+    end
+
     def test_store_id_is_set_when_offer_registered_in_store
       other_order_id = SecureRandom.uuid
       event_store.publish(Pricing::OfferDrafted.new(data: { order_id: other_order_id }))

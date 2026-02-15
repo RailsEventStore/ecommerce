@@ -4,6 +4,10 @@ module Orders
   class ItemAddedToBasketTest < InMemoryTestCase
     cover "Orders*"
 
+    def configure(event_store, _command_bus)
+      Orders::Configuration.new.call(event_store)
+    end
+
     def test_add_new_item
       event_store = Rails.configuration.event_store
 

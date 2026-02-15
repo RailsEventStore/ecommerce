@@ -4,6 +4,10 @@ module Orders
   class UpdateOrderTotalValueTest < InMemoryTestCase
     cover "Orders*"
 
+    def configure(event_store, _command_bus)
+      Orders::Configuration.new.call(event_store)
+    end
+
     def test_order_created_when_total_value_updated
       customer_id = SecureRandom.uuid
       product_id = SecureRandom.uuid

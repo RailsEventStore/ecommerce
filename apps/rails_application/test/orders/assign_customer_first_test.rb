@@ -4,6 +4,10 @@ module Orders
   class AssignCustomerFirstTest < InMemoryTestCase
     cover "Orders*"
 
+    def configure(event_store, _command_bus)
+      Orders::Configuration.new.call(event_store)
+    end
+
     def test_create_draft_order_when_not_exists
       event_store = Rails.configuration.event_store
       customer_id = SecureRandom.uuid

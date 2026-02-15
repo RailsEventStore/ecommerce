@@ -4,6 +4,10 @@ module Orders
   class DraftOrderTest < InMemoryTestCase
     cover "Orders*"
 
+    def configure(event_store, _command_bus)
+      Orders::Configuration.new.call(event_store)
+    end
+
     def test_order_is_created_when_offer_drafted
       event_store.publish(offer_drafted)
 

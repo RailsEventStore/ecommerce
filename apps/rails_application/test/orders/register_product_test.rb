@@ -4,6 +4,10 @@ module Orders
   class RegisterProductTest < InMemoryTestCase
     cover "Orders*"
 
+    def configure(event_store, _command_bus)
+      Orders::Configuration.new.call(event_store)
+    end
+
     def test_register_product
       product_id = SecureRandom.uuid
       product_registered = ProductCatalog::ProductRegistered.new(data: { product_id: product_id })

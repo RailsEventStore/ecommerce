@@ -4,6 +4,10 @@ module Orders
   class ItemRemovedFromBasketTest < InMemoryTestCase
     cover "Orders*"
 
+    def configure(event_store, _command_bus)
+      Orders::Configuration.new.call(event_store)
+    end
+
     def test_remove_item_when_quantity_gt_1
       event_store = Rails.configuration.event_store
 

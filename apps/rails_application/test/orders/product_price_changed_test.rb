@@ -4,6 +4,10 @@ module Orders
   class ProductPriceChangedTest < InMemoryTestCase
     cover "Orders*"
 
+    def configure(event_store, _command_bus)
+      Orders::Configuration.new.call(event_store)
+    end
+
     def test_reflects_change
       product_id = prepare_product
       unchanged_product_id = prepare_product
