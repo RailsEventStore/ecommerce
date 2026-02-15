@@ -4,6 +4,16 @@ module ClientOrders
   class DiscountTest < InMemoryTestCase
     cover "ClientOrders*"
 
+    def configure(event_store, command_bus)
+      ClientOrders::Configuration.new.call(event_store)
+      Ecommerce::Configuration.new(
+        number_generator: Rails.configuration.number_generator,
+        payment_gateway: Rails.configuration.payment_gateway
+      ).call(event_store, command_bus)
+      Orders::Configuration.new.call(event_store)
+      Processes::Configuration.new.call(event_store, command_bus)
+    end
+
     def test_discount_set
       customer_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
