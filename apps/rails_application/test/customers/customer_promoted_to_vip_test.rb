@@ -4,6 +4,14 @@ module Customers
   class CustomerPromotedToVipTest < InMemoryTestCase
     cover "Customers"
 
+    def configure(event_store, command_bus)
+      Customers::Configuration.new.call(event_store)
+      Ecommerce::Configuration.new(
+        number_generator: Rails.configuration.number_generator,
+        payment_gateway: Rails.configuration.payment_gateway
+      ).call(event_store, command_bus)
+    end
+
     def test_promote_customer_to_vip
       event_store = Rails.configuration.event_store
 

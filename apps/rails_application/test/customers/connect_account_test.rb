@@ -4,6 +4,14 @@ module Customers
   class ConnectAccountTest < InMemoryTestCase
     cover "Customers"
 
+    def configure(event_store, command_bus)
+      Customers::Configuration.new.call(event_store)
+      Ecommerce::Configuration.new(
+        number_generator: Rails.configuration.number_generator,
+        payment_gateway: Rails.configuration.payment_gateway
+      ).call(event_store, command_bus)
+    end
+
     def test_first_register_then_connect
       customer_id = SecureRandom.uuid
       account_id = SecureRandom.uuid
