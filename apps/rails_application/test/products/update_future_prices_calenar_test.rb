@@ -4,6 +4,14 @@ module Products
   class UpdateFuturePricesCalendarTest < InMemoryTestCase
     cover "Products*"
 
+    def configure(event_store, command_bus)
+      Products::Configuration.new(event_store).call
+      Ecommerce::Configuration.new(
+        number_generator: Rails.configuration.number_generator,
+        payment_gateway: Rails.configuration.payment_gateway
+      ).call(event_store, command_bus)
+    end
+
     def test_add_future_price
       product_id = SecureRandom.uuid
       product_registered = ProductCatalog::ProductRegistered.new(data: { product_id: product_id })
