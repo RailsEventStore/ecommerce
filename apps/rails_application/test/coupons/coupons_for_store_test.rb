@@ -4,6 +4,10 @@ module Coupons
   class CouponsForStoreTest < InMemoryTestCase
     cover "Coupons*"
 
+    def configure(event_store, _command_bus)
+      Coupons::Configuration.new.call(event_store)
+    end
+
     def test_returns_coupons_for_store
       store_2_id = SecureRandom.uuid
 

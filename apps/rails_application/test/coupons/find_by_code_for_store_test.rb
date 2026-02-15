@@ -4,6 +4,10 @@ module Coupons
   class FindByCodeForStoreTest < InMemoryTestCase
     cover "Coupons*"
 
+    def configure(event_store, _command_bus)
+      Coupons::Configuration.new.call(event_store)
+    end
+
     def test_finds_coupon_by_code_for_store
       event_store.publish(coupon_created)
       event_store.publish(coupon_registered_in_store)

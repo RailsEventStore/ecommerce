@@ -4,6 +4,10 @@ module Coupons
   class RegisterCouponTest < InMemoryTestCase
     cover "Coupons*"
 
+    def configure(event_store, _command_bus)
+      Coupons::Configuration.new.call(event_store)
+    end
+
     def test_coupon_registered_with_all_attributes
       event_store.publish(coupon_created)
 
