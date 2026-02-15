@@ -4,6 +4,14 @@ module ClientAuthentication
   class CreateTest < InMemoryTestCase
     cover "Authentication*"
 
+    def configure(event_store, command_bus)
+      ClientAuthentication::Configuration.new.call(event_store)
+      Ecommerce::Configuration.new(
+        number_generator: Rails.configuration.number_generator,
+        payment_gateway: Rails.configuration.payment_gateway
+      ).call(event_store, command_bus)
+    end
+
     def test_set_create
       customer_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
