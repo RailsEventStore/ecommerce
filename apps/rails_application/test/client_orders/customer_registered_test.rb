@@ -4,6 +4,10 @@ module ClientOrders
   class CustomerRegisteredTest < InMemoryTestCase
     cover "ClientOrders*"
 
+    def configure(event_store, _command_bus)
+      ClientOrders::Configuration.new.call(event_store)
+    end
+
     def test_customer_registered
       event_store = Rails.configuration.event_store
 
