@@ -4,6 +4,10 @@ module VatRates
   class RemoveAvailableVatRateTest < InMemoryTestCase
     cover "VatRates*"
 
+    def configure(event_store, _command_bus)
+      VatRates::Configuration.new.call(event_store)
+    end
+
     def test_removing_available_vat_rate
       uid = SecureRandom.uuid
       code = "standard"

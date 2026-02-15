@@ -4,6 +4,10 @@ module TimePromotions
   class AssignStoreToTimePromotionTest < InMemoryTestCase
     cover "TimePromotions*"
 
+    def configure(event_store, _command_bus)
+      TimePromotions::Configuration.new.call(event_store)
+    end
+
     def test_store_id_is_set_when_time_promotion_registered_in_store
       event_store.publish(time_promotion_created)
       event_store.publish(time_promotion_registered_in_store)

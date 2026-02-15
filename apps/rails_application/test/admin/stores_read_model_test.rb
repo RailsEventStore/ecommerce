@@ -4,6 +4,10 @@ class AdminStoresReadModelTest < InMemoryTestCase
   cover "Admin::RegisterStore*"
   cover "Admin::NameStore*"
 
+  def configure(event_store, _command_bus)
+    Admin::Configuration.new.call(event_store)
+  end
+
   def test_register_store_creates_record
     previous_count = Admin::Store.count
     event_store.publish(store_registered)

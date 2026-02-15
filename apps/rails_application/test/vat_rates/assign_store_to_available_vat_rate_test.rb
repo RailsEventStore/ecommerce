@@ -4,6 +4,10 @@ module VatRates
   class AssignStoreToAvailableVatRateTest < InMemoryTestCase
     cover "VatRates*"
 
+    def configure(event_store, _command_bus)
+      VatRates::Configuration.new.call(event_store)
+    end
+
     def test_assign_store_to_available_vat_rate
       event_store = Rails.configuration.event_store
       store_id = SecureRandom.uuid

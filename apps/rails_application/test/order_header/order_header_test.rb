@@ -4,6 +4,10 @@ module OrderHeader
   class OrderHeaderTest < InMemoryTestCase
     cover "OrderHeader*"
 
+    def configure(event_store, _command_bus)
+      OrderHeader::Configuration.new.call(event_store)
+    end
+
     def test_header_is_created_when_offer_drafted
       order_id = SecureRandom.uuid
 
