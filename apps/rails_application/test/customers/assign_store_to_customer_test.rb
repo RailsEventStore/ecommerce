@@ -4,6 +4,10 @@ module Customers
   class AssignStoreToCustomerTest < InMemoryTestCase
     cover "Customers*"
 
+    def configure(event_store, _command_bus)
+      Customers::Configuration.new.call(event_store)
+    end
+
     def test_store_id_is_set_when_customer_registered_in_store
       event_store.publish(customer_registered)
       event_store.publish(customer_registered_in_store)

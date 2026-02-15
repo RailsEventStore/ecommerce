@@ -4,6 +4,10 @@ module Customers
   class RegisterCustomerTest < InMemoryTestCase
     cover "Customers*"
 
+    def configure(event_store, _command_bus)
+      Customers::Configuration.new.call(event_store)
+    end
+
     def test_register_customer_creates_customer_with_name
       event_store.publish(customer_registered)
 
