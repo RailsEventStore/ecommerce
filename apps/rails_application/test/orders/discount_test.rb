@@ -4,75 +4,65 @@ module Orders
   class DiscountTest < InMemoryTestCase
     cover "Orders*"
 
-    def configure(event_store, command_bus)
+    def configure(event_store, _command_bus)
       Orders::Configuration.new.call(event_store)
-      Ecommerce::Configuration.new(
-        number_generator: Rails.configuration.number_generator,
-        payment_gateway: Rails.configuration.payment_gateway
-      ).call(event_store, command_bus)
-      Processes::Configuration.new.call(event_store, command_bus)
     end
 
     def test_discount_set
-      customer_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
-      customer_registered(customer_id)
       prepare_product(product_id)
       item_added_to_basket(order_id, product_id)
 
       set_percentage_discount(order_id)
+      update_order_total_value(order_id, product_id, 50, 45)
 
       order = Order.find_by(uid: order_id)
-      assert_equal 50, order.total_value
-      assert_equal 45, order.discounted_value
-      assert_equal 10, order.percentage_discount
-      assert_nil order.time_promotion_discount_value
-      assert event_store.event_in_stream?(event_store.read.of_type([Pricing::PercentageDiscountSet]).last.event_id, "Orders$all")
+      assert_equal(50, order.total_value)
+      assert_equal(45, order.discounted_value)
+      assert_equal(10, order.percentage_discount)
+      assert_nil(order.time_promotion_discount_value)
+      assert(event_store.event_in_stream?(event_store.read.of_type([Pricing::PercentageDiscountSet]).last.event_id, "Orders$all"))
     end
 
     def test_discount_changed
-      customer_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
-      customer_registered(customer_id)
       prepare_product(product_id)
       item_added_to_basket(order_id, product_id)
       set_percentage_discount(order_id)
 
       change_percentage_discount(order_id)
+      update_order_total_value(order_id, product_id, 50, 49.5)
 
       order = Order.find_by(uid: order_id)
-      assert_equal 50, order.total_value
-      assert_equal 49.5, order.discounted_value
-      assert_equal 1, order.percentage_discount
-      assert_nil order.time_promotion_discount_value
-      assert event_store.event_in_stream?(event_store.read.of_type([Pricing::PercentageDiscountChanged]).last.event_id, "Orders$all")
+      assert_equal(50, order.total_value)
+      assert_equal(49.5, order.discounted_value)
+      assert_equal(1, order.percentage_discount)
+      assert_nil(order.time_promotion_discount_value)
+      assert(event_store.event_in_stream?(event_store.read.of_type([Pricing::PercentageDiscountChanged]).last.event_id, "Orders$all"))
     end
 
     def test_remove_discount
-      customer_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
-      customer_registered(customer_id)
       prepare_product(product_id)
       item_added_to_basket(order_id, product_id)
       set_percentage_discount(order_id)
 
       remove_percentage_discount(order_id)
+      update_order_total_value(order_id, product_id, 50, 50)
 
       order = Order.find_by(uid: order_id)
       assert_equal(50, order.total_value)
       assert_equal(50, order.discounted_value)
       assert_nil(order.percentage_discount)
-      assert event_store.event_in_stream?(event_store.read.of_type([Pricing::PercentageDiscountRemoved]).last.event_id, "Orders$all")
+      assert(event_store.event_in_stream?(event_store.read.of_type([Pricing::PercentageDiscountRemoved]).last.event_id, "Orders$all"))
     end
 
     def test_does_not_remove_general_discount_when_removing_non_general_discount
-      customer_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
-      customer_registered(customer_id)
       prepare_product(product_id)
       item_added_to_basket(order_id, product_id)
       set_percentage_discount(order_id)
@@ -89,43 +79,35 @@ module Orders
     end
 
     def test_does_not_remove_percentage_discount_when_removing_time_promotion
-      customer_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
-
-      base_time = Time.utc(2020, 1, 1, 12, 0, 0)
-      travel_to(base_time) do
-        event_store.publish(
-          Pricing::TimePromotionCreated.new(
-            data: {
-              time_promotion_id: SecureRandom.uuid,
-              discount: 50,
-              start_time: base_time - 1.second,
-              end_time: base_time + 1.minute,
-              label: "Last Minute"
-            }
-          )
-        )
-        customer_registered(customer_id)
-        prepare_product(product_id)
-        item_added_to_basket(order_id, product_id)
-        set_percentage_discount(order_id)
-      end
-
-      travel_to(base_time + 2.minutes) do
-        assert_no_changes -> { Orders.find_order( order_id).percentage_discount } do
-          item_added_to_basket(order_id, product_id)
-        end
-      end
-    end
-
-    def test_newest_event_is_always_applied
-      customer_id = SecureRandom.uuid
-      product_id = SecureRandom.uuid
-      order_id = SecureRandom.uuid
-      customer_registered(customer_id)
       prepare_product(product_id)
       item_added_to_basket(order_id, product_id)
+      set_percentage_discount(order_id)
+
+      set_time_promotion_discount(order_id, 50)
+      remove_time_promotion_discount(order_id)
+
+      assert_equal(10, Orders.find_order(order_id).percentage_discount)
+    end
+
+    def test_newest_discount_is_always_applied
+      product_id = SecureRandom.uuid
+      order_id = SecureRandom.uuid
+      prepare_product(product_id)
+      item_added_to_basket(order_id, product_id)
+
+      event_store.publish(Pricing::PercentageDiscountSet.new(
+        data: {
+          order_id: order_id,
+          type: Pricing::Discounts::GENERAL_DISCOUNT,
+          amount: 20
+        },
+        metadata: {
+          timestamp: 1.minute.ago
+        })
+      )
+      assert_equal(20, Orders.find_order(order_id).percentage_discount)
 
       event_store.publish(Pricing::PercentageDiscountSet.new(
         data: {
@@ -137,18 +119,65 @@ module Orders
           timestamp: Time.current
         })
       )
+      assert_equal(30, Orders.find_order(order_id).percentage_discount)
+
       event_store.publish(Pricing::PercentageDiscountSet.new(
         data: {
           order_id: order_id,
           type: Pricing::Discounts::GENERAL_DISCOUNT,
-          amount: 20
+          amount: 10
+        },
+        metadata: {
+          timestamp: 2.minutes.ago
+        })
+      )
+      assert_equal(30, Orders.find_order(order_id).percentage_discount)
+    end
+
+    def test_newest_total_value_is_always_applied
+      product_id = SecureRandom.uuid
+      order_id = SecureRandom.uuid
+      prepare_product(product_id)
+      item_added_to_basket(order_id, product_id)
+
+      event_store.publish(Processes::TotalOrderValueUpdated.new(
+        data: {
+          order_id: order_id,
+          discounted_amount: 40,
+          total_amount: 50,
+          items: [{ product_id: product_id, quantity: 1, amount: 40 }]
         },
         metadata: {
           timestamp: 1.minute.ago
         })
       )
+      assert_equal(40, Orders.find_order(order_id).discounted_value)
 
-      assert_equal 30, Orders.find_order( order_id).percentage_discount
+      event_store.publish(Processes::TotalOrderValueUpdated.new(
+        data: {
+          order_id: order_id,
+          discounted_amount: 45,
+          total_amount: 50,
+          items: [{ product_id: product_id, quantity: 1, amount: 45 }]
+        },
+        metadata: {
+          timestamp: Time.current
+        })
+      )
+      assert_equal(45, Orders.find_order(order_id).discounted_value)
+
+      event_store.publish(Processes::TotalOrderValueUpdated.new(
+        data: {
+          order_id: order_id,
+          discounted_amount: 30,
+          total_amount: 50,
+          items: [{ product_id: product_id, quantity: 1, amount: 30 }]
+        },
+        metadata: {
+          timestamp: 2.minutes.ago
+        })
+      )
+      assert_equal(45, Orders.find_order(order_id).discounted_value)
     end
 
     private
@@ -182,6 +211,42 @@ module Orders
       ))
     end
 
+    def set_time_promotion_discount(order_id, amount)
+      event_store.publish(
+        Pricing::PercentageDiscountSet.new(
+          data: {
+            order_id: order_id,
+            type: Pricing::Discounts::TIME_PROMOTION_DISCOUNT,
+            amount: amount
+          }
+        )
+      )
+    end
+
+    def remove_time_promotion_discount(order_id)
+      event_store.publish(
+        Pricing::PercentageDiscountRemoved.new(
+          data: {
+            order_id: order_id,
+            type: Pricing::Discounts::TIME_PROMOTION_DISCOUNT
+          }
+        )
+      )
+    end
+
+    def update_order_total_value(order_id, product_id, total_amount, discounted_amount)
+      event_store.publish(
+        Processes::TotalOrderValueUpdated.new(
+          data: {
+            order_id: order_id,
+            discounted_amount: discounted_amount,
+            total_amount: total_amount,
+            items: [{ product_id: product_id, quantity: 1, amount: discounted_amount }]
+          }
+        )
+      )
+    end
+
     def item_added_to_basket(order_id, product_id)
       event_store.publish(Pricing::PriceItemAdded.new(
         data: {
@@ -212,10 +277,6 @@ module Orders
         )
       )
       event_store.publish(Pricing::PriceSet.new(data: { product_id: product_id, price: 50 }))
-    end
-
-    def customer_registered(customer_id)
-      event_store.publish(Crm::CustomerRegistered.new(data: { customer_id: customer_id, name: "Arkency" }))
     end
 
     def event_store

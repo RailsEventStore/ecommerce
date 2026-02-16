@@ -4,13 +4,8 @@ module Orders
   class BroadcastTest < InMemoryTestCase
     cover "Orders*"
 
-    def configure(event_store, command_bus)
+    def configure(event_store, _command_bus)
       Orders::Configuration.new.call(event_store)
-      Ecommerce::Configuration.new(
-        number_generator: Rails.configuration.number_generator,
-        payment_gateway: Rails.configuration.payment_gateway
-      ).call(event_store, command_bus)
-      Processes::Configuration.new.call(event_store, command_bus)
     end
 
     def setup
@@ -279,6 +274,16 @@ module Orders
             order_id: order_id,
             type: Pricing::Discounts::GENERAL_DISCOUNT,
             amount: 30
+          }
+        )
+      )
+      event_store.publish(
+        Processes::TotalOrderValueUpdated.new(
+          data: {
+            order_id: order_id,
+            discounted_amount: 14,
+            total_amount: 20,
+            items: [{ product_id: product_id, quantity: 1, amount: 14 }]
           }
         )
       )
