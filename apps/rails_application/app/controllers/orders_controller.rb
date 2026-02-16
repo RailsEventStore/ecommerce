@@ -1,6 +1,5 @@
 class OrdersController < ApplicationController
-  before_action :verify_order_ownership, only: [:show, :add_item, :remove_item, :remove_discount, :pay, :cancel]
-  before_action :verify_order_ownership_for_update_discount, only: [:update_discount]
+  before_action :verify_order_ownership, only: [:show, :add_item, :remove_item, :remove_discount, :pay, :cancel, :update_discount]
   before_action :verify_order_ownership_for_submit, only: [:create]
 
   def index
@@ -10,11 +9,7 @@ class OrdersController < ApplicationController
   def show
     return not_found unless @order
 
-    if order_belongs_to_different_store?
-      not_found
-    else
-      @order_header = OrderHeader.find_by_uid(params.fetch(:id))
-    end
+    @order_header = OrderHeader.find_by_uid(params.fetch(:id))
   end
 
   def new
@@ -125,28 +120,13 @@ class OrdersController < ApplicationController
   private
 
   def verify_order_ownership
-    @order = Orders.find_order(params.fetch(:id))
-    return not_found if @order && order_belongs_to_different_store_for?(@order)
-  end
-
-  def verify_order_ownership_for_update_discount
-    @order = Orders.find_or_create_order(params.fetch(:id))
-    return not_found if order_belongs_to_different_store_for?(@order)
+    @order = Orders.find_order_in_store(params.fetch(:id), current_store_id)
+    return not_found unless @order
   end
 
   def verify_order_ownership_for_submit
-    @order = Orders.find_order(params.fetch(:order_id))
-    return not_found if @order && order_belongs_to_different_store_for?(@order)
-  end
-
-  def order_belongs_to_different_store?
-    return false unless @order.store_id
-    !(@order.store_id == current_store_id)
-  end
-
-  def order_belongs_to_different_store_for?(order)
-    return false unless order.store_id
-    !(order.store_id == current_store_id)
+    @order = Orders.find_order_in_store(params.fetch(:order_id), current_store_id)
+    return not_found unless @order
   end
 
   def authorize_payment(order_id)

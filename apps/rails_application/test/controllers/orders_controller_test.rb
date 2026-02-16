@@ -37,14 +37,14 @@ class OrdersControllerTest < ActionDispatch::IntegrationTest
     assert_response(:not_found)
   end
 
-  def test_show_allows_access_to_order_without_store_id
+  def test_show_returns_not_found_for_order_without_store_id
     order_id = SecureRandom.uuid
     event_store.publish(Pricing::OfferDrafted.new(data: { order_id: order_id }))
 
     post "/switch_store", params: { store_id: @store_id_a }
     get "/orders/#{order_id}"
 
-    assert_response(:success)
+    assert_response(:not_found)
   end
 
   def test_show_allows_access_to_order_in_current_store
@@ -85,7 +85,7 @@ class OrdersControllerTest < ActionDispatch::IntegrationTest
     assert_response(:success)
   end
 
-  def test_add_item_allows_access_to_order_without_store_id
+  def test_add_item_returns_not_found_for_order_without_store_id
     product_id = register_product("Test Product", 100, 10)
     order_id = SecureRandom.uuid
     event_store.publish(Pricing::OfferDrafted.new(data: { order_id: order_id }))
@@ -93,7 +93,7 @@ class OrdersControllerTest < ActionDispatch::IntegrationTest
     post "/switch_store", params: { store_id: @store_id_a }
     post "/orders/#{order_id}/add_item?product_id=#{product_id}"
 
-    assert_response(:success)
+    assert_response(:not_found)
   end
 
   def test_remove_item_returns_not_found_when_order_belongs_to_different_store
