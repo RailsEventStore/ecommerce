@@ -55,10 +55,6 @@ module Orders
     Order.where(store_id: store_id).find_by_uid(uid)
   end
 
-  def self.find_or_create_order(uid)
-    Order.find_or_create_by!(uid: uid)
-  end
-
   def self.store_id_for_order(order_id)
     Order.find_by!(uid: order_id).store_id
   end

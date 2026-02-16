@@ -242,26 +242,6 @@ module Orders
       assert_nil(result)
     end
 
-    def test_find_or_create_order_returns_existing_order
-      order_id = SecureRandom.uuid
-
-      draft_order(order_id)
-
-      result = Orders.find_or_create_order(order_id)
-
-      assert_equal(order_id, result.uid)
-      assert_equal(false, result.new_record?)
-    end
-
-    def test_find_or_create_order_creates_new_order_when_not_found
-      order_id = SecureRandom.uuid
-
-      result = Orders.find_or_create_order(order_id)
-
-      assert_equal(order_id, result.uid)
-      assert_equal(false, result.new_record?)
-    end
-
     private
 
     def register_product(product_id, name, price)
