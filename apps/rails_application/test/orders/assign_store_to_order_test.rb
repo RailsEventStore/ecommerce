@@ -14,9 +14,9 @@ module Orders
       event_store.publish(offer_drafted)
       event_store.publish(offer_registered_in_store)
 
-      assert_equal(store_id, Orders.find_order(order_id).store_id)
+      assert_equal(order_id, Orders.find_order_in_store(order_id, store_id).uid)
       assert_equal(store_id, Orders.store_id_for_order(order_id))
-      assert_nil(Orders.find_order(other_order_id).store_id)
+      assert_nil(Orders.find_order_in_store(other_order_id, store_id))
     end
 
     def test_store_id_is_updated_when_offer_registered_in_different_store

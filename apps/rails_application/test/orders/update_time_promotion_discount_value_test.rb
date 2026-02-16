@@ -12,19 +12,27 @@ module Orders
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
       other_order_id = SecureRandom.uuid
+      store_id = SecureRandom.uuid
 
       prepare_product(product_id)
+      draft_order_in_store(order_id, store_id)
+      draft_order_in_store(other_order_id, store_id)
       item_added_to_basket(order_id, product_id)
       item_added_to_basket(other_order_id, product_id)
 
       set_time_promotion_discount(order_id, 50)
 
-      assert_equal(50, Orders.find_order(order_id).time_promotion_discount_value)
-      assert_nil(Orders.find_order(order_id).percentage_discount)
-      assert_nil(Orders.find_order(other_order_id).time_promotion_discount_value)
+      assert_equal(50, Orders.find_order_in_store(order_id, store_id).time_promotion_discount_value)
+      assert_nil(Orders.find_order_in_store(order_id, store_id).percentage_discount)
+      assert_nil(Orders.find_order_in_store(other_order_id, store_id).time_promotion_discount_value)
     end
 
     private
+
+    def draft_order_in_store(order_id, store_id)
+      event_store.publish(Pricing::OfferDrafted.new(data: { order_id: order_id }))
+      event_store.publish(Stores::OfferRegistered.new(data: { order_id: order_id, store_id: store_id }))
+    end
 
     def set_time_promotion_discount(order_id, amount)
       event_store.publish(

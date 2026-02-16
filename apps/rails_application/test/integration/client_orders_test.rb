@@ -6,7 +6,7 @@ class ClientOrdersTest < InMemoryRESIntegrationTestCase
   def setup
     super
     Rails.configuration.payment_gateway.call.reset
-    register_store("Test Store")
+    @store_id = register_store("Test Store")
     add_available_vat_rate(10)
   end
 
@@ -39,7 +39,7 @@ class ClientOrdersTest < InMemoryRESIntegrationTestCase
     submit_order_for_customer(arkency_id, order_id)
     get "/client_orders"
     order_price =
-      number_to_currency(Orders.find_order(order_id).discounted_value)
+      number_to_currency(Orders.find_order_in_store(order_id, @store_id).discounted_value)
 
     assert_select("td", "Submitted")
     assert_select("td", order_price)
@@ -70,7 +70,7 @@ class ClientOrdersTest < InMemoryRESIntegrationTestCase
     as_client_submit_order_for_customer(order_id)
     get "/client_orders"
     order_price =
-      number_to_currency(Orders.find_order(order_id).discounted_value)
+      number_to_currency(Orders.find_order_in_store(order_id, @store_id).discounted_value)
     assert_select("td", "Submitted")
     assert_select("td", order_price)
   end

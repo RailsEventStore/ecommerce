@@ -43,10 +43,6 @@ module Orders
     Order.where(store_id: store_id).order("id DESC").page(page).per(10)
   end
 
-  def self.find_order(uid)
-    Order.find_by_uid(uid)
-  end
-
   def self.find_order_in_store(uid, store_id)
     Order.where(store_id: store_id).find_by_uid(uid)
   end

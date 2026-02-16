@@ -144,6 +144,10 @@ module Orders
       )
 
       order_id = SecureRandom.uuid
+      store_id = SecureRandom.uuid
+      event_store.publish(Pricing::OfferDrafted.new(data: { order_id: order_id }))
+      event_store.publish(Stores::OfferRegistered.new(data: { order_id: order_id, store_id: store_id }))
+
       event_store.publish(
         Pricing::PriceItemAdded.new(
           data: {
@@ -170,7 +174,7 @@ module Orders
         )
       )
 
-      order = Orders.find_order( order_id)
+      order = Orders.find_order_in_store(order_id, store_id)
       assert_equal(order.order_lines.count, 2)
       order_lines = order.order_lines
       assert_equal(

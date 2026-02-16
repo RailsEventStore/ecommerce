@@ -40,11 +40,15 @@ module Orders
     end
 
     def test_order_lines_for_returns_all_lines_for_order
+      store_id = SecureRandom.uuid
       order_id_1 = SecureRandom.uuid
       order_id_2 = SecureRandom.uuid
       product_id_1 = SecureRandom.uuid
       product_id_2 = SecureRandom.uuid
       product_id_3 = SecureRandom.uuid
+
+      draft_order_in_store(order_id_1, store_id)
+      draft_order_in_store(order_id_2, store_id)
 
       register_product(product_id_1, "Product 1", 10)
       add_item_to_order(order_id_1, product_id_1, 10)
@@ -55,7 +59,7 @@ module Orders
       register_product(product_id_3, "Product 3", 30)
       add_item_to_order(order_id_2, product_id_3, 30)
 
-      result = Orders.find_order(order_id_1).order_lines
+      result = Orders.find_order_in_store(order_id_1, store_id).order_lines
 
       assert_equal(2, result.count)
       assert_equal([product_id_1, product_id_2].sort, result.pluck(:product_id).sort)
@@ -171,24 +175,6 @@ module Orders
       assert_equal(2, result.size)
       assert_includes(result.pluck(:uid), order_id_1)
       assert_includes(result.pluck(:uid), order_id_2)
-    end
-
-    def test_find_order_returns_order_by_uid
-      order_id = SecureRandom.uuid
-
-      draft_order(order_id)
-
-      result = Orders.find_order(order_id)
-
-      assert_equal(order_id, result.uid)
-    end
-
-    def test_find_order_returns_nil_when_not_found
-      order_id = SecureRandom.uuid
-
-      result = Orders.find_order(order_id)
-
-      assert_nil(result)
     end
 
     def test_find_order_in_store_returns_order_in_correct_store

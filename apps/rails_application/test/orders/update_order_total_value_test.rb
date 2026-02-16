@@ -9,39 +9,37 @@ module Orders
     end
 
     def test_order_created_when_total_value_updated
-      customer_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
-      customer_registered(customer_id)
+      store_id = SecureRandom.uuid
       prepare_product(product_id)
+      draft_order_in_store(order_id, store_id)
 
       event_store.publish(Processes::TotalOrderValueUpdated.new(data: { order_id: order_id, discounted_amount: 0, total_amount: 10, items: [] }))
 
-      order = Orders.find_order( order_id)
+      order = Orders.find_order_in_store(order_id, store_id)
       assert(order)
     end
 
     def test_newest_event_is_always_applied
-      customer_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
-      customer_registered(customer_id)
+      store_id = SecureRandom.uuid
       prepare_product(product_id)
+      draft_order_in_store(order_id, store_id)
       item_added_to_basket(order_id, product_id)
 
       event_store.publish(Processes::TotalOrderValueUpdated.new(data: { order_id: order_id, discounted_amount: 0, total_amount: 10, items: [] }, metadata: { timestamp: Time.current }))
       event_store.publish(Processes::TotalOrderValueUpdated.new(data: { order_id: order_id, discounted_amount: 10, total_amount: 20, items: [] }, metadata: { timestamp: 1.minute.ago }))
 
-      order = Orders.find_order( order_id)
-      assert_equal 10, order.total_value
-      assert_equal 0, order.discounted_value
+      order = Orders.find_order_in_store(order_id, store_id)
+      assert_equal(10, order.total_value)
+      assert_equal(0, order.discounted_value)
     end
 
     def test_stream
-      customer_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
-      customer_registered(customer_id)
       prepare_product(product_id)
       event = total_order_value_updated(order_id)
       event_store.publish(event)
@@ -52,6 +50,11 @@ module Orders
 
     def total_order_value_updated(order_id)
       Processes::TotalOrderValueUpdated.new(data: { order_id: order_id, discounted_amount: 0, total_amount: 10, items: [] })
+    end
+
+    def draft_order_in_store(order_id, store_id)
+      event_store.publish(Pricing::OfferDrafted.new(data: { order_id: order_id }))
+      event_store.publish(Stores::OfferRegistered.new(data: { order_id: order_id, store_id: store_id }))
     end
 
     def item_added_to_basket(order_id, product_id)
@@ -76,10 +79,6 @@ module Orders
         )
       )
       event_store.publish(Pricing::PriceSet.new(data: { product_id: product_id, price: 50 }))
-    end
-
-    def customer_registered(customer_id)
-      event_store.publish(Crm::CustomerRegistered.new(data: { customer_id: customer_id, name: "Arkency" }))
     end
 
     def event_store
