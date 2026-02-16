@@ -15,13 +15,14 @@ module OrderHeader
     Header.find_by_uid(uid)
   end
 
-  def self.draft_orders
-    Header.where(state: "Draft")
+  def self.draft_orders(store_id)
+    Header.where(state: "Draft", store_id: store_id)
   end
 
   class Configuration
     def call(event_store)
       event_store.subscribe(CreateCustomer.new, to: [Crm::CustomerRegistered])
+      event_store.subscribe(AssignStoreToOrderHeader.new, to: [Stores::OfferRegistered])
       event_store.subscribe(
         ->(event) { draft_order_header(event) },
         to: [Pricing::OfferDrafted]

@@ -84,7 +84,7 @@ class OrdersController < ApplicationController
   end
 
   def expire
-    OrderHeader.draft_orders.find_each { |order| command_bus.(Pricing::ExpireOffer.new(order_id: order.uid)) }
+    OrderHeader.draft_orders(current_store_id).find_each { |order| command_bus.(Pricing::ExpireOffer.new(order_id: order.uid)) }
     redirect_to root_path
   end
 

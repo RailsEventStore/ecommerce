@@ -18,23 +18,41 @@ module OrderHeader
       assert_equal("Draft", header.state)
     end
 
-    def test_draft_orders_returns_only_draft_orders
+    def test_draft_orders_returns_only_draft_orders_in_store
+      store_id = SecureRandom.uuid
+      other_store_id = SecureRandom.uuid
       draft_order_1 = SecureRandom.uuid
       draft_order_2 = SecureRandom.uuid
       submitted_order = SecureRandom.uuid
+      other_store_order = SecureRandom.uuid
 
-      event_store.publish(Pricing::OfferDrafted.new(data: { order_id: draft_order_1 }))
-      event_store.publish(Pricing::OfferDrafted.new(data: { order_id: draft_order_2 }))
-      event_store.publish(Pricing::OfferDrafted.new(data: { order_id: submitted_order }))
+      draft_order_in_store(draft_order_1, store_id)
+      draft_order_in_store(draft_order_2, store_id)
+      draft_order_in_store(submitted_order, store_id)
+      draft_order_in_store(other_store_order, other_store_id)
       event_store.publish(Fulfillment::OrderRegistered.new(data: { order_id: submitted_order, order_number: "2024/12/001" }))
 
-      draft_orders = OrderHeader.draft_orders
+      draft_orders = OrderHeader.draft_orders(store_id)
       draft_order_uids = draft_orders.map(&:uid)
 
       assert_equal(2, draft_orders.count)
       assert_includes(draft_order_uids, draft_order_1)
       assert_includes(draft_order_uids, draft_order_2)
       refute_includes(draft_order_uids, submitted_order)
+      refute_includes(draft_order_uids, other_store_order)
+    end
+
+    def test_assigns_store_to_header
+      order_id = SecureRandom.uuid
+      store_id = SecureRandom.uuid
+      other_order_id = SecureRandom.uuid
+
+      event_store.publish(Pricing::OfferDrafted.new(data: { order_id: order_id }))
+      event_store.publish(Pricing::OfferDrafted.new(data: { order_id: other_order_id }))
+      event_store.publish(Stores::OfferRegistered.new(data: { order_id: order_id, store_id: store_id }))
+
+      assert_equal(store_id, OrderHeader.find_by_uid(order_id).store_id)
+      assert_nil(OrderHeader.find_by_uid(other_order_id).store_id)
     end
 
     def test_assigns_customer_to_header
@@ -176,6 +194,11 @@ module OrderHeader
 
     def event_store
       Rails.configuration.event_store
+    end
+
+    def draft_order_in_store(order_id, store_id)
+      event_store.publish(Pricing::OfferDrafted.new(data: { order_id: order_id }))
+      event_store.publish(Stores::OfferRegistered.new(data: { order_id: order_id, store_id: store_id }))
     end
 
     def create_customer(name)
