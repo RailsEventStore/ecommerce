@@ -1,7 +1,8 @@
 class ReturnsController < ApplicationController
+  before_action -> { verify_order_in_store(params[:order_id]) }
+
   def edit
     @return = Returns::Return.find_by_uid!(params[:id])
-    @order = Orders.find_order!(@return.order_uid)
     @return_items = build_return_items_list(@order.order_lines, @return.return_items)
   end
 

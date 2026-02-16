@@ -1,6 +1,6 @@
 class OrdersController < ApplicationController
-  before_action :verify_order_ownership, only: [:show, :add_item, :remove_item, :remove_discount, :pay, :cancel, :update_discount]
-  before_action :verify_order_ownership_for_submit, only: [:create]
+  before_action -> { verify_order_in_store(params.fetch(:id)) }, only: [:show, :add_item, :remove_item, :remove_discount, :pay, :cancel, :update_discount]
+  before_action -> { verify_order_in_store(params.fetch(:order_id)) }, only: [:create]
 
   def index
     @orders = Orders.paginated_orders(params[:page], current_store_id)
@@ -118,16 +118,6 @@ class OrdersController < ApplicationController
   end
 
   private
-
-  def verify_order_ownership
-    @order = Orders.find_order_in_store(params.fetch(:id), current_store_id)
-    return not_found unless @order
-  end
-
-  def verify_order_ownership_for_submit
-    @order = Orders.find_order_in_store(params.fetch(:order_id), current_store_id)
-    return not_found unless @order
-  end
 
   def authorize_payment(order_id)
     command_bus.call(authorize_payment_cmd(order_id))

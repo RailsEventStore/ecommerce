@@ -44,4 +44,9 @@ class ApplicationController < ActionController::Base
     return false if store_id.blank?
     available_stores.exists?(id: store_id)
   end
+
+  def verify_order_in_store(order_uid)
+    @order = Orders.find_order_in_store(order_uid, current_store_id)
+    return not_found unless @order
+  end
 end
