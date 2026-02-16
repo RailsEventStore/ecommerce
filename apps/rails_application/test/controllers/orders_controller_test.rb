@@ -4,7 +4,7 @@ class OrdersControllerTest < ActionDispatch::IntegrationTest
   cover "OrdersController#show"
   cover "OrdersController#add_item"
   cover "OrdersController#remove_item"
-  cover "OrdersController#create"
+  cover "OrdersController#submit"
   cover "OrdersController#update_discount"
   cover "OrdersController#remove_discount"
   cover "OrdersController#pay"
@@ -133,7 +133,7 @@ class OrdersControllerTest < ActionDispatch::IntegrationTest
     order_id = request.path.split('/')[2]
 
     post "/switch_store", params: { store_id: @store_id_a }
-    post "/orders", params: { order_id: order_id, customer_id: customer_id }
+    post "/orders/#{order_id}/submit", params: { customer_id: customer_id }
 
     assert_response(:not_found)
   end
@@ -148,7 +148,7 @@ class OrdersControllerTest < ActionDispatch::IntegrationTest
     order_id = request.path.split('/')[2]
     post "/orders/#{order_id}/add_item?product_id=#{product_id}"
 
-    post "/orders", params: { order_id: order_id, customer_id: customer_id }
+    post "/orders/#{order_id}/submit", params: { customer_id: customer_id }
 
     assert_redirected_to order_path(order_id)
   end
@@ -209,7 +209,7 @@ class OrdersControllerTest < ActionDispatch::IntegrationTest
     follow_redirect!
     order_id = request.path.split('/')[2]
     post "/orders/#{order_id}/add_item?product_id=#{product_id}"
-    post "/orders", params: { order_id: order_id, customer_id: customer_id }
+    post "/orders/#{order_id}/submit", params: { customer_id: customer_id }
 
     post "/switch_store", params: { store_id: @store_id_a }
     post "/orders/#{order_id}/pay"
@@ -226,7 +226,7 @@ class OrdersControllerTest < ActionDispatch::IntegrationTest
     follow_redirect!
     order_id = request.path.split('/')[2]
     post "/orders/#{order_id}/add_item?product_id=#{product_id}"
-    post "/orders", params: { order_id: order_id, customer_id: customer_id }
+    post "/orders/#{order_id}/submit", params: { customer_id: customer_id }
 
     post "/orders/#{order_id}/pay"
 
@@ -242,7 +242,7 @@ class OrdersControllerTest < ActionDispatch::IntegrationTest
     follow_redirect!
     order_id = request.path.split('/')[2]
     post "/orders/#{order_id}/add_item?product_id=#{product_id}"
-    post "/orders", params: { order_id: order_id, customer_id: customer_id }
+    post "/orders/#{order_id}/submit", params: { customer_id: customer_id }
 
     post "/switch_store", params: { store_id: @store_id_a }
     post "/orders/#{order_id}/cancel"
@@ -259,7 +259,7 @@ class OrdersControllerTest < ActionDispatch::IntegrationTest
     follow_redirect!
     order_id = request.path.split('/')[2]
     post "/orders/#{order_id}/add_item?product_id=#{product_id}"
-    post "/orders", params: { order_id: order_id, customer_id: customer_id }
+    post "/orders/#{order_id}/submit", params: { customer_id: customer_id }
 
     post "/orders/#{order_id}/cancel"
 

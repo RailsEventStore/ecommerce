@@ -191,10 +191,9 @@ class InMemoryRESIntegrationTestCase < ActionDispatch::IntegrationTest
   end
 
   def submit_order(customer_id, order_id)
-    post "/orders",
+    post "/orders/#{order_id}/submit",
          params: {
            "authenticity_token" => "[FILTERED]",
-           "order_id" => order_id,
            "customer_id" => customer_id,
            "commit" => "Submit order"
          }

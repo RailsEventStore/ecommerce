@@ -1,14 +1,11 @@
 class OrdersController < ApplicationController
-  before_action -> { verify_order_in_store(params.fetch(:id)) }, only: [:show, :add_item, :remove_item, :remove_discount, :pay, :cancel, :update_discount]
-  before_action -> { verify_order_in_store(params.fetch(:order_id)) }, only: [:create]
+  before_action :verify_order_ownership, except: [:index, :new, :expire]
 
   def index
     @orders = Orders.paginated_orders(params[:page], current_store_id)
   end
 
   def show
-    return not_found unless @order
-
     @order_header = OrderHeader.find_by_uid(params.fetch(:id))
   end
 
@@ -23,10 +20,6 @@ class OrdersController < ApplicationController
 
   def edit
     @order_id = params[:id]
-    @order = Orders.find_order_in_store(params[:id], current_store_id)
-
-    return not_found unless @order
-
     @products = Products.products_for_store(current_store_id)
     @customers = Customers.customers_for_store(current_store_id)
     @time_promotions = TimePromotions.current_time_promotions_for_store(current_store_id)
@@ -77,17 +70,17 @@ class OrdersController < ApplicationController
     head :ok
   end
 
-  def create
-    Orders::SubmitService.new(params[:order_id], params[:customer_id]).call
+  def submit
+    Orders::SubmitService.new(params[:id], params[:customer_id]).call
   rescue Orders::OrderHasUnavailableProducts => e
     unavailable_products = e.unavailable_products.join(", ")
-    redirect_to edit_order_path(params[:order_id]), alert: "Order can not be submitted! #{unavailable_products} not available in requested quantity!"
+    redirect_to edit_order_path(params[:id]), alert: "Order can not be submitted! #{unavailable_products} not available in requested quantity!"
   rescue Pricing::Offer::IsEmpty
-    redirect_to edit_order_path(params[:order_id]), alert: "You can't submit an empty order"
+    redirect_to edit_order_path(params[:id]), alert: "You can't submit an empty order"
   rescue Crm::Customer::NotExists
-    redirect_to order_path(params[:order_id]), alert: "Order can not be submitted! Customer does not exist."
+    redirect_to order_path(params[:id]), alert: "Order can not be submitted! Customer does not exist."
   else
-    redirect_to order_path(params[:order_id]), notice: "Your order is being submitted"
+    redirect_to order_path(params[:id]), notice: "Your order is being submitted"
   end
 
   def expire
@@ -118,6 +111,10 @@ class OrdersController < ApplicationController
   end
 
   private
+
+  def verify_order_ownership
+    verify_order_in_store(params[:id])
+  end
 
   def authorize_payment(order_id)
     command_bus.call(authorize_payment_cmd(order_id))

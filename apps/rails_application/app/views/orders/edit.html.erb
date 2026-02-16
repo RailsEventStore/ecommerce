@@ -86,8 +86,7 @@
   </tfoot>
 </table>
 
-<%= form_tag({controller: "orders", action: "create"}, method: "post", id: "form") do %>
-  <%= hidden_field_tag(:order_id, @order_id) %>
+<%= form_tag(submit_order_path(@order_id), method: "post", id: "form") do %>
 
   <div class="mt-8">
     <label for="customer" class="block font-bold">

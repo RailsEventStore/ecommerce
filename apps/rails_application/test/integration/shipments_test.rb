@@ -78,9 +78,8 @@ class ShipmentsTest < InMemoryRESIntegrationTestCase
             address_line_4: "US"
           }
         }
-    post "/orders",
+    post "/orders/#{order_id}/submit",
          params: {
-           "order_id" => order_id,
            "customer_id" => customer_id
          }
 

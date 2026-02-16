@@ -281,7 +281,7 @@ class ClientOrdersTest < InMemoryRESIntegrationTestCase
   private
 
   def submit_order_for_customer(customer_id, order_id)
-    post "/orders", params: { order_id: order_id, customer_id: customer_id }
+    post "/orders/#{order_id}/submit", params: { customer_id: customer_id }
     follow_redirect!
   end
 

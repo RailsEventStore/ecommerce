@@ -16,10 +16,9 @@ class OrdersTest < InMemoryRESIntegrationTestCase
 
     another_order_id = create_order
 
-    post "/orders",
+    post "/orders/#{another_order_id}/submit",
          params: {
            "authenticity_token" => "[FILTERED]",
-           "order_id" => another_order_id,
            "customer_id" => shopify_id,
            "commit" => "Submit order"
          }
@@ -37,10 +36,9 @@ class OrdersTest < InMemoryRESIntegrationTestCase
 
     apply_discount_10_percent(order_id)
 
-    post "/orders",
+    post "/orders/#{order_id}/submit",
          params: {
            "authenticity_token" => "[FILTERED]",
-           "order_id" => order_id,
            "customer_id" => shopify_id,
            "commit" => "Submit order"
          }
@@ -84,10 +82,9 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     get "/"
     order_id = create_order
     post "/orders/#{order_id}/add_item?product_id=#{async_remote_id}"
-    post "/orders",
+    post "/orders/#{order_id}/submit",
          params: {
            "authenticity_token" => "[FILTERED]",
-           "order_id" => order_id,
            "customer_id" => shopify_id,
            "commit" => "Submit order"
          }
@@ -113,10 +110,9 @@ class OrdersTest < InMemoryRESIntegrationTestCase
 
     assert_select("button", text: "Cancel Order", count: 0)
 
-    post "/orders",
+    post "/orders/#{order_id}/submit",
          params: {
            "authenticity_token" => "[FILTERED]",
-           "order_id" => order_id,
            "customer_id" => shopify_id,
            "commit" => "Submit order"
          }
@@ -143,10 +139,9 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     post "/orders/#{order_id}/add_item?product_id=#{async_remote_id}"
     post "/orders/#{order_id}/add_item?product_id=#{async_remote_id}"
 
-    post "/orders",
+    post "/orders/#{order_id}/submit",
          params: {
            "authenticity_token" => "[FILTERED]",
-           "order_id" => order_id,
            "customer_id" => shopify_id,
            "commit" => "Submit order"
          }
@@ -172,10 +167,9 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     post "/orders/#{order_id}/add_item?product_id=#{async_remote_id}"
     post "/orders/#{order_id}/add_item?product_id=#{fearless_id}"
 
-    post "/orders",
+    post "/orders/#{order_id}/submit",
          params: {
            "authenticity_token" => "[FILTERED]",
-           "order_id" => order_id,
            "customer_id" => shopify_id,
            "commit" => "Submit order"
          }
@@ -194,10 +188,9 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     order_id = retrieve_order_id_from_url
 
     assert_no_changes -> { Orders.all_orders.count } do
-      post "/orders",
+      post "/orders/#{order_id}/submit",
             params: {
               "authenticity_token" => "[FILTERED]",
-              "order_id" => order_id,
               "customer_id" => shopify_id,
               "commit" => "Submit order"
             }
@@ -217,8 +210,8 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     post "/orders/#{order_1_id}/add_item?product_id=#{product_id}"
     post "/orders/#{order_2_id}/add_item?product_id=#{product_id}"
 
-    post "/orders", params: { order_id: order_1_id, customer_id: shopify_id }
-    post "/orders", params: { order_id: order_2_id, customer_id: shopify_id }
+    post "/orders/#{order_1_id}/submit", params: { customer_id: shopify_id }
+    post "/orders/#{order_2_id}/submit", params: { customer_id: shopify_id }
 
     assert_equal "Order can not be submitted! Fearless Refactoring not available in requested quantity!", flash[:alert]
   end
@@ -234,10 +227,9 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     assert_select "td span", "1"
 
     post "/orders/#{order_id}/add_item?product_id=#{async_remote_id}"
-    post "/orders",
+    post "/orders/#{order_id}/submit",
             params: {
               "authenticity_token" => "[FILTERED]",
-              "order_id" => order_id,
               "customer_id" => shopify_id,
               "commit" => "Submit order"
             }
@@ -260,10 +252,9 @@ class OrdersTest < InMemoryRESIntegrationTestCase
 
     post "/orders/#{order_id}/add_item?product_id=#{async_remote_id}"
 
-    post "/orders",
+    post "/orders/#{order_id}/submit",
          params: {
            "authenticity_token" => "[FILTERED]",
-           "order_id" => order_id,
            "customer_id" => shopify_id,
            "commit" => "Submit order"
          }
@@ -282,10 +273,9 @@ class OrdersTest < InMemoryRESIntegrationTestCase
 
     another_order_id = create_order
 
-    post "/orders",
+    post "/orders/#{another_order_id}/submit",
          params: {
            "authenticity_token" => "[FILTERED]",
-           "order_id" => another_order_id,
            "customer_id" => shopify_id,
            "commit" => "Submit order"
          }
