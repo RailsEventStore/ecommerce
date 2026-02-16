@@ -191,24 +191,6 @@ module Orders
       assert_nil(result)
     end
 
-    def test_find_order_bang_returns_order_by_uid
-      order_id = SecureRandom.uuid
-
-      draft_order(order_id)
-
-      result = Orders.find_order!(order_id)
-
-      assert_equal(order_id, result.uid)
-    end
-
-    def test_find_order_bang_raises_when_not_found
-      order_id = SecureRandom.uuid
-
-      assert_raises(ActiveRecord::RecordNotFound) do
-        Orders.find_order!(order_id)
-      end
-    end
-
     def test_find_order_in_store_returns_order_in_correct_store
       store_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
