@@ -19,12 +19,15 @@ mutate-rails:
 	@make -C apps/rails_application mutate
 
 install-crm:
+	@make -C domains/crm install
 	@make -C apps/crm install
 
 test-crm:
+	@make -C domains/crm test
 	@make -C apps/crm test
 
 mutate-crm:
+	@make -C domains/crm mutate
 	@make -C apps/crm mutate
 
 install-infra:
