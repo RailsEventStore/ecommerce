@@ -2,13 +2,23 @@ require "infra"
 require_relative "crm/commands/promote_customer_to_vip"
 require_relative "crm/commands/register_customer"
 require_relative "crm/commands/assign_customer_to_order"
+require_relative "crm/commands/register_contact"
+require_relative "crm/commands/set_contact_email"
+require_relative "crm/commands/set_contact_phone"
+require_relative "crm/commands/set_contact_linkedin_url"
 require_relative "crm/events/customer_promoted_to_vip"
 require_relative "crm/events/customer_registered"
 require_relative "crm/events/customer_assigned_to_order.rb"
+require_relative "crm/events/contact_registered"
+require_relative "crm/events/contact_email_set"
+require_relative "crm/events/contact_phone_set"
+require_relative "crm/events/contact_linkedin_url_set"
 require_relative "crm/customer_service"
 require_relative "crm/customer"
 require_relative "crm/order_service"
 require_relative "crm/order"
+require_relative "crm/contact_service"
+require_relative "crm/contact"
 
 module Crm
   class Configuration
@@ -17,6 +27,10 @@ module Crm
       command_bus.register(RegisterCustomer, OnRegistration.new(event_store))
       command_bus.register(PromoteCustomerToVip, OnPromoteCustomerToVip.new(event_store))
       command_bus.register(AssignCustomerToOrder, OnSetCustomer.new(event_store))
+      command_bus.register(RegisterContact, OnRegisterContact.new(event_store))
+      command_bus.register(SetContactEmail, OnSetContactEmail.new(event_store))
+      command_bus.register(SetContactPhone, OnSetContactPhone.new(event_store))
+      command_bus.register(SetContactLinkedinUrl, OnSetContactLinkedinUrl.new(event_store))
     end
   end
 end
