@@ -24,17 +24,19 @@ Before writing any code, clarify:
 
 ### 2. Generate the Rails app
 
-Run from the project root:
+Run from the `apps/` directory. The `rails` alias may not work — use the full rbenv path:
 
 ```bash
-cd apps && rails new {app_name} --database=postgresql --css=tailwind --skip-test-unit
+cd apps && /Users/andrzej/.rbenv/versions/3.4.6/bin/rails new {app_name} --database=postgresql --css=tailwind --skip-test-unit
 ```
 
-Then clean up unnecessary files and add the project-specific setup.
+**Important post-generation steps:**
+- `rails new` creates a nested `.git` directory inside the new app. **Remove it** so the app is part of the parent repo: ask the user to run `rm -rf apps/{app_name}/.git`
+- The generated test group includes `capybara` and `selenium-webdriver` — **replace** the entire test group with `mutant-minitest` (see step 3)
 
 ### 3. Configure Gemfile
 
-Add these gems to the generated Gemfile:
+Add these gems to the generated Gemfile (after the last gem before the comments):
 
 ```ruby
 gem "rails_event_store", ">= 2.15.0", "< 3.0"
@@ -42,7 +44,7 @@ gem "arkency-command_bus"
 gem "infra", path: "../../infra"
 ```
 
-Add to test group:
+**Replace** the generated test group (which has capybara/selenium) with:
 
 ```ruby
 group :test do
@@ -130,7 +132,7 @@ end
 
 ### 8. Create test helper
 
-Create `test/test_helper.rb`:
+**Replace** the generated `test/test_helper.rb` (which has `parallelize` and `fixtures :all`):
 
 ```ruby
 ENV["RAILS_ENV"] ||= "test"
@@ -307,6 +309,13 @@ Build the app incrementally, with tests passing at each step:
 4. Add controllers + views for each read model
 5. Add integration tests
 6. Run `make test` and mutation testing
+
+## Gotchas
+
+- **`rails` command**: The shell alias may not resolve. Use full path: `/Users/andrzej/.rbenv/versions/3.4.6/bin/rails new`
+- **Nested `.git`**: `rails new` creates its own git repo. Must be removed before committing to parent repo
+- **`bin/rails` commands** (migrations, generators): Must run from `apps/{app_name}/` directory, not project root
+- **Generated boilerplate**: Rails generates fixtures, system tests, channels etc. These are harmless but unused — leave them or ask user to clean up
 
 ## Key conventions
 
