@@ -19,6 +19,12 @@ require_relative "crm/order_service"
 require_relative "crm/order"
 require_relative "crm/contact_service"
 require_relative "crm/contact"
+require_relative "crm/commands/register_company"
+require_relative "crm/commands/set_company_linkedin_url"
+require_relative "crm/events/company_registered"
+require_relative "crm/events/company_linkedin_url_set"
+require_relative "crm/company_service"
+require_relative "crm/company"
 
 module Crm
   class Configuration
@@ -31,6 +37,8 @@ module Crm
       command_bus.register(SetContactEmail, OnSetContactEmail.new(event_store))
       command_bus.register(SetContactPhone, OnSetContactPhone.new(event_store))
       command_bus.register(SetContactLinkedinUrl, OnSetContactLinkedinUrl.new(event_store))
+      command_bus.register(RegisterCompany, OnRegisterCompany.new(event_store))
+      command_bus.register(SetCompanyLinkedinUrl, OnSetCompanyLinkedinUrl.new(event_store))
     end
   end
 end
