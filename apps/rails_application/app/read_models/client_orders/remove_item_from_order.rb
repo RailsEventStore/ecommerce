@@ -1,16 +1,23 @@
 module ClientOrders
   class RemoveItemFromOrder
     def call(event)
-      product_id = event.data.fetch(:product_id)
-      order_id = event.data.fetch(:order_id)
-      item = find(order_id , product_id)
+      item = persist_item(event)
+      broadcast_to_ui(item, event)
+    end
+
+    def persist_item(event)
+      item = find(event.data.fetch(:order_id), event.data.fetch(:product_id))
       item.product_quantity -= 1
       item.product_quantity > 0 ? item.save! : item.destroy!
+      item
+    end
 
+    def broadcast_to_ui(item, event)
+      order_id = event.data.fetch(:order_id)
+      product_id = event.data.fetch(:product_id)
       broadcast_update(order_id, product_id, "product_quantity", item.product_quantity)
       broadcast_update(order_id, product_id, "value", ActiveSupport::NumberHelper.number_to_currency(item.value))
       broadcast_update(order_id, product_id, "remove_item_button", "") if zero_quantity?(item)
-
       event_store.link_event_to_stream(event, "ClientOrders$all")
     end
 

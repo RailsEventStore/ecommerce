@@ -40,16 +40,17 @@ matcher:
     - ClientOrders::Configuration#subscribe_and_link_to_stream
     - ClientOrders::Configuration#link_to_stream
     - ClientOrders::Configuration#with_order
-    - ClientOrders::Rendering::OrdersList*
-    - ClientOrders::RemoveItemFromOrder*
-    - ClientOrders::AddItemToOrder#show_remove_item_button
-    - ClientOrders::AddItemToOrder#remove_button_html
+    - ClientOrders::AddItemToOrder#call
     - ClientOrders::AddItemToOrder#broadcast_to_ui
     - ClientOrders::AddItemToOrder#broadcast_update
-    - ClientOrders::AddItemToOrder#call
-    - ClientOrders::ProductHandlers::ChangeProductName*
-    - ClientOrders::ProductHandlers::ChangeProductPrice*
-    - ClientOrders::ProductHandlers::RegisterProduct*
+    - ClientOrders::AddItemToOrder#show_remove_item_button
+    - ClientOrders::AddItemToOrder#remove_button_html
+    - ClientOrders::RemoveItemFromOrder#call
+    - ClientOrders::RemoveItemFromOrder#broadcast_to_ui
+    - ClientOrders::RemoveItemFromOrder#broadcast_update
+    - ClientOrders::RemoveItemFromOrder#zero_quantity?
+    - ClientOrders::RemoveItemFromOrder#event_store
+    - ClientOrders::Rendering::OrdersList*
     - ClientOrders::Rendering::ShowOrder*
     - ClientOrders::Rendering::EditOrder*
     - Processes::Configuration*
