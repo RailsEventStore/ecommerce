@@ -10,7 +10,7 @@ module Processes
       confirm_order_on_payment_captured(event_store, command_bus)
       enable_apply_time_promotion_process(event_store, command_bus)
 
-      enable_release_payment_process(event_store, command_bus)
+      enable_release_payment_on_order_expiration(event_store, command_bus)
       enable_shipment_process(event_store, command_bus)
       enable_reservation_process(event_store, command_bus)
       enable_welcome_message_process(event_store, command_bus)
@@ -42,9 +42,9 @@ module Processes
       )
     end
 
-    def enable_release_payment_process(event_store, command_bus)
+    def enable_release_payment_on_order_expiration(event_store, command_bus)
       event_store.subscribe(
-        ReleasePaymentProcess.new(event_store, command_bus),
+        ReleasePaymentOnOrderExpiration.new(event_store, command_bus),
         to: [
           Pricing::OfferExpired,
           Fulfillment::OrderRegistered,

@@ -1,5 +1,5 @@
 module Processes
-  class ReleasePaymentProcess < Infra::ProcessManager
+  class ReleasePaymentOnOrderExpiration < Infra::ProcessManager
 
     subscribes_to(
       Payments::PaymentAuthorized,
