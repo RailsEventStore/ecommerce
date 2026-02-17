@@ -9,7 +9,10 @@ coverage_criteria:
   process_abort: true
 matcher:
   subjects:
+    - Companies*
     - Contacts*
   ignore:
+    - Companies::Company
+    - Companies::Configuration#call
     - Contacts::Contact
     - Contacts::Configuration#call
