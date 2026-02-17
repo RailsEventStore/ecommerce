@@ -1,0 +1,27 @@
+<div class="max-w-4xl mx-auto py-8">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold">Contacts</h1>
+    <%= link_to "New Contact", new_contact_path, class: "bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" %>
+  </div>
+
+  <table class="w-full border-collapse">
+    <thead>
+      <tr class="border-b">
+        <th class="text-left py-2">Name</th>
+        <th class="text-left py-2">Email</th>
+        <th class="text-left py-2">Phone</th>
+        <th class="text-left py-2">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @contacts.each do |contact| %>
+        <tr class="border-b hover:bg-gray-50">
+          <td class="py-2"><%= link_to contact.name, contact_path(contact.uid), class: "text-blue-600 hover:underline" %></td>
+          <td class="py-2"><%= contact.email %></td>
+          <td class="py-2"><%= contact.phone %></td>
+          <td class="py-2"><%= link_to "Edit", edit_contact_path(contact.uid), class: "text-gray-600 hover:underline" %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
