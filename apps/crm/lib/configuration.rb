@@ -4,11 +4,16 @@ require_relative "../../../infra/lib/infra"
 class Configuration
   def call(event_store, command_bus)
     enable_res_infra_event_linking(event_store)
+    enable_contacts_read_model(event_store)
 
     Crm::Configuration.new.call(event_store, command_bus)
   end
 
   private
+
+  def enable_contacts_read_model(event_store)
+    Contacts::Configuration.new.call(event_store)
+  end
 
   def enable_res_infra_event_linking(event_store)
     [

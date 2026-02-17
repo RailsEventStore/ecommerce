@@ -10,9 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_17_111622) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_17_112238) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "contacts", force: :cascade do |t|
+    t.uuid "uid", null: false
+    t.string "name", null: false
+    t.string "email"
+    t.string "phone"
+    t.string "linkedin_url"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["uid"], name: "index_contacts_on_uid", unique: true
+  end
 
   create_table "event_store_events", force: :cascade do |t|
     t.uuid "event_id", null: false

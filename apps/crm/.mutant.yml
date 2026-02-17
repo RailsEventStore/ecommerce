@@ -8,5 +8,8 @@ coverage_criteria:
   timeout: true
   process_abort: true
 matcher:
-  subjects: []
-  ignore: []
+  subjects:
+    - Contacts*
+  ignore:
+    - Contacts::Contact
+    - Contacts::Configuration#call
