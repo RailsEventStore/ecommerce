@@ -25,6 +25,24 @@ require_relative "crm/events/company_registered"
 require_relative "crm/events/company_linkedin_url_set"
 require_relative "crm/company_service"
 require_relative "crm/company"
+require_relative "crm/commands/create_pipeline"
+require_relative "crm/commands/add_stage_to_pipeline"
+require_relative "crm/commands/remove_stage_from_pipeline"
+require_relative "crm/events/pipeline_created"
+require_relative "crm/events/stage_added_to_pipeline"
+require_relative "crm/events/stage_removed_from_pipeline"
+require_relative "crm/pipeline_service"
+require_relative "crm/pipeline"
+require_relative "crm/commands/create_deal"
+require_relative "crm/commands/set_deal_value"
+require_relative "crm/commands/set_deal_expected_close_date"
+require_relative "crm/commands/move_deal_to_stage"
+require_relative "crm/events/deal_created"
+require_relative "crm/events/deal_value_set"
+require_relative "crm/events/deal_expected_close_date_set"
+require_relative "crm/events/deal_moved_to_stage"
+require_relative "crm/deal_service"
+require_relative "crm/deal"
 
 module Crm
   class Configuration
@@ -39,6 +57,13 @@ module Crm
       command_bus.register(SetContactLinkedinUrl, OnSetContactLinkedinUrl.new(event_store))
       command_bus.register(RegisterCompany, OnRegisterCompany.new(event_store))
       command_bus.register(SetCompanyLinkedinUrl, OnSetCompanyLinkedinUrl.new(event_store))
+      command_bus.register(CreatePipeline, OnCreatePipeline.new(event_store))
+      command_bus.register(AddStageToPipeline, OnAddStageToPipeline.new(event_store))
+      command_bus.register(RemoveStageFromPipeline, OnRemoveStageFromPipeline.new(event_store))
+      command_bus.register(CreateDeal, OnCreateDeal.new(event_store))
+      command_bus.register(SetDealValue, OnSetDealValue.new(event_store))
+      command_bus.register(SetDealExpectedCloseDate, OnSetDealExpectedCloseDate.new(event_store))
+      command_bus.register(MoveDealToStage, OnMoveDealToStage.new(event_store))
     end
   end
 end
