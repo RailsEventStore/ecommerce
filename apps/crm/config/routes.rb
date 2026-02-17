@@ -11,4 +11,5 @@ Rails.application.routes.draw do
 
   root "contacts#index"
   resources :contacts, only: [:index, :show, :new, :create, :edit, :update]
+  resources :companies, only: [:index, :show, :new, :create, :edit, :update]
 end

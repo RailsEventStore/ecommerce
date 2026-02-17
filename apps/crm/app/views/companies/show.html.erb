@@ -1,0 +1,17 @@
+<div class="max-w-2xl mx-auto py-8">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold"><%= @company.name %></h1>
+    <%= link_to "Edit", edit_company_path(@company.uid), class: "text-blue-600 hover:underline" %>
+  </div>
+
+  <dl class="space-y-4">
+    <div>
+      <dt class="text-sm text-gray-500">LinkedIn</dt>
+      <dd class="text-lg"><%= @company.linkedin_url || "—" %></dd>
+    </div>
+  </dl>
+
+  <div class="mt-8">
+    <%= link_to "Back to Companies", companies_path, class: "text-gray-600 hover:underline" %>
+  </div>
+</div>
