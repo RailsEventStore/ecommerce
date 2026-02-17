@@ -1,0 +1,12 @@
+includes:
+  - test
+requires:
+  - ./config/environment
+integration: minitest
+usage: opensource
+coverage_criteria:
+  timeout: true
+  process_abort: true
+matcher:
+  subjects: []
+  ignore: []
