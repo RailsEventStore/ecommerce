@@ -22,36 +22,29 @@ module Processes
     def apply(event)
       case event
       when Payments::PaymentAuthorized
-        state.with(payment: :authorized)
+        state.with(payment_authorized: true)
       when Payments::PaymentReleased
-        state.with(payment: :released)
-      when Fulfillment::OrderRegistered
-        state.with(
-          order: :placed,
-          order_id: event.data.fetch(:order_id)
-        )
+        state.with(payment_authorized: false)
       when Pricing::OfferExpired
-        state.with(order: :expired)
-      when Fulfillment::OrderConfirmed
-        state.with(order: :confirmed)
+        state.with(order_expired: true)
+      else
+        state
       end
     end
 
     def release_payment
-      command_bus.call(Payments::ReleasePayment.new(order_id: state.order_id))
+      command_bus.call(Payments::ReleasePayment.new(order_id: id))
     end
 
     def fetch_id(event)
       event.data.fetch(:order_id)
     end
 
-    ProcessState = Data.define(:order, :payment, :order_id) do
-      def initialize(order: :draft, payment: :none, order_id: nil)
-        super
-      end
+    ProcessState = Data.define(:payment_authorized, :order_expired) do
+      def initialize(payment_authorized: false, order_expired: false) = super
 
       def release?
-        payment.eql?(:authorized) && order.eql?(:expired)
+        payment_authorized && order_expired
       end
     end
   end
