@@ -1,6 +1,5 @@
 module Processes
-  class ReleasePaymentProcess
-    include Infra::ProcessManager.with_state { ProcessState }
+  class ReleasePaymentProcess < Infra::ProcessManager
 
     subscribes_to(
       Payments::PaymentAuthorized,
@@ -11,6 +10,10 @@ module Processes
     )
 
     private
+
+    def initial_state
+      ProcessState.new
+    end
 
     def act
       release_payment if state.release?

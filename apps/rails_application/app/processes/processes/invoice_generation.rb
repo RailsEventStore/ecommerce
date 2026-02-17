@@ -1,8 +1,7 @@
 require_relative 'invoices/money_splitter'
 
 module Processes
-  class InvoiceGeneration
-    include Infra::ProcessManager.with_state { Invoice }
+  class InvoiceGeneration < Infra::ProcessManager
 
     def initialize(event_store, command_bus)
       super(event_store, command_bus)
@@ -23,6 +22,10 @@ module Processes
     end
 
     private
+
+    def initial_state
+      Invoice.new
+    end
 
     def register_invoice
       return unless state.store_id

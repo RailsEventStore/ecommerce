@@ -24,4 +24,6 @@ matcher:
     - Infra::Mapper*
     - Infra::Process*
     - Infra::EventHandler*
-    - Infra::ProcessManager*
+    - Infra::ProcessManager.subscribes_to
+    - Infra::ProcessManager.subscribed_events
+    - Infra::ProcessManager#stream_name

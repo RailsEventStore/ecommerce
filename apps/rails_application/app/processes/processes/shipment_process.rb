@@ -1,6 +1,5 @@
 module Processes
-  class ShipmentProcess
-    include Infra::ProcessManager.with_state { ProcessState }
+  class ShipmentProcess < Infra::ProcessManager
 
     subscribes_to(
       Shipping::ShippingAddressAddedToShipment,
@@ -10,6 +9,10 @@ module Processes
     )
 
     private
+
+    def initial_state
+      ProcessState.new
+    end
 
     def act
       case state
