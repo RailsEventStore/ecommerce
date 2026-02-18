@@ -25,7 +25,7 @@
   <body>
     <nav class="bg-gray-800 text-white px-6 py-3 fixed top-0 w-full z-10">
       <div class="container mx-auto flex items-center space-x-6">
-        <span class="font-bold text-lg">CRM</span>
+        <%= link_to "CRM", root_path, class: "font-bold text-lg hover:text-gray-300" %>
         <%= link_to "Contacts", contacts_path, class: "hover:text-gray-300" %>
         <%= link_to "Companies", companies_path, class: "hover:text-gray-300" %>
         <%= link_to "Deals", deals_path, class: "hover:text-gray-300" %>

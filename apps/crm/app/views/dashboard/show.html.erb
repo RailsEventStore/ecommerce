@@ -1,0 +1,52 @@
+<div class="max-w-4xl mx-auto py-8">
+  <h1 class="text-2xl font-bold mb-8">Dashboard</h1>
+
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+    <div class="bg-white rounded shadow p-4">
+      <div class="text-sm text-gray-500">Contacts</div>
+      <div class="stat-contacts text-3xl font-bold"><%= @contacts_count %></div>
+      <%= link_to "View all", contacts_path, class: "text-blue-600 text-sm hover:underline" %>
+    </div>
+    <div class="bg-white rounded shadow p-4">
+      <div class="text-sm text-gray-500">Companies</div>
+      <div class="stat-companies text-3xl font-bold"><%= @companies_count %></div>
+      <%= link_to "View all", companies_path, class: "text-blue-600 text-sm hover:underline" %>
+    </div>
+    <div class="bg-white rounded shadow p-4">
+      <div class="text-sm text-gray-500">Deals</div>
+      <div class="stat-deals text-3xl font-bold"><%= @deals_count %></div>
+      <%= link_to "View all", deals_path, class: "text-blue-600 text-sm hover:underline" %>
+    </div>
+    <div class="bg-white rounded shadow p-4">
+      <div class="text-sm text-gray-500">Pipelines</div>
+      <div class="stat-pipelines text-3xl font-bold"><%= @pipelines_count %></div>
+      <%= link_to "View all", pipelines_path, class: "text-blue-600 text-sm hover:underline" %>
+    </div>
+  </div>
+
+  <div>
+    <h2 class="text-lg font-bold mb-4">Recent Deals</h2>
+    <% if @recent_deals.any? %>
+      <table class="w-full border-collapse">
+        <thead>
+          <tr class="border-b">
+            <th class="text-left py-2">Name</th>
+            <th class="text-left py-2">Value</th>
+            <th class="text-left py-2">Stage</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @recent_deals.each do |deal| %>
+            <tr class="border-b hover:bg-gray-50">
+              <td class="py-2"><%= link_to deal.name, deal_path(deal.uid), class: "text-blue-600 hover:underline" %></td>
+              <td class="py-2"><%= deal.value %></td>
+              <td class="py-2"><%= deal.stage %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% else %>
+      <p class="text-gray-500">No deals yet.</p>
+    <% end %>
+  </div>
+</div>
