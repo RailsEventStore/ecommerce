@@ -1,0 +1,52 @@
+<div class="w-full py-8">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold"><%= @pipeline.name %></h1>
+    <%= link_to "Back to Pipelines", pipelines_path, class: "text-gray-600 hover:underline" %>
+  </div>
+
+  <div class="flex gap-4 overflow-x-auto pb-4" data-controller="kanban" data-kanban-pipeline-id-value="<%= @pipeline.uid %>">
+    <% @stages.each do |stage| %>
+      <div class="flex-shrink-0 w-72 bg-gray-100 rounded-lg p-4">
+        <div class="flex justify-between items-center mb-3">
+          <h3 class="font-semibold"><%= stage.stage_name %></h3>
+          <%= button_to "Remove", remove_stage_pipeline_path(@pipeline.uid), method: :delete, params: { stage: { name: stage.stage_name } }, class: "text-red-500 text-sm hover:underline" %>
+        </div>
+        <div class="space-y-2 min-h-[2rem]" data-kanban-target="column" data-stage="<%= stage.stage_name %>">
+          <% @deals.select { |d| d.stage == stage.stage_name }.each do |deal| %>
+            <div class="deal-card bg-white rounded shadow p-3 cursor-grab" data-deal-id="<%= deal.uid %>">
+              <%= deal.name %>
+              <% if deal.value %>
+                <span class="text-sm text-gray-500 block"><%= deal.value %></span>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
+    <% unassigned_deals = @deals.select { |d| d.stage.blank? } %>
+    <% if unassigned_deals.any? %>
+      <div class="flex-shrink-0 w-72 bg-yellow-50 rounded-lg p-4">
+        <h3 class="font-semibold mb-3">Unassigned</h3>
+        <div class="space-y-2 min-h-[2rem]" data-kanban-target="column" data-stage="">
+          <% unassigned_deals.each do |deal| %>
+            <div class="deal-card bg-white rounded shadow p-3 cursor-grab" data-deal-id="<%= deal.uid %>">
+              <%= deal.name %>
+              <% if deal.value %>
+                <span class="text-sm text-gray-500 block"><%= deal.value %></span>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="mt-6">
+    <h2 class="text-lg font-semibold mb-2">Add Stage</h2>
+    <%= form_with url: add_stage_pipeline_path(@pipeline.uid), scope: :stage, method: :post, class: "flex gap-2" do |f| %>
+      <%= f.text_field :name, required: true, placeholder: "Stage name", class: "rounded border-gray-300 shadow-sm" %>
+      <%= f.submit "Add Stage", class: "bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 cursor-pointer" %>
+    <% end %>
+  </div>
+</div>

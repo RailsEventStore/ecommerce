@@ -12,4 +12,11 @@ Rails.application.routes.draw do
   root "contacts#index"
   resources :contacts, only: [:index, :show, :new, :create, :edit, :update]
   resources :companies, only: [:index, :show, :new, :create, :edit, :update]
+  resources :pipelines, only: [:index, :show, :new, :create] do
+    member do
+      post :add_stage
+      delete :remove_stage
+      patch :move_deal
+    end
+  end
 end
