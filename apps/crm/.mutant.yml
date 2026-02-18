@@ -11,8 +11,17 @@ matcher:
   subjects:
     - Companies*
     - Contacts*
+    - Pipelines*
+    - Deals*
   ignore:
     - Companies::Company
     - Companies::Configuration#call
     - Contacts::Contact
     - Contacts::Configuration#call
+    - Pipelines::Pipeline
+    - Pipelines::Stage
+    - Pipelines::Configuration#call
+    - Pipelines.stages_for
+    - Deals::Deal
+    - Deals::Configuration#call
+    - Deals.for_pipeline

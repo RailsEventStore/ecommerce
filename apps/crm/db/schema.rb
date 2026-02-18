@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_17_112239) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_17_112242) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -32,6 +32,18 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_17_112239) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["uid"], name: "index_contacts_on_uid", unique: true
+  end
+
+  create_table "deals", force: :cascade do |t|
+    t.uuid "uid", null: false
+    t.uuid "pipeline_uid", null: false
+    t.string "name", null: false
+    t.integer "value"
+    t.string "expected_close_date"
+    t.string "stage"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["uid"], name: "index_deals_on_uid", unique: true
   end
 
   create_table "event_store_events", force: :cascade do |t|
@@ -56,6 +68,22 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_17_112239) do
     t.index ["event_id"], name: "index_event_store_events_in_streams_on_event_id"
     t.index ["stream", "event_id"], name: "index_event_store_events_in_streams_on_stream_and_event_id", unique: true
     t.index ["stream", "position"], name: "index_event_store_events_in_streams_on_stream_and_position", unique: true
+  end
+
+  create_table "pipeline_stages", force: :cascade do |t|
+    t.uuid "pipeline_uid", null: false
+    t.string "stage_name", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["pipeline_uid", "stage_name"], name: "index_pipeline_stages_on_pipeline_uid_and_stage_name", unique: true
+  end
+
+  create_table "pipelines", force: :cascade do |t|
+    t.uuid "uid", null: false
+    t.string "name", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["uid"], name: "index_pipelines_on_uid", unique: true
   end
 
   add_foreign_key "event_store_events_in_streams", "event_store_events", column: "event_id", primary_key: "event_id"

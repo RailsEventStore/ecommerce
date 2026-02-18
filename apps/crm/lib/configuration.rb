@@ -6,6 +6,8 @@ class Configuration
     enable_res_infra_event_linking(event_store)
     enable_contacts_read_model(event_store)
     enable_companies_read_model(event_store)
+    enable_pipelines_read_model(event_store)
+    enable_deals_read_model(event_store)
 
     Crm::Configuration.new.call(event_store, command_bus)
   end
@@ -18,6 +20,14 @@ class Configuration
 
   def enable_contacts_read_model(event_store)
     Contacts::Configuration.new.call(event_store)
+  end
+
+  def enable_pipelines_read_model(event_store)
+    Pipelines::Configuration.new.call(event_store)
+  end
+
+  def enable_deals_read_model(event_store)
+    Deals::Configuration.new.call(event_store)
   end
 
   def enable_res_infra_event_linking(event_store)
