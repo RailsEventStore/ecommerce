@@ -5,5 +5,6 @@ class DashboardController < ApplicationController
     @deals_count = Deals.all.size
     @pipelines_count = Pipelines.all.size
     @recent_deals = Deals.all.last(5)
+    @recent_activities = Activities.recent(5)
   end
 end

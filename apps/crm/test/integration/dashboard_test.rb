@@ -20,6 +20,15 @@ class DashboardIntegrationTest < InMemoryRESIntegrationTestCase
     assert_select(".stat-pipelines", /1/)
   end
 
+  def test_dashboard_shows_recent_activities
+    post "/contacts", params: { contact: { name: "Alice" } }
+    post "/companies", params: { company: { name: "Arkency" } }
+
+    get "/"
+    assert_select(".recent-activities td", "Contact registered: Alice")
+    assert_select(".recent-activities td", "Company registered: Arkency")
+  end
+
   private
 
   def create_pipeline(name)

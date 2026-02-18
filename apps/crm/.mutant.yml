@@ -13,6 +13,7 @@ matcher:
     - Contacts*
     - Pipelines*
     - Deals*
+    - Activities*
   ignore:
     - Companies::Company
     - Companies::Configuration#call
@@ -25,3 +26,5 @@ matcher:
     - Deals::Deal
     - Deals::Configuration#call
     - Deals.for_pipeline
+    - Activities::Activity
+    - Activities::Configuration#call

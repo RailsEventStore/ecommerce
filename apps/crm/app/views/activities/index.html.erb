@@ -1,0 +1,26 @@
+<div class="max-w-4xl mx-auto py-8">
+  <h1 class="text-2xl font-bold mb-6">Activity Log</h1>
+
+  <% if @activities.any? %>
+    <table class="w-full border-collapse">
+      <thead>
+        <tr class="border-b">
+          <th class="text-left py-2">Action</th>
+          <th class="text-left py-2">Type</th>
+          <th class="text-left py-2">When</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @activities.each do |activity| %>
+          <tr class="border-b hover:bg-gray-50">
+            <td class="py-2"><%= activity.action %></td>
+            <td class="py-2"><%= activity.entity_type.capitalize %></td>
+            <td class="py-2"><%= activity.occurred_at.strftime("%Y-%m-%d %H:%M") %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% else %>
+    <p class="text-gray-500">No activities yet.</p>
+  <% end %>
+</div>

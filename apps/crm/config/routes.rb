@@ -13,6 +13,7 @@ Rails.application.routes.draw do
   resources :contacts, only: [:index, :show, :new, :create, :edit, :update]
   resources :companies, only: [:index, :show, :new, :create, :edit, :update]
   resources :deals, only: [:index, :show, :new, :create, :edit, :update]
+  resources :activities, only: [:index]
   resources :pipelines, only: [:index, :show, :new, :create] do
     member do
       post :add_stage
