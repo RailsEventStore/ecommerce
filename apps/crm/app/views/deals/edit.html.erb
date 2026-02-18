@@ -1,0 +1,21 @@
+<div class="max-w-2xl mx-auto py-8">
+  <h1 class="text-2xl font-bold mb-6">Edit <%= @deal.name %></h1>
+
+  <%= form_with url: deal_path(@deal.uid), scope: :deal, method: :patch, class: "space-y-4" do |f| %>
+    <div>
+      <%= f.label :value, class: "block text-sm font-medium text-gray-700" %>
+      <%= f.number_field :value, value: @deal.value, class: "mt-1 block w-full rounded border-gray-300 shadow-sm" %>
+    </div>
+    <div>
+      <%= f.label :expected_close_date, "Expected Close Date", class: "block text-sm font-medium text-gray-700" %>
+      <%= f.date_field :expected_close_date, value: @deal.expected_close_date, class: "mt-1 block w-full rounded border-gray-300 shadow-sm" %>
+    </div>
+    <div>
+      <%= f.label :stage, class: "block text-sm font-medium text-gray-700" %>
+      <%= f.select :stage, @stages.map { |s| [s.stage_name, s.stage_name] }, { include_blank: "Select a stage", selected: @deal.stage }, class: "mt-1 block w-full rounded border-gray-300 shadow-sm" %>
+    </div>
+    <div>
+      <%= f.submit "Update Deal", class: "bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 cursor-pointer" %>
+    </div>
+  <% end %>
+</div>
