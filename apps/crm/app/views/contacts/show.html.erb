@@ -17,6 +17,10 @@
       <dt class="text-sm text-gray-500">LinkedIn</dt>
       <dd class="text-lg"><%= @contact.linkedin_url || "—" %></dd>
     </div>
+    <div>
+      <dt class="text-sm text-gray-500">Company</dt>
+      <dd class="text-lg"><%= @company&.name || "—" %></dd>
+    </div>
   </dl>
 
   <div class="mt-8">

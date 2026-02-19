@@ -15,6 +15,10 @@
       <%= f.url_field :linkedin_url, value: @contact.linkedin_url, class: "mt-1 block w-full rounded border-gray-300 shadow-sm" %>
     </div>
     <div>
+      <%= f.label :company_id, "Company", class: "block text-sm font-medium text-gray-700" %>
+      <%= f.select :company_id, @companies.map { |c| [c.name, c.uid] }, { include_blank: "Select a company", selected: @contact.company_uid }, class: "mt-1 block w-full rounded border-gray-300 shadow-sm" %>
+    </div>
+    <div>
       <%= f.submit "Update Contact", class: "bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 cursor-pointer" %>
     </div>
   <% end %>

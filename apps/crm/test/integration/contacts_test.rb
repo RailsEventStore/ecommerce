@@ -62,11 +62,28 @@ class ContactsIntegrationTest < InMemoryRESIntegrationTestCase
     assert_select("dd", "https://linkedin.com/in/johndoe")
   end
 
+  def test_assign_contact_to_company
+    company_id = create_company("Arkency")
+    contact_id = create_contact("Alice")
+
+    patch "/contacts/#{contact_id}", params: {
+      contact: { company_id: company_id }
+    }
+    follow_redirect!
+    assert_select("dd", "Arkency")
+  end
+
   private
 
   def create_contact(name)
     post "/contacts", params: { contact: { name: name } }
     follow_redirect!
     Contacts.all.last.uid
+  end
+
+  def create_company(name)
+    post "/companies", params: { company: { name: name } }
+    follow_redirect!
+    Companies.all.last.uid
   end
 end

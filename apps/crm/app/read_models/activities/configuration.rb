@@ -155,6 +155,45 @@ module Activities
     end
   end
 
+  class OnContactAssignedToCompany
+    def call(event)
+      contact_name = Contacts.find_by_uid(event.data.fetch(:contact_id)).name
+      company_name = Companies.find_by_uid(event.data.fetch(:company_id)).name
+      Activity.create!(
+        entity_type: "contact",
+        entity_uid: event.data.fetch(:contact_id),
+        action: "#{contact_name} assigned to company: #{company_name}",
+        occurred_at: event.metadata.fetch(:timestamp)
+      )
+    end
+  end
+
+  class OnCompanyAssignedToDeal
+    def call(event)
+      deal_name = Deals.find_by_uid(event.data.fetch(:deal_id)).name
+      company_name = Companies.find_by_uid(event.data.fetch(:company_id)).name
+      Activity.create!(
+        entity_type: "deal",
+        entity_uid: event.data.fetch(:deal_id),
+        action: "#{company_name} assigned to deal: #{deal_name}",
+        occurred_at: event.metadata.fetch(:timestamp)
+      )
+    end
+  end
+
+  class OnContactAssignedToDeal
+    def call(event)
+      deal_name = Deals.find_by_uid(event.data.fetch(:deal_id)).name
+      contact_name = Contacts.find_by_uid(event.data.fetch(:contact_id)).name
+      Activity.create!(
+        entity_type: "deal",
+        entity_uid: event.data.fetch(:deal_id),
+        action: "#{contact_name} assigned to deal: #{deal_name}",
+        occurred_at: event.metadata.fetch(:timestamp)
+      )
+    end
+  end
+
   class Configuration
     def call(event_store)
       event_store.subscribe(OnContactRegistered.new, to: [Crm::ContactRegistered])
@@ -170,6 +209,9 @@ module Activities
       event_store.subscribe(OnDealValueSet.new, to: [Crm::DealValueSet])
       event_store.subscribe(OnDealExpectedCloseDateSet.new, to: [Crm::DealExpectedCloseDateSet])
       event_store.subscribe(OnDealMovedToStage.new, to: [Crm::DealMovedToStage])
+      event_store.subscribe(OnContactAssignedToCompany.new, to: [Crm::ContactAssignedToCompany])
+      event_store.subscribe(OnCompanyAssignedToDeal.new, to: [Crm::CompanyAssignedToDeal])
+      event_store.subscribe(OnContactAssignedToDeal.new, to: [Crm::ContactAssignedToDeal])
     end
   end
 end

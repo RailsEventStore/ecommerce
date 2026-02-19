@@ -46,4 +46,18 @@ module Crm
       end
     end
   end
+
+  class OnAssignContactToCompany
+    def initialize(event_store)
+      @event_store = event_store
+      @repository = Infra::AggregateRootRepository.new(event_store)
+    end
+
+    def call(command)
+      @event_store.read.stream("Crm::Company$#{command.company_id}").last or raise Company::NotFound
+      @repository.with_aggregate(Contact, command.aggregate_id) do |contact|
+        contact.assign_to_company(command.company_id)
+      end
+    end
+  end
 end

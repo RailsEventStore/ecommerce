@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_18_120000) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_18_130002) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -41,7 +41,20 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_18_120000) do
     t.string "linkedin_url"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.uuid "company_uid"
     t.index ["uid"], name: "index_contacts_on_uid", unique: true
+  end
+
+  create_table "deal_companies", force: :cascade do |t|
+    t.uuid "deal_uid", null: false
+    t.uuid "company_uid", null: false
+    t.index ["deal_uid", "company_uid"], name: "index_deal_companies_on_deal_uid_and_company_uid", unique: true
+  end
+
+  create_table "deal_contacts", force: :cascade do |t|
+    t.uuid "deal_uid", null: false
+    t.uuid "contact_uid", null: false
+    t.index ["deal_uid", "contact_uid"], name: "index_deal_contacts_on_deal_uid_and_contact_uid", unique: true
   end
 
   create_table "deals", force: :cascade do |t|

@@ -39,12 +39,19 @@ module Contacts
     end
   end
 
+  class AssignToCompany
+    def call(event)
+      Contact.find_by!(uid: event.data.fetch(:contact_id)).update!(company_uid: event.data.fetch(:company_id))
+    end
+  end
+
   class Configuration
     def call(event_store)
       event_store.subscribe(RegisterContact.new, to: [Crm::ContactRegistered])
       event_store.subscribe(SetEmail.new, to: [Crm::ContactEmailSet])
       event_store.subscribe(SetPhone.new, to: [Crm::ContactPhoneSet])
       event_store.subscribe(SetLinkedinUrl.new, to: [Crm::ContactLinkedinUrlSet])
+      event_store.subscribe(AssignToCompany.new, to: [Crm::ContactAssignedToCompany])
     end
   end
 end

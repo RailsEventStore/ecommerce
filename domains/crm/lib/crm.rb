@@ -6,6 +6,7 @@ require_relative "crm/commands/register_contact"
 require_relative "crm/commands/set_contact_email"
 require_relative "crm/commands/set_contact_phone"
 require_relative "crm/commands/set_contact_linkedin_url"
+require_relative "crm/commands/assign_contact_to_company"
 require_relative "crm/events/customer_promoted_to_vip"
 require_relative "crm/events/customer_registered"
 require_relative "crm/events/customer_assigned_to_order.rb"
@@ -13,6 +14,7 @@ require_relative "crm/events/contact_registered"
 require_relative "crm/events/contact_email_set"
 require_relative "crm/events/contact_phone_set"
 require_relative "crm/events/contact_linkedin_url_set"
+require_relative "crm/events/contact_assigned_to_company"
 require_relative "crm/customer_service"
 require_relative "crm/customer"
 require_relative "crm/order_service"
@@ -37,10 +39,14 @@ require_relative "crm/commands/create_deal"
 require_relative "crm/commands/set_deal_value"
 require_relative "crm/commands/set_deal_expected_close_date"
 require_relative "crm/commands/move_deal_to_stage"
+require_relative "crm/commands/assign_company_to_deal"
+require_relative "crm/commands/assign_contact_to_deal"
 require_relative "crm/events/deal_created"
 require_relative "crm/events/deal_value_set"
 require_relative "crm/events/deal_expected_close_date_set"
 require_relative "crm/events/deal_moved_to_stage"
+require_relative "crm/events/company_assigned_to_deal"
+require_relative "crm/events/contact_assigned_to_deal"
 require_relative "crm/deal_service"
 require_relative "crm/deal"
 
@@ -55,6 +61,7 @@ module Crm
       command_bus.register(SetContactEmail, OnSetContactEmail.new(event_store))
       command_bus.register(SetContactPhone, OnSetContactPhone.new(event_store))
       command_bus.register(SetContactLinkedinUrl, OnSetContactLinkedinUrl.new(event_store))
+      command_bus.register(AssignContactToCompany, OnAssignContactToCompany.new(event_store))
       command_bus.register(RegisterCompany, OnRegisterCompany.new(event_store))
       command_bus.register(SetCompanyLinkedinUrl, OnSetCompanyLinkedinUrl.new(event_store))
       command_bus.register(CreatePipeline, OnCreatePipeline.new(event_store))
@@ -64,6 +71,8 @@ module Crm
       command_bus.register(SetDealValue, OnSetDealValue.new(event_store))
       command_bus.register(SetDealExpectedCloseDate, OnSetDealExpectedCloseDate.new(event_store))
       command_bus.register(MoveDealToStage, OnMoveDealToStage.new(event_store))
+      command_bus.register(AssignCompanyToDeal, OnAssignCompanyToDeal.new(event_store))
+      command_bus.register(AssignContactToDeal, OnAssignContactToDeal.new(event_store))
     end
   end
 end

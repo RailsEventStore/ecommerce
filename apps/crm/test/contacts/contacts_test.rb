@@ -46,7 +46,21 @@ module Contacts
       assert_nil(Contacts.find_by_uid(other_contact_id).linkedin_url)
     end
 
+    def test_assign_to_company
+      register_company(company_id, "Arkency")
+      register_contact(contact_id, "John Doe")
+      register_contact(other_contact_id, "Jane Doe")
+      assign_to_company(contact_id, company_id)
+
+      assert_equal(company_id, Contacts.find_by_uid(contact_id).company_uid)
+      assert_nil(Contacts.find_by_uid(other_contact_id).company_uid)
+    end
+
     private
+
+    def company_id
+      @company_id ||= SecureRandom.uuid
+    end
 
     def contact_id
       @contact_id ||= SecureRandom.uuid
@@ -70,6 +84,14 @@ module Contacts
 
     def set_linkedin_url(uid, linkedin_url)
       event_store.publish(Crm::ContactLinkedinUrlSet.new(data: { contact_id: uid, linkedin_url: linkedin_url }))
+    end
+
+    def register_company(uid, name)
+      event_store.publish(Crm::CompanyRegistered.new(data: { company_id: uid, name: name }))
+    end
+
+    def assign_to_company(uid, company_uid)
+      event_store.publish(Crm::ContactAssignedToCompany.new(data: { contact_id: uid, company_id: company_uid }))
     end
   end
 end

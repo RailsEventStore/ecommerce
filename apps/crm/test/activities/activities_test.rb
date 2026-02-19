@@ -159,6 +159,51 @@ module Activities
       assert_equal("Deal moved to stage: Negotiation", moves.last.action)
     end
 
+    def test_contact_assigned_to_company
+      register_company(company_id, "Arkency")
+      register_company(other_company_id, "Acme")
+      register_contact(contact_id, "Alice")
+      assign_contact_to_company(contact_id, company_id)
+      register_contact(other_contact_id, "Bob")
+      assign_contact_to_company(other_contact_id, other_company_id)
+
+      activities = Activities.all.select { |a| a.action.include?("assigned to company") }
+      assert_equal(2, activities.count)
+      assert_equal(contact_id, activities.last.entity_uid)
+      assert_equal("Alice assigned to company: Arkency", activities.last.action)
+      assert_equal("contact", activities.last.entity_type)
+    end
+
+    def test_company_assigned_to_deal
+      register_company(company_id, "Arkency")
+      register_company(other_company_id, "Acme")
+      create_deal(deal_id, pipeline_id, "Big Deal")
+      assign_company_to_deal(deal_id, company_id)
+      create_deal(other_deal_id, pipeline_id, "Small Deal")
+      assign_company_to_deal(other_deal_id, other_company_id)
+
+      activities = Activities.all.select { |a| a.action.include?("assigned to deal") && a.action.include?("Arkency") }
+      assert_equal(1, activities.count)
+      assert_equal(deal_id, activities.first.entity_uid)
+      assert_equal("Arkency assigned to deal: Big Deal", activities.first.action)
+      assert_equal("deal", activities.first.entity_type)
+    end
+
+    def test_contact_assigned_to_deal
+      register_contact(contact_id, "Alice")
+      register_contact(other_contact_id, "Bob")
+      create_deal(deal_id, pipeline_id, "Big Deal")
+      assign_contact_to_deal(deal_id, contact_id)
+      create_deal(other_deal_id, pipeline_id, "Small Deal")
+      assign_contact_to_deal(other_deal_id, other_contact_id)
+
+      activities = Activities.all.select { |a| a.action.include?("assigned to deal") && a.action.include?("Alice") }
+      assert_equal(1, activities.count)
+      assert_equal(deal_id, activities.first.entity_uid)
+      assert_equal("Alice assigned to deal: Big Deal", activities.first.action)
+      assert_equal("deal", activities.first.entity_type)
+    end
+
     def test_recent_returns_limited_results
       register_contact(contact_id, "Alice")
       register_company(company_id, "Arkency")
@@ -272,6 +317,18 @@ module Activities
 
     def move_deal_to_stage(uid, stage)
       event_store.publish(Crm::DealMovedToStage.new(data: { deal_id: uid, stage: stage }))
+    end
+
+    def assign_contact_to_company(contact_uid, company_uid)
+      event_store.publish(Crm::ContactAssignedToCompany.new(data: { contact_id: contact_uid, company_id: company_uid }))
+    end
+
+    def assign_company_to_deal(deal_uid, company_uid)
+      event_store.publish(Crm::CompanyAssignedToDeal.new(data: { deal_id: deal_uid, company_id: company_uid }))
+    end
+
+    def assign_contact_to_deal(deal_uid, contact_uid)
+      event_store.publish(Crm::ContactAssignedToDeal.new(data: { deal_id: deal_uid, contact_id: contact_uid }))
     end
   end
 end

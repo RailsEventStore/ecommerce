@@ -5,6 +5,7 @@ class ContactsController < ApplicationController
 
   def show
     @contact = Contacts.find_by_uid(params[:id])
+    @company = Companies.find_by_uid(@contact.company_uid) if @contact.company_uid.present?
   end
 
   def new
@@ -25,15 +26,17 @@ class ContactsController < ApplicationController
 
   def edit
     @contact = Contacts.find_by_uid(params[:id])
+    @companies = Companies.all
   end
 
   def update
-    contact_params = params.require(:contact).permit(:email, :phone, :linkedin_url)
+    contact_params = params.require(:contact).permit(:email, :phone, :linkedin_url, :company_id)
 
     ActiveRecord::Base.transaction do
       command_bus.call(Crm::SetContactEmail.new(contact_id: params[:id], email: contact_params[:email])) if contact_params[:email].present?
       command_bus.call(Crm::SetContactPhone.new(contact_id: params[:id], phone: contact_params[:phone])) if contact_params[:phone].present?
       command_bus.call(Crm::SetContactLinkedinUrl.new(contact_id: params[:id], linkedin_url: contact_params[:linkedin_url])) if contact_params[:linkedin_url].present?
+      command_bus.call(Crm::AssignContactToCompany.new(contact_id: params[:id], company_id: contact_params[:company_id])) if contact_params[:company_id].present?
     end
     redirect_to contact_path(params[:id])
   end
