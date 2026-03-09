@@ -146,11 +146,11 @@ module Deals
     end
 
     def assign_company(deal_uid, company_uid)
-      event_store.publish(Crm::CompanyAssignedToDeal.new(data: { deal_id: deal_uid, company_id: company_uid }))
+      event_store.publish(Crm::CompanyAssignedToDeal.new(data: { deal_party_id: SecureRandom.uuid, deal_id: deal_uid, company_id: company_uid }))
     end
 
     def assign_contact(deal_uid, contact_uid)
-      event_store.publish(Crm::ContactAssignedToDeal.new(data: { deal_id: deal_uid, contact_id: contact_uid }))
+      event_store.publish(Crm::ContactAssignedToDeal.new(data: { deal_party_id: SecureRandom.uuid, deal_id: deal_uid, contact_id: contact_uid }))
     end
   end
 end

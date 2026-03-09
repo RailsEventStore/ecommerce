@@ -51,6 +51,8 @@ require_relative "crm/deal_service"
 require_relative "crm/deal"
 require_relative "crm/position_service"
 require_relative "crm/position"
+require_relative "crm/deal_party_service"
+require_relative "crm/deal_party"
 
 module Crm
   class Configuration
