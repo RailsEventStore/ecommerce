@@ -21,6 +21,30 @@
       <dt class="text-sm text-gray-500">Stage</dt>
       <dd class="text-lg"><%= @deal.stage || "—" %></dd>
     </div>
+    <div>
+      <dt class="text-sm text-gray-500">Companies</dt>
+      <dd class="text-lg">
+        <% if @companies.any? %>
+          <% @companies.each do |dc| %>
+            <span><%= Companies.find_by_uid(dc.company_uid).name %></span>
+          <% end %>
+        <% else %>
+          —
+        <% end %>
+      </dd>
+    </div>
+    <div>
+      <dt class="text-sm text-gray-500">Contacts</dt>
+      <dd class="text-lg">
+        <% if @contacts.any? %>
+          <% @contacts.each do |dc| %>
+            <span><%= Contacts.find_by_uid(dc.contact_uid).name %></span>
+          <% end %>
+        <% else %>
+          —
+        <% end %>
+      </dd>
+    </div>
   </dl>
 
   <div class="mt-8">

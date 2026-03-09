@@ -91,7 +91,7 @@ module Contacts
     end
 
     def assign_to_company(uid, company_uid)
-      event_store.publish(Crm::ContactAssignedToCompany.new(data: { contact_id: uid, company_id: company_uid }))
+      event_store.publish(Crm::ContactAssignedToCompany.new(data: { position_id: SecureRandom.uuid, contact_id: uid, company_id: company_uid }))
     end
   end
 end

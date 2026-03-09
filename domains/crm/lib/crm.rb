@@ -49,6 +49,8 @@ require_relative "crm/events/company_assigned_to_deal"
 require_relative "crm/events/contact_assigned_to_deal"
 require_relative "crm/deal_service"
 require_relative "crm/deal"
+require_relative "crm/position_service"
+require_relative "crm/position"
 
 module Crm
   class Configuration

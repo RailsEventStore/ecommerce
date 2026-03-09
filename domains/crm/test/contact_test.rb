@@ -80,76 +80,6 @@ module Crm
       end
     end
 
-    def test_assign_contact_to_company
-      uid = SecureRandom.uuid
-      company_id = SecureRandom.uuid
-      register_company(company_id, "Arkency")
-
-      assert_events(
-        "Crm::Contact$#{uid}",
-        ContactRegistered.new(data: { contact_id: uid, name: "John Doe" }),
-        ContactAssignedToCompany.new(data: { contact_id: uid, company_id: company_id })
-      ) do
-        register_contact(uid, "John Doe")
-        assign_contact_to_company(uid, company_id)
-      end
-    end
-
-    def test_cannot_assign_nonexistent_contact_to_company
-      uid = SecureRandom.uuid
-      company_id = SecureRandom.uuid
-      register_company(company_id, "Arkency")
-
-      assert_raises(Contact::NotFound) do
-        assign_contact_to_company(uid, company_id)
-      end
-    end
-
-    def test_cannot_assign_contact_to_nonexistent_company
-      uid = SecureRandom.uuid
-      company_id = SecureRandom.uuid
-      register_contact(uid, "John Doe")
-
-      assert_raises(Company::NotFound) do
-        assign_contact_to_company(uid, company_id)
-      end
-    end
-
-    def test_assign_contact_to_same_company_is_noop
-      uid = SecureRandom.uuid
-      company_id = SecureRandom.uuid
-      register_company(company_id, "Arkency")
-
-      assert_events(
-        "Crm::Contact$#{uid}",
-        ContactRegistered.new(data: { contact_id: uid, name: "John Doe" }),
-        ContactAssignedToCompany.new(data: { contact_id: uid, company_id: company_id })
-      ) do
-        register_contact(uid, "John Doe")
-        assign_contact_to_company(uid, company_id)
-        assign_contact_to_company(uid, company_id)
-      end
-    end
-
-    def test_can_reassign_contact_to_different_company
-      uid = SecureRandom.uuid
-      company_id = SecureRandom.uuid
-      other_company_id = SecureRandom.uuid
-      register_company(company_id, "Arkency")
-      register_company(other_company_id, "Acme")
-
-      assert_events(
-        "Crm::Contact$#{uid}",
-        ContactRegistered.new(data: { contact_id: uid, name: "John Doe" }),
-        ContactAssignedToCompany.new(data: { contact_id: uid, company_id: company_id }),
-        ContactAssignedToCompany.new(data: { contact_id: uid, company_id: other_company_id })
-      ) do
-        register_contact(uid, "John Doe")
-        assign_contact_to_company(uid, company_id)
-        assign_contact_to_company(uid, other_company_id)
-      end
-    end
-
     private
 
     def register_contact(uid, name)
@@ -166,14 +96,6 @@ module Crm
 
     def set_contact_linkedin_url(uid, linkedin_url)
       run_command(SetContactLinkedinUrl.new(contact_id: uid, linkedin_url: linkedin_url))
-    end
-
-    def assign_contact_to_company(uid, company_id)
-      run_command(AssignContactToCompany.new(contact_id: uid, company_id: company_id))
-    end
-
-    def register_company(uid, name)
-      run_command(RegisterCompany.new(company_id: uid, name: name))
     end
   end
 end

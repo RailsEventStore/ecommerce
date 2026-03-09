@@ -36,7 +36,7 @@ class ContactsController < ApplicationController
       command_bus.call(Crm::SetContactEmail.new(contact_id: params[:id], email: contact_params[:email])) if contact_params[:email].present?
       command_bus.call(Crm::SetContactPhone.new(contact_id: params[:id], phone: contact_params[:phone])) if contact_params[:phone].present?
       command_bus.call(Crm::SetContactLinkedinUrl.new(contact_id: params[:id], linkedin_url: contact_params[:linkedin_url])) if contact_params[:linkedin_url].present?
-      command_bus.call(Crm::AssignContactToCompany.new(contact_id: params[:id], company_id: contact_params[:company_id])) if contact_params[:company_id].present?
+      command_bus.call(Crm::AssignContactToCompany.new(position_id: SecureRandom.uuid, contact_id: params[:id], company_id: contact_params[:company_id])) if contact_params[:company_id].present?
     end
     redirect_to contact_path(params[:id])
   end

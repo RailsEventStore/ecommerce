@@ -7,6 +7,8 @@ module Crm
 
     def initialize(id)
       @id = id
+      @company_ids = Set.new
+      @contact_ids = Set.new
     end
 
     def create(pipeline_id, name)
@@ -29,6 +31,18 @@ module Crm
       apply DealMovedToStage.new(data: { deal_id: @id, stage: stage })
     end
 
+    def assign_company(company_id)
+      raise NotFound unless @created
+      return if @company_ids.include?(company_id)
+      apply CompanyAssignedToDeal.new(data: { deal_id: @id, company_id: company_id })
+    end
+
+    def assign_contact(contact_id)
+      raise NotFound unless @created
+      return if @contact_ids.include?(contact_id)
+      apply ContactAssignedToDeal.new(data: { deal_id: @id, contact_id: contact_id })
+    end
+
     on DealCreated do |event|
       @created = true
     end
@@ -40,6 +54,14 @@ module Crm
     end
 
     on DealMovedToStage do |event|
+    end
+
+    on CompanyAssignedToDeal do |event|
+      @company_ids.add(event.data.fetch(:company_id))
+    end
+
+    on ContactAssignedToDeal do |event|
+      @contact_ids.add(event.data.fetch(:contact_id))
     end
   end
 end

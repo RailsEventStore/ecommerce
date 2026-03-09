@@ -88,6 +88,82 @@ module Crm
       end
     end
 
+    def test_assign_company_to_deal
+      deal_id = SecureRandom.uuid
+      pipeline_id = SecureRandom.uuid
+      company_id = SecureRandom.uuid
+      assert_events(
+        "Crm::Deal$#{deal_id}",
+        DealCreated.new(data: { deal_id: deal_id, pipeline_id: pipeline_id, name: "Big Deal" }),
+        CompanyAssignedToDeal.new(data: { deal_id: deal_id, company_id: company_id })
+      ) do
+        create_deal(deal_id, pipeline_id, "Big Deal")
+        assign_company_to_deal(deal_id, company_id)
+      end
+    end
+
+    def test_cannot_assign_company_to_nonexistent_deal
+      deal_id = SecureRandom.uuid
+      company_id = SecureRandom.uuid
+
+      assert_raises(Deal::NotFound) do
+        assign_company_to_deal(deal_id, company_id)
+      end
+    end
+
+    def test_assign_same_company_to_deal_is_noop
+      deal_id = SecureRandom.uuid
+      pipeline_id = SecureRandom.uuid
+      company_id = SecureRandom.uuid
+      assert_events(
+        "Crm::Deal$#{deal_id}",
+        DealCreated.new(data: { deal_id: deal_id, pipeline_id: pipeline_id, name: "Big Deal" }),
+        CompanyAssignedToDeal.new(data: { deal_id: deal_id, company_id: company_id })
+      ) do
+        create_deal(deal_id, pipeline_id, "Big Deal")
+        assign_company_to_deal(deal_id, company_id)
+        assign_company_to_deal(deal_id, company_id)
+      end
+    end
+
+    def test_assign_contact_to_deal
+      deal_id = SecureRandom.uuid
+      pipeline_id = SecureRandom.uuid
+      contact_id = SecureRandom.uuid
+      assert_events(
+        "Crm::Deal$#{deal_id}",
+        DealCreated.new(data: { deal_id: deal_id, pipeline_id: pipeline_id, name: "Big Deal" }),
+        ContactAssignedToDeal.new(data: { deal_id: deal_id, contact_id: contact_id })
+      ) do
+        create_deal(deal_id, pipeline_id, "Big Deal")
+        assign_contact_to_deal(deal_id, contact_id)
+      end
+    end
+
+    def test_cannot_assign_contact_to_nonexistent_deal
+      deal_id = SecureRandom.uuid
+      contact_id = SecureRandom.uuid
+
+      assert_raises(Deal::NotFound) do
+        assign_contact_to_deal(deal_id, contact_id)
+      end
+    end
+
+    def test_assign_same_contact_to_deal_is_noop
+      deal_id = SecureRandom.uuid
+      pipeline_id = SecureRandom.uuid
+      contact_id = SecureRandom.uuid
+      assert_events(
+        "Crm::Deal$#{deal_id}",
+        DealCreated.new(data: { deal_id: deal_id, pipeline_id: pipeline_id, name: "Big Deal" }),
+        ContactAssignedToDeal.new(data: { deal_id: deal_id, contact_id: contact_id })
+      ) do
+        create_deal(deal_id, pipeline_id, "Big Deal")
+        assign_contact_to_deal(deal_id, contact_id)
+        assign_contact_to_deal(deal_id, contact_id)
+      end
+    end
+
     private
 
     def create_deal(deal_id, pipeline_id, name)
@@ -104,6 +180,14 @@ module Crm
 
     def move_deal_to_stage(deal_id, stage)
       run_command(MoveDealToStage.new(deal_id: deal_id, stage: stage))
+    end
+
+    def assign_company_to_deal(deal_id, company_id)
+      run_command(AssignCompanyToDeal.new(deal_id: deal_id, company_id: company_id))
+    end
+
+    def assign_contact_to_deal(deal_id, contact_id)
+      run_command(AssignContactToDeal.new(deal_id: deal_id, contact_id: contact_id))
     end
   end
 end

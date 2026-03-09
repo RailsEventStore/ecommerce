@@ -29,12 +29,6 @@ module Crm
       apply ContactLinkedinUrlSet.new(data: { contact_id: @id, linkedin_url: linkedin_url })
     end
 
-    def assign_to_company(company_id)
-      raise NotFound unless @registered
-      return if @company_id == company_id
-      apply ContactAssignedToCompany.new(data: { contact_id: @id, company_id: company_id })
-    end
-
     on ContactRegistered do |event|
       @registered = true
     end
@@ -46,10 +40,6 @@ module Crm
     end
 
     on ContactLinkedinUrlSet do |event|
-    end
-
-    on ContactAssignedToCompany do |event|
-      @company_id = event.data.fetch(:company_id)
     end
   end
 end

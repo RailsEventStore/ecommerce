@@ -66,6 +66,26 @@ class DealsIntegrationTest < InMemoryRESIntegrationTestCase
     assert_select("dd", "Negotiation")
   end
 
+  def test_assign_company_to_deal
+    pipeline_id = create_pipeline("Sales")
+    deal_id = create_deal("Big Deal", pipeline_id)
+    company_id = create_company("Arkency")
+
+    patch "/deals/#{deal_id}", params: { deal: { company_id: company_id } }
+    follow_redirect!
+    assert_select("span", "Arkency")
+  end
+
+  def test_assign_contact_to_deal
+    pipeline_id = create_pipeline("Sales")
+    deal_id = create_deal("Big Deal", pipeline_id)
+    contact_id = create_contact("Alice")
+
+    patch "/deals/#{deal_id}", params: { deal: { contact_id: contact_id } }
+    follow_redirect!
+    assert_select("span", "Alice")
+  end
+
   private
 
   def create_pipeline(name)
@@ -83,5 +103,17 @@ class DealsIntegrationTest < InMemoryRESIntegrationTestCase
     post "/deals", params: { deal: { name: name, pipeline_id: pipeline_id } }
     follow_redirect!
     Deals.all.last.uid
+  end
+
+  def create_company(name)
+    post "/companies", params: { company: { name: name } }
+    follow_redirect!
+    Companies.all.last.uid
+  end
+
+  def create_contact(name)
+    post "/contacts", params: { contact: { name: name } }
+    follow_redirect!
+    Contacts.all.last.uid
   end
 end

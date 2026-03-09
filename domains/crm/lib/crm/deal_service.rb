@@ -46,4 +46,28 @@ module Crm
       end
     end
   end
+
+  class OnAssignCompanyToDeal
+    def initialize(event_store)
+      @repository = Infra::AggregateRootRepository.new(event_store)
+    end
+
+    def call(command)
+      @repository.with_aggregate(Deal, command.aggregate_id) do |deal|
+        deal.assign_company(command.company_id)
+      end
+    end
+  end
+
+  class OnAssignContactToDeal
+    def initialize(event_store)
+      @repository = Infra::AggregateRootRepository.new(event_store)
+    end
+
+    def call(command)
+      @repository.with_aggregate(Deal, command.aggregate_id) do |deal|
+        deal.assign_contact(command.contact_id)
+      end
+    end
+  end
 end

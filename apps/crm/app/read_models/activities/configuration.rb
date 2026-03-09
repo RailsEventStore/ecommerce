@@ -4,6 +4,11 @@ module Activities
   end
   private_constant :Activity
 
+  class EntityName < ApplicationRecord
+    self.table_name = "entity_names"
+  end
+  private_constant :EntityName
+
   def self.all
     Activity.order(occurred_at: :desc)
   end
@@ -14,6 +19,7 @@ module Activities
 
   class OnContactRegistered
     def call(event)
+      EntityName.create!(entity_type: "contact", entity_uid: event.data.fetch(:contact_id), name: event.data.fetch(:name))
       Activity.create!(
         entity_type: "contact",
         entity_uid: event.data.fetch(:contact_id),
@@ -58,6 +64,7 @@ module Activities
 
   class OnCompanyRegistered
     def call(event)
+      EntityName.create!(entity_type: "company", entity_uid: event.data.fetch(:company_id), name: event.data.fetch(:name))
       Activity.create!(
         entity_type: "company",
         entity_uid: event.data.fetch(:company_id),
@@ -113,6 +120,7 @@ module Activities
 
   class OnDealCreated
     def call(event)
+      EntityName.create!(entity_type: "deal", entity_uid: event.data.fetch(:deal_id), name: event.data.fetch(:name))
       Activity.create!(
         entity_type: "deal",
         entity_uid: event.data.fetch(:deal_id),
@@ -157,8 +165,8 @@ module Activities
 
   class OnContactAssignedToCompany
     def call(event)
-      contact_name = Contacts.find_by_uid(event.data.fetch(:contact_id)).name
-      company_name = Companies.find_by_uid(event.data.fetch(:company_id)).name
+      contact_name = EntityName.find_by!(entity_uid: event.data.fetch(:contact_id)).name
+      company_name = EntityName.find_by!(entity_uid: event.data.fetch(:company_id)).name
       Activity.create!(
         entity_type: "contact",
         entity_uid: event.data.fetch(:contact_id),
@@ -170,8 +178,8 @@ module Activities
 
   class OnCompanyAssignedToDeal
     def call(event)
-      deal_name = Deals.find_by_uid(event.data.fetch(:deal_id)).name
-      company_name = Companies.find_by_uid(event.data.fetch(:company_id)).name
+      deal_name = EntityName.find_by!(entity_uid: event.data.fetch(:deal_id)).name
+      company_name = EntityName.find_by!(entity_uid: event.data.fetch(:company_id)).name
       Activity.create!(
         entity_type: "deal",
         entity_uid: event.data.fetch(:deal_id),
@@ -183,8 +191,8 @@ module Activities
 
   class OnContactAssignedToDeal
     def call(event)
-      deal_name = Deals.find_by_uid(event.data.fetch(:deal_id)).name
-      contact_name = Contacts.find_by_uid(event.data.fetch(:contact_id)).name
+      deal_name = EntityName.find_by!(entity_uid: event.data.fetch(:deal_id)).name
+      contact_name = EntityName.find_by!(entity_uid: event.data.fetch(:contact_id)).name
       Activity.create!(
         entity_type: "deal",
         entity_uid: event.data.fetch(:deal_id),

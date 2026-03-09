@@ -15,6 +15,14 @@
       <%= f.select :stage, @stages.map { |s| [s.stage_name, s.stage_name] }, { include_blank: "Select a stage", selected: @deal.stage }, class: "mt-1 block w-full rounded border-gray-300 shadow-sm" %>
     </div>
     <div>
+      <%= f.label :company_id, "Add Company", class: "block text-sm font-medium text-gray-700" %>
+      <%= f.select :company_id, @all_companies.map { |c| [c.name, c.uid] }, { include_blank: "Select a company" }, class: "mt-1 block w-full rounded border-gray-300 shadow-sm" %>
+    </div>
+    <div>
+      <%= f.label :contact_id, "Add Contact", class: "block text-sm font-medium text-gray-700" %>
+      <%= f.select :contact_id, @all_contacts.map { |c| [c.name, c.uid] }, { include_blank: "Select a contact" }, class: "mt-1 block w-full rounded border-gray-300 shadow-sm" %>
+    </div>
+    <div>
       <%= f.submit "Update Deal", class: "bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 cursor-pointer" %>
     </div>
   <% end %>

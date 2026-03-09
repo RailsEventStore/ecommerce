@@ -26,5 +26,10 @@ matcher:
     - Deals::Deal
     - Deals::Configuration#call
     - Deals.for_pipeline
+    - Deals::DealCompany
+    - Deals::DealContact
+    - Deals.companies_for
+    - Deals.contacts_for
     - Activities::Activity
+    - Activities::EntityName
     - Activities::Configuration#call

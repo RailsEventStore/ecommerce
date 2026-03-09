@@ -320,7 +320,7 @@ module Activities
     end
 
     def assign_contact_to_company(contact_uid, company_uid)
-      event_store.publish(Crm::ContactAssignedToCompany.new(data: { contact_id: contact_uid, company_id: company_uid }))
+      event_store.publish(Crm::ContactAssignedToCompany.new(data: { position_id: SecureRandom.uuid, contact_id: contact_uid, company_id: company_uid }))
     end
 
     def assign_company_to_deal(deal_uid, company_uid)
