@@ -149,7 +149,7 @@ GEM
     herb (0.9.3-x86_64-darwin)
     herb (0.9.3-x86_64-linux-gnu)
     herb (0.9.3-x86_64-linux-musl)
-    honeybadger (5.29.1)
+    honeybadger (6.5.3)
       logger
       ostruct
     i18n (1.14.8)
