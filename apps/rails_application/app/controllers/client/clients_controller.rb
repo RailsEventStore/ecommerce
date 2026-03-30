@@ -4,7 +4,7 @@ module Client
     skip_before_action :ensure_logged_in, only: [:index, :login, :logout]
 
     def index
-      if cookies[:client_id]
+      if session[:client_id]
         redirect_to client_orders_path
       else
         render html: Login.build(view_context), layout: true
@@ -20,15 +20,15 @@ module Client
           redirect_to clients_path
           return
         end
-        cookies[:client_id] = client_id
+        session[:client_id] = client_id
       else
-        cookies[:client_id] = client_id
+        session[:client_id] = client_id
       end
       redirect_to client_orders_path
     end
 
     def logout
-      cookies.delete(:client_id)
+      reset_session
       redirect_to clients_path
     end
 

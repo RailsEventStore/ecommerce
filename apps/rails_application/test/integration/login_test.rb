@@ -16,7 +16,6 @@ class LoginTest < InMemoryRESIntegrationTestCase
     follow_redirect!
 
     assert_select("h1", "Arkency")
-    assert_equal customer_id, cookies["client_id"]
   end
 
   def test_login_with_incorrect_password
@@ -31,18 +30,26 @@ class LoginTest < InMemoryRESIntegrationTestCase
          }
     follow_redirect!
 
-    refute cookies["client_id"].present?
+    assert_equal("/clients", path)
   end
 
-  def test_cookies_set_to_not_existing_customer_should_log_out_and_redirect_to_login
-    cookies["client_id"] = "not-existing-customer"
+  def test_forged_cookie_does_not_grant_access
+    customer_id = register_customer("Victim")
+
+    cookies["client_id"] = customer_id
 
     get "/client_orders"
+
+    assert_redirected_to("/logout")
+  end
+
+  def test_not_existing_customer_session_should_log_out_and_redirect_to_login
+    post "/login", params: { client_id: "not-existing-customer" }
+    follow_redirect!
     follow_redirect!
     follow_redirect!
 
-    refute cookies["client_id"].present?
-    assert_equal "/clients", path
+    assert_equal("/clients", path)
   end
 
   private
@@ -65,7 +72,6 @@ class LoginTest < InMemoryRESIntegrationTestCase
       )
     )
 
-    cookies["client_id"] = nil
     customer_id
   end
 end

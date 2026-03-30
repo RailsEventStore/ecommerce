@@ -2,7 +2,7 @@ module Client
   class OrdersController < BaseController
 
     def index
-      render html: ClientOrders::Rendering::OrdersList.build(view_context, cookies[:client_id]), layout: true
+      render html: ClientOrders::Rendering::OrdersList.build(view_context, current_client_id), layout: true
     end
 
     def new
@@ -15,7 +15,7 @@ module Client
     end
 
     def create
-      Client::Orders::SubmitService.call(order_id: params[:order_id], customer_id: cookies[:client_id])
+      Client::Orders::SubmitService.call(order_id: params[:order_id], customer_id: current_client_id)
     rescue Orders::OrderHasUnavailableProducts => e
       unavailable_products = e.unavailable_products.join(", ")
       redirect_to edit_client_order_path(params[:order_id]), alert: "Order can not be submitted! #{unavailable_products} not available in requested quantity!"
