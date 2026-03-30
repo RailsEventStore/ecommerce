@@ -108,7 +108,7 @@ GEM
     connection_pool (3.0.2)
     crass (1.0.6)
     date (3.4.1)
-    diff-lcs (1.6.2)
+    diff-lcs (2.0.0)
     dotenv (3.2.0)
     dotenv-rails (3.2.0)
       dotenv (= 3.2.0)
