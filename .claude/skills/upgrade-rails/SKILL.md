@@ -98,9 +98,13 @@ Note these for fixing before the next minor bump.
 
 Use the /commit skill. Good message example: "Upgrade Rails from 8.0.3 to 8.1.3"
 
-### 8. (Optional, separate step) Bump config.load_defaults
+### 8. Bump config.load_defaults (separate commit)
 
-After the upgrade is stable, consider bumping `config.load_defaults` in `config/application.rb` to the new minor version. This changes framework default behaviors and should be done as a separate commit after reviewing the Rails upgrade guide for implications. Ask the user whether to do this now or later.
+Bump `config.load_defaults` in `config/application.rb` to the new minor version. Before bumping:
+
+1. Check the new defaults (search for `new_framework_defaults_X_Y.rb` in Rails source)
+2. Grep the codebase for patterns that could break (e.g. unscoped `.first`/`.last` for `raise_on_missing_required_finder_order_columns`, path-relative redirects)
+3. Bump, run `make test`, commit separately
 
 ### 9. (Optional) Run rails app:update
 
