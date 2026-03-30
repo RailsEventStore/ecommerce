@@ -280,7 +280,7 @@ Run in this order:
 - **No local variables** - prefer method calls
 - **No named params** unless required
 - **No `return unless` guards** — always use `find_by!`, never `find_by` with `&.`
-- **Read models must not access other read models**
+- **Read models must not access other read models** — if a read model needs data owned by another (e.g., entity names for activity descriptions), subscribe to the same domain events and maintain an internal lookup table (e.g., `EntityName` with `entity_uid` + `name`). This keeps the read model self-contained. Another approach worth considering is a **SummaryEvent** — an event built from other events that carries all the necessary data, so the read model handler receives everything it needs in a single event without any lookups.
 - **Use `private_constant`** for ActiveRecord classes
 - **Facade methods only when used** by controllers/views
 - **Use uuid type** in migrations for UUID columns

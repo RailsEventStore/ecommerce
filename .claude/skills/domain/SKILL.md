@@ -324,6 +324,22 @@ Then from the project root:
 make test          # Ensure nothing is broken globally
 ```
 
+## Aggregate design principles
+
+**Keep aggregates as small as possible.** An aggregate is often a small state machine with two or three states. Adding new methods to an existing aggregate is a smell — it signals a cohesion problem. Before adding a method, ask: "Is this really the same concept, or is it a new aggregate?"
+
+**Associations between entities are often aggregates on their own.** For example, "Contact assigned to Company" is not a method on Contact — it's a separate `ContactCompanyAssignment` aggregate with its own lifecycle. The Contact aggregate handles contact registration and attributes. The assignment is a different concern.
+
+**Passing strings or "data" into aggregate methods is a smell.** Aggregate methods should ideally receive only IDs (UUIDs). If you're passing names, descriptions, or other data, consider whether the aggregate is doing too much. Small smells are acceptable — the goal is to avoid ActiveRecord-like bloat where aggregates accumulate dozens of setter methods.
+
+**Don't validate other aggregates from command handlers.** Avoid patterns like `@event_store.read.stream("Crm::Entity$#{id}").last or raise NotFound` in command handlers. This couples the handler to stream naming conventions and makes it responsible for validating external state. Instead, trust the caller (controllers provide valid IDs from read model dropdowns) or model the relationship as its own aggregate that can enforce its own invariants.
+
+**Signs an aggregate is too big:**
+- More than 4-5 command methods
+- Instance variables tracking unrelated concerns (e.g., `@name`, `@email`, `@company_id`)
+- Command handlers needing to check other aggregate streams
+- The `on` blocks are growing in number
+
 ## Key conventions
 
 - Commands are imperative: `RegisterCustomer`, `AddTodo`, `AssignDeal`
