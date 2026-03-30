@@ -8,7 +8,11 @@ test:
 	@bin/rails test
 
 mutate:
-	@bundle exec mutant run
+	@RAILS_ENV=test bundle exec mutant run "Companies*"
+	@RAILS_ENV=test bundle exec mutant run "Contacts*"
+	@RAILS_ENV=test bundle exec mutant run "Pipelines*"
+	@RAILS_ENV=test bundle exec mutant run "Deals*"
+	@RAILS_ENV=test bundle exec mutant run "Activities*"
 
 tailwind:
 	@bin/rails tailwindcss:build
