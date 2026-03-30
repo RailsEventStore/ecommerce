@@ -16,13 +16,13 @@ module ClientOrders
       customer_registered(customer_id)
       prepare_product(product_id)
       item_added_to_basket(order_id, product_id)
-      set_time_promotion_discount(order_id, 50)
-      update_order_total_value(order_id, 50, 25)
+      set_time_promotion_discount(order_id, 10.5)
+      update_order_total_value(order_id, 50, 39.5)
 
       order = ClientOrders::Order.find_by(order_uid: order_id)
       assert_equal(50, order.total_value)
-      assert_equal(25, order.discounted_value)
-      assert_equal(50, order.time_promotion_discount["discount_value"])
+      assert_equal(39.5, order.discounted_value)
+      assert_equal(10.5, order.time_promotion_discount["discount_value"])
       assert_equal("time_promotion_discount", order.time_promotion_discount["type"])
       assert_nil(order.percentage_discount)
     end

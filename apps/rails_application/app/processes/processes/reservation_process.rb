@@ -26,7 +26,6 @@ module Processes
         release_stock(state.reserved_product_ids)
       in order: :confirmed
         dispatch_stock
-      else
       end
     end
 

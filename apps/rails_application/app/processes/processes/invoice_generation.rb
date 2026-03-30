@@ -4,7 +4,7 @@ module Processes
   class InvoiceGeneration < Infra::ProcessManager
 
     def initialize(event_store, command_bus)
-      super(event_store, command_bus)
+      super
       @vat_rate_catalog = Taxes::VatRateCatalog.new(event_store)
     end
 

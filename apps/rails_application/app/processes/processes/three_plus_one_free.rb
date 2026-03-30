@@ -21,7 +21,6 @@ module Processes
         make_new_product_for_free(new_free_product)
       in [old_free_product, *]
         remove_old_free_product(old_free_product)
-      else
       end
     end
 
