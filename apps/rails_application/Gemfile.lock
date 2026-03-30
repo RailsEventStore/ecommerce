@@ -155,8 +155,9 @@ GEM
     i18n (1.14.8)
       concurrent-ruby (~> 1.0)
     ice_nine (0.11.2)
-    importmap-rails (1.1.5)
+    importmap-rails (2.2.3)
       actionpack (>= 6.0.0)
+      activesupport (>= 6.0.0)
       railties (>= 6.0.0)
     io-console (0.8.1)
     irb (1.15.2)
@@ -391,7 +392,7 @@ DEPENDENCIES
   dotenv-rails
   herb
   honeybadger
-  importmap-rails (~> 1.1)
+  importmap-rails (~> 2.0)
   infra!
   kaminari
   listen (~> 3.3)

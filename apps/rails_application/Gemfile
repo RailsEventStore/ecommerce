@@ -13,7 +13,7 @@ gem "kaminari"
 gem "sprockets-rails"
 gem "turbo-rails"
 gem "stimulus-rails"
-gem "importmap-rails", "~> 1.1"
+gem "importmap-rails", "~> 2.0"
 gem "rails_event_store",  ">= 2.15.0", "< 3.0"
 gem 'arbre'
 
