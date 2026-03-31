@@ -2,7 +2,7 @@ require_relative "test_helper"
 
 module Invoicing
   class InvoiceItemTest < Test
-    cover "Invoicing::Invoice"
+    cover "Invoicing::Invoice*"
 
     def test_initializer
       product_id = SecureRandom.uuid

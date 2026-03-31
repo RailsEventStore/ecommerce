@@ -136,6 +136,35 @@ module Shipping
       assert_equal :draft, shipment.state
     end
 
+    def test_submit_without_address_raises
+      shipment = Shipment.new(order_id)
+
+      assert_raises(Shipment::ShippingAddressMissing) { shipment.submit }
+    end
+
+    def test_submit_already_submitted_raises
+      shipment = Shipment.new(order_id)
+      shipment.add_address(fake_address)
+      shipment.submit
+
+      assert_raises(Shipment::AlreadySubmitted) { shipment.submit }
+    end
+
+    def test_authorize_not_submitted_raises
+      shipment = Shipment.new(order_id)
+
+      assert_raises(Shipment::NotSubmitted) { shipment.authorize }
+    end
+
+    def test_authorize_already_authorized_raises
+      shipment = Shipment.new(order_id)
+      shipment.add_address(fake_address)
+      shipment.submit
+      shipment.authorize
+
+      assert_raises(Shipment::AlreadyAuthorized) { shipment.authorize }
+    end
+
     private
 
     def order_id

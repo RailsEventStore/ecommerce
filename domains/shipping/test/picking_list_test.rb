@@ -2,6 +2,7 @@ require_relative "test_helper"
 
 module Shipping
   class PickingListTest < Test
+    cover "Shipping::PickingList*"
 
     def test_initialize
       list = PickingList.new
@@ -23,6 +24,17 @@ module Shipping
 
       assert_equal 2, list.items.size
       assert_equal 1, list.find_item(product_two_id).quantity
+    end
+
+    def test_has_item
+      product_id = SecureRandom.uuid
+      list = PickingList.new
+
+      assert_nil(list.has_item?(product_id))
+
+      list.increase_item_quantity(product_id)
+
+      assert(list.has_item?(product_id))
     end
 
     def test_decrease_item_quantity

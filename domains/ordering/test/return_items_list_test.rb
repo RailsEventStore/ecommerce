@@ -2,6 +2,7 @@ require_relative "test_helper"
 
 module Ordering
   class ReturnItemsListTest < Test
+    cover "Ordering::ItemsList*"
 
     def test_initialize
       list = ItemsList.new

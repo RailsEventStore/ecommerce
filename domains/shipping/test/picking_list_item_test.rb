@@ -2,6 +2,7 @@ require_relative "test_helper"
 
 module Shipping
   class PickingListItemTest < Test
+    cover "Shipping::PickingListItem*"
 
     def test_initialize
       product_id = SecureRandom.uuid
