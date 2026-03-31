@@ -331,7 +331,7 @@ GEM
     securerandom (0.4.1)
     skylight (7.1.0)
       activesupport (>= 7.2.0)
-    sorbet-runtime (0.6.13067)
+    sorbet-runtime (0.6.13071)
     sprockets (4.2.2)
       concurrent-ruby (~> 1.0)
       logger
