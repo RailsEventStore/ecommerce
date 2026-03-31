@@ -8,5 +8,6 @@ matcher:
   subjects:
     - Crm*
   ignore:
+    - Crm::Test*
     - Crm::Configuration#call
 

@@ -1,5 +1,5 @@
 unless $PROGRAM_NAME.end_with?('/mutant') && ARGV.any? { |arg| arg.start_with?('--since') }
-  require "minitest/autorun"
+  require "minitest/autorun" unless defined?(Mutant)
 end
 
 require "mutant/minitest/coverage"
