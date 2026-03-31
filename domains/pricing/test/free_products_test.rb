@@ -2,7 +2,7 @@ require_relative "test_helper"
 
 module Pricing
   class FreeProductsTest < Test
-    cover "Pricing*"
+    cover "Pricing::Offer*"
 
     def test_making_product_free_possible_when_order_is_eligible
       product_1_id = SecureRandom.uuid

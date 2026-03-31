@@ -8,4 +8,5 @@ matcher:
   subjects:
     - Authentication*
   ignore:
+    - Authentication::Test*
     - Authentication::Configuration#call

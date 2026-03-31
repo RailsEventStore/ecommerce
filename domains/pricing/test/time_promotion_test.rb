@@ -39,6 +39,7 @@ module Pricing
 
   class DiscountWithTimePromotionTest < Test
     cover "Pricing::Offer*"
+    cover "Pricing::TimePromotion*"
 
     def test_calculates_total_value_with_time_promotion
       order_id = SecureRandom.uuid

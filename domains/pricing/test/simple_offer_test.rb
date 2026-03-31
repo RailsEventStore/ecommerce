@@ -3,6 +3,7 @@ require_relative "test_helper"
 module Pricing
   class SimpleOfferTest < Test
     cover "Pricing::Offer*"
+    cover "Pricing::Discounts*"
 
     def test_adding
       product_id = SecureRandom.uuid

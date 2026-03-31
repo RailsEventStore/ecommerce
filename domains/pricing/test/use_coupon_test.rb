@@ -2,7 +2,8 @@ require_relative "test_helper"
 
 module Pricing
   class UseCouponTest < Test
-    cover "Pricing*"
+    cover "Pricing::Offer*"
+    cover "Pricing::Discounts*"
 
     def test_coupon_is_used
       product_1_id = SecureRandom.uuid

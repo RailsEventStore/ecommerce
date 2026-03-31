@@ -3,6 +3,8 @@ require_relative "test_helper"
 module Pricing
   class PricingTest < Test
     cover "Pricing*"
+    cover "Pricing::Offer*"
+    cover "Pricing::Discounts*"
 
     def test_sets_time_promotion_discount
       order_id = SecureRandom.uuid

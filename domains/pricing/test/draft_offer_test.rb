@@ -2,7 +2,7 @@ require_relative "test_helper"
 
 module Pricing
   class DraftOfferTest < Test
-    cover "Pricing*"
+    cover "Pricing::Offer*"
 
     def test_draft_offer
       order_id = SecureRandom.uuid
