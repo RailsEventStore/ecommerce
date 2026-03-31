@@ -8,5 +8,6 @@ matcher:
   subjects:
     - Communication*
   ignore:
+    - Communication::Test*
     - Communication::Configuration#call
 

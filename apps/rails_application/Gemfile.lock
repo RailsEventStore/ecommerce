@@ -194,7 +194,9 @@ GEM
       net-smtp
     marcel (1.1.0)
     mini_mime (1.1.5)
-    minitest (5.25.0)
+    minitest (6.0.2)
+      drb (~> 2.0)
+      prism (~> 1.5)
     msgpack (1.8.0)
     mutant (0.15.1)
       diff-lcs (>= 1.6, < 3)
@@ -398,7 +400,7 @@ DEPENDENCIES
   infra!
   kaminari
   listen (~> 3.3)
-  minitest (= 5.25.0)!
+  minitest (~> 6.0)!
   mutant-minitest (= 0.15.1)!
   pg (~> 1.5)
   puma
