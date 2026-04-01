@@ -1,0 +1,10 @@
+@import "tailwindcss";
+
+@source "../../../app/helpers";
+@source "../../../app/views";
+@source "../../../app/read_models";
+@source "../../../public/*.html";
+
+@plugin "@tailwindcss/forms";
+@plugin "@tailwindcss/aspect-ratio";
+@plugin "@tailwindcss/typography";

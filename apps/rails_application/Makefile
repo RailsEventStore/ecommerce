@@ -4,12 +4,11 @@ install: ## Installs dependencies, runs migrations, creates db & seeds if necess
 dev: ## Start development environment with web server and CSS watcher
 	@$(MAKE) -j 2 web css
 
-TAILWIND_SRC    := app/assets/stylesheets/application.tailwind.css
-TAILWIND_CONFIG := config/tailwind.config.js
+TAILWIND_SRC    := app/assets/tailwind/application.css
 TAILWIND_BUILD  := app/assets/builds
 TAILWIND_OUT    := $(TAILWIND_BUILD)/tailwind.css
 
-$(TAILWIND_OUT): $(TAILWIND_SRC) $(TAILWIND_CONFIG) | $(TAILWIND_BUILD)
+$(TAILWIND_OUT): $(TAILWIND_SRC) | $(TAILWIND_BUILD)
 	@echo "Building Tailwind CSS…"
 	@bin/rails tailwindcss:build
 
