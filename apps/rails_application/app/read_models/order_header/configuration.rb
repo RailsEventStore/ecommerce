@@ -78,7 +78,7 @@ module OrderHeader
     def assign_customer(event)
       customer_id = event.data.fetch(:customer_id)
       customer_name = Customer.find_by(customer_id: customer_id).name
-      find_or_create_header(event.data.fetch(:order_id)).update!(customer: customer_name)
+      find_or_create_header(event.data.fetch(:order_id)).update!(customer: customer_name, customer_id: customer_id)
     end
 
     def submit_order(event)
