@@ -103,6 +103,24 @@ class CustomersTest < InMemoryRESIntegrationTestCase
     assert_response(:not_found)
   end
 
+  def test_rename_customer
+    customer_id = register_customer("Old Name")
+    product_id = register_product("Fearless Refactoring", 4, 10)
+    order_id = create_order
+    add_product_to_basket(order_id, product_id)
+    submit_order(customer_id, order_id)
+
+    get "/orders"
+    assert_select "td", "Old Name"
+
+    patch "/customers/#{customer_id}", params: { name: "New Name" }
+    follow_redirect!
+    assert_select "dd", "New Name"
+
+    get "/orders"
+    assert_select "td", "New Name"
+  end
+
   def test_update_prevents_access_to_customer_from_another_store
     store_1_id = register_store("Store 1")
     store_2_id = register_store("Store 2")

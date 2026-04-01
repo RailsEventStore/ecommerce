@@ -228,6 +228,29 @@ Some older read models still use one class per event type in separate files. Whe
 - No local variables, prefer method calls
 - Extract shared `find_*` methods as private helpers for reusability
 
+### 5a. Denormalization rules
+
+When a read model copies data from one entity into another table (e.g., customer name into an order header), **always store the entity's ID alongside the denormalized value**. This allows updates by ID rather than by name or other mutable attributes.
+
+- **Always add an ID column** (e.g., `customer_id`) to the table that stores denormalized data, not just the display value (e.g., `customer_name`)
+- **Update by ID, not by value** — when handling rename/update events, find records to update using the entity ID, never by matching the old string value. Matching by string is fragile: two entities with the same name would both get updated incorrectly
+- If an existing table is missing the ID column, add a migration to include it
+
+**Bad — matching by old name:**
+```ruby
+when Crm::CustomerRenamed
+  old_name = customer.name
+  customer.update!(name: event.data.fetch(:name))
+  Deal.where(customer_name: old_name).update_all(customer_name: event.data.fetch(:name))
+```
+
+**Good — matching by ID:**
+```ruby
+when Crm::CustomerRenamed
+  Customer.find_by!(customer_id: event.data.fetch(:customer_id)).update!(name: event.data.fetch(:name))
+  Deal.where(customer_id: event.data.fetch(:customer_id)).update_all(customer_name: event.data.fetch(:name))
+```
+
 ### 6. Facade methods
 
 - Only create facade methods that are **actually called by controllers or views**

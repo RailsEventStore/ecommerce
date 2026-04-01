@@ -49,6 +49,7 @@ module ClientOrders
       event_store.subscribe(RemoveItemFromOrder, to: [Pricing::PriceItemRemoved])
 
       event_store.subscribe(CreateCustomer.new, to: [Crm::CustomerRegistered])
+      event_store.subscribe(RenameCustomer.new, to: [Crm::CustomerRenamed])
       event_store.subscribe(OrderHandlers::AssignCustomerToOrder, to: [Crm::CustomerAssignedToOrder])
 
       event_store.subscribe(ProductHandlers::ChangeProductName, to: [ProductCatalog::ProductNamed])

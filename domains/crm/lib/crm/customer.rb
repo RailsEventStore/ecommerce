@@ -20,6 +20,15 @@ module Crm
         )
     end
 
+    def rename(name)
+      apply CustomerRenamed.new(
+          data: {
+              customer_id: @id,
+              name: name
+          }
+        )
+    end
+
     def promote_to_vip
       raise AlreadyVip if @vip
       apply CustomerPromotedToVip.new(
@@ -31,6 +40,9 @@ module Crm
 
     on CustomerRegistered do |event|
       @registered = true
+    end
+
+    on CustomerRenamed do |event|
     end
 
     on CustomerPromotedToVip do |event|

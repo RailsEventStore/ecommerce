@@ -22,6 +22,7 @@ module OrderHeader
   class Configuration
     def call(event_store)
       event_store.subscribe(CreateCustomer.new, to: [Crm::CustomerRegistered])
+      event_store.subscribe(RenameCustomer.new, to: [Crm::CustomerRenamed])
       event_store.subscribe(AssignStoreToOrderHeader.new, to: [Stores::OfferRegistered])
       event_store.subscribe(
         ->(event) { draft_order_header(event) },

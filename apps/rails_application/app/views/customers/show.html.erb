@@ -9,6 +9,16 @@
   <dd class="mb-2"><%= @customer.vip? ? "Yes" : "No" %> </dd>
 </dl>
 
+<%= form_with(url: customer_path(@customer), method: :patch, class: "mb-8 flex items-end gap-4") do |form| %>
+  <div>
+    <%= form.label :name, "Rename", class: "block font-bold mb-1" %>
+    <%= form.text_field :name, value: @customer.name, required: true, class: "border rounded px-3 py-2" %>
+  </div>
+  <%= action_button "border-transparent text-white bg-blue-600 hover:bg-blue-700", type: "submit" do %>
+    Rename
+  <% end %>
+<% end %>
+
 <table class="w-full">
   <thead>
     <tr>

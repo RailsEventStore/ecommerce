@@ -20,11 +20,15 @@ class CustomersController < ApplicationController
 
   def update
     customer = Customers.find_customer_in_store(params[:id], current_store_id)
-    promote_to_vip(customer.id)
+    if params[:name].present?
+      rename_customer(customer.id, params[:name])
+      redirect_to customer_path(customer), notice: "Customer was renamed"
+    else
+      promote_to_vip(customer.id)
+      redirect_to customers_path, notice: "Customer was promoted to VIP"
+    end
   rescue Crm::Customer::AlreadyVip
     redirect_to customers_path, notice: "Customer was marked as vip"
-  else
-    redirect_to customers_path, notice: "Customer was promoted to VIP"
   end
 
   def show
@@ -41,6 +45,10 @@ class CustomersController < ApplicationController
     command_bus.(register_customer_in_store_cmd(customer_id))
   end
 
+  def rename_customer(customer_id, name)
+    command_bus.(rename_customer_cmd(customer_id, name))
+  end
+
   def promote_to_vip(customer_id)
     command_bus.(promote_to_vip_cmd(customer_id))
   end
@@ -51,6 +59,10 @@ class CustomersController < ApplicationController
 
   def register_customer_in_store_cmd(customer_id)
     Stores::RegisterCustomer.new(customer_id: customer_id, store_id: current_store_id)
+  end
+
+  def rename_customer_cmd(customer_id, name)
+    Crm::RenameCustomer.new(customer_id: customer_id, name: name)
   end
 
   def promote_to_vip_cmd(customer_id)

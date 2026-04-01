@@ -24,6 +24,11 @@ module Deals
         find_deal(event).update!(store_id: event.data.fetch(:store_id))
       when Crm::CustomerRegistered
         Customer.find_or_create_by!(customer_id: event.data.fetch(:customer_id)).update!(name: event.data.fetch(:name))
+      when Crm::CustomerRenamed
+        customer = Customer.find_by!(customer_id: event.data.fetch(:customer_id))
+        old_name = customer.name
+        customer.update!(name: event.data.fetch(:name))
+        Deal.where(customer_name: old_name).update_all(customer_name: event.data.fetch(:name))
       when Crm::CustomerAssignedToOrder
         find_deal(event).update!(customer_name: find_customer(event).name)
       when Processes::TotalOrderValueUpdated
@@ -56,6 +61,7 @@ module Deals
         Pricing::OfferDrafted,
         Stores::OfferRegistered,
         Crm::CustomerRegistered,
+        Crm::CustomerRenamed,
         Crm::CustomerAssignedToOrder,
         Processes::TotalOrderValueUpdated,
         Fulfillment::OrderRegistered,

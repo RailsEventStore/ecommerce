@@ -1,6 +1,7 @@
 require "infra"
 require_relative "crm/commands/promote_customer_to_vip"
 require_relative "crm/commands/register_customer"
+require_relative "crm/commands/rename_customer"
 require_relative "crm/commands/assign_customer_to_order"
 require_relative "crm/commands/register_contact"
 require_relative "crm/commands/set_contact_email"
@@ -9,6 +10,7 @@ require_relative "crm/commands/set_contact_linkedin_url"
 require_relative "crm/commands/assign_contact_to_company"
 require_relative "crm/events/customer_promoted_to_vip"
 require_relative "crm/events/customer_registered"
+require_relative "crm/events/customer_renamed"
 require_relative "crm/events/customer_assigned_to_order.rb"
 require_relative "crm/events/contact_registered"
 require_relative "crm/events/contact_email_set"
@@ -59,6 +61,7 @@ module Crm
 
     def call(event_store, command_bus)
       command_bus.register(RegisterCustomer, OnRegistration.new(event_store))
+      command_bus.register(RenameCustomer, OnRenameCustomer.new(event_store))
       command_bus.register(PromoteCustomerToVip, OnPromoteCustomerToVip.new(event_store))
       command_bus.register(AssignCustomerToOrder, OnSetCustomer.new(event_store))
       command_bus.register(RegisterContact, OnRegisterContact.new(event_store))

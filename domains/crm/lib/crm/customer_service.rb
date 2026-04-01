@@ -12,6 +12,18 @@ module Crm
     end
   end
 
+  class OnRenameCustomer
+    def initialize(event_store)
+      @repository = Infra::AggregateRootRepository.new(event_store)
+    end
+
+    def call(command)
+      @repository.with_aggregate(Customer, command.aggregate_id) do |customer|
+        customer.rename(command.name)
+      end
+    end
+  end
+
   class OnPromoteCustomerToVip
     def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)
