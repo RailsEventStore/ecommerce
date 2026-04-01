@@ -25,8 +25,8 @@ module ApplicationHelper
   def action_button(css_classes, type: "button", form: nil, data: {})
     content_tag "span", class: "sm:ml-3" do
       content_tag "button", type: type, form: form, data:, class: class_names(
-        "inline-flex items-center px-4 py-2 border rounded-md shadow-sm text-sm font-medium",
-        "focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500",
+        "inline-flex items-center px-4 py-2 border rounded-md shadow-xs text-sm font-medium",
+        "focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-blue-500",
         css_classes
       ) do
         yield

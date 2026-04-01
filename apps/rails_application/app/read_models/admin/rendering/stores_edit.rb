@@ -17,7 +17,7 @@ module Admin
 
             div do
               label "Name", for: "name", class: "block font-bold"
-              input type: "text", name: "name", value: store.name, required: true, class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-sm sm:text-sm border-gray-300 rounded-md", data: { turbo_permanent: true }
+              input type: "text", name: "name", value: store.name, required: true, class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-xs sm:text-sm border-gray-300 rounded-md", data: { turbo_permanent: true }
             end
 
             if alert
@@ -27,7 +27,7 @@ module Admin
             end
 
             div class: "mt-4" do
-              input type: "submit", value: "Update Store", class: "inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 cursor-pointer"
+              input type: "submit", value: "Update Store", class: "inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-xs text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 cursor-pointer"
             end
           end
         end

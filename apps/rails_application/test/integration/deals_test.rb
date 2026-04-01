@@ -122,6 +122,6 @@ class DealsTest < InMemoryRESIntegrationTestCase
   end
 
   def assert_deal_count(expected)
-    assert_equal(expected, css_select(".bg-white.rounded-lg.shadow-sm").size)
+    assert_equal(expected, css_select(".bg-white.rounded-lg.shadow-xs").size)
   end
 end

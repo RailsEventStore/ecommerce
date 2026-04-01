@@ -98,7 +98,7 @@ module ClientOrders
           link_to(
             "New order",
             new_client_order_path,
-            class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"))
+            class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-xs"))
       end
 
       def order_link_with_order_number(order)

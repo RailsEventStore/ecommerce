@@ -35,7 +35,7 @@ module Deals
       end
 
       def deal_card(deal)
-        div class: "bg-white rounded-lg shadow-sm border border-gray-200 p-3" do
+        div class: "bg-white rounded-lg shadow-xs border border-gray-200 p-3" do
           div class: "font-medium text-gray-900 text-sm" do
             deal.order_number || "No number"
           end

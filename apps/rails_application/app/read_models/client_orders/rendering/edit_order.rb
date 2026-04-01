@@ -126,10 +126,10 @@ module ClientOrders
             id: "coupon_code",
             type: :text,
             name: :coupon_code,
-            class: "focus:ring-blue-500 focus:border-blue-500 block shadow-sm sm:text-sm border-gray-300 rounded-md",
+            class: "focus:ring-blue-500 focus:border-blue-500 block shadow-xs sm:text-sm border-gray-300 rounded-md",
             "data-turbo-permanent": true
           )
-          input(type: :submit, value: "Use Coupon", class: "px-4 py-2 border rounded-md shadow-sm text-sm font-medium border-gray-300 text-gray-700 bg-white hover:bg-gray-50")
+          input(type: :submit, value: "Use Coupon", class: "px-4 py-2 border rounded-md shadow-xs text-sm font-medium border-gray-300 text-gray-700 bg-white hover:bg-gray-50")
         end
       end
 
@@ -137,7 +137,7 @@ module ClientOrders
         form(id: "form", action: client_orders_path, method: :post) do
           input(type: :hidden, name: :order_id, value: order.order_uid)
           div(class: "mt-8") do
-            input type: :submit, value: "Create Order", class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            input type: :submit, value: "Create Order", class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-xs"
           end
         end
       end

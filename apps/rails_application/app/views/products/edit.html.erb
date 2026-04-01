@@ -23,7 +23,7 @@
     <label for="vat_rate" class="block font-bold">
       Product Name
     </label>
-    <%= text_field_tag :name, @product.name, required: true, class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-sm sm:text-sm border-gray-300 rounded-md" %>
+    <%= text_field_tag :name, @product.name, required: true, class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-xs sm:text-sm border-gray-300 rounded-md" %>
   </div>
   <div class="mt-2">
     <label for="vat_rate" class="block font-bold">
@@ -35,7 +35,7 @@
     <label for="price" class="block font-bold">
       Price
     </label>
-    <%= number_field_tag :price, @product.price, min: 0, step: 0.01, required: true, class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-sm sm:text-sm border-gray-300 rounded-md" %>
+    <%= number_field_tag :price, @product.price, min: 0, step: 0.01, required: true, class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-xs sm:text-sm border-gray-300 rounded-md" %>
   </div>
 
   <% if @product.future_prices_calendar.any? %>

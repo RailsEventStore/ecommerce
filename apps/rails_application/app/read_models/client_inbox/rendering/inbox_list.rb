@@ -33,7 +33,7 @@ module ClientInbox
       def messages_list(messages)
         return no_messages_message if messages.empty?
         
-        div class: "bg-white shadow rounded-lg overflow-hidden" do
+        div class: "bg-white shadow-sm rounded-lg overflow-hidden" do
           ul class: "divide-y divide-gray-200" do
             messages.each do |message|
               li class: "p-4 hover:bg-gray-50 transition duration-150" do
@@ -95,13 +95,13 @@ module ClientInbox
       end
 
       def unread_indicator
-        div class: "ml-2 flex-shrink-0" do
+        div class: "ml-2 shrink-0" do
           span class: "inline-block h-2 w-2 rounded-full bg-blue-600"
         end
       end
 
       def no_messages_message
-        div class: "bg-white shadow rounded-lg p-6 text-center text-gray-500" do
+        div class: "bg-white shadow-sm rounded-lg p-6 text-center text-gray-500" do
           "You have no messages"
         end
       end

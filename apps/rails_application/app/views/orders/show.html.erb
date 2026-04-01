@@ -20,15 +20,15 @@
   <% end if @order_header.state == "Draft" %>
 
   <% if @order_header.state == "Submitted" %>
-    <%= button_to("Pay", pay_order_path(@order_header.uid), class: "mr-3 ml-3 inline-flex items-center px-4 py-2 border rounded-md shadow-sm text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 border-transparent text-white bg-blue-600 hover:bg-blue-700") %>
+    <%= button_to("Pay", pay_order_path(@order_header.uid), class: "mr-3 ml-3 inline-flex items-center px-4 py-2 border rounded-md shadow-xs text-sm font-medium focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 border-transparent text-white bg-blue-600 hover:bg-blue-700") %>
   <% end %>
 
   <% if @order_header.state == "Paid" %>
-    <%= button_to("Return", order_returns_path(order_id: @order_header.uid), class: "ml-3 inline-flex items-center px-4 py-2 border rounded-md shadow-sm text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-50 border-gray-300 text-gray-700 bg-white hover:bg-gray-50") %>
+    <%= button_to("Return", order_returns_path(order_id: @order_header.uid), class: "ml-3 inline-flex items-center px-4 py-2 border rounded-md shadow-xs text-sm font-medium focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-blue-50 border-gray-300 text-gray-700 bg-white hover:bg-gray-50") %>
   <% end %>
 
   <% if @order_header.state == "Submitted" %>
-    <%= button_to("Cancel Order", cancel_order_path(@order_header.uid), class: "inline-flex items-center px-4 py-2 border rounded-md shadow-sm text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-50 border-gray-300 text-gray-700 bg-white hover:bg-gray-50") %>
+    <%= button_to("Cancel Order", cancel_order_path(@order_header.uid), class: "inline-flex items-center px-4 py-2 border rounded-md shadow-xs text-sm font-medium focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-blue-50 border-gray-300 text-gray-700 bg-white hover:bg-gray-50") %>
   <% end %>
 <% end %>
 
@@ -47,7 +47,7 @@
     <% unless @order_header.shipping_address_present? %>
       <%= link_to "Add shipment address",
                   edit_order_shipping_address_path(@order_header.uid),
-                  class: 'px-2 py-1 border rounded-md shadow-sm text-xs font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 border-transparent text-white bg-blue-600 hover:bg-blue-700'
+                  class: 'px-2 py-1 border rounded-md shadow-xs text-xs font-medium focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 border-transparent text-white bg-blue-600 hover:bg-blue-700'
       %>
     <% else %>
       Your shipment has been queued for processing.
@@ -62,13 +62,13 @@
         Billing address is missing.
         <%= link_to "Add billing address",
                     edit_order_billing_address_path(@order_header.uid),
-                    class: 'px-2 py-1 border rounded-md shadow-sm text-xs font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 border-transparent text-white bg-blue-600 hover:bg-blue-700'
+                    class: 'px-2 py-1 border rounded-md shadow-xs text-xs font-medium focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 border-transparent text-white bg-blue-600 hover:bg-blue-700'
         %>
       <% else %>
         Invoice not issued
         <%= button_to "Issue now",
                     order_invoice_path(@order_header.uid),
-                    class: 'px-2 py-1 border rounded-md shadow-sm text-xs font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 border-transparent text-white bg-blue-600 hover:bg-blue-700'
+                    class: 'px-2 py-1 border rounded-md shadow-xs text-xs font-medium focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 border-transparent text-white bg-blue-600 hover:bg-blue-700'
         %>
       <% end %>
     </dd>

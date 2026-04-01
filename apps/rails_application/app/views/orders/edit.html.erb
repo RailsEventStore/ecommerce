@@ -92,6 +92,6 @@
     <label for="customer" class="block font-bold">
       Customer
     </label>
-    <%= select_tag(:customer_id, options_from_collection_for_select(@customers, :id, :name), id: "customer", class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-sm sm:text-sm border-gray-300 rounded-md") %>
+    <%= select_tag(:customer_id, options_from_collection_for_select(@customers, :id, :name), id: "customer", class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-xs sm:text-sm border-gray-300 rounded-md") %>
   </div>
 <% end %>
