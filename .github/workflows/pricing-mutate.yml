@@ -12,7 +12,7 @@ jobs:
           fetch-depth: 0
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: ruby-3.4.6
+          ruby-version: ruby-3.4.9
           bundler-cache: true
           working-directory: domains/pricing
       - name: Run tests
@@ -26,7 +26,7 @@ jobs:
           fetch-depth: 0
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: ruby-3.4.6
+          ruby-version: ruby-3.4.9
           bundler-cache: true
           working-directory: domains/pricing
       - name: Run incremental mutation testing

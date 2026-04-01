@@ -34,7 +34,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: ruby-3.4.6
+          ruby-version: ruby-3.4.9
           bundler-cache: true
           working-directory: apps/rails_application
       - name: Run tests
@@ -58,7 +58,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ruby/setup-ruby@v1
         with:
-          ruby-version: ruby-3.4.6
+          ruby-version: ruby-3.4.9
           bundler-cache: true
           working-directory: apps/rails_application
       - name: Run full mutation testing
