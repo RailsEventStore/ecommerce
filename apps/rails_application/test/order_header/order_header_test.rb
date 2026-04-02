@@ -66,6 +66,41 @@ module OrderHeader
       assert_equal("John Doe", header.customer)
     end
 
+    def test_assigns_customer_id_to_header
+      order_id = SecureRandom.uuid
+      other_order_id = SecureRandom.uuid
+      customer_id = create_customer("John Doe")
+
+      event_store.publish(Crm::CustomerAssignedToOrder.new(data: { order_id: order_id, customer_id: customer_id }))
+      event_store.publish(Crm::CustomerAssignedToOrder.new(data: { order_id: other_order_id, customer_id: customer_id }))
+
+      assert_equal(customer_id, OrderHeader.find_by_uid(order_id).customer_id)
+      assert_equal(customer_id, OrderHeader.find_by_uid(other_order_id).customer_id)
+    end
+
+    def test_renames_customer_on_header
+      order_id = SecureRandom.uuid
+      other_customer_order_id = SecureRandom.uuid
+      new_order_id = SecureRandom.uuid
+      customer_id = create_customer("Old Name")
+      other_customer_id = create_customer("Other Customer")
+
+      event_store.publish(Crm::CustomerAssignedToOrder.new(data: { order_id: order_id, customer_id: customer_id }))
+      event_store.publish(Crm::CustomerAssignedToOrder.new(data: { order_id: other_customer_order_id, customer_id: other_customer_id }))
+
+      event_store.publish(Crm::CustomerRenamed.new(data: { customer_id: customer_id, name: "New Name" }))
+
+      assert_equal("New Name", OrderHeader.find_by_uid(order_id).customer)
+      assert_equal("Other Customer", OrderHeader.find_by_uid(other_customer_order_id).customer)
+
+      event_store.publish(Crm::CustomerAssignedToOrder.new(data: { order_id: new_order_id, customer_id: customer_id }))
+      assert_equal("New Name", OrderHeader.find_by_uid(new_order_id).customer)
+
+      other_new_order_id = SecureRandom.uuid
+      event_store.publish(Crm::CustomerAssignedToOrder.new(data: { order_id: other_new_order_id, customer_id: other_customer_id }))
+      assert_equal("Other Customer", OrderHeader.find_by_uid(other_new_order_id).customer)
+    end
+
     def test_creates_header_with_draft_state_when_not_exists
       order_id = SecureRandom.uuid
       customer_id = create_customer("Jane Doe")

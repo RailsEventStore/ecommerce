@@ -34,6 +34,31 @@ module Deals
       assert_equal("Jane Smith", deal_for(order_id).customer_name)
     end
 
+    def test_deal_customer_renamed
+      other_customer_id = SecureRandom.uuid
+      third_order_id = SecureRandom.uuid
+      register_customer(customer_id, "John Doe")
+      register_customer(other_customer_id, "Other Customer")
+      draft_deal(order_id)
+      draft_deal(other_order_id)
+      draft_deal(third_order_id)
+      assign_customer(customer_id, order_id)
+      assign_customer(other_customer_id, other_order_id)
+
+      rename_customer(customer_id, "Jane Doe")
+
+      assert_equal("Jane Doe", deal_for(order_id).customer_name)
+      assert_equal("Other Customer", deal_for(other_order_id).customer_name)
+
+      assign_customer(customer_id, third_order_id)
+      assert_equal("Jane Doe", deal_for(third_order_id).customer_name)
+
+      fourth_order_id = SecureRandom.uuid
+      draft_deal(fourth_order_id)
+      assign_customer(other_customer_id, fourth_order_id)
+      assert_equal("Other Customer", deal_for(fourth_order_id).customer_name)
+    end
+
     def test_deal_has_value
       draft_deal(order_id)
       draft_deal(other_order_id)
@@ -133,6 +158,10 @@ module Deals
 
     def assign_customer(cid, oid)
       event_store.publish(Crm::CustomerAssignedToOrder.new(data: { customer_id: cid, order_id: oid }))
+    end
+
+    def rename_customer(cid, name)
+      event_store.publish(Crm::CustomerRenamed.new(data: { customer_id: cid, name: name }))
     end
 
     def update_value(oid, amount)
