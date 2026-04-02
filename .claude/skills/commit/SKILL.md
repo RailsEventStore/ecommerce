@@ -16,7 +16,9 @@ Use this skill when asked to commit changes, group changes into commits, or prep
 - Leave a blank line after the first line if adding a body
 - Body (optional): explain motivation, context, or trade-offs — not a list of files changed
 - Never mention AI tools, Claude, Claude Code, or assistants in commit messages
+- Never mention skills, slash commands, or internal tooling in commit messages
 - No "Co-Authored-By" lines
+- Be precise about what technology/component is involved — don't say "previous upgrade" or "the tool", name the specific thing (e.g., "Rails gems", "activesupport")
 
 ## Atomic commits
 
