@@ -56,3 +56,4 @@ jobs:
           DATABASE_URL: "postgres://postgres:secret@localhost:5432/cqrs-es-sample-with-res_test"
           RAILS_ENV: test
           MUTANT_OPTS: --jobs 4
+          GIT_BASE_SHA: ${{ github.event_name == 'push' && github.event.before || '' }}
