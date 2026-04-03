@@ -31,3 +31,5 @@ jobs:
           working-directory: domains/pricing
       - name: Run incremental mutation testing
         run: make -C domains/pricing mutate-changes
+        env:
+          GIT_BASE_SHA: ${{ github.event_name == 'push' && github.event.before || '' }}
