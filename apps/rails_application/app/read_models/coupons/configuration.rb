@@ -16,7 +16,6 @@ module Coupons
   class Configuration
     def call(event_store)
       event_store.subscribe(RegisterCoupon.new, to: [Pricing::CouponRegistered])
-      event_store.subscribe(LimitCouponToMaxUses.new, to: [Pricing::CouponLimitedToMaxUses])
       event_store.subscribe(AssignStoreToCoupon.new, to: [Stores::CouponRegistered])
     end
   end

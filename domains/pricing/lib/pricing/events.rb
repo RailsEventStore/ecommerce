@@ -88,9 +88,4 @@ module Pricing
   class OfferExpired < Infra::Event
     attribute :order_id, Infra::Types::UUID
   end
-
-  class CouponLimitedToMaxUses < Infra::Event
-    attribute :coupon_id, Infra::Types::UUID
-    attribute :max_uses, Infra::Types::Integer
-  end
 end

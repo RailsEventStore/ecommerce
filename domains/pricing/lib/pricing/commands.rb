@@ -119,11 +119,4 @@ module Pricing
 
     alias aggregate_id order_id
   end
-
-  class LimitCouponToMaxUses < Infra::Command
-    attribute :coupon_id, Infra::Types::UUID
-    attribute :max_uses, Infra::Types::Integer
-
-    alias aggregate_id coupon_id
-  end
 end
