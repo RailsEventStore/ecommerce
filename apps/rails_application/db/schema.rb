@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_01_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_03_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -100,6 +100,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_01_120000) do
     t.string "code"
     t.datetime "created_at", null: false
     t.decimal "discount"
+    t.integer "max_uses"
     t.string "name"
     t.uuid "store_id"
     t.uuid "uid", null: false

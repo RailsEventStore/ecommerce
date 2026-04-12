@@ -66,6 +66,10 @@ module Pricing
         UseCouponHandler.new(event_store)
       )
       command_bus.register(
+        LimitCouponToMaxUses,
+        LimitCouponToMaxUsesHandler.new(event_store)
+      )
+      command_bus.register(
         AcceptOffer,
         OnAcceptOffer.new(event_store)
       )

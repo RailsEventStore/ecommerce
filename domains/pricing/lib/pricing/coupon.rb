@@ -23,8 +23,24 @@ module Pricing
       )
     end
 
+    def limit_to_max_uses(max_uses)
+      raise NotRegistered unless @registered
+
+      apply CouponLimitedToMaxUses.new(
+        data: {
+          coupon_id: @id,
+          max_uses: max_uses
+        }
+      )
+    end
+
+    NotRegistered = Class.new(StandardError)
+
     on CouponRegistered do |event|
       @registered = true
+    end
+
+    on CouponLimitedToMaxUses do |event|
     end
   end
 end

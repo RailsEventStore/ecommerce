@@ -198,6 +198,18 @@ module Pricing
     end
   end
 
+  class LimitCouponToMaxUsesHandler
+    def initialize(event_store)
+      @repository = Infra::AggregateRootRepository.new(event_store)
+    end
+
+    def call(command)
+      @repository.with_aggregate(Coupon, command.aggregate_id) do |coupon|
+        coupon.limit_to_max_uses(command.max_uses)
+      end
+    end
+  end
+
   class OnAcceptOffer
     def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)
