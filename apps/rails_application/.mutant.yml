@@ -29,6 +29,7 @@ matcher:
     - Availability*
     - ClientInbox*
     - ClientAuthentication*
+    - Admin*
   ignore:
     - Customers::Configuration#call
     - Customers::Rendering::CustomersList*
@@ -36,6 +37,12 @@ matcher:
     - ClientInbox::Configuration#call
     - ClientInbox::Rendering::InboxList*
     - ClientAuthentication::Configuration#call
+    - Admin::Configuration#call
+    - Admin::Rendering::StoresIndex*
+    - Admin::Rendering::StoresNew*
+    - Admin::Rendering::StoresEdit*
+    - Admin::Arbre::TurboFrame*
+    - Admin::StoresController*
     - Coupons::Configuration#call
     - Orders::Configuration#call
     - Orders::Configuration#broadcast_order_state_change
