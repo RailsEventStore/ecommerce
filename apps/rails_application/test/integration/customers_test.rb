@@ -121,16 +121,32 @@ class CustomersTest < InMemoryRESIntegrationTestCase
     assert_select "td", "New Name"
   end
 
-  def test_has_account_column_shows_login_or_no
+  def test_admin_can_create_account_for_customer
+    customer_id = register_customer("BigCorp Ltd")
+
+    get("/customers")
+    assert_response(:success)
+    assert_select("a[href=?]", "/customers/#{customer_id}/account/new", "Create account")
+
+    get("/customers/#{customer_id}/account/new")
+    assert_response(:success)
+
+    post("/customers/#{customer_id}/account", params: { login: "bigcorp@example.com", password: "secret123" })
+    follow_redirect!
+
+    assert_customer_account_status("BigCorp Ltd", "bigcorp@example.com")
+  end
+
+  def test_account_column_shows_login_or_create_link
     with_account_id = register_customer("BigCorp Ltd")
     register_customer("MegaTron Gmbh")
 
-    connect_account_to_customer(with_account_id, "bigcorp@example.com")
+    post("/customers/#{with_account_id}/account", params: { login: "bigcorp@example.com", password: "secret123" })
 
     get("/customers")
     assert_response(:success)
     assert_customer_account_status("BigCorp Ltd", "bigcorp@example.com")
-    assert_customer_account_status("MegaTron Gmbh", "No")
+    assert_customer_account_status("MegaTron Gmbh", "Create account")
   end
 
   def test_update_prevents_access_to_customer_from_another_store
@@ -170,13 +186,6 @@ class CustomersTest < InMemoryRESIntegrationTestCase
       assert_select "td:nth-child(1)", customer_name
       assert_select "td:nth-child(4)", status
     end
-  end
-
-  def connect_account_to_customer(customer_id, login)
-    account_id = SecureRandom.uuid
-    run_command(Authentication::RegisterAccount.new(account_id: account_id))
-    run_command(Authentication::ConnectAccountToClient.new(account_id: account_id, client_id: customer_id))
-    run_command(Authentication::SetLogin.new(account_id: account_id, login: login))
   end
 
   def assert_customer_details(customer_name, vip_status)

@@ -40,7 +40,7 @@
           <%= number_to_currency(customer.paid_orders_summary) %>
         </td>
         <td class="py-2 text-center">
-          <%= customer.login.presence || "No" %>
+          <%= customer.login.presence || link_to("Create account", new_customer_account_path(customer), class: "text-blue-500 hover:underline") %>
         </td>
     </tr>
   <% end %>

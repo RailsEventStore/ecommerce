@@ -1,0 +1,25 @@
+<% content_for(:header) do %>
+  New Account
+<% end %>
+
+<% content_for(:actions) do %>
+  <%= secondary_action_button do %>
+    <%= link_to 'Back', customers_path %>
+  <% end %>
+
+  <%= primary_form_action_button do %>
+    Create Account
+  <% end %>
+<% end %>
+
+<%= form_tag(customer_account_path(@customer_id), method: "post", id: "form") do %>
+  <label for="login" class="block font-bold">
+    Login
+  </label>
+  <%= text_field_tag :login, "", required: true, class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-xs sm:text-sm border-gray-300 rounded-md" %>
+
+  <label for="password" class="block font-bold mt-4">
+    Password
+  </label>
+  <%= password_field_tag :password, "", required: true, class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-xs sm:text-sm border-gray-300 rounded-md" %>
+<% end %>
