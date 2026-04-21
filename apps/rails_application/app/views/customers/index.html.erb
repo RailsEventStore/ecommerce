@@ -10,39 +10,4 @@
   <% end %>
 <% end %>
 
-<table class="w-full">
-  <thead>
-    <tr>
-      <th class="text-left py-2">Name</th>
-      <th class="text-center py-2">Vip</th>
-      <th class="text-right py-2">Paid orders summary</th>
-      <th class="text-center py-2">Account</th>
-    </tr>
-  </thead>
-
-  <tbody>
-  <% @customers.each do |customer| %>
-    <tr class="border-t">
-        <td class="py-2"><%= link_to customer.name, customer_path(customer), class: "text-blue-500 hover:underline" %></td>
-        <td class="py-2 text-center">
-          <%- if customer.vip %>
-            Already a VIP
-          <%- else %>
-            <%= form_with(model: customer, url: customer_path(customer.id), id: "form#{customer.id}") do |form| %>
-              <%= action_button "border-transparent text-white bg-blue-600 hover:bg-blue-700", type: "submit",
-                                form: "form#{customer.id}" do %>
-                  Promote to Vip
-              <% end %>
-            <% end %>
-          <% end %>
-        </td>
-        <td class="py-2 text-right">
-          <%= number_to_currency(customer.paid_orders_summary) %>
-        </td>
-        <td class="py-2 text-center">
-          <%= customer.login.presence || link_to("Create account", new_customer_account_path(customer), class: "text-blue-500 hover:underline") %>
-        </td>
-    </tr>
-  <% end %>
-  </tbody>
-</table>
+<%= Customers::Rendering::CustomersList.build(self, current_store_id) %>

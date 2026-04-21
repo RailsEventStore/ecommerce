@@ -1,6 +1,5 @@
 class CustomersController < ApplicationController
   def index
-    @customers = Customers.customers_for_store(current_store_id)
   end
 
   def new
