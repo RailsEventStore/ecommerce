@@ -2,59 +2,49 @@ require "test_helper"
 
 module ClientAuthentication
   class SetPasswordTest < InMemoryTestCase
-    cover "Authentication*"
+    cover "ClientAuthentication::SetPassword*"
 
-    def configure(event_store, command_bus)
+    def configure(event_store, _command_bus)
       ClientAuthentication::Configuration.new.call(event_store)
     end
 
-    def test_set_password
-      customer_id = SecureRandom.uuid
+    def test_sets_password_only_on_matching_account
       account_id = SecureRandom.uuid
-      password = "1234qwer"
-      password_hash = Digest::SHA256.hexdigest(password)
+      other_account_id = SecureRandom.uuid
+      client_id = SecureRandom.uuid
+      other_client_id = SecureRandom.uuid
 
-      connect_to_account(customer_id, account_id)
-      set_password(account_id, password_hash)
+      connect_account(account_id, client_id)
+      connect_account(other_account_id, other_client_id)
+      set_password(account_id, "hash-a")
+      set_password(other_account_id, "hash-b")
 
-      account = Account.find_by(client_id: customer_id, account_id: account_id)
-      assert_equal password_hash, account.password
+      assert_equal("hash-a", Account.find_by(account_id: account_id).password)
+      assert_equal("hash-b", Account.find_by(account_id: other_account_id).password)
     end
 
-    def test_set_password_then_connect_account
-      customer_id = SecureRandom.uuid
+    def test_sets_password_before_account_is_connected
       account_id = SecureRandom.uuid
-      password = "1234qwer"
-      password_hash = Digest::SHA256.hexdigest(password)
+      client_id = SecureRandom.uuid
 
-      set_password(account_id, password_hash)
-      connect_to_account(customer_id, account_id)
+      set_password(account_id, "hash-a")
+      connect_account(account_id, client_id)
 
-      account = Account.find_by(client_id: customer_id, account_id: account_id)
-      assert_equal password_hash, account.password
+      assert_equal("hash-a", Account.find_by(account_id: account_id).password)
+      assert_equal(client_id, Account.find_by(account_id: account_id).client_id)
     end
 
     private
 
-    def connect_to_account(customer_id, account_id)
+    def connect_account(account_id, client_id)
       event_store.publish(
-        Authentication::AccountConnectedToClient.new(
-          data: {
-            account_id: account_id,
-            client_id: customer_id
-          }
-        )
+        Authentication::AccountConnectedToClient.new(data: { account_id: account_id, client_id: client_id })
       )
     end
 
     def set_password(account_id, password_hash)
       event_store.publish(
-        Authentication::PasswordHashSet.new(
-          data: {
-            account_id: account_id,
-            password_hash: password_hash
-          }
-        )
+        Authentication::PasswordHashSet.new(data: { account_id: account_id, password_hash: password_hash })
       )
     end
 

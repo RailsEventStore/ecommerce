@@ -28,12 +28,14 @@ matcher:
     - Customers*
     - Availability*
     - ClientInbox*
+    - ClientAuthentication*
   ignore:
     - Customers::Configuration#call
     - Customers::Rendering::CustomersList*
     - Customers::AccountsController*
     - ClientInbox::Configuration#call
     - ClientInbox::Rendering::InboxList*
+    - ClientAuthentication::Configuration#call
     - Coupons::Configuration#call
     - Orders::Configuration#call
     - Orders::Configuration#broadcast_order_state_change
