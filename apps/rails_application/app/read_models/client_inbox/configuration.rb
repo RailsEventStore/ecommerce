@@ -27,9 +27,7 @@ module ClientInbox
 
   class ReadMessage
     def call(event)
-      message = Message.find_by(id: event.data.fetch(:message_id))
-      message.update(read: true)
-      message.save
+      Message.find_by(id: event.data.fetch(:message_id)).update(read: true)
     end
   end
 end

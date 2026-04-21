@@ -26,10 +26,14 @@ matcher:
     - VatRates*
     - Deals*
     - Customers*
+    - Availability*
+    - ClientInbox*
   ignore:
     - Customers::Configuration#call
     - Customers::Rendering::CustomersList*
     - Customers::AccountsController*
+    - ClientInbox::Configuration#call
+    - ClientInbox::Rendering::InboxList*
     - Coupons::Configuration#call
     - Orders::Configuration#call
     - Orders::Configuration#broadcast_order_state_change
