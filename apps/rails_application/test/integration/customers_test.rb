@@ -121,15 +121,15 @@ class CustomersTest < InMemoryRESIntegrationTestCase
     assert_select "td", "New Name"
   end
 
-  def test_has_account_column_shows_account_status
+  def test_has_account_column_shows_login_or_no
     with_account_id = register_customer("BigCorp Ltd")
     register_customer("MegaTron Gmbh")
 
-    connect_account_to_customer(with_account_id)
+    connect_account_to_customer(with_account_id, "bigcorp@example.com")
 
     get("/customers")
     assert_response(:success)
-    assert_customer_account_status("BigCorp Ltd", "Yes")
+    assert_customer_account_status("BigCorp Ltd", "bigcorp@example.com")
     assert_customer_account_status("MegaTron Gmbh", "No")
   end
 
@@ -172,10 +172,11 @@ class CustomersTest < InMemoryRESIntegrationTestCase
     end
   end
 
-  def connect_account_to_customer(customer_id)
+  def connect_account_to_customer(customer_id, login)
     account_id = SecureRandom.uuid
     run_command(Authentication::RegisterAccount.new(account_id: account_id))
     run_command(Authentication::ConnectAccountToClient.new(account_id: account_id, client_id: customer_id))
+    run_command(Authentication::SetLogin.new(account_id: account_id, login: login))
   end
 
   def assert_customer_details(customer_name, vip_status)

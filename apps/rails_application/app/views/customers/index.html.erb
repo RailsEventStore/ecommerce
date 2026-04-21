@@ -40,7 +40,7 @@
           <%= number_to_currency(customer.paid_orders_summary) %>
         </td>
         <td class="py-2 text-center">
-          <%= customer.account_id.present? ? "Yes" : "No" %>
+          <%= customer.login.presence || "No" %>
         </td>
     </tr>
   <% end %>

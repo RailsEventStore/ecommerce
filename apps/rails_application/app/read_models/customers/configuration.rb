@@ -21,6 +21,7 @@ module Customers
       event_store.subscribe(PromoteToVip.new, to: [Crm::CustomerPromotedToVip])
       event_store.subscribe(UpdatePaidOrdersSummary.new, to: [Fulfillment::OrderConfirmed])
       event_store.subscribe(ConnectAccount.new, to: [Authentication::AccountConnectedToClient])
+      event_store.subscribe(SetLogin.new, to: [Authentication::LoginSet])
     end
   end
 end
