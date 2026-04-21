@@ -35,3 +35,5 @@ end
 gem "infra", path: "../../infra"
 
 gem "tzinfo-data"
+
+gem "judoscale-rails"

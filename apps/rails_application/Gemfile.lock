@@ -166,6 +166,11 @@ GEM
       rdoc (>= 4.0.0)
       reline (>= 0.4.2)
     json (2.19.3)
+    judoscale-rails (1.13.2)
+      judoscale-ruby (= 1.13.2)
+      railties
+    judoscale-ruby (1.13.2)
+      logger
     kaminari (1.2.2)
       activesupport (>= 4.1.0)
       kaminari-actionview (= 1.2.2)
@@ -398,6 +403,7 @@ DEPENDENCIES
   honeybadger
   importmap-rails (~> 2.0)
   infra!
+  judoscale-rails
   kaminari
   listen (~> 3.3)
   minitest (~> 6.0)!
