@@ -1,25 +1,25 @@
 require "test_helper"
 
 module Customers
-  class CustomerPromotedToVipTest < InMemoryTestCase
-    cover "Customers::PromoteToVip*"
+  class RenameCustomerTest < InMemoryTestCase
+    cover "Customers::RenameCustomer*"
 
     def configure(event_store, _command_bus)
       Customers::Configuration.new.call(event_store)
     end
 
-    def test_promotes_only_matching_customer_to_vip
+    def test_renames_only_matching_customer
       customer_id = SecureRandom.uuid
       other_customer_id = SecureRandom.uuid
       store_id = SecureRandom.uuid
 
-      register_customer_in_store(customer_id, "Joe", store_id)
-      register_customer_in_store(other_customer_id, "Jane", store_id)
+      register_customer_in_store(customer_id, "Old Name", store_id)
+      register_customer_in_store(other_customer_id, "Untouched", store_id)
 
-      event_store.publish(Crm::CustomerPromotedToVip.new(data: { customer_id: customer_id }))
+      event_store.publish(Crm::CustomerRenamed.new(data: { customer_id: customer_id, name: "New Name" }))
 
-      assert_equal(true, Customers.customers_for_store(store_id).find(customer_id).vip)
-      assert_equal(false, Customers.customers_for_store(store_id).find(other_customer_id).vip)
+      assert_equal("New Name", Customers.customers_for_store(store_id).find(customer_id).name)
+      assert_equal("Untouched", Customers.customers_for_store(store_id).find(other_customer_id).name)
     end
 
     private

@@ -25,7 +25,11 @@ matcher:
     - Shipments*
     - VatRates*
     - Deals*
+    - Customers*
   ignore:
+    - Customers::Configuration#call
+    - Customers::Rendering::CustomersList*
+    - Customers::AccountsController*
     - Coupons::Configuration#call
     - Orders::Configuration#call
     - Orders::Configuration#broadcast_order_state_change
