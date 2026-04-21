@@ -121,6 +121,18 @@ class CustomersTest < InMemoryRESIntegrationTestCase
     assert_select "td", "New Name"
   end
 
+  def test_has_account_column_shows_account_status
+    with_account_id = register_customer("BigCorp Ltd")
+    register_customer("MegaTron Gmbh")
+
+    connect_account_to_customer(with_account_id)
+
+    get("/customers")
+    assert_response(:success)
+    assert_customer_account_status("BigCorp Ltd", "Yes")
+    assert_customer_account_status("MegaTron Gmbh", "No")
+  end
+
   def test_update_prevents_access_to_customer_from_another_store
     store_1_id = register_store("Store 1")
     store_2_id = register_store("Store 2")
@@ -151,6 +163,19 @@ class CustomersTest < InMemoryRESIntegrationTestCase
       assert_select "td:nth-child(1)", customer_name
       assert_select "td:nth-child(3)", summary
     end
+  end
+
+  def assert_customer_account_status(customer_name, status)
+    assert_select "tr" do
+      assert_select "td:nth-child(1)", customer_name
+      assert_select "td:nth-child(4)", status
+    end
+  end
+
+  def connect_account_to_customer(customer_id)
+    account_id = SecureRandom.uuid
+    run_command(Authentication::RegisterAccount.new(account_id: account_id))
+    run_command(Authentication::ConnectAccountToClient.new(account_id: account_id, client_id: customer_id))
   end
 
   def assert_customer_details(customer_name, vip_status)

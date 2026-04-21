@@ -16,6 +16,7 @@
       <th class="text-left py-2">Name</th>
       <th class="text-center py-2">Vip</th>
       <th class="text-right py-2">Paid orders summary</th>
+      <th class="text-center py-2">Account</th>
     </tr>
   </thead>
 
@@ -37,6 +38,9 @@
         </td>
         <td class="py-2 text-right">
           <%= number_to_currency(customer.paid_orders_summary) %>
+        </td>
+        <td class="py-2 text-center">
+          <%= customer.account_id.present? ? "Yes" : "No" %>
         </td>
     </tr>
   <% end %>
