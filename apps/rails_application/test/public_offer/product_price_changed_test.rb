@@ -14,7 +14,7 @@ module PublicOffer
 
       set_price(product_id, 100)
 
-      assert_equal 100, Product.find(product_id).price
+      assert_equal 100, PublicOffer.find_product(product_id).price
       assert_equal 50, Product.find(unchanged_product_id).price
     end
 
@@ -23,7 +23,7 @@ module PublicOffer
 
       set_price(product_id, 40)
 
-      assert_equal 40, Product.find(product_id).lowest_recent_price
+      assert_equal 40, PublicOffer.find_product(product_id).lowest_recent_price
     end
 
     def test_keeps_lowest_recent_price
@@ -34,7 +34,7 @@ module PublicOffer
       set_price(product_id, 50)
       set_price(product_id, 70)
 
-      assert_equal 20, Product.find(product_id).lowest_recent_price
+      assert_equal 20, PublicOffer.find_product(product_id).lowest_recent_price
     end
 
     def test_takes_into_account_price_set_before_30_days
@@ -45,7 +45,7 @@ module PublicOffer
       set_price(product_id, 50)
       set_price(product_id, 70)
 
-      assert_equal 15, Product.find(product_id).lowest_recent_price
+      assert_equal 15, PublicOffer.find_product(product_id).lowest_recent_price
     end
 
     def test_ignores_prices_older_than_30_days
@@ -59,7 +59,7 @@ module PublicOffer
         set_past_price(product_id, 35, 30.days.ago)
         set_past_price(product_id, 40, 29.days.ago.beginning_of_day)
 
-        assert_equal 30, Product.find(product_id).lowest_recent_price
+        assert_equal 30, PublicOffer.find_product(product_id).lowest_recent_price
       end
     end
 
@@ -70,7 +70,7 @@ module PublicOffer
       set_price(product_id, 35)
       set_future_price(product_id, 11, 2.days.from_now)
 
-      assert_equal 35, Product.find(product_id).lowest_recent_price
+      assert_equal 35, PublicOffer.find_product(product_id).lowest_recent_price
     end
 
     def test_ignores_other_products
@@ -81,7 +81,47 @@ module PublicOffer
       set_price(product2_id, 25)
       set_price(product1_id, 30)
 
-      assert_equal 30, Product.find(product1_id).lowest_recent_price
+      assert_equal 30, PublicOffer.find_product(product1_id).lowest_recent_price
+      assert_equal 25, PublicOffer.find_product(product2_id).lowest_recent_price
+    end
+
+    def test_border_event_does_not_replace_recent_prices
+      product_id = SecureRandom.uuid
+      event_store.publish(ProductCatalog::ProductRegistered.new(data: { product_id: product_id }))
+      set_past_price(product_id, 100, 31.days.ago.beginning_of_day)
+      set_price(product_id, 50)
+
+      assert_equal 50, PublicOffer.find_product(product_id).lowest_recent_price
+    end
+
+    def test_sorts_events_chronologically_to_find_latest_pre_window_border
+      product_id = SecureRandom.uuid
+      event_store.publish(ProductCatalog::ProductRegistered.new(data: { product_id: product_id }))
+      set_past_price(product_id, 15, 32.days.ago.beginning_of_day)
+      set_past_price(product_id, 20, 45.days.ago.beginning_of_day)
+      set_future_price(product_id, 11, 2.days.from_now)
+
+      assert_equal 15, PublicOffer.find_product(product_id).lowest_recent_price
+    end
+
+    def test_is_idempotent_when_handler_is_invoked_twice_on_the_same_event
+      product_id = prepare_product
+      event = Pricing::PriceSet.new(data: { product_id: product_id, price: 40 })
+      event_store.publish(event)
+      RegisterLowestPrice.new.call(event)
+
+      assert_equal 40, PublicOffer.find_product(product_id).lowest_recent_price
+    end
+
+    def test_border_event_selection_uses_append_order_when_timestamps_tie
+      product_id = SecureRandom.uuid
+      event_store.publish(ProductCatalog::ProductRegistered.new(data: { product_id: product_id }))
+      timestamp = 40.days.ago.beginning_of_day
+      set_past_price(product_id, 100, timestamp)
+      set_past_price(product_id, 50, timestamp)
+      set_future_price(product_id, 11, 2.days.from_now)
+
+      assert_equal 50, PublicOffer.find_product(product_id).lowest_recent_price
     end
 
     def test_takes_last_event_when_no_events_in_last_30_days
@@ -96,7 +136,7 @@ module PublicOffer
       set_past_price(product_id, 45, 32.days.ago)
       set_future_price(product_id, 11, 2.days.from_now)
 
-      assert_equal 45, Product.find(product_id).lowest_recent_price
+      assert_equal 45, PublicOffer.find_product(product_id).lowest_recent_price
     end
 
     private

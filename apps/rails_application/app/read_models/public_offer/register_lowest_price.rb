@@ -17,15 +17,10 @@ module PublicOffer
 
     def lowest_recent_price_for(product_id)
       price_changes = project_price_changes(product_id)
+      recent_prices = price_changes.select { |pc| recent_event?(pc) && !future_event?(pc) }.map { |pc| pc.fetch(:price) }
       border_event = find_border_event(price_changes)
-
-      events_to_compare = price_changes.select do |price_change|
-        recent_event?(price_change) && !future_event?(price_change)
-      end
-
-      events_to_compare.push(border_event) if border_event.present?
-
-      events_to_compare.min_by { |price_change| price_change.fetch(:price) }&.fetch(:price)
+      prices = border_event ? recent_prices + [border_event.fetch(:price)] : recent_prices
+      prices.min
     end
 
     def project_price_changes(product_id)
@@ -53,12 +48,8 @@ module PublicOffer
     end
 
     def link_to_stream(event, product_id)
-      event_store.link(
-        event.event_id,
-        stream_name: stream_name(product_id)
-      )
-    rescue RubyEventStore::EventDuplicatedInStream => error
-      Rails.logger.info("Duplicated event registered for PricesHistoryReport: #{error}")
+      event_store.link(event.event_id, stream_name: stream_name(product_id))
+    rescue RubyEventStore::EventDuplicatedInStream
     end
 
     def event_store

@@ -13,24 +13,24 @@ class ReadModelHandlerTest < InMemoryTestCase
   def test_create_record
     event = product_registered
     event_store.append(event)
-    previous_count = PublicOffer::Product.count
-    CreateRecord.new(event_store, PublicOffer::Product, :product_id).call(event)
-    assert_equal(previous_count + 1, PublicOffer::Product.count)
+    previous_count = PublicOffer.const_get(:Product).count
+    CreateRecord.new(event_store, PublicOffer.const_get(:Product), :product_id).call(event)
+    assert_equal(previous_count + 1, PublicOffer.const_get(:Product).count)
   end
 
   def test_dealing_with_at_least_once_delivery
     event = product_registered
     event_store.append(event)
-    previous_count = PublicOffer::Product.count
-    2.times { CreateRecord.new(event_store, PublicOffer::Product, :product_id).call(event) }
-    assert_equal(previous_count + 1, PublicOffer::Product.count)
+    previous_count = PublicOffer.const_get(:Product).count
+    2.times { CreateRecord.new(event_store, PublicOffer.const_get(:Product), :product_id).call(event) }
+    assert_equal(previous_count + 1, PublicOffer.const_get(:Product).count)
   end
 
   def test_copy
     event = product_named
     event_store.append(event)
-    CopyEventAttribute.new(event_store, PublicOffer::Product, :product_id, :name, :name).call(event)
-    assert_equal product_name, PublicOffer::Product.find_by(id: product_id).name
+    CopyEventAttribute.new(event_store, PublicOffer.const_get(:Product), :product_id, :name, :name).call(event)
+    assert_equal product_name, PublicOffer.const_get(:Product).find_by(id: product_id).name
   end
 
   def test_copy_nested_attribute
@@ -43,28 +43,28 @@ class ReadModelHandlerTest < InMemoryTestCase
   def test_no_specific_order_expected
     event = product_registered
     event_store.append(event)
-    previous_count = PublicOffer::Product.count
-    PublicOffer::Product.create(id: product_id)
-    CreateRecord.new(event_store, PublicOffer::Product, :product_id).call(event)
-    assert_equal(previous_count + 1, PublicOffer::Product.count)
+    previous_count = PublicOffer.const_get(:Product).count
+    PublicOffer.const_get(:Product).create(id: product_id)
+    CreateRecord.new(event_store, PublicOffer.const_get(:Product), :product_id).call(event)
+    assert_equal(previous_count + 1, PublicOffer.const_get(:Product).count)
   end
 
   def test_updating_with_newest_data
     event_store.append(first_event = product_named(product_name))
     event_store.append(second_event = product_named('New name'))
 
-    handler = CopyEventAttribute.new(event_store, PublicOffer::Product, :product_id, :name, :name)
+    handler = CopyEventAttribute.new(event_store, PublicOffer.const_get(:Product), :product_id, :name, :name)
     handler.call(second_event)
     handler.call(first_event)
 
-    assert_equal 'New name', PublicOffer::Product.find_by(id: product_id).name
+    assert_equal 'New name', PublicOffer.const_get(:Product).find_by(id: product_id).name
   end
 
   def test_updating_with_newest_data_concurrently
     events = 3.times.map { |i| product_named("#{product_name} #{i}") }
     events += [product_named('New name')]
     events.each { |event| event_store.append(event) }
-    handler = CopyEventAttribute.new(event_store, PublicOffer::Product, :product_id, :name, :name)
+    handler = CopyEventAttribute.new(event_store, PublicOffer.const_get(:Product), :product_id, :name, :name)
 
     assert_equal(5, ActiveRecord::Base.connection.pool.size)
 
@@ -77,7 +77,7 @@ class ReadModelHandlerTest < InMemoryTestCase
     end
     wait_for_it = false
     threads.each(&:join)
-    assert_equal 'New name', PublicOffer::Product.find_by(id: product_id).name
+    assert_equal 'New name', PublicOffer.const_get(:Product).find_by(id: product_id).name
   ensure
     ActiveRecord::Base.connection_pool.disconnect!
   end
@@ -85,7 +85,7 @@ class ReadModelHandlerTest < InMemoryTestCase
   private
 
   def read_model
-    SingleTableReadModel.new(event_store, PublicOffer::Product, :product_id)
+    SingleTableReadModel.new(event_store, PublicOffer.const_get(:Product), :product_id)
   end
 
   def product_id

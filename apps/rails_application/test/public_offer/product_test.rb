@@ -12,13 +12,13 @@ module PublicOffer
       event_store.publish(product_registered)
       event_store.publish(product_registered_in_store)
 
-      assert_equal(store_id, Product.find(product_id).store_id)
+      assert_equal(store_id, PublicOffer.find_product(product_id).store_id)
     end
 
     def test_store_id_is_nil_when_product_not_registered_in_store
       event_store.publish(product_registered)
 
-      assert_nil(Product.find(product_id).store_id)
+      assert_nil(PublicOffer.find_product(product_id).store_id)
     end
 
     def test_store_id_is_updated_when_product_registered_in_different_store
@@ -27,11 +27,27 @@ module PublicOffer
       event_store.publish(product_registered)
       event_store.publish(product_registered_in_store)
 
-      assert_equal(store_id, Product.find(product_id).store_id)
+      assert_equal(store_id, PublicOffer.find_product(product_id).store_id)
 
       event_store.publish(product_registered_in_different_store(store_2_id))
 
-      assert_equal(store_2_id, Product.find(product_id).store_id)
+      assert_equal(store_2_id, PublicOffer.find_product(product_id).store_id)
+    end
+
+    def test_lowest_recent_price_lower_from_current_is_false_when_no_lowest_recorded
+      refute(Product.new(price: 50, lowest_recent_price: nil).lowest_recent_price_lower_from_current?)
+    end
+
+    def test_lowest_recent_price_lower_from_current_is_false_when_equal_to_current
+      refute(Product.new(price: 50, lowest_recent_price: 50).lowest_recent_price_lower_from_current?)
+    end
+
+    def test_lowest_recent_price_lower_from_current_is_false_when_higher_than_current
+      refute(Product.new(price: 50, lowest_recent_price: 80).lowest_recent_price_lower_from_current?)
+    end
+
+    def test_lowest_recent_price_lower_from_current_is_true_when_lower_than_current
+      assert(Product.new(price: 50, lowest_recent_price: 30).lowest_recent_price_lower_from_current?)
     end
 
     private

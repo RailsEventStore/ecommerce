@@ -2,8 +2,7 @@ module PublicOffer
   class ProductsList < Arbre::Component
 
     def self.build(view_context, store_id)
-      products = Product.where(store_id: store_id)
-      new(Arbre::Context.new(nil, view_context)).build(products)
+      new(Arbre::Context.new(nil, view_context)).build(PublicOffer.products_in_store(store_id))
     end
 
     def build(products, attributes = {})

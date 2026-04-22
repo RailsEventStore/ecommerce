@@ -31,6 +31,7 @@ matcher:
     - ClientAuthentication*
     - Admin*
     - Products*
+    - PublicOffer*
   ignore:
     - Customers::Configuration#call
     - Customers::Rendering::CustomersList*
@@ -45,6 +46,8 @@ matcher:
     - Admin::Arbre::TurboFrame*
     - Admin::StoresController*
     - Products::Configuration#call
+    - PublicOffer::Configuration*
+    - PublicOffer::ProductsList*
     - Coupons::Configuration#call
     - Orders::Configuration#call
     - Orders::Configuration#broadcast_order_state_change
