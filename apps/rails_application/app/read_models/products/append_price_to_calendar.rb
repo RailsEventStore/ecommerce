@@ -1,5 +1,5 @@
 module Products
-  class RefreshFuturePricesCalendar
+  class AppendPriceToCalendar
     def call(event)
       product_id = event.data.fetch(:product_id)
       product = Product.find_or_create_by(id: product_id)
@@ -10,7 +10,7 @@ module Products
 
     def updated_prices_calendar(event, product)
       (product.read_attribute(:current_prices_calendar) << new_entry_from_event(event))
-        .sort_by { |entry| Time.parse(entry[:valid_since]) }
+        .sort_by { |entry| Time.parse(entry.fetch(:valid_since)) }
     end
 
     def new_entry_from_event(event)

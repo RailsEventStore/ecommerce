@@ -4,7 +4,6 @@ module Products
     serialize :current_prices_calendar, type: Array, coder: YAML
 
     def current_prices_calendar
-      return [] unless super
       super.map(&method(:parse_calendar_entry))
     end
 
@@ -13,7 +12,7 @@ module Products
     end
 
     def future_prices_calendar
-      current_prices_calendar.select { |entry| entry[:valid_since] > Time.current }
+      current_prices_calendar.select { |entry| entry.fetch(:valid_since) > Time.current }
     end
 
     def unavailable?
@@ -27,18 +26,14 @@ module Products
     end
 
     def prices_before(time)
-      current_prices_calendar.partition { |entry| entry[:valid_since] < time }.first
+      current_prices_calendar.partition { |entry| entry.fetch(:valid_since) < time }.first
     end
 
     def parse_calendar_entry(entry)
       {
-        valid_since:  Time.zone.parse(time_of(entry)),
-        price: BigDecimal(entry[:price])
+        valid_since:  Time.zone.parse(entry.fetch(:valid_since)),
+        price: BigDecimal(entry.fetch(:price))
       }
-    end
-
-    def time_of(entry)
-      entry[:valid_since]
     end
   end
 
@@ -73,7 +68,7 @@ module Products
       @read_model.subscribe_copy(Taxes::VatRateSet, [:vat_rate, :code])
       @read_model.subscribe_copy(Inventory::AvailabilityChanged, :available)
       @read_model.subscribe_copy(Stores::ProductRegistered, :store_id)
-      @event_store.subscribe(RefreshFuturePricesCalendar, to: [Pricing::PriceSet])
+      @event_store.subscribe(AppendPriceToCalendar, to: [Pricing::PriceSet])
     end
   end
 end

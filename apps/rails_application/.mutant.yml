@@ -30,6 +30,7 @@ matcher:
     - ClientInbox*
     - ClientAuthentication*
     - Admin*
+    - Products*
   ignore:
     - Customers::Configuration#call
     - Customers::Rendering::CustomersList*
@@ -43,6 +44,7 @@ matcher:
     - Admin::Rendering::StoresEdit*
     - Admin::Arbre::TurboFrame*
     - Admin::StoresController*
+    - Products::Configuration#call
     - Coupons::Configuration#call
     - Orders::Configuration#call
     - Orders::Configuration#broadcast_order_state_change
