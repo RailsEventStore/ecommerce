@@ -16,19 +16,35 @@ module PublicOffer
     end
 
     def lowest_recent(history)
-      sorted = history.sort_by { |entry| entry.fetch(:valid_at) }
-      border = sorted.reverse.find { |entry| !recent?(entry) }
-      recent_prices = sorted.select { |entry| recent?(entry) && !future?(entry) }.map { |entry| BigDecimal(entry.fetch(:price)) }
-      prices = border ? recent_prices + [BigDecimal(border.fetch(:price))] : recent_prices
-      prices.min
+      recent_prices(history).min
+    end
+
+    def recent_prices(history)
+      (recent_entries(history) + [border_entry(history)].compact).map { |entry| price_of(entry) }
+    end
+
+    def recent_entries(history)
+      history.select { |entry| recent?(entry) && !future?(entry) }
+    end
+
+    def border_entry(history)
+      history.sort_by { |entry| valid_at_of(entry) }.reverse.find { |entry| !recent?(entry) }
+    end
+
+    def price_of(entry)
+      BigDecimal(entry.fetch(:price))
+    end
+
+    def valid_at_of(entry)
+      entry.fetch(:valid_at)
     end
 
     def recent?(entry)
-      entry.fetch(:valid_at) > RECENT_PERIOD.ago.beginning_of_day
+      valid_at_of(entry) > RECENT_PERIOD.ago.beginning_of_day
     end
 
     def future?(entry)
-      entry.fetch(:valid_at) > Time.now
+      valid_at_of(entry) > Time.now
     end
   end
 end
