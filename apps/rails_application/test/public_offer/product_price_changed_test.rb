@@ -113,6 +113,19 @@ module PublicOffer
       assert_equal 40, PublicOffer.find_product(product_id).lowest_recent_price
     end
 
+    def test_border_is_selected_chronologically_not_lexicographically_across_timezones
+      product_id = SecureRandom.uuid
+      event_store.publish(ProductCatalog::ProductRegistered.new(data: { product_id: product_id }))
+
+      earlier_chrono_but_later_lex = Time.new(2026, 3, 1, 10, 0, 0, "+05:00")
+      later_chrono_but_earlier_lex = Time.new(2026, 3, 1, 7, 0, 0, "-05:00")
+
+      set_past_price(product_id, 99, earlier_chrono_but_later_lex)
+      set_past_price(product_id, 77, later_chrono_but_earlier_lex)
+
+      assert_equal 77, PublicOffer.find_product(product_id).lowest_recent_price
+    end
+
     def test_border_event_selection_uses_append_order_when_timestamps_tie
       product_id = SecureRandom.uuid
       event_store.publish(ProductCatalog::ProductRegistered.new(data: { product_id: product_id }))
