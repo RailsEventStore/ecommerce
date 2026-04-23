@@ -1,3 +1,13 @@
+GIT
+  remote: https://github.com/RailsEventStore/rails_event_store.git
+  revision: ceee4ee1186594eaef025f0b05b7729c30bf9542
+  branch: res-cli-v2
+  glob: contrib/ruby_event_store-cli/*.gemspec
+  specs:
+    ruby_event_store-cli (0.1.0)
+      dry-cli (>= 1.0)
+      ruby_event_store (>= 1.0.0)
+
 PATH
   remote: ../../infra
   specs:
@@ -114,6 +124,7 @@ GEM
       dotenv (= 3.2.0)
       railties (>= 6.1)
     drb (2.2.3)
+    dry-cli (1.4.1)
     dry-core (1.2.0)
       concurrent-ruby (~> 1.0)
       logger
@@ -412,6 +423,7 @@ DEPENDENCIES
   puma
   rails (~> 8.1.0)
   rails_event_store (>= 2.15.0, < 3.0)
+  ruby_event_store-cli!
   skylight
   sprockets-rails
   stimulus-rails

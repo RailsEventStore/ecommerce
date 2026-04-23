@@ -21,6 +21,10 @@ group :development do
   gem "listen", "~> 3.3"
   gem "herb"
   gem "bundler-audit"
+  gem "ruby_event_store-cli",
+      github: "RailsEventStore/rails_event_store",
+      branch: "res-cli-v2",
+      glob: "contrib/ruby_event_store-cli/*.gemspec"
 end
 
 group :development, :test do
