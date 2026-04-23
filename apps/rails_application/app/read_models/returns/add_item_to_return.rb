@@ -1,6 +1,12 @@
 module Returns
   class AddItemToReturn
     def call(event)
+      ActiveRecord::Base.transaction { apply(event) }
+    end
+
+    private
+
+    def apply(event)
       return_record = Return.find_by!(uid: event.data.fetch(:return_id))
       product = Orders.find_product(event.data.fetch(:product_id))
 
@@ -12,10 +18,8 @@ module Returns
       return_record.total_value += item.price
       item.quantity += 1
 
-      ActiveRecord::Base.transaction do
-        return_record.save!
-        item.save!
-      end
+      return_record.save!
+      item.save!
     end
   end
 
