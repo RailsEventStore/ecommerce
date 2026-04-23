@@ -32,6 +32,7 @@ matcher:
     - Admin*
     - Products*
     - PublicOffer*
+    - TimePromotions*
   ignore:
     - Customers::Configuration#call
     - Customers::Rendering::CustomersList*
@@ -48,6 +49,11 @@ matcher:
     - Products::Configuration#call
     - PublicOffer::Configuration*
     - PublicOffer::ProductsList*
+    - TimePromotions::Configuration#call
+    - TimePromotions::Broadcaster*
+    - TimePromotions::CreateTimePromotion#call
+    - TimePromotions::CreateTimePromotion#broadcast_new_row
+    - TimePromotions::CreateTimePromotion#row_html
     - Coupons::Configuration#call
     - Orders::Configuration#call
     - Orders::Configuration#broadcast_order_state_change
