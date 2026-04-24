@@ -1,0 +1,153 @@
+read_models:
+
+  - name: Admin
+    path: app/read_models/admin
+
+  - name: Availability
+    path: app/read_models/availability
+
+  - name: ClientAuthentication
+    path: app/read_models/client_authentication
+
+  - name: ClientInbox
+    path: app/read_models/client_inbox
+
+  - name: ClientOrders
+    path: app/read_models/client_orders
+    known_violations:
+      - file: app/read_models/client_orders/rendering/edit_order.rb
+        constant: TimePromotions
+
+  - name: Coupons
+    path: app/read_models/coupons
+
+  - name: Customers
+    path: app/read_models/customers
+    known_violations:
+      - file: app/read_models/customers/update_paid_orders_summary.rb
+        constant: ClientOrders::Order
+
+  - name: Deals
+    path: app/read_models/deals
+
+  - name: Invoices
+    path: app/read_models/invoices
+
+  - name: OrderHeader
+    path: app/read_models/order_header
+
+  - name: Orders
+    path: app/read_models/orders
+
+  - name: Products
+    path: app/read_models/products
+
+  - name: PublicOffer
+    path: app/read_models/public_offer
+
+  - name: Returns
+    path: app/read_models/returns
+    known_violations:
+      - file: app/read_models/returns/add_item_to_return.rb
+        constant: Orders
+
+  - name: Shipments
+    path: app/read_models/shipments
+    known_violations:
+      - file: app/read_models/shipments/add_item_to_shipment.rb
+        constant: Orders
+
+  - name: TimePromotions
+    path: app/read_models/time_promotions
+
+  - name: VatRates
+    path: app/read_models/vat_rates
+
+bounded_contexts:
+
+  - name: Authentication
+    path: ../../domains/authentication/lib
+
+  - name: Communication
+    path: ../../domains/communication/lib
+
+  - name: Crm
+    path: ../../domains/crm/lib
+
+  - name: Fulfillment
+    path: ../../domains/fulfillment/lib
+
+  - name: Inventory
+    path: ../../domains/inventory/lib
+
+  - name: Invoicing
+    path: ../../domains/invoicing/lib
+
+  - name: Ordering
+    path: ../../domains/ordering/lib
+    known_violations:
+      - file: ../../domains/ordering/lib/ordering/refundable_products.rb
+        constant: Pricing::OfferAccepted
+      - file: ../../domains/ordering/lib/ordering/returnable_products.rb
+        constant: Pricing::OfferAccepted
+
+  - name: Payments
+    path: ../../domains/payments/lib
+
+  - name: Pricing
+    path: ../../domains/pricing/lib
+
+  - name: ProductCatalog
+    path: ../../domains/product_catalog/lib
+
+  - name: Shipping
+    path: ../../domains/shipping/lib
+
+  - name: Stores
+    path: ../../domains/stores/lib
+
+  - name: Taxes
+    path: ../../domains/taxes/lib
+
+  - name: Todo
+    path: ../../domains/todo/lib
+
+processes:
+
+  - name: Processes::ApplyTimePromotion
+    path: app/processes/processes/apply_time_promotion.rb
+    known_violations:
+      - file: app/processes/processes/apply_time_promotion.rb
+        constant: Orders
+
+  - name: Processes::ConfirmOrderOnPaymentCaptured
+    path: app/processes/processes/confirm_order_on_payment_captured.rb
+
+  - name: Processes::InvoiceGeneration
+    path:
+      - app/processes/processes/invoice_generation.rb
+      - app/processes/processes/invoices
+
+  - name: Processes::NotifyPaymentsAboutOrderValue
+    path: app/processes/processes/notify_payments_about_order_value.rb
+
+  - name: Processes::ReleasePaymentOnOrderExpiration
+    path: app/processes/processes/release_payment_on_order_expiration.rb
+
+  - name: Processes::ReservationProcess
+    path: app/processes/processes/reservation_process.rb
+
+  - name: Processes::ShipmentProcess
+    path: app/processes/processes/shipment_process.rb
+
+  - name: Processes::SyncShipmentFromPricing
+    path: app/processes/processes/sync_shipment_from_pricing.rb
+
+  - name: Processes::ThreePlusOneFree
+    path: app/processes/processes/three_plus_one_free.rb
+
+  - name: Processes::TotalOrderValue
+    path: app/processes/processes/total_order_value.rb
+
+  - name: Processes::WelcomeMessageProcess
+    path: app/processes/processes/welcome_message_process.rb

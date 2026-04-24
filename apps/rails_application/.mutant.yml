@@ -14,6 +14,7 @@ coverage_criteria:
   process_abort: true
 requires:
   - ./config/environment
+  - ./lib/architecture/check
 matcher:
   subjects:
     - Coupons*
@@ -34,7 +35,11 @@ matcher:
     - PublicOffer*
     - TimePromotions*
     - Returns*
+    - Architecture*
   ignore:
+    - Architecture::Boundaries#matching_prefix
+    - Architecture::Boundaries#first_matching_boundary
+    - Architecture::Boundaries#expand_path
     - Customers::Configuration#call
     - Customers::Rendering::CustomersList*
     - Customers::AccountsController*

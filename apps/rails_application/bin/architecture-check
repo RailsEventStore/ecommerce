@@ -1,0 +1,82 @@
+#!/usr/bin/env ruby
+require "yaml"
+require_relative "../lib/architecture/check"
+
+CONFIG_PATH = File.expand_path("../config/architecture.yml", __dir__)
+
+def format_config(config)
+  lines = []
+  Architecture::Check::SECTIONS.each_key.with_index do |section, i|
+    lines << "" if i > 0
+    lines << "#{section}:"
+    (config[section] || []).each do |b|
+      lines << ""
+      lines << "  - name: #{b.fetch('name')}"
+      format_path(lines, b.fetch("path"))
+      if (allowed = b["allowed"]) && !allowed.empty?
+        lines << "    allowed: [#{allowed.join(', ')}]"
+      end
+      if (known = b["known_violations"]) && !known.empty?
+        lines << "    known_violations:"
+        known.each do |v|
+          lines << "      - file: #{v.fetch('file')}"
+          lines << "        constant: #{v.fetch('constant')}"
+        end
+      end
+    end
+  end
+  lines.join("\n") + "\n"
+end
+
+def format_path(lines, path)
+  if path.is_a?(Array)
+    lines << "    path:"
+    path.each { |p| lines << "      - #{p}" }
+  else
+    lines << "    path: #{path}"
+  end
+end
+
+def update_baseline(config, violations)
+  by_source = violations.group_by(&:source)
+  Architecture::Check::SECTIONS.each_key do |section|
+    (config[section] || []).each do |b|
+      entries = (by_source[b.fetch("name")] || []).map do |v|
+        { "file" => v.file, "constant" => v.constant }
+      end
+      if entries.any?
+        b["known_violations"] = entries
+      else
+        b.delete("known_violations")
+      end
+    end
+  end
+end
+
+if ARGV.include?("--baseline")
+  config = YAML.safe_load_file(CONFIG_PATH)
+  result = Architecture::Check.run(CONFIG_PATH)
+  update_baseline(config, result.violations)
+  File.write(CONFIG_PATH, format_config(config))
+  puts "Wrote #{result.violations.size} known violation(s) into #{File.basename(CONFIG_PATH)}"
+  exit 0
+end
+
+result = Architecture::Check.run(CONFIG_PATH)
+
+if result.new_violations.empty?
+  puts "No new boundary violations."
+  puts "(#{result.known_count} known violation(s) ignored)" if result.known_count > 0
+  exit 0
+end
+
+grouped = result.new_violations.group_by { |v| [v.source, v.target] }
+grouped.sort_by { |(src, tgt), _| [src, tgt] }.each do |(src, tgt), vs|
+  puts "#{src} -> #{tgt} (#{vs.size} references):"
+  vs.each { |v| puts "  #{v.file}:#{v.line}:#{v.column}  #{v.constant}" }
+  puts
+end
+
+puts "#{result.new_violations.size} new violation(s) across #{grouped.size} boundary pair(s)."
+puts "(#{result.known_count} known violation(s) ignored)" if result.known_count > 0
+exit 1
