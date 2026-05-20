@@ -65,26 +65,6 @@ module Orders
       assert_equal([product_id_1, product_id_2].sort, result.pluck(:product_id).sort)
     end
 
-    def test_find_product_returns_product_by_uid
-      product_id = SecureRandom.uuid
-
-      register_product(product_id, "Test Product", 100)
-
-      result = Orders.find_product(product_id)
-
-      assert_equal(product_id, result.uid)
-      assert_equal("Test Product", result.name)
-      assert_equal(100, result.price)
-    end
-
-    def test_find_product_raises_when_not_found
-      product_id = SecureRandom.uuid
-
-      assert_raises(ActiveRecord::RecordNotFound) do
-        Orders.find_product(product_id)
-      end
-    end
-
     def test_paginated_orders_returns_paginated_results
       store_id = SecureRandom.uuid
       order_ids = 15.times.map { SecureRandom.uuid }

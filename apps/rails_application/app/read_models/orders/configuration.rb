@@ -31,10 +31,6 @@ module Orders
     OrderLine.where(order_uid: order_uid, product_id: product_id).first
   end
 
-  def self.find_product(product_id)
-    Product.find_by_uid!(product_id)
-  end
-
   def self.all_orders
     Order.all
   end
