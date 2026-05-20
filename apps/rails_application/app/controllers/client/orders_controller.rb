@@ -31,8 +31,7 @@ module Client
 
     def edit
       order_id = params[:id]
-      time_promotions = TimePromotions.current_time_promotions_for_store(current_store_id)
-      render html: ClientOrders::Rendering::EditOrder.build(view_context, order_id, time_promotions), layout: true
+      render html: ClientOrders::Rendering::EditOrder.build(view_context, order_id, current_store_id), layout: true
     end
 
     def add_item

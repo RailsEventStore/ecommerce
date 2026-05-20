@@ -39,6 +39,16 @@ module ClientOrders
     self.table_name = "client_order_products"
   end
 
+  class TimePromotion < ApplicationRecord
+    self.table_name = "client_orders_time_promotions"
+
+    scope :current, -> { where("start_time < ? AND end_time > ?", Time.current, Time.current) }
+  end
+
+  def self.current_time_promotions_for_store(store_id)
+    TimePromotion.where(store_id: store_id).current
+  end
+
   class Configuration
     def call(event_store)
       event_store.subscribe(OrderHandlers::ExpireOrder, to: [Pricing::OfferExpired])
@@ -62,6 +72,9 @@ module ClientOrders
       event_store.subscribe(OrderHandlers::RemoveDiscount, to: [Pricing::PercentageDiscountRemoved])
       event_store.subscribe(OrderHandlers::UpdateOrderTotalValue, to: [Processes::TotalOrderValueUpdated])
       event_store.subscribe(OrderHandlers::UpdatePaidOrdersSummary, to: [Fulfillment::OrderConfirmed])
+
+      event_store.subscribe(CreateTimePromotion.new, to: [Pricing::TimePromotionCreated])
+      event_store.subscribe(AssignStoreToTimePromotion.new, to: [Stores::TimePromotionRegistered])
     end
   end
 end
