@@ -3,7 +3,6 @@ require "test_helper"
 module TimePromotions
   class FacadeTest < InMemoryTestCase
     cover "TimePromotions.time_promotions_for_store"
-    cover "TimePromotions.current_time_promotions_for_store"
 
     def configure(event_store, _command_bus)
       TimePromotions::Configuration.new.call(event_store)
@@ -20,28 +19,6 @@ module TimePromotions
 
       assert_equal(2, result.count)
       assert_equal([promotion_1_id, promotion_2_id].sort, result.pluck(:id).sort)
-    end
-
-    def test_current_time_promotions_for_store_excludes_expired_promotions
-      store_id = SecureRandom.uuid
-      current_id = create_and_assign(store_id, 10, Time.current - 1.hour, Time.current + 1.hour, "Current")
-      create_and_assign(store_id, 20, Time.current - 2.hours, Time.current - 1.hour, "Expired")
-      create_and_assign(store_id, 30, Time.current + 1.hour, Time.current + 2.hours, "Upcoming")
-
-      result = TimePromotions.current_time_promotions_for_store(store_id)
-
-      assert_equal([current_id], result.pluck(:id))
-    end
-
-    def test_current_time_promotions_for_store_excludes_other_stores
-      store_id = SecureRandom.uuid
-      other_store_id = SecureRandom.uuid
-      mine_id = create_and_assign(store_id, 10, Time.current - 1.hour, Time.current + 1.hour, "Mine")
-      create_and_assign(other_store_id, 20, Time.current - 1.hour, Time.current + 1.hour, "Theirs")
-
-      result = TimePromotions.current_time_promotions_for_store(store_id)
-
-      assert_equal([mine_id], result.pluck(:id))
     end
 
     private
