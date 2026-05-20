@@ -23,9 +23,6 @@ read_models:
 
   - name: Customers
     path: app/read_models/customers
-    known_violations:
-      - file: app/read_models/customers/update_paid_orders_summary.rb
-        constant: ClientOrders::Order
 
   - name: Deals
     path: app/read_models/deals

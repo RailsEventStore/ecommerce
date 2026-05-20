@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_22_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_20_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -116,6 +116,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_22_120000) do
     t.uuid "store_id"
     t.datetime "updated_at", precision: nil, null: false
     t.boolean "vip", default: false, null: false
+  end
+
+  create_table "customers_orders", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.uuid "customer_id"
+    t.decimal "discounted_value", precision: 8, scale: 2
+    t.uuid "order_uid", null: false
+    t.datetime "updated_at", null: false
+    t.index ["order_uid"], name: "index_customers_orders_on_order_uid", unique: true
   end
 
   create_table "deals", force: :cascade do |t|
@@ -252,6 +261,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_22_120000) do
 
   create_table "products", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.integer "available"
+    t.uuid "catalog_product_id"
     t.text "current_prices_calendar"
     t.string "name"
     t.datetime "registered_at", precision: nil
@@ -260,7 +270,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_22_120000) do
     t.string "vat_rate_code"
   end
 
+  create_table "products_catalog_products", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "name"
+    t.uuid "store_id"
+  end
+
+  create_table "public_offer_catalog_products", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "name"
+    t.uuid "store_id"
+  end
+
   create_table "public_offer_products", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "catalog_product_id"
     t.datetime "created_at", null: false
     t.decimal "lowest_recent_price", precision: 8, scale: 2
     t.string "name"
