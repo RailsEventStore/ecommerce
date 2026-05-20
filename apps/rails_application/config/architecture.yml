@@ -14,9 +14,6 @@ read_models:
 
   - name: ClientOrders
     path: app/read_models/client_orders
-    known_violations:
-      - file: app/read_models/client_orders/rendering/edit_order.rb
-        constant: TimePromotions
 
   - name: Coupons
     path: app/read_models/coupons
