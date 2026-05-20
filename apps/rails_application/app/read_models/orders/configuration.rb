@@ -27,6 +27,18 @@ module Orders
 
   private_constant :OrderLine
 
+  class TimePromotion < ApplicationRecord
+    self.table_name = "orders_time_promotions"
+
+    scope :current, -> { where("start_time < ? AND end_time > ?", Time.current, Time.current) }
+  end
+
+  private_constant :TimePromotion
+
+  def self.current_time_promotions_for_store(store_id)
+    TimePromotion.where(store_id: store_id).current
+  end
+
   def self.find_order_line(order_uid:, product_id:)
     OrderLine.where(order_uid: order_uid, product_id: product_id).first
   end
@@ -65,6 +77,8 @@ module Orders
       event_store.subscribe(ChangeProductPrice.new, to: [Pricing::PriceSet])
       event_store.subscribe(UpdateTimePromotionDiscountValue.new, to: [Pricing::PercentageDiscountSet])
       event_store.subscribe(RemoveTimePromotionDiscount.new, to: [Pricing::PercentageDiscountRemoved])
+      event_store.subscribe(CreateTimePromotion.new, to: [Pricing::TimePromotionCreated])
+      event_store.subscribe(AssignStoreToTimePromotion.new, to: [Stores::TimePromotionRegistered])
 
       event_store.subscribe(
         ->(event) {
