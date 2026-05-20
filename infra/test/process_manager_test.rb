@@ -23,7 +23,6 @@ module Infra
       end
 
       def act
-        puts state.inspect
         case state
         in { paid: true, address: true }
           command_bus.call(ShipOrder.new(id))
