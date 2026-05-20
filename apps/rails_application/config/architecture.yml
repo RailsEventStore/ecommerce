@@ -74,8 +74,6 @@ bounded_contexts:
   - name: Ordering
     path: ../../domains/ordering/lib
     known_violations:
-      - file: ../../domains/ordering/lib/ordering/refundable_products.rb
-        constant: Pricing::OfferAccepted
       - file: ../../domains/ordering/lib/ordering/returnable_products.rb
         constant: Pricing::OfferAccepted
 
