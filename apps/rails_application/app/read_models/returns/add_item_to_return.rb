@@ -8,7 +8,7 @@ module Returns
 
     def apply(event)
       return_record = Return.find_by!(uid: event.data.fetch(:return_id))
-      product = Orders.find_product(event.data.fetch(:product_id))
+      product = Product.find_by!(uid: event.data.fetch(:product_id))
 
       item = return_record.return_items.find_or_create_by(product_uid: product.uid) do |item|
         item.price = product.price

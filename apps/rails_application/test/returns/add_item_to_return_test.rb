@@ -6,7 +6,6 @@ module Returns
 
     def configure(event_store, _command_bus)
       Returns::Configuration.new.call(event_store)
-      Orders::Configuration.new.call(event_store)
     end
 
     def test_first_add_creates_return_item_with_product_price_and_quantity_one
@@ -64,6 +63,17 @@ module Returns
       items = Return.find_by!(uid: return_id).return_items
       assert_equal(1, items.count)
       assert_equal(added_product_id, items.first.product_uid)
+    end
+
+    def test_add_for_unknown_product_raises
+      return_id = SecureRandom.uuid
+      order_id = SecureRandom.uuid
+      product_id = SecureRandom.uuid
+      publish_draft(return_id, order_id)
+
+      assert_raises(ActiveRecord::RecordNotFound) do
+        publish_add(return_id, order_id, product_id)
+      end
     end
 
     private

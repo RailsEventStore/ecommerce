@@ -44,9 +44,6 @@ read_models:
 
   - name: Returns
     path: app/read_models/returns
-    known_violations:
-      - file: app/read_models/returns/add_item_to_return.rb
-        constant: Orders
 
   - name: Shipments
     path: app/read_models/shipments

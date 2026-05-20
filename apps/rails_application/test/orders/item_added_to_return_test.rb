@@ -6,6 +6,7 @@ module Returns
 
     def configure(event_store, _command_bus)
       Orders::Configuration.new.call(event_store)
+      Returns::Configuration.new.call(event_store)
     end
 
     def test_add_item_to_return

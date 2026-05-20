@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_20_130000) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_20_140000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -308,6 +308,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_20_130000) do
     t.decimal "total_value", precision: 8, scale: 2, null: false
     t.uuid "uid", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "returns_products", force: :cascade do |t|
+    t.decimal "price", precision: 8, scale: 2
+    t.uuid "uid", null: false
+    t.index ["uid"], name: "index_returns_products_on_uid", unique: true
   end
 
   create_table "shipment_items", force: :cascade do |t|

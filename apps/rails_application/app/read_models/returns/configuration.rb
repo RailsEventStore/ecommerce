@@ -8,6 +8,10 @@ module Returns
              primary_key: :uid
   end
 
+  class Product < ApplicationRecord
+    self.table_name = "returns_products"
+  end
+
   class ReturnItem < ApplicationRecord
     self.table_name = "return_items"
 
@@ -30,6 +34,7 @@ module Returns
   class Configuration
     def call(event_store)
       event_store.subscribe(CreateDraftReturn.new, to: [Ordering::DraftReturnCreated])
+      event_store.subscribe(ChangeProductPrice.new, to: [Pricing::PriceSet])
       event_store.subscribe(AddItemToReturn.new, to: [Ordering::ItemAddedToReturn])
       event_store.subscribe(RemoveItemFromReturn.new, to: [Ordering::ItemRemovedFromReturn])
       event_store.subscribe(SetOrderNumber.new, to: [Fulfillment::OrderRegistered])
