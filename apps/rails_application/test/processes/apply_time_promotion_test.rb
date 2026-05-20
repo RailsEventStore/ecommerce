@@ -2,73 +2,56 @@ require "test_helper"
 
 module Processes
   class ApplyTimePromotionTest < ProcessTest
-    cover "Processes::ApplyTimePromotion"
+    cover "Processes::ApplyTimePromotion*"
 
     def test_applies_time_promotion_when_active_promotion_exists
-      store_id = SecureRandom.uuid
-      order_repository = fake_order_repository(order_id, store_id)
       create_active_time_promotion(store_id, 50)
 
-      process = ApplyTimePromotion.new(command_bus, event_store, order_repository)
-      process.call(price_item_added)
+      given([offer_registered, price_item_added], process:)
 
       assert_command(Pricing::SetTimePromotionDiscount.new(order_id: order_id, amount: 50))
     end
 
     def test_removes_time_promotion_when_no_active_promotion
-      store_id = SecureRandom.uuid
-      order_repository = fake_order_repository(order_id, store_id)
-
-      process = ApplyTimePromotion.new(command_bus, event_store, order_repository)
-      process.call(price_item_added)
+      given([offer_registered, price_item_added], process:)
 
       assert_command(Pricing::RemoveTimePromotionDiscount.new(order_id: order_id))
     end
 
     def test_does_nothing_when_order_has_no_store
-      order_repository = fake_order_repository(order_id, nil)
-
-      process = ApplyTimePromotion.new(command_bus, event_store, order_repository)
-      process.call(price_item_added)
+      given([price_item_added], process:)
 
       assert_no_command
     end
 
     def test_rescues_not_possible_to_assign_discount_twice
-      store_id = SecureRandom.uuid
-      order_repository = fake_order_repository(order_id, store_id)
       create_active_time_promotion(store_id, 50)
+      failing_process = ApplyTimePromotion.new(event_store, FailingCommandBus.new(Pricing::NotPossibleToAssignDiscountTwice))
 
-      failing_command_bus = FailingCommandBus.new(Pricing::NotPossibleToAssignDiscountTwice)
-      process = ApplyTimePromotion.new(failing_command_bus, event_store, order_repository)
-
-      process.call(price_item_added)
+      given([offer_registered, price_item_added], process: failing_process)
     end
 
     def test_rescues_not_possible_to_remove_without_discount
-      store_id = SecureRandom.uuid
-      order_repository = fake_order_repository(order_id, store_id)
+      failing_process = ApplyTimePromotion.new(event_store, FailingCommandBus.new(Pricing::NotPossibleToRemoveWithoutDiscount))
 
-      failing_command_bus = FailingCommandBus.new(Pricing::NotPossibleToRemoveWithoutDiscount)
-      process = ApplyTimePromotion.new(failing_command_bus, event_store, order_repository)
-
-      process.call(price_item_added)
+      given([offer_registered, price_item_added], process: failing_process)
     end
 
     def test_selects_biggest_promotion_when_multiple_active
-      store_id = SecureRandom.uuid
-      order_repository = fake_order_repository(order_id, store_id)
       create_active_time_promotion(store_id, 30)
       create_active_time_promotion(store_id, 50)
       create_active_time_promotion(store_id, 20)
 
-      process = ApplyTimePromotion.new(command_bus, event_store, order_repository)
-      process.call(price_item_added)
+      given([offer_registered, price_item_added], process:)
 
       assert_command(Pricing::SetTimePromotionDiscount.new(order_id: order_id, amount: 50))
     end
 
     private
+
+    def process
+      ApplyTimePromotion.new(event_store, command_bus)
+    end
 
     class FailingCommandBus
       def initialize(exception_class)
@@ -80,19 +63,21 @@ module Processes
       end
     end
 
-    def fake_order_repository(expected_order_id, store_id)
-      FakeOrderRepository.new(expected_order_id, store_id)
+    def store_id
+      @store_id ||= SecureRandom.uuid
     end
 
-    class FakeOrderRepository
-      def initialize(expected_order_id, store_id)
-        @expected_order_id = expected_order_id
-        @store_id = store_id
-      end
+    def offer_registered
+      Stores::OfferRegistered.new(data: { order_id: order_id, store_id: store_id })
+    end
 
-      def store_id_for_order(order_id)
-        order_id == @expected_order_id ? @store_id : nil
-      end
+    def price_item_added
+      Pricing::PriceItemAdded.new(data: {
+        order_id: order_id,
+        product_id: SecureRandom.uuid,
+        base_price: 100,
+        price: 100
+      })
     end
 
     def create_active_time_promotion(store_id, discount)
@@ -118,15 +103,6 @@ module Processes
         }),
         stream_name: "Stores::Store$#{store_id}"
       )
-    end
-
-    def price_item_added
-      Pricing::PriceItemAdded.new(data: {
-        order_id: order_id,
-        product_id: SecureRandom.uuid,
-        base_price: 100,
-        price: 100
-      })
     end
   end
 end

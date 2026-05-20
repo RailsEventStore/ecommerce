@@ -107,9 +107,6 @@ processes:
 
   - name: Processes::ApplyTimePromotion
     path: app/processes/processes/apply_time_promotion.rb
-    known_violations:
-      - file: app/processes/processes/apply_time_promotion.rb
-        constant: Orders
 
   - name: Processes::ConfirmOrderOnPaymentCaptured
     path: app/processes/processes/confirm_order_on_payment_captured.rb

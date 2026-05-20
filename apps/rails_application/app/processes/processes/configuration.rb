@@ -118,16 +118,8 @@ module Processes
 
     def enable_apply_time_promotion_process(event_store, command_bus)
       event_store.subscribe(
-        ApplyTimePromotion.new(command_bus, event_store),
-        to: [
-          Pricing::PriceItemAdded,
-          Pricing::PriceItemRemoved,
-          Pricing::PercentageDiscountSet,
-          Pricing::PercentageDiscountRemoved,
-          Pricing::PercentageDiscountChanged,
-          Pricing::ProductMadeFreeForOrder,
-          Pricing::FreeProductRemovedFromOrder
-        ]
+        ApplyTimePromotion.new(event_store, command_bus),
+        to: ApplyTimePromotion.subscribed_events
       )
     end
   end
