@@ -32,7 +32,11 @@ class ReturnsController < ApplicationController
   private
 
   def create_draft_return_cmd(return_id)
-    Ordering::CreateDraftReturn.new(return_id: return_id, order_id: params[:order_id])
+    Ordering::CreateDraftReturn.new(
+      return_id: return_id,
+      order_id: params[:order_id],
+      returnable_products: Returns::ReturnableProducts.new.call(event_store, params[:order_id])
+    )
   end
 
   def create_draft_return(return_id)

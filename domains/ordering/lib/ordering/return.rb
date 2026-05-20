@@ -71,5 +71,4 @@ module Ordering
   end
 
   Refund = Return
-  RefundableProducts = ReturnableProducts if defined?(ReturnableProducts)
 end

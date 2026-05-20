@@ -12,25 +12,15 @@ module Ordering
       product_3_id = SecureRandom.uuid
       stream = "Ordering::Return$#{aggregate_id}"
 
+      returnable_products = [
+        { product_id: product_1_id, quantity: 1 },
+        { product_id: product_2_id, quantity: 2 },
+        { product_id: product_3_id, quantity: 1 },
+      ]
+
       arrange(
-        Pricing::SetPrice.new(product_id: product_1_id, price: 11),
-        Pricing::SetPrice.new(product_id: product_2_id, price: 22),
-        Pricing::SetPrice.new(product_id: product_3_id, price: 33),
-        Pricing::AddPriceItem.new(order_id: order_id, product_id: product_1_id, price: 11),
-        Pricing::AddPriceItem.new(order_id: order_id, product_id: product_2_id, price: 22),
-        Pricing::AddPriceItem.new(order_id: order_id, product_id: product_2_id, price: 22),
-        Pricing::AddPriceItem.new(order_id: order_id, product_id: product_3_id, price: 33),
-        Pricing::AcceptOffer.new(order_id: order_id),
-        Fulfillment::RegisterOrder.new(order_id: order_id),
-        CreateDraftReturn.new(
-          return_id: aggregate_id,
-          order_id: order_id
-        ),
-        AddItemToReturn.new(
-          return_id: aggregate_id,
-          order_id: order_id,
-          product_id: product_1_id
-        )
+        CreateDraftReturn.new(return_id: aggregate_id, order_id: order_id, returnable_products: returnable_products),
+        AddItemToReturn.new(return_id: aggregate_id, order_id: order_id, product_id: product_1_id)
       )
 
       expected_events = [
@@ -60,24 +50,9 @@ module Ordering
       product_id = SecureRandom.uuid
 
       arrange(
-        Pricing::SetPrice.new(product_id: product_id, price: 11),
-        Pricing::AddPriceItem.new(order_id: order_id, product_id: product_id, price: 11),
-        Pricing::AcceptOffer.new(order_id: order_id),
-        Fulfillment::RegisterOrder.new(order_id: order_id),
-        CreateDraftReturn.new(
-          return_id: aggregate_id,
-          order_id: order_id
-        ),
-        AddItemToReturn.new(
-          return_id: aggregate_id,
-          order_id: order_id,
-          product_id: product_id
-        ),
-        RemoveItemFromReturn.new(
-          return_id: aggregate_id,
-          order_id: order_id,
-          product_id: product_id
-        )
+        CreateDraftReturn.new(return_id: aggregate_id, order_id: order_id, returnable_products: [{ product_id: product_id, quantity: 1 }]),
+        AddItemToReturn.new(return_id: aggregate_id, order_id: order_id, product_id: product_id),
+        RemoveItemFromReturn.new(return_id: aggregate_id, order_id: order_id, product_id: product_id)
       )
 
       assert_raises(Return::ReturnHaveNotBeenRequestedForThisProductError) do

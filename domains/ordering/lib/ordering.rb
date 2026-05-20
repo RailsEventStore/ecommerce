@@ -7,7 +7,6 @@ require_relative "ordering/commands/add_item_to_return"
 require_relative "ordering/commands/remove_item_from_return"
 require_relative "ordering/service"
 require_relative "ordering/return"
-require_relative "ordering/returnable_products"
 
 module Ordering
   class Configuration

@@ -10,20 +10,14 @@ module Ordering
       product_id = SecureRandom.uuid
       stream = "Ordering::Return$#{aggregate_id}"
 
-      arrange(
-        Pricing::SetPrice.new(product_id: product_id, price: 11),
-        Pricing::AddPriceItem.new(order_id: order_id, product_id: product_id, price: 11),
-        Pricing::AddPriceItem.new(order_id: order_id, product_id: product_id, price: 11),
-        Pricing::AcceptOffer.new(order_id: order_id),
-        Fulfillment::RegisterOrder.new(order_id: order_id),
-      )
+      returnable_products = [{ product_id: product_id, quantity: 2 }]
 
       expected_events = [
         DraftReturnCreated.new(
           data: {
             return_id: aggregate_id,
             order_id: order_id,
-            returnable_products: [{ product_id:, quantity: 2 }]
+            returnable_products: returnable_products
           }
         )
       ]
@@ -32,7 +26,8 @@ module Ordering
         act(
           CreateDraftReturn.new(
             return_id: aggregate_id,
-            order_id: order_id
+            order_id: order_id,
+            returnable_products: returnable_products
           )
         )
       end

@@ -1,4 +1,4 @@
-module Ordering
+module Returns
   class ReturnableProducts
     def call(event_store, order_id)
       accepted_event = event_store
@@ -15,6 +15,4 @@ module Ordering
       accepted_event.data.fetch(:order_lines) if placed_event
     end
   end
-
-  RefundableProducts = ReturnableProducts
 end
