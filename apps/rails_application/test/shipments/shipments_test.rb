@@ -6,7 +6,6 @@ module Shipments
 
     def configure(event_store, _command_bus)
       Shipments::Configuration.new.call(event_store)
-      Orders::Configuration.new.call(event_store)
     end
 
     def test_add_new_item
@@ -23,6 +22,28 @@ module Shipments
       assert_equal(product_id, shipment_item.product_id)
       assert_equal("Async Remote", shipment_item.product_name)
       assert_equal(1, shipment_item.quantity)
+    end
+
+    def test_add_item_uses_renamed_product
+      product_id = SecureRandom.uuid
+      prepare_product(product_id, "Old Name", 49)
+      product_named(product_id, "New Name")
+
+      order_id = SecureRandom.uuid
+      item_added_to_shipment_picking_list(order_id, product_id)
+
+      shipment_item = Shipment.find_by(order_uid: order_id).shipment_items.first
+
+      assert_equal("New Name", shipment_item.product_name)
+    end
+
+    def test_add_item_for_unknown_product_raises
+      order_id = SecureRandom.uuid
+      product_id = SecureRandom.uuid
+
+      assert_raises(ActiveRecord::RecordNotFound) do
+        item_added_to_shipment_picking_list(order_id, product_id)
+      end
     end
 
     def test_add_the_same_item_twice
@@ -317,19 +338,23 @@ module Shipments
           }
         )
       )
-      event_store.publish(
-        ProductCatalog::ProductNamed.new(
-          data: {
-            product_id: product_id,
-            name: name
-          }
-        )
-      )
+      product_named(product_id, name)
       event_store.publish(
         Pricing::PriceSet.new(
           data: {
             product_id: product_id,
             price: price
+          }
+        )
+      )
+    end
+
+    def product_named(product_id, name)
+      event_store.publish(
+        ProductCatalog::ProductNamed.new(
+          data: {
+            product_id: product_id,
+            name: name
           }
         )
       )

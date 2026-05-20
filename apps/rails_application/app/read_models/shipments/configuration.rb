@@ -15,6 +15,10 @@ module Shipments
     self.table_name = "shipments_orders"
   end
 
+  class Product < ApplicationRecord
+    self.table_name = "shipments_products"
+  end
+
   class ShipmentItem < ApplicationRecord
     self.table_name = "shipment_items"
 
@@ -33,6 +37,7 @@ module Shipments
     def call(event_store)
       event_store.subscribe(SetShippingAddress, to: [Shipping::ShippingAddressAddedToShipment])
       event_store.subscribe(MarkOrderPlaced, to: [Fulfillment::OrderRegistered])
+      event_store.subscribe(ChangeProductName, to: [ProductCatalog::ProductNamed])
       event_store.subscribe(AddItemToShipment, to: [Shipping::ItemAddedToShipmentPickingList])
       event_store.subscribe(RemoveItemFromShipment, to: [Shipping::ItemRemovedFromShipmentPickingList])
       event_store.subscribe(AssignStoreToShipment, to: [Stores::ShipmentRegistered])

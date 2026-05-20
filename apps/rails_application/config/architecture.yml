@@ -50,9 +50,6 @@ read_models:
 
   - name: Shipments
     path: app/read_models/shipments
-    known_violations:
-      - file: app/read_models/shipments/add_item_to_shipment.rb
-        constant: Orders
 
   - name: TimePromotions
     path: app/read_models/time_promotions
