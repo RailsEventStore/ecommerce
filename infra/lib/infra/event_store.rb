@@ -33,6 +33,7 @@ module Infra
     end
 
     def subscribe(subscriber, to:)
+      raise ArgumentError, "subscriber must be an instance or lambda, not a class" if subscriber.is_a?(Class)
       __getobj__.subscribe(subscriber, to: to)
     end
 
