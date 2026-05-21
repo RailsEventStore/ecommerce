@@ -19,7 +19,7 @@ module Availability
 
   class Configuration
     def call(event_store)
-      event_store.subscribe(UpdateAvailability, to: [Inventory::AvailabilityChanged])
+      event_store.subscribe(UpdateAvailability.new, to: [Inventory::AvailabilityChanged])
     end
   end
 end

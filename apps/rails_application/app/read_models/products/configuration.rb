@@ -68,7 +68,7 @@ module Products
       @read_model.subscribe_copy(Taxes::VatRateSet, [:vat_rate, :code])
       @read_model.subscribe_copy(Inventory::AvailabilityChanged, :available)
       @read_model.subscribe_copy(Stores::ProductRegistered, :store_id)
-      @event_store.subscribe(AppendPriceToCalendar, to: [Pricing::PriceSet])
+      @event_store.subscribe(AppendPriceToCalendar.new, to: [Pricing::PriceSet])
     end
   end
 end

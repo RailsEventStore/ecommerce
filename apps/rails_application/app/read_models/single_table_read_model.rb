@@ -6,11 +6,11 @@ class SingleTableReadModel
   end
 
   def subscribe_create(creation_event)
-    @event_store.subscribe(create_handler(creation_event), to: [creation_event])
+    @event_store.subscribe(create_handler(creation_event).new, to: [creation_event])
   end
 
   def subscribe_copy(event, sequence_of_keys, column = Array(sequence_of_keys).join('_'))
-    @event_store.subscribe(copy_handler(event, sequence_of_keys, column), to: [event])
+    @event_store.subscribe(copy_handler(event, sequence_of_keys, column).new, to: [event])
   end
 
   private

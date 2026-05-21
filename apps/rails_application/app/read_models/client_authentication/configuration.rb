@@ -5,8 +5,8 @@ module ClientAuthentication
 
   class Configuration
     def call(event_store)
-      event_store.subscribe(CreateAccount, to: [Authentication::AccountConnectedToClient])
-      event_store.subscribe(SetPassword, to: [Authentication::PasswordHashSet])
+      event_store.subscribe(CreateAccount.new, to: [Authentication::AccountConnectedToClient])
+      event_store.subscribe(SetPassword.new, to: [Authentication::PasswordHashSet])
     end
   end
 end

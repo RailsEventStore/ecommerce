@@ -71,7 +71,7 @@ module PublicOffer
       @read_model.subscribe_copy(ProductCatalog::ProductNamed, :name)
       @read_model.subscribe_copy(Pricing::PriceSet, :price)
       @read_model.subscribe_copy(Stores::ProductRegistered, :store_id)
-      @event_store.subscribe(RegisterLowestPrice, to: [Pricing::PriceSet])
+      @event_store.subscribe(RegisterLowestPrice.new, to: [Pricing::PriceSet])
     end
   end
 end

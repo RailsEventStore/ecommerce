@@ -11,7 +11,7 @@ module TimePromotions
 
   class Configuration
     def call(event_store)
-      event_store.subscribe(CreateTimePromotion, to: [Pricing::TimePromotionCreated])
+      event_store.subscribe(CreateTimePromotion.new, to: [Pricing::TimePromotionCreated])
       event_store.subscribe(AssignStoreToTimePromotion.new, to: [Stores::TimePromotionRegistered])
     end
   end
