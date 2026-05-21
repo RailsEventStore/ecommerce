@@ -45,7 +45,8 @@ module Processes
           items: items,
           order_id: @order_id
         }),
-        stream_name: "Processes::TotalOrderValue$#{@order_id}"
+        stream_name: "Processes::TotalOrderValue$#{@order_id}",
+        expected_version: :auto
       )
     end
 

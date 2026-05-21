@@ -19,7 +19,7 @@ module Infra
     def self.in_memory
       new(
         RubyEventStore::Client.new(
-          repository: RubyEventStore::InMemoryRepository.new
+          repository: RubyEventStore::InMemoryRepository.new(ensure_supported_any_usage: true)
         )
       )
     end
@@ -27,7 +27,7 @@ module Infra
     def self.in_memory_rails
       new(
         RailsEventStore::Client.new(
-          repository: RubyEventStore::InMemoryRepository.new
+          repository: RubyEventStore::InMemoryRepository.new(ensure_supported_any_usage: true)
         )
       )
     end
