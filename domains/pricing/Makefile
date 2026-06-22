@@ -1,4 +1,4 @@
-GIT_BASE_SHA ?= $(shell git merge-base HEAD origin/master)
+GIT_BASE_SHA := $(or $(GIT_BASE_SHA),$(shell git merge-base HEAD origin/master))
 
 install:
 	@bundle install

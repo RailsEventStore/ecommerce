@@ -26,7 +26,7 @@ else
 	@bundle exec mutant run $(MUTANT_OPTS)
 endif
 
-GIT_BASE_SHA ?= $(shell git merge-base HEAD origin/master)
+GIT_BASE_SHA := $(or $(GIT_BASE_SHA),$(shell git merge-base HEAD origin/master))
 
 mutate-changes: ## Run incremental mutation tests on changes
 	@echo "Running incremental mutation tests against $(GIT_BASE_SHA)..."
