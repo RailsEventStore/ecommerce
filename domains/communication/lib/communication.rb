@@ -74,10 +74,10 @@ module Communication
       apply MessageRead.new(data: { message_id: message_id })
     end
 
-    def apply_message_sent(_)
+    on MessageSent do |_|
     end
 
-    def apply_message_read(_)
+    on MessageRead do |_|
     end
   end
 end
