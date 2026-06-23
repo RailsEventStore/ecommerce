@@ -574,6 +574,20 @@ module Processes
       end
     end
 
+    def test_publishes_with_consistent_stream_versioning
+      store = RubyEventStore::Client.new(
+        repository: RubyEventStore::InMemoryRepository.new(ensure_supported_any_usage: true)
+      )
+      process = TotalOrderValue.new(store, command_bus)
+      event = price_item_added
+      store.append(event)
+
+      process.call(event)
+
+      published = store.read.stream("Processes::TotalOrderValue$#{order_id}").to_a
+      assert(published.any? { |e| e.is_a?(Processes::TotalOrderValueUpdated) })
+    end
+
     private
 
     def price_item_added(product_id = SecureRandom.uuid)
