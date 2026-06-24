@@ -1,15 +1,5 @@
 GIT
   remote: https://github.com/RailsEventStore/rails_event_store.git
-  revision: 3497927e27bcba142e7b6b5ae08c3b2275d2f9b0
-  branch: master
-  glob: contrib/ruby_event_store-transformations/*.gemspec
-  specs:
-    ruby_event_store-transformations (0.1.0)
-      activesupport (>= 6.0)
-      ruby_event_store (>= 2.0.0, < 4.0.0)
-
-GIT
-  remote: https://github.com/RailsEventStore/rails_event_store.git
   revision: ceee4ee1186594eaef025f0b05b7729c30bf9542
   branch: res-cli-v2
   glob: contrib/ruby_event_store-cli/*.gemspec
@@ -22,12 +12,12 @@ PATH
   remote: ../../infra
   specs:
     infra (1.0.0)
-      aggregate_root (>= 2.15, < 4.0)
+      aggregate_root (~> 2.15)
       arkency-command_bus
       dry-struct
       dry-types
       rake
-      ruby_event_store (>= 2.15, < 4.0)
+      ruby_event_store (~> 2.15)
       ruby_event_store-transformations
 
 GEM
@@ -107,8 +97,8 @@ GEM
       securerandom (>= 0.3)
       tzinfo (~> 2.0, >= 2.0.5)
       uri (>= 0.13.1)
-    aggregate_root (3.0.0)
-      ruby_event_store (= 3.0.0)
+    aggregate_root (2.19.1)
+      ruby_event_store (= 2.19.1)
     arbre (2.2.1)
       activesupport (>= 7.0)
     arkency-command_bus (0.4.1)
@@ -124,7 +114,7 @@ GEM
       thor (~> 1.0)
     byebug (13.0.0)
       reline (>= 0.6.0)
-    concurrent-ruby (1.3.7)
+    concurrent-ruby (1.3.6)
     connection_pool (3.0.2)
     crass (1.0.6)
     date (3.5.1)
@@ -160,7 +150,7 @@ GEM
     erb (6.0.2)
     erubi (1.13.1)
     ffi (1.15.5)
-    globalid (1.4.0)
+    globalid (1.3.0)
       activesupport (>= 6.1)
     herb (0.9.3-aarch64-linux-gnu)
     herb (0.9.3-aarch64-linux-musl)
@@ -173,7 +163,7 @@ GEM
     honeybadger (6.5.3)
       logger
       ostruct
-    i18n (1.15.2)
+    i18n (1.14.8)
       concurrent-ruby (~> 1.0)
     ice_nine (0.11.2)
     importmap-rails (2.2.3)
@@ -186,7 +176,7 @@ GEM
       prism (>= 1.3.0)
       rdoc (>= 4.0.0)
       reline (>= 0.4.2)
-    json (2.20.0)
+    json (2.19.5)
     judoscale-rails (1.13.2)
       judoscale-ruby (= 1.13.2)
       railties
@@ -312,15 +302,17 @@ GEM
     rails-html-sanitizer (1.7.0)
       loofah (~> 2.25)
       nokogiri (>= 1.15.7, != 1.16.7, != 1.16.6, != 1.16.5, != 1.16.4, != 1.16.3, != 1.16.2, != 1.16.1, != 1.16.0.rc1, != 1.16.0)
-    rails_event_store (3.0.0)
+    rails_event_store (2.19.1)
       activejob (>= 6.0)
       activemodel (>= 6.0)
       activesupport (>= 6.0)
-      aggregate_root (= 3.0.0)
+      aggregate_root (= 2.19.1)
       arkency-command_bus (>= 0.4)
-      ruby_event_store (= 3.0.0)
-      ruby_event_store-active_record (= 3.0.0)
-      ruby_event_store-browser (= 3.0.0)
+      rails_event_store_active_record (= 2.19.1)
+      ruby_event_store (= 2.19.1)
+      ruby_event_store-browser (= 2.19.1)
+    rails_event_store_active_record (2.19.1)
+      ruby_event_store-active_record (= 2.19.1)
     railties (8.1.3)
       actionpack (= 8.1.3)
       activesupport (= 8.1.3)
@@ -341,14 +333,17 @@ GEM
     regexp_parser (2.11.3)
     reline (0.6.3)
       io-console (~> 0.5)
-    ruby_event_store (3.0.0)
+    ruby_event_store (2.19.1)
       concurrent-ruby (~> 1.0, >= 1.1.6)
-    ruby_event_store-active_record (3.0.0)
+    ruby_event_store-active_record (2.19.1)
       activerecord (>= 6.0)
-      ruby_event_store (= 3.0.0)
-    ruby_event_store-browser (3.0.0)
+      ruby_event_store (= 2.19.1)
+    ruby_event_store-browser (2.19.1)
       rack
-      ruby_event_store (= 3.0.0)
+      ruby_event_store (= 2.19.1)
+    ruby_event_store-transformations (0.1.0)
+      activesupport (>= 5.0)
+      ruby_event_store (>= 2.0.0, < 3.0.0)
     securerandom (0.4.1)
     skylight (7.1.0)
       activesupport (>= 7.2.0)
@@ -427,9 +422,8 @@ DEPENDENCIES
   pg (~> 1.5)
   puma
   rails (~> 8.1.0)
-  rails_event_store (>= 3.0, < 4.0)
+  rails_event_store (>= 2.15.0, < 3.0)
   ruby_event_store-cli!
-  ruby_event_store-transformations!
   skylight
   sprockets-rails
   stimulus-rails
