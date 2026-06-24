@@ -576,7 +576,7 @@ module Processes
 
     def test_publishes_with_consistent_stream_versioning
       store = RubyEventStore::Client.new(
-        repository: RubyEventStore::InMemoryRepository.new(ensure_supported_any_usage: true)
+        repository: RubyEventStore::InMemoryRepository.new
       )
       process = TotalOrderValue.new(store, command_bus)
       event = price_item_added
