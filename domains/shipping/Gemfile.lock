@@ -2,12 +2,12 @@ PATH
   remote: ../../infra
   specs:
     infra (1.0.0)
-      aggregate_root (~> 2.15)
+      aggregate_root (>= 2.15, < 4.0)
       arkency-command_bus
       dry-struct
       dry-types
       rake
-      ruby_event_store (~> 2.15)
+      ruby_event_store (>= 2.15, < 4.0)
       ruby_event_store-transformations
 
 GEM
@@ -26,14 +26,14 @@ GEM
       securerandom (>= 0.3)
       tzinfo (~> 2.0, >= 2.0.5)
       uri (>= 0.13.1)
-    aggregate_root (2.18.0)
-      ruby_event_store (= 2.18.0)
+    aggregate_root (3.0.0)
+      ruby_event_store (= 3.0.0)
     arkency-command_bus (0.4.1)
       concurrent-ruby
     ast (2.4.3)
     base64 (0.3.0)
     bigdecimal (4.1.0)
-    concurrent-ruby (1.3.6)
+    concurrent-ruby (1.3.7)
     connection_pool (3.0.2)
     date (3.5.1)
     diff-lcs (2.0.0)
@@ -106,11 +106,11 @@ GEM
     regexp_parser (2.11.3)
     reline (0.6.3)
       io-console (~> 0.5)
-    ruby_event_store (2.18.0)
+    ruby_event_store (3.0.0)
       concurrent-ruby (~> 1.0, >= 1.1.6)
-    ruby_event_store-transformations (0.1.0)
-      activesupport (>= 5.0)
-      ruby_event_store (>= 2.0.0, < 3.0.0)
+    ruby_event_store-transformations (0.2.0)
+      activesupport (>= 6.0)
+      ruby_event_store (>= 2.0.0, < 4.0.0)
     securerandom (0.4.1)
     sorbet-runtime (0.6.13073)
     stringio (3.2.0)
