@@ -11,7 +11,21 @@ Use this skill when asked to create a new Rails application in the `apps/` direc
 
 ## Reference
 
-The `apps/todo_mvc` app is the canonical reference. All patterns below are extracted from it.
+`apps/todo_mvc` is the canonical reference for **app structure** (initializer, Configuration, test harness, Makefile). For the **current RES 3.0 wiring and gem versions**, use `apps/rails_application` and `apps/twitter` — todo_mvc still pins RES 2.x, which is stale. When the two disagree, follow rails_application.
+
+## Version policy (do this first, every time)
+
+Always scaffold on the **newest Ruby and newest Rails** — do not hardcode versions from this doc, they go stale.
+
+- **Newest Rails**: `gem list rails --remote --exact | head -1` (checks RubyGems, not just what's installed locally). As of this writing: Rails 8.1.3.
+- **Newest Ruby**: pick the highest installed under `~/.rbenv/versions/` (`ls ~/.rbenv/versions | sort -V | tail`). As of this writing: Ruby 4.0.1. Set it in the app's `.ruby-version`. Ruby 4.0.1 works with Rails 8.1 + RES 3.0 + the infra/domain gems.
+- Confirm the chosen Ruby's gemset actually has the target Rails: `~/.rbenv/versions/{ruby}/bin/rails -v`.
+
+Invoke rails/bundle via the **full rbenv path** for the chosen Ruby, e.g. `~/.rbenv/versions/4.0.1/bin/rails`, `~/.rbenv/versions/4.0.1/bin/bundle` — the `rails` shell alias may resolve to a different Ruby.
+
+## Commit cadence
+
+Commit frequently at natural checkpoints, not once at the end. **Commit directly on the current branch — do not create a feature branch.** Suggested commits: (1) after generating the app + configuring the Gemfile, (2) after RES wiring is green, (3) after each domain/read model. Per project convention, use the `/commit` skill and never mention Claude in commit messages.
 
 ## Step-by-step process
 
@@ -24,27 +38,29 @@ Before writing any code, clarify:
 
 ### 2. Generate the Rails app
 
-Run from the `apps/` directory. The `rails` alias may not work — use the full rbenv path:
+Run from the `apps/` directory, using the full rbenv path for the newest Ruby (see Version policy above):
 
 ```bash
-cd apps && /Users/andrzej/.rbenv/versions/3.4.6/bin/rails new {app_name} --database=postgresql --css=tailwind --skip-test-unit
+cd apps && ~/.rbenv/versions/{ruby}/bin/rails new {app_name} --database=postgresql --css=tailwind --skip-test
 ```
 
+`--skip-test` (not `--skip-test-unit`, which no longer exists) drops the default test setup so we can install our own minitest + mutant harness.
+
 **Important post-generation steps:**
-- `rails new` creates a nested `.git` directory inside the new app. **Remove it** so the app is part of the parent repo: ask the user to run `rm -rf apps/{app_name}/.git`
-- The generated test group includes `capybara` and `selenium-webdriver` — **replace** the entire test group with `mutant-minitest` (see step 3)
+- Set the app's Ruby: `echo "{ruby}" > apps/{app_name}/.ruby-version` (the generator pins the global default, which may not be the newest).
+- `rails new` creates a nested `.git` directory inside the new app. **It must be removed** so the app is part of the parent repo. `rm -rf` is blocked by the repo's git-safety hook, so **ask the user to run it manually**: `rm -rf apps/{app_name}/.git`. Do not proceed to committing until it's gone.
 
 ### 3. Configure Gemfile
 
-Add these gems to the generated Gemfile (after the last gem before the comments):
+Add these gems to the generated Gemfile (after `jbuilder`, before the tzinfo/solid gems). Use RES 3.0 to match `rails_application`:
 
 ```ruby
-gem "rails_event_store", ">= 2.15.0", "< 3.0"
+gem "rails_event_store", ">= 3.0", "< 4.0"
 gem "arkency-command_bus"
 gem "infra", path: "../../infra"
 ```
 
-**Replace** the generated test group (which has capybara/selenium) with:
+Rails 8.1 with `--skip-test` does **not** generate a capybara/selenium test group. Just **add** a test group:
 
 ```ruby
 group :test do
@@ -52,7 +68,7 @@ group :test do
 end
 ```
 
-Run `bundle install`.
+Run `bundle install` (via the full rbenv path). Commit the generated app + Gemfile now (checkpoint 1).
 
 ### 4. Create event store initializer
 
@@ -74,18 +90,14 @@ end
 
 ### 5. Create app-level Configuration
 
-Create `lib/configuration.rb`:
+Create `lib/configuration.rb`. For the **initial scaffold there is no domain yet**, so `call` only wires event linking — this keeps the app bootable and tests green before any domain exists:
 
 ```ruby
-require_relative "../../../domains/{domain_name}/lib/{domain_name}"
 require_relative "../../../infra/lib/infra"
 
 class Configuration
   def call(event_store, command_bus)
     enable_res_infra_event_linking(event_store)
-    # enable_{read_model_name}_read_model(event_store) — add as read models are created
-
-    {DomainModule}::Configuration.new.call(event_store, command_bus)
   end
 
   private
@@ -100,17 +112,17 @@ class Configuration
 end
 ```
 
-Each read model gets its own `enable_*` private method, called from `call`.
+As domains and read models are added later, extend `call`: `require_relative` the domain, add `{DomainModule}::Configuration.new.call(event_store, command_bus)`, and give each read model its own `enable_*` private method called from `call`. Do not add a `require_relative` to a domain that doesn't exist yet — it will break boot.
 
 ### 6. Create event store migration
 
-Generate the RES migration:
+In **RES 3.0 the generator was renamed** — the old `rails_event_store_active_record:migration` no longer exists. Use the `ruby_event_store` namespace with a data type (`jsonb` pairs cleanly with infra's `RailsEventStore::JSONClient`):
 
 ```bash
-cd apps/{app_name} && rails generate rails_event_store_active_record:migration
+cd apps/{app_name} && ~/.rbenv/versions/{ruby}/bin/bundle exec rails generate ruby_event_store:active_record:migration --data-type=jsonb
 ```
 
-Run `rails db:create && rails db:migrate`.
+Then `rails db:create && rails db:migrate` (via the full rbenv path). The generated migration creates `event_store_events` and `event_store_events_in_streams` with uuid `event_id` and `jsonb` `data`/`metadata`.
 
 ### 7. Create ApplicationController
 
@@ -199,7 +211,7 @@ end
 
 ### 9. Create .mutant.yml
 
-Create `.mutant.yml` in the app root:
+Create `.mutant.yml` in the app root. On the initial scaffold there are **no subjects yet**, so start with empty lists (mutant isn't run until there's domain code to cover):
 
 ```yaml
 includes:
@@ -212,14 +224,11 @@ coverage_criteria:
   timeout: true
   process_abort: true
 matcher:
-  subjects:
-    - ReadModelName*
-  ignore:
-    - ReadModelName::ModelClass
-    - ReadModelName::Configuration#call
+  subjects: []
+  ignore: []
 ```
 
-Add each read model's namespace to `subjects` and its AR model + Configuration#call to `ignore`.
+As each read model is added, append its namespace to `subjects` (e.g. `- Tweets*`) and its AR model + `Configuration#call` to `ignore`. See `apps/crm/.mutant.yml` for a fully-populated example.
 
 ### 10. Register in root Makefile
 
@@ -253,7 +262,7 @@ test:
 	@bin/rails test
 
 mutate:
-	@bundle exec mutant run
+	@RAILS_ENV=test bundle exec mutant run
 
 tailwind:
 	@bin/rails tailwindcss:build
@@ -312,10 +321,13 @@ Build the app incrementally, with tests passing at each step:
 
 ## Gotchas
 
-- **`rails` command**: The shell alias may not resolve. Use full path: `/Users/andrzej/.rbenv/versions/3.4.6/bin/rails new`
-- **Nested `.git`**: `rails new` creates its own git repo. Must be removed before committing to parent repo
-- **`bin/rails` commands** (migrations, generators): Must run from `apps/{app_name}/` directory, not project root
-- **Generated boilerplate**: Rails generates fixtures, system tests, channels etc. These are harmless but unused — leave them or ask user to clean up
+- **Versions go stale**: Do not hardcode Ruby/Rails versions — resolve the newest each time (see Version policy). This doc's concrete numbers (Ruby 4.0.1, Rails 8.1.3) are examples, not pins.
+- **`rails`/`bundle` alias**: The shell alias may resolve to the wrong Ruby. Always use the full rbenv path: `~/.rbenv/versions/{ruby}/bin/rails`, `~/.rbenv/versions/{ruby}/bin/bundle`.
+- **Nested `.git`**: `rails new` creates its own git repo. It must be removed before the app can be committed to the parent repo. `rm -rf` is **blocked by the git-safety hook** — ask the user to run `rm -rf apps/{app_name}/.git` manually.
+- **`.ruby-version`**: The generator pins the rbenv global default, not necessarily the newest — overwrite it with the chosen Ruby.
+- **RES 3.0 migration generator renamed**: use `ruby_event_store:active_record:migration`, not the old `rails_event_store_active_record:migration` (see step 6).
+- **`bin/rails` commands** (migrations, generators, tests): Must run from `apps/{app_name}/` directory, not project root.
+- **Generated boilerplate**: Rails generates channels, kamal/solid config etc. These are harmless but unused — leave them or ask user to clean up.
 
 ## Key conventions
 
