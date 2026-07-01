@@ -27,6 +27,15 @@ test-crm-app:
 mutate-crm-app:
 	@make -C apps/crm mutate
 
+install-twitter-app:
+	@make -C apps/twitter install
+
+test-twitter-app:
+	@make -C apps/twitter test
+
+mutate-twitter-app:
+	@make -C apps/twitter mutate
+
 install-infra:
 	@make -C infra install
 
@@ -39,11 +48,11 @@ mutate-infra:
 dev:
 	@make -C apps/rails_application dev
 
-install: install-infra install-rails install-crm-app $(addprefix install-, $(CONTEXTS)) ## Install all dependencies
+install: install-infra install-rails install-crm-app install-twitter-app $(addprefix install-, $(CONTEXTS)) ## Install all dependencies
 
-test: test-infra test-rails test-crm-app $(addprefix test-, $(CONTEXTS)) ## Run all unit tests
+test: test-infra test-rails test-crm-app test-twitter-app $(addprefix test-, $(CONTEXTS)) ## Run all unit tests
 
-mutate: mutate-infra mutate-rails mutate-crm-app $(addprefix mutate-, $(CONTEXTS)) ## Run all mutation coverage
+mutate: mutate-infra mutate-rails mutate-crm-app mutate-twitter-app $(addprefix mutate-, $(CONTEXTS)) ## Run all mutation coverage
 
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'

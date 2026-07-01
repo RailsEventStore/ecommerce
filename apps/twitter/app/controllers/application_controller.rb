@@ -4,4 +4,12 @@ class ApplicationController < ActionController::Base
 
   # Changes to the importmap will invalidate the etag for HTML responses
   stale_when_importmap_changes
+
+  def command_bus
+    Rails.configuration.command_bus
+  end
+
+  def event_store
+    Rails.configuration.event_store
+  end
 end
