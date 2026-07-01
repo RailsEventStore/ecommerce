@@ -1,15 +1,11 @@
-includes:
-  - test
 requires:
-  - ./config/environment
+  - ./test/test_helper
 integration: minitest
 usage: opensource
 coverage_criteria:
-  timeout: true
   process_abort: true
 matcher:
   subjects:
-    - Feed*
+    - Social*
   ignore:
-    - Feed::Tweet
-    - Feed::Configuration#call
+    - Social::Test*
