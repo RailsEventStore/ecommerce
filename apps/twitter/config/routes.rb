@@ -10,6 +10,7 @@ Rails.application.routes.draw do
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
   resources :registrations, only: [:new, :create]
+  resource :session, only: [:new, :create, :destroy]
 
   root "feed#index"
 end

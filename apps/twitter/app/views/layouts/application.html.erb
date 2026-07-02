@@ -28,9 +28,15 @@
       <nav class="container mx-auto px-5 py-4 flex justify-between items-center">
         <%= link_to "Twitter", root_path, class: "font-bold text-lg" %>
         <% if current_handle %>
-          <span>Signed in as @<span data-current-user><%= current_handle %></span></span>
+          <div class="flex items-center gap-4">
+            <span>Signed in as @<span data-current-user><%= current_handle %></span></span>
+            <%= button_to "Log out", session_path, method: :delete, class: "text-blue-600" %>
+          </div>
         <% else %>
-          <%= link_to "Register", new_registration_path, class: "text-blue-600" %>
+          <div class="flex items-center gap-4">
+            <%= link_to "Log in", new_session_path, class: "text-blue-600" %>
+            <%= link_to "Register", new_registration_path, class: "text-blue-600" %>
+          </div>
         <% end %>
       </nav>
     </header>

@@ -20,11 +20,38 @@ module Accounts
       assert_nil(Accounts.handle_for(SecureRandom.uuid))
     end
 
+    def test_authenticate_returns_account_id_for_correct_password
+      alice = SecureRandom.uuid
+      bob = SecureRandom.uuid
+      register(alice, "alice", "s3cret")
+      register(bob, "bob", "hunter2")
+
+      assert_equal(alice, Accounts.authenticate("alice", "s3cret"))
+      assert_equal(bob, Accounts.authenticate("bob", "hunter2"))
+    end
+
+    def test_authenticate_returns_nil_for_wrong_password
+      register(SecureRandom.uuid, "alice", "s3cret")
+
+      assert_nil(Accounts.authenticate("alice", "wrong"))
+    end
+
+    def test_authenticate_returns_nil_for_unknown_handle
+      register(SecureRandom.uuid, "alice", "s3cret")
+
+      assert_nil(Accounts.authenticate("bob", "s3cret"))
+    end
+
     private
 
-    def register(account_id, handle)
+    def register(account_id, handle, password = "password")
       event_store.publish(::Authentication::AccountRegistered.new(data: { account_id: account_id }))
       event_store.publish(::Authentication::LoginSet.new(data: { account_id: account_id, login: handle }))
+      event_store.publish(
+        ::Authentication::PasswordHashSet.new(
+          data: { account_id: account_id, password_hash: BCrypt::Password.create(password) }
+        )
+      )
     end
   end
 end
