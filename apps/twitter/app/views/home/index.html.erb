@@ -1,0 +1,16 @@
+<div class="max-w-xl mx-auto py-8 px-4 w-full">
+  <h1 class="text-2xl font-bold mb-6">Your home timeline</h1>
+
+  <% if @entries.empty? %>
+    <p class="text-gray-500">Follow people to see their tweets here.</p>
+  <% else %>
+    <ul class="divide-y divide-gray-200">
+      <% @entries.each do |entry| %>
+        <li class="py-4">
+          <span class="font-semibold">@<span data-timeline-author><%= entry.author %></span></span>
+          <p data-timeline-body class="mt-1 text-gray-800"><%= entry.body %></p>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+</div>

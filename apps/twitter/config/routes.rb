@@ -13,6 +13,7 @@ Rails.application.routes.draw do
   resource :session, only: [:new, :create, :destroy]
   resources :tweets, only: [:create]
   resources :follows, only: [:index, :create, :destroy]
+  get "/home", to: "home#index"
 
   root "feed#index"
 end

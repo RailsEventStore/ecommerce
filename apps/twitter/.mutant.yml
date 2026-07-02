@@ -12,7 +12,9 @@ matcher:
     - Feed*
     - Accounts*
     - Follows*
+    - HomeTimeline*
   ignore:
     - Feed::Configuration#call
     - Accounts::Configuration#call
     - Follows::Configuration#call
+    - HomeTimeline::Configuration#call

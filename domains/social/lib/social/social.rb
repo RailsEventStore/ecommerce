@@ -1,12 +1,14 @@
 module Social
   class PostTweet < Infra::Command
     attribute :tweet_id, Infra::Types::UUID
+    attribute :author_id, Infra::Types::UUID
     attribute :author, Infra::Types::String
     attribute :body, Infra::Types::String
   end
 
   class TweetPosted < Infra::Event
     attribute :tweet_id, Infra::Types::UUID
+    attribute :author_id, Infra::Types::UUID
     attribute :author, Infra::Types::String
     attribute :body, Infra::Types::String
   end
@@ -18,8 +20,8 @@ module Social
       @id = id
     end
 
-    def post(author, body)
-      apply(TweetPosted.new(data: { tweet_id: @id, author: author, body: body }))
+    def post(author_id, author, body)
+      apply(TweetPosted.new(data: { tweet_id: @id, author_id: author_id, author: author, body: body }))
     end
 
     on TweetPosted do |event|
@@ -33,7 +35,7 @@ module Social
 
     def call(command)
       @repository.with_aggregate(Tweet, command.tweet_id) do |tweet|
-        tweet.post(command.author, command.body)
+        tweet.post(command.author_id, command.author, command.body)
       end
     end
   end

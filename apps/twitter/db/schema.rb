@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_02_131710) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_02_134748) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -64,6 +64,23 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_02_131710) do
     t.datetime "updated_at", null: false
     t.index ["follower_id", "followee_id"], name: "index_follows_on_follower_id_and_followee_id", unique: true
     t.index ["follower_id"], name: "index_follows_on_follower_id"
+  end
+
+  create_table "home_timeline_edges", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.uuid "followee_id", null: false
+    t.uuid "follower_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["followee_id"], name: "index_home_timeline_edges_on_followee_id"
+  end
+
+  create_table "home_timeline_entries", force: :cascade do |t|
+    t.string "author", null: false
+    t.text "body", null: false
+    t.datetime "created_at", null: false
+    t.uuid "recipient_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["recipient_id"], name: "index_home_timeline_entries_on_recipient_id"
   end
 
   add_foreign_key "event_store_events_in_streams", "event_store_events", column: "event_id", primary_key: "event_id"

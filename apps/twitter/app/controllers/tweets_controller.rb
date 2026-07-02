@@ -5,6 +5,7 @@ class TweetsController < ApplicationController
     command_bus.call(
       Social::PostTweet.new(
         tweet_id: SecureRandom.uuid,
+        author_id: session[:account_id],
         author: current_handle,
         body: params[:body]
       )
