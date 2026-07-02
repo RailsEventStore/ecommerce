@@ -24,7 +24,18 @@
   </head>
 
   <body>
-    <main class="container mx-auto mt-28 px-5 flex">
+    <header class="border-b border-gray-200">
+      <nav class="container mx-auto px-5 py-4 flex justify-between items-center">
+        <%= link_to "Twitter", root_path, class: "font-bold text-lg" %>
+        <% if current_handle %>
+          <span>Signed in as @<span data-current-user><%= current_handle %></span></span>
+        <% else %>
+          <%= link_to "Register", new_registration_path, class: "text-blue-600" %>
+        <% end %>
+      </nav>
+    </header>
+
+    <main class="container mx-auto mt-8 px-5 flex">
       <%= yield %>
     </main>
   </body>

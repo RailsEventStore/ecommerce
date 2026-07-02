@@ -93,6 +93,7 @@ GEM
       concurrent-ruby
     ast (2.4.3)
     base64 (0.3.0)
+    bcrypt (3.1.22)
     bcrypt_pbkdf (1.1.2)
     bigdecimal (4.1.2)
     bindex (0.8.1)
@@ -453,6 +454,7 @@ PLATFORMS
 
 DEPENDENCIES
   arkency-command_bus
+  bcrypt (~> 3.1)
   bootsnap
   brakeman
   bundler-audit

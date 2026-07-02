@@ -12,4 +12,9 @@ class ApplicationController < ActionController::Base
   def event_store
     Rails.configuration.event_store
   end
+
+  def current_handle
+    Accounts.handle_for(session[:account_id])
+  end
+  helper_method :current_handle
 end

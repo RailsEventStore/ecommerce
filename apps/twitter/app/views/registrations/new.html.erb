@@ -1,0 +1,15 @@
+<div class="max-w-sm mx-auto py-8 px-4 w-full">
+  <h1 class="text-2xl font-bold mb-6">Create your account</h1>
+
+  <%= form_with url: registrations_path, method: :post, class: "space-y-4" do |form| %>
+    <div>
+      <%= form.label :handle, class: "block font-medium" %>
+      <%= form.text_field :handle, class: "mt-1 w-full border rounded px-3 py-2" %>
+    </div>
+    <div>
+      <%= form.label :password, class: "block font-medium" %>
+      <%= form.password_field :password, class: "mt-1 w-full border rounded px-3 py-2" %>
+    </div>
+    <%= form.submit "Register", class: "bg-blue-600 text-white rounded px-4 py-2" %>
+  <% end %>
+</div>

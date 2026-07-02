@@ -10,6 +10,7 @@ coverage_criteria:
 matcher:
   subjects:
     - Feed*
+    - Accounts*
   ignore:
-    - Feed::Tweet
     - Feed::Configuration#call
+    - Accounts::Configuration#call
