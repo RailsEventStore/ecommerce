@@ -12,6 +12,7 @@ Rails.application.routes.draw do
   resources :registrations, only: [:new, :create]
   resource :session, only: [:new, :create, :destroy]
   resources :tweets, only: [:create]
+  resources :follows, only: [:index, :create, :destroy]
 
   root "feed#index"
 end

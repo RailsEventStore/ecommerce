@@ -8,6 +8,10 @@ module Accounts
     Account.find_by(account_id: account_id)&.handle
   end
 
+  def self.id_for(handle)
+    Account.find_by(handle: handle)&.account_id
+  end
+
   def self.authenticate(handle, password)
     account = Account.find_by(handle: handle)
     return unless account

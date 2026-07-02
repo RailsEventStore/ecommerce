@@ -7,6 +7,7 @@ class Configuration
     enable_res_infra_event_linking(event_store)
     enable_feed_read_model(event_store)
     enable_accounts_read_model(event_store)
+    enable_follows_read_model(event_store)
 
     Social::Configuration.new.call(event_store, command_bus)
     Authentication::Configuration.new.call(event_store, command_bus)
@@ -28,5 +29,9 @@ class Configuration
 
   def enable_accounts_read_model(event_store)
     Accounts::Configuration.new.call(event_store)
+  end
+
+  def enable_follows_read_model(event_store)
+    Follows::Configuration.new.call(event_store)
   end
 end

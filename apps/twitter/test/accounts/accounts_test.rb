@@ -20,6 +20,22 @@ module Accounts
       assert_nil(Accounts.handle_for(SecureRandom.uuid))
     end
 
+    def test_id_for_returns_the_account_id_for_a_handle
+      alice = SecureRandom.uuid
+      bob = SecureRandom.uuid
+      register(alice, "alice")
+      register(bob, "bob")
+
+      assert_equal(alice, Accounts.id_for("alice"))
+      assert_equal(bob, Accounts.id_for("bob"))
+    end
+
+    def test_id_for_returns_nil_for_unknown_handle
+      register(SecureRandom.uuid, "alice")
+
+      assert_nil(Accounts.id_for("bob"))
+    end
+
     def test_authenticate_returns_account_id_for_correct_password
       alice = SecureRandom.uuid
       bob = SecureRandom.uuid

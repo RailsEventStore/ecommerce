@@ -1,0 +1,17 @@
+<div class="max-w-xl mx-auto py-8 px-4 w-full">
+  <h1 class="text-2xl font-bold mb-6">Following</h1>
+
+  <%= form_with url: follows_path, method: :post, class: "flex gap-2 mb-6" do |form| %>
+    <%= form.text_field :handle, placeholder: "handle", class: "flex-1 border rounded px-3 py-2" %>
+    <%= form.submit "Follow", class: "bg-blue-600 text-white rounded px-4 py-2" %>
+  <% end %>
+
+  <ul class="divide-y divide-gray-200">
+    <% @followees.each do |handle| %>
+      <li class="py-3 flex justify-between items-center">
+        <span>@<span data-following><%= handle %></span></span>
+        <%= button_to "Unfollow", follow_path(handle), method: :delete, class: "text-blue-600" %>
+      </li>
+    <% end %>
+  </ul>
+</div>

@@ -29,6 +29,7 @@
         <%= link_to "Twitter", root_path, class: "font-bold text-lg" %>
         <% if current_handle %>
           <div class="flex items-center gap-4">
+            <%= link_to "Following", follows_path, class: "text-blue-600" %>
             <span>Signed in as @<span data-current-user><%= current_handle %></span></span>
             <%= button_to "Log out", session_path, method: :delete, class: "text-blue-600" %>
           </div>

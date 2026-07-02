@@ -11,6 +11,8 @@ matcher:
   subjects:
     - Feed*
     - Accounts*
+    - Follows*
   ignore:
     - Feed::Configuration#call
     - Accounts::Configuration#call
+    - Follows::Configuration#call

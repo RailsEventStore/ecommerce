@@ -17,4 +17,10 @@ class ApplicationController < ActionController::Base
     Accounts.handle_for(session[:account_id])
   end
   helper_method :current_handle
+
+  private
+
+  def require_sign_in
+    redirect_to new_session_path unless current_handle
+  end
 end
