@@ -1,6 +1,13 @@
 <div class="max-w-xl mx-auto py-8 px-4">
   <h1 class="text-2xl font-bold mb-6">Latest tweets</h1>
 
+  <% if current_handle %>
+    <%= form_with url: tweets_path, method: :post, class: "mb-6" do |form| %>
+      <%= form.text_area :body, placeholder: "What's happening?", class: "w-full border rounded px-3 py-2" %>
+      <%= form.submit "Tweet", class: "mt-2 bg-blue-600 text-white rounded px-4 py-2" %>
+    <% end %>
+  <% end %>
+
   <% if @tweets.empty? %>
     <p class="text-gray-500">No tweets yet.</p>
   <% else %>
