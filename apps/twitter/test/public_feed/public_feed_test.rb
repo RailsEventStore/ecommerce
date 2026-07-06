@@ -1,17 +1,17 @@
 require_relative "../test_helper"
 
-module Feed
-  class FeedTest < InMemoryRESTestCase
-    cover "Feed*"
+module PublicFeed
+  class PublicFeedTest < InMemoryRESTestCase
+    cover "PublicFeed*"
 
     def test_adds_tweet_to_feed_on_tweet_posted
       tweet_id = SecureRandom.uuid
       publish_tweet(tweet_id: tweet_id, author: "alice", body: "Hello")
 
-      assert_equal(1, Feed.recent.count)
-      assert_equal(tweet_id, Feed.recent.first.uid)
-      assert_equal("alice", Feed.recent.first.author)
-      assert_equal("Hello", Feed.recent.first.body)
+      assert_equal(1, PublicFeed.recent.count)
+      assert_equal(tweet_id, PublicFeed.recent.first.uid)
+      assert_equal("alice", PublicFeed.recent.first.author)
+      assert_equal("Hello", PublicFeed.recent.first.body)
     end
 
     def test_returns_tweets_newest_first
@@ -20,11 +20,11 @@ module Feed
       publish_tweet(tweet_id: older, author: "alice", body: "first")
       publish_tweet(tweet_id: newer, author: "bob", body: "second")
 
-      assert_equal([newer, older], Feed.recent.map(&:uid))
+      assert_equal([newer, older], PublicFeed.recent.map(&:uid))
     end
 
     def test_recent_is_empty_without_tweets
-      assert_equal([], Feed.recent.to_a)
+      assert_equal([], PublicFeed.recent.to_a)
     end
 
     private

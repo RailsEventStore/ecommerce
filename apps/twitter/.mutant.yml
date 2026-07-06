@@ -9,12 +9,12 @@ coverage_criteria:
   process_abort: true
 matcher:
   subjects:
-    - Feed*
+    - PublicFeed*
     - Accounts*
     - Follows*
     - HomeTimeline*
   ignore:
-    - Feed::Configuration#call
+    - PublicFeed::Configuration#call
     - Accounts::Configuration#call
     - Follows::Configuration#call
     - HomeTimeline::Configuration#call

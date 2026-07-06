@@ -1,5 +1,5 @@
 class FeedController < ApplicationController
   def index
-    @tweets = Feed.recent
+    @tweets = PublicFeed.recent
   end
 end

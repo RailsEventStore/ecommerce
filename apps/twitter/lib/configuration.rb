@@ -5,7 +5,7 @@ require_relative "../../../infra/lib/infra"
 class Configuration
   def call(event_store, command_bus)
     enable_res_infra_event_linking(event_store)
-    enable_feed_read_model(event_store)
+    enable_public_feed_read_model(event_store)
     enable_accounts_read_model(event_store)
     enable_follows_read_model(event_store)
     enable_home_timeline_read_model(event_store)
@@ -24,8 +24,8 @@ class Configuration
     ].each { |h| event_store.subscribe_to_all_events(h) }
   end
 
-  def enable_feed_read_model(event_store)
-    Feed::Configuration.new.call(event_store)
+  def enable_public_feed_read_model(event_store)
+    PublicFeed::Configuration.new.call(event_store)
   end
 
   def enable_accounts_read_model(event_store)

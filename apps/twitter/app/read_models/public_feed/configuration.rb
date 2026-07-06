@@ -1,4 +1,4 @@
-module Feed
+module PublicFeed
   class Tweet < ApplicationRecord
     self.table_name = "feed_tweets"
   end
