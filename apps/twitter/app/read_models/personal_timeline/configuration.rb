@@ -1,8 +1,8 @@
 module PersonalTimeline
-  class Edge < ApplicationRecord
-    self.table_name = "home_timeline_edges"
+  class Follow < ApplicationRecord
+    self.table_name = "home_timeline_follows"
   end
-  private_constant :Edge
+  private_constant :Follow
 
   class Entry < ApplicationRecord
     self.table_name = "home_timeline_entries"
@@ -15,7 +15,7 @@ module PersonalTimeline
 
   class RecordFollow
     def call(event)
-      Edge.create!(
+      Follow.create!(
         follower_id: event.data.fetch(:follower_id),
         followee_id: event.data.fetch(:followee_id)
       )
@@ -24,7 +24,7 @@ module PersonalTimeline
 
   class RemoveFollow
     def call(event)
-      Edge.where(
+      Follow.where(
         follower_id: event.data.fetch(:follower_id),
         followee_id: event.data.fetch(:followee_id)
       ).delete_all
@@ -33,7 +33,7 @@ module PersonalTimeline
 
   class FanOut
     def call(event)
-      Edge.where(followee_id: event.data.fetch(:author_id)).pluck(:follower_id).each do |follower_id|
+      Follow.where(followee_id: event.data.fetch(:author_id)).pluck(:follower_id).each do |follower_id|
         Entry.create!(
           recipient_id: follower_id,
           author: event.data.fetch(:author),
