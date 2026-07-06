@@ -119,4 +119,64 @@ module Social
       end
     end
   end
+
+  class DeliverPostToTimeline < Infra::Command
+    attribute :post_id, Infra::Types::UUID
+    attribute :recipient_id, Infra::Types::UUID
+    attribute :author, Infra::Types::String
+    attribute :body, Infra::Types::String
+
+    def aggregate_id
+      "#{post_id}:#{recipient_id}"
+    end
+  end
+
+  class PostDeliveredToTimeline < Infra::Event
+    attribute :post_id, Infra::Types::UUID
+    attribute :recipient_id, Infra::Types::UUID
+    attribute :author, Infra::Types::String
+    attribute :body, Infra::Types::String
+  end
+
+  class Delivery
+    include AggregateRoot
+
+    AlreadyDelivered = Class.new(StandardError)
+
+    def initialize(_id)
+    end
+
+    def deliver(post_id, recipient_id, author, body)
+      raise AlreadyDelivered if @delivered
+
+      apply(
+        PostDeliveredToTimeline.new(
+          data: {
+            post_id: post_id,
+            recipient_id: recipient_id,
+            author: author,
+            body: body
+          }
+        )
+      )
+    end
+
+    private
+
+    on PostDeliveredToTimeline do |event|
+      @delivered = true
+    end
+  end
+
+  class DeliverPostToTimelineHandler
+    def initialize(event_store)
+      @repository = Infra::AggregateRootRepository.new(event_store)
+    end
+
+    def call(command)
+      @repository.with_aggregate(Delivery, command.aggregate_id) do |delivery|
+        delivery.deliver(command.post_id, command.recipient_id, command.author, command.body)
+      end
+    end
+  end
 end

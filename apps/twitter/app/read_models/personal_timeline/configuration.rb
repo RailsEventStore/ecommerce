@@ -1,9 +1,4 @@
 module PersonalTimeline
-  class Follow < ApplicationRecord
-    self.table_name = "home_timeline_follows"
-  end
-  private_constant :Follow
-
   class Post < ApplicationRecord
     self.table_name = "home_timeline_entries"
   end
@@ -13,47 +8,19 @@ module PersonalTimeline
     Post.where(recipient_id: recipient_id).order(created_at: :desc)
   end
 
-  class RecordFollow
+  class AddPost
     def call(event)
-      Follow.create!(
-        follower_id: event.data.fetch(:follower_id),
-        followee_id: event.data.fetch(:followee_id)
+      Post.create!(
+        recipient_id: event.data.fetch(:recipient_id),
+        author: event.data.fetch(:author),
+        body: event.data.fetch(:body)
       )
-    end
-  end
-
-  class RemoveFollow
-    def call(event)
-      Follow.where(
-        follower_id: event.data.fetch(:follower_id),
-        followee_id: event.data.fetch(:followee_id)
-      ).delete_all
-    end
-  end
-
-  class FanOut
-    def call(event)
-      followers(event.data.fetch(:author_id)).each do |follower_id|
-        Post.create!(
-          recipient_id: follower_id,
-          author: event.data.fetch(:author),
-          body: event.data.fetch(:body)
-        )
-      end
-    end
-
-    private
-
-    def followers(author_id)
-      Follow.where(followee_id: author_id).pluck(:follower_id)
     end
   end
 
   class Configuration
     def call(event_store)
-      event_store.subscribe(RecordFollow.new, to: [::Social::UserFollowed])
-      event_store.subscribe(RemoveFollow.new, to: [::Social::UserUnfollowed])
-      event_store.subscribe(FanOut.new, to: [::Social::PostPublished])
+      event_store.subscribe(AddPost.new, to: [::Social::PostDeliveredToTimeline])
     end
   end
 end

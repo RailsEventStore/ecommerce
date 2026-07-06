@@ -13,6 +13,7 @@ matcher:
     - Accounts*
     - Follows*
     - PersonalTimeline*
+    - TimelineDeliveryProcess*
   ignore:
     - PublicFeed::Configuration#call
     - Accounts::Configuration#call

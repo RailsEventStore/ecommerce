@@ -71,5 +71,93 @@ module Social
 
       assert_equal(2, event_store.read.of_type(UserFollowed).count)
     end
+
+    def test_delivers_post_to_recipient_timeline
+      command_bus.call(deliver_post_to_timeline)
+
+      assert_event_published(
+        PostDeliveredToTimeline.new(
+          data: {
+            post_id: post_id,
+            recipient_id: recipient_id,
+            author: "bob",
+            body: "hi"
+          }
+        )
+      )
+    end
+
+    def test_cannot_deliver_the_same_post_to_the_same_recipient_twice
+      command_bus.call(deliver_post_to_timeline)
+
+      assert_raises(Delivery::AlreadyDelivered) do
+        command_bus.call(deliver_post_to_timeline)
+      end
+    end
+
+    def test_delivers_the_same_post_to_different_recipients
+      command_bus.call(deliver_post_to_timeline)
+
+      command_bus.call(
+        DeliverPostToTimeline.new(
+          post_id: post_id,
+          recipient_id: other_recipient_id,
+          author: "bob",
+          body: "hi"
+        )
+      )
+
+      assert_equal(2, event_store.read.of_type(PostDeliveredToTimeline).count)
+    end
+
+    def test_delivers_different_posts_to_the_same_recipient
+      command_bus.call(deliver_post_to_timeline)
+
+      command_bus.call(
+        DeliverPostToTimeline.new(
+          post_id: other_post_id,
+          recipient_id: recipient_id,
+          author: "bob",
+          body: "hi"
+        )
+      )
+
+      assert_equal(2, event_store.read.of_type(PostDeliveredToTimeline).count)
+    end
+
+    def test_delivery_aggregate_id_uses_post_and_recipient
+      assert_equal(
+        "#{post_id}:#{recipient_id}",
+        deliver_post_to_timeline.aggregate_id
+      )
+    end
+
+    private
+
+    def deliver_post_to_timeline
+      DeliverPostToTimeline.new(
+        post_id: post_id,
+        recipient_id: recipient_id,
+        author: "bob",
+        body: "hi"
+      )
+    end
+
+    def post_id
+      @post_id ||= SecureRandom.uuid
+    end
+
+    def other_post_id
+      @other_post_id ||= SecureRandom.uuid
+    end
+
+    def recipient_id
+      @recipient_id ||= SecureRandom.uuid
+    end
+
+    def other_recipient_id
+      @other_recipient_id ||= SecureRandom.uuid
+    end
+
   end
 end

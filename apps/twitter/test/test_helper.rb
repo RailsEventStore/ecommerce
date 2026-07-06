@@ -58,3 +58,38 @@ class InMemoryRESIntegrationTestCase < ActionDispatch::IntegrationTest
     Rails.configuration.command_bus
   end
 end
+
+class ProcessTest < Minitest::Test
+  include Infra::TestPlumbing.with(
+    event_store: -> { Infra::EventStore.in_memory },
+    command_bus: -> { FakeCommandBus.new }
+  )
+
+  def assert_all_commands(*commands)
+    assert_equal(commands, command_bus.all_received)
+  end
+
+  def assert_no_command
+    assert_nil(command_bus.received)
+  end
+
+  private
+
+  class FakeCommandBus
+    attr_reader :received, :all_received
+
+    def initialize
+      @all_received = []
+    end
+
+    def call(command)
+      @received = command
+      @all_received << command
+    end
+
+    def clear_all_received
+      @received = nil
+      @all_received = []
+    end
+  end
+end
