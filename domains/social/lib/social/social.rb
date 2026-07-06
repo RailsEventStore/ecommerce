@@ -1,41 +1,41 @@
 module Social
-  class PostTweet < Infra::Command
-    attribute :tweet_id, Infra::Types::UUID
+  class PublishPost < Infra::Command
+    attribute :post_id, Infra::Types::UUID
     attribute :author_id, Infra::Types::UUID
     attribute :author, Infra::Types::String
     attribute :body, Infra::Types::String
   end
 
-  class TweetPosted < Infra::Event
-    attribute :tweet_id, Infra::Types::UUID
+  class PostPublished < Infra::Event
+    attribute :post_id, Infra::Types::UUID
     attribute :author_id, Infra::Types::UUID
     attribute :author, Infra::Types::String
     attribute :body, Infra::Types::String
   end
 
-  class Tweet
+  class Post
     include AggregateRoot
 
     def initialize(id)
       @id = id
     end
 
-    def post(author_id, author, body)
-      apply(TweetPosted.new(data: { tweet_id: @id, author_id: author_id, author: author, body: body }))
+    def publish(author_id, author, body)
+      apply(PostPublished.new(data: { post_id: @id, author_id: author_id, author: author, body: body }))
     end
 
-    on TweetPosted do |event|
+    on PostPublished do |event|
     end
   end
 
-  class PostTweetHandler
+  class PublishPostHandler
     def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)
     end
 
     def call(command)
-      @repository.with_aggregate(Tweet, command.tweet_id) do |tweet|
-        tweet.post(command.author_id, command.author, command.body)
+      @repository.with_aggregate(Post, command.post_id) do |post|
+        post.publish(command.author_id, command.author, command.body)
       end
     end
   end

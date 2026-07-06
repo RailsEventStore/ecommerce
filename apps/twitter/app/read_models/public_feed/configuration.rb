@@ -1,17 +1,17 @@
 module PublicFeed
-  class Tweet < ApplicationRecord
+  class Post < ApplicationRecord
     self.table_name = "feed_tweets"
   end
-  private_constant :Tweet
+  private_constant :Post
 
   def self.recent
-    Tweet.order(created_at: :desc)
+    Post.order(created_at: :desc)
   end
 
-  class AddTweet
+  class AddPost
     def call(event)
-      Tweet.create!(
-        uid: event.data.fetch(:tweet_id),
+      Post.create!(
+        uid: event.data.fetch(:post_id),
         author: event.data.fetch(:author),
         body: event.data.fetch(:body)
       )
@@ -20,7 +20,7 @@ module PublicFeed
 
   class Configuration
     def call(event_store)
-      event_store.subscribe(AddTweet.new, to: [::Social::TweetPosted])
+      event_store.subscribe(AddPost.new, to: [::Social::PostPublished])
     end
   end
 end

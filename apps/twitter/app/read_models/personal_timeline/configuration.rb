@@ -4,13 +4,13 @@ module PersonalTimeline
   end
   private_constant :Follow
 
-  class Entry < ApplicationRecord
+  class Post < ApplicationRecord
     self.table_name = "home_timeline_entries"
   end
-  private_constant :Entry
+  private_constant :Post
 
   def self.for(recipient_id)
-    Entry.where(recipient_id: recipient_id).order(created_at: :desc)
+    Post.where(recipient_id: recipient_id).order(created_at: :desc)
   end
 
   class RecordFollow
@@ -34,7 +34,7 @@ module PersonalTimeline
   class FanOut
     def call(event)
       Follow.where(followee_id: event.data.fetch(:author_id)).pluck(:follower_id).each do |follower_id|
-        Entry.create!(
+        Post.create!(
           recipient_id: follower_id,
           author: event.data.fetch(:author),
           body: event.data.fetch(:body)
@@ -47,7 +47,7 @@ module PersonalTimeline
     def call(event_store)
       event_store.subscribe(RecordFollow.new, to: [::Social::UserFollowed])
       event_store.subscribe(RemoveFollow.new, to: [::Social::UserUnfollowed])
-      event_store.subscribe(FanOut.new, to: [::Social::TweetPosted])
+      event_store.subscribe(FanOut.new, to: [::Social::PostPublished])
     end
   end
 end

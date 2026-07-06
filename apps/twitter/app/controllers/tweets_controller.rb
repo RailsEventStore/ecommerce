@@ -3,8 +3,8 @@ class TweetsController < ApplicationController
 
   def create
     command_bus.call(
-      Social::PostTweet.new(
-        tweet_id: SecureRandom.uuid,
+      Social::PublishPost.new(
+        post_id: SecureRandom.uuid,
         author_id: session[:account_id],
         author: current_handle,
         body: params[:body]

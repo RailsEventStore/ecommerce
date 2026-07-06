@@ -4,12 +4,12 @@ module PublicFeed
   class PublicFeedTest < InMemoryRESTestCase
     cover "PublicFeed*"
 
-    def test_adds_tweet_to_feed_on_tweet_posted
-      tweet_id = SecureRandom.uuid
-      publish_tweet(tweet_id: tweet_id, author: "alice", body: "Hello")
+    def test_adds_post_to_feed_on_post_published
+      post_id = SecureRandom.uuid
+      publish_post(post_id: post_id, author: "alice", body: "Hello")
 
       assert_equal(1, PublicFeed.recent.count)
-      assert_equal(tweet_id, PublicFeed.recent.first.uid)
+      assert_equal(post_id, PublicFeed.recent.first.uid)
       assert_equal("alice", PublicFeed.recent.first.author)
       assert_equal("Hello", PublicFeed.recent.first.body)
     end
@@ -17,8 +17,8 @@ module PublicFeed
     def test_returns_tweets_newest_first
       older = SecureRandom.uuid
       newer = SecureRandom.uuid
-      publish_tweet(tweet_id: older, author: "alice", body: "first")
-      publish_tweet(tweet_id: newer, author: "bob", body: "second")
+      publish_post(post_id: older, author: "alice", body: "first")
+      publish_post(post_id: newer, author: "bob", body: "second")
 
       assert_equal([newer, older], PublicFeed.recent.map(&:uid))
     end
@@ -29,10 +29,10 @@ module PublicFeed
 
     private
 
-    def publish_tweet(tweet_id:, author:, body:)
+    def publish_post(post_id:, author:, body:)
       event_store.publish(
-        ::Social::TweetPosted.new(
-          data: { tweet_id: tweet_id, author_id: SecureRandom.uuid, author: author, body: body }
+        ::Social::PostPublished.new(
+          data: { post_id: post_id, author_id: SecureRandom.uuid, author: author, body: body }
         )
       )
     end

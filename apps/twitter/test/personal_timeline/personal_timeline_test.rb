@@ -11,7 +11,7 @@ module PersonalTimeline
       follow(alice, bob)
       follow(carol, bob)
 
-      post_tweet(bob, "bob", "hi")
+      publish_post(bob, "bob", "hi")
 
       assert_equal(["hi"], PersonalTimeline.for(alice).map(&:body))
       assert_equal(["hi"], PersonalTimeline.for(carol).map(&:body))
@@ -25,7 +25,7 @@ module PersonalTimeline
       follow(alice, bob)
       follow(dave, eve)
 
-      post_tweet(bob, "bob", "hi")
+      publish_post(bob, "bob", "hi")
 
       assert_equal(["hi"], PersonalTimeline.for(alice).map(&:body))
       assert_equal([], PersonalTimeline.for(dave).to_a)
@@ -36,7 +36,7 @@ module PersonalTimeline
       bob = SecureRandom.uuid
       follow(alice, bob)
 
-      post_tweet(bob, "bob", "hi")
+      publish_post(bob, "bob", "hi")
 
       entry = PersonalTimeline.for(alice).first
       assert_equal("bob", entry.author)
@@ -48,8 +48,8 @@ module PersonalTimeline
       bob = SecureRandom.uuid
       follow(alice, bob)
 
-      post_tweet(bob, "bob", "first")
-      post_tweet(bob, "bob", "second")
+      publish_post(bob, "bob", "first")
+      publish_post(bob, "bob", "second")
 
       assert_equal(["second", "first"], PersonalTimeline.for(alice).map(&:body))
     end
@@ -62,7 +62,7 @@ module PersonalTimeline
       follow(carol, bob)
 
       unfollow(alice, bob)
-      post_tweet(bob, "bob", "hi")
+      publish_post(bob, "bob", "hi")
 
       assert_equal([], PersonalTimeline.for(alice).to_a)
       assert_equal(["hi"], PersonalTimeline.for(carol).map(&:body))
@@ -76,7 +76,7 @@ module PersonalTimeline
       follow(alice, eve)
 
       unfollow(alice, bob)
-      post_tweet(eve, "eve", "still here")
+      publish_post(eve, "eve", "still here")
 
       assert_equal(["still here"], PersonalTimeline.for(alice).map(&:body))
     end
@@ -95,10 +95,10 @@ module PersonalTimeline
       )
     end
 
-    def post_tweet(author_id, author, body)
+    def publish_post(author_id, author, body)
       event_store.publish(
-        ::Social::TweetPosted.new(
-          data: { tweet_id: SecureRandom.uuid, author_id: author_id, author: author, body: body }
+        ::Social::PostPublished.new(
+          data: { post_id: SecureRandom.uuid, author_id: author_id, author: author, body: body }
         )
       )
     end
