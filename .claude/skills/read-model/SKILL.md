@@ -18,7 +18,7 @@ Determine which app the read model belongs to. Default is `apps/rails_applicatio
 ### 1. Gather requirements
 
 Before writing any code, clarify:
-- The **module name** for the read model (e.g. `Wishlist`, `Notifications`)
+- The **module name** for the read model — **always ask the user for their preferred name before creating any files.** Read-model naming is a product/domain decision the user cares about (e.g. `Feed` vs `PublicFeed`, `Timeline` vs `HomeTimeline`), and renaming later touches the directory, module, test, `cover`/`.mutant.yml` entries, controller references and `Configuration` wiring. Propose one or two candidate names with a one-line rationale (what UI view / query it serves, and how it contrasts with sibling read models), then let the user confirm or override. Do not derive the name silently from the events or the feature description.
 - Which **domain events** it will subscribe to (e.g. `Catalog::ProductAdded`, `Ordering::OrderPlaced`)
 - What **data** needs to be stored and queried
 - What **facade methods** the rest of the app needs — only add facade methods that are actually used by controllers/views, not speculative ones
