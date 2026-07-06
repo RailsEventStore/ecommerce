@@ -33,13 +33,19 @@ module PersonalTimeline
 
   class FanOut
     def call(event)
-      Follow.where(followee_id: event.data.fetch(:author_id)).pluck(:follower_id).each do |follower_id|
+      followers(event.data.fetch(:author_id)).each do |follower_id|
         Post.create!(
           recipient_id: follower_id,
           author: event.data.fetch(:author),
           body: event.data.fetch(:body)
         )
       end
+    end
+
+    private
+
+    def followers(author_id)
+      Follow.where(followee_id: author_id).pluck(:follower_id)
     end
   end
 
