@@ -8,7 +8,7 @@ class Configuration
     enable_public_feed_read_model(event_store)
     enable_accounts_read_model(event_store)
     enable_follows_read_model(event_store)
-    enable_home_timeline_read_model(event_store)
+    enable_personal_timeline_read_model(event_store)
 
     Social::Configuration.new.call(event_store, command_bus)
     Authentication::Configuration.new.call(event_store, command_bus)
@@ -36,7 +36,7 @@ class Configuration
     Follows::Configuration.new.call(event_store)
   end
 
-  def enable_home_timeline_read_model(event_store)
-    HomeTimeline::Configuration.new.call(event_store)
+  def enable_personal_timeline_read_model(event_store)
+    PersonalTimeline::Configuration.new.call(event_store)
   end
 end

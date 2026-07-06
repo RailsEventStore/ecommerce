@@ -12,9 +12,9 @@ matcher:
     - PublicFeed*
     - Accounts*
     - Follows*
-    - HomeTimeline*
+    - PersonalTimeline*
   ignore:
     - PublicFeed::Configuration#call
     - Accounts::Configuration#call
     - Follows::Configuration#call
-    - HomeTimeline::Configuration#call
+    - PersonalTimeline::Configuration#call

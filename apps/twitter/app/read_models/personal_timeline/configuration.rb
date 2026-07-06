@@ -1,4 +1,4 @@
-module HomeTimeline
+module PersonalTimeline
   class Edge < ApplicationRecord
     self.table_name = "home_timeline_edges"
   end

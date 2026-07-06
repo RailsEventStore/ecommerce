@@ -1,8 +1,8 @@
 require_relative "../test_helper"
 
-module HomeTimeline
-  class HomeTimelineTest < InMemoryRESTestCase
-    cover "HomeTimeline*"
+module PersonalTimeline
+  class PersonalTimelineTest < InMemoryRESTestCase
+    cover "PersonalTimeline*"
 
     def test_fans_out_a_tweet_to_each_follower
       alice = SecureRandom.uuid
@@ -13,8 +13,8 @@ module HomeTimeline
 
       post_tweet(bob, "bob", "hi")
 
-      assert_equal(["hi"], HomeTimeline.for(alice).map(&:body))
-      assert_equal(["hi"], HomeTimeline.for(carol).map(&:body))
+      assert_equal(["hi"], PersonalTimeline.for(alice).map(&:body))
+      assert_equal(["hi"], PersonalTimeline.for(carol).map(&:body))
     end
 
     def test_fans_out_only_to_followers_of_the_author
@@ -27,8 +27,8 @@ module HomeTimeline
 
       post_tweet(bob, "bob", "hi")
 
-      assert_equal(["hi"], HomeTimeline.for(alice).map(&:body))
-      assert_equal([], HomeTimeline.for(dave).to_a)
+      assert_equal(["hi"], PersonalTimeline.for(alice).map(&:body))
+      assert_equal([], PersonalTimeline.for(dave).to_a)
     end
 
     def test_stores_author_handle_and_body
@@ -38,7 +38,7 @@ module HomeTimeline
 
       post_tweet(bob, "bob", "hi")
 
-      entry = HomeTimeline.for(alice).first
+      entry = PersonalTimeline.for(alice).first
       assert_equal("bob", entry.author)
       assert_equal("hi", entry.body)
     end
@@ -51,7 +51,7 @@ module HomeTimeline
       post_tweet(bob, "bob", "first")
       post_tweet(bob, "bob", "second")
 
-      assert_equal(["second", "first"], HomeTimeline.for(alice).map(&:body))
+      assert_equal(["second", "first"], PersonalTimeline.for(alice).map(&:body))
     end
 
     def test_unfollow_only_removes_that_edge_for_that_follower
@@ -64,8 +64,8 @@ module HomeTimeline
       unfollow(alice, bob)
       post_tweet(bob, "bob", "hi")
 
-      assert_equal([], HomeTimeline.for(alice).to_a)
-      assert_equal(["hi"], HomeTimeline.for(carol).map(&:body))
+      assert_equal([], PersonalTimeline.for(alice).to_a)
+      assert_equal(["hi"], PersonalTimeline.for(carol).map(&:body))
     end
 
     def test_unfollow_only_removes_the_named_followee
@@ -78,7 +78,7 @@ module HomeTimeline
       unfollow(alice, bob)
       post_tweet(eve, "eve", "still here")
 
-      assert_equal(["still here"], HomeTimeline.for(alice).map(&:body))
+      assert_equal(["still here"], PersonalTimeline.for(alice).map(&:body))
     end
 
     private

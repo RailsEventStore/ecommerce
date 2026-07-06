@@ -1,6 +1,6 @@
 require_relative "../test_helper"
 
-class HomeTimelineTest < InMemoryRESIntegrationTestCase
+class PersonalTimelineTest < InMemoryRESIntegrationTestCase
   def test_shows_tweets_from_followed_users
     create_account("bob", "pw")
     sign_up("alice", "pw")
