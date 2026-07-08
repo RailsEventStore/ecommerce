@@ -15,30 +15,39 @@ This app implements **fan-out on write**.
 
 ## How it works
 
-Two user actions become events:
+User actions become events in the `Social` domain:
 
 - publishing a post → `Social::PostPublished`
 - following / unfollowing → `Social::UserFollowed` / `Social::UserUnfollowed`
 
-The `PersonalTimeline` read model subscribes to both. It keeps its own copy of the follow graph, and on every `PostPublished` it fans the post out to each follower:
+The fan-out is a **process**, kept out of the read model. `TimelineDeliveryProcess` remembers each author's followers (from the follow events) and, on every `PostPublished`, issues one delivery per follower:
 
 ```ruby
-# PersonalTimeline, handling Social::PostPublished
-followers(author_id).each do |follower_id|
-  Post.create!(recipient_id: follower_id, author: author, body: body)
+# TimelineDeliveryProcess, reacting to Social::PostPublished
+followers.each do |recipient_id|
+  command_bus.call(Social::DeliverPostToTimeline.new(post_id:, recipient_id:, author:, body:))
 end
 ```
 
-Reading a home timeline is then a single indexed lookup — no joins:
+Each delivery is recorded as a `Social::PostDeliveredToTimeline` event. The `PersonalTimeline` read model is then a plain projection of those events — one row per delivery, nothing else:
+
+```ruby
+# PersonalTimeline, handling Social::PostDeliveredToTimeline
+Post.create!(recipient_id:, author:, body:)
+```
+
+Reading a home timeline is a single indexed lookup — no joins:
 
 ```ruby
 Post.where(recipient_id: current_account).order(created_at: :desc)
 ```
 
-There are two feed read models:
+This mirrors the book's framing: fan-out is a **delivery pipeline** that writes into per-user timelines, so reading one is just a lookup. The trade-off is explicit here — a delivery command and event per follower — which keeps the read model a pure projection at the cost of a `PostDeliveredToTimeline` event per recipient.
+
+Two feed read models:
 
 - **`PublicFeed`** — the global feed at `/` (every post, visible when logged out). One row per post.
-- **`PersonalTimeline`** — your `/home` timeline (only people you follow). One row per *(recipient, post)* — that's the fan-out.
+- **`PersonalTimeline`** — your `/home` timeline (only people you follow). One row per delivered post.
 
 ## Stack
 
