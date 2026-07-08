@@ -12,7 +12,11 @@ class TimelineDeliveryProcess < Infra::ProcessManager
   end
 
   def act
-    state.followers.each { |recipient_id| deliver_post_to(recipient_id) } if state.post
+    recipients.each { |recipient_id| deliver_post_to(recipient_id) } if state.post
+  end
+
+  def recipients
+    state.followers + [state.post.data.fetch(:author_id)]
   end
 
   def apply(event)

@@ -18,6 +18,16 @@ class PersonalTimelineTest < InMemoryRESIntegrationTestCase
     assert_select("[data-timeline-body]", text: "Hello from bob")
   end
 
+  def test_shows_your_own_posts_in_your_timeline
+    sign_up("alice", "pw")
+
+    post_tweet("Hello from me")
+    get(home_path)
+
+    assert_select("[data-timeline-author]", text: "alice")
+    assert_select("[data-timeline-body]", text: "Hello from me")
+  end
+
   def test_hides_tweets_from_users_you_do_not_follow
     create_account("bob", "pw")
     sign_up("alice", "pw")
