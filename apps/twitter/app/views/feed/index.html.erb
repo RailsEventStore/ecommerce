@@ -14,7 +14,7 @@
     <ul class="divide-y divide-gray-200">
       <% @tweets.each do |tweet| %>
         <li class="py-4">
-          <span class="font-semibold">@<span data-tweet-author><%= tweet.author %></span></span>
+          <span class="font-semibold">@<%= link_to tweet.author, profile_path(tweet.author), data: { tweet_author: "" }, class: "hover:underline" %></span>
           <p data-tweet-body class="mt-1 text-gray-800"><%= tweet.body %></p>
         </li>
       <% end %>

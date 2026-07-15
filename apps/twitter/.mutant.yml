@@ -13,9 +13,11 @@ matcher:
     - Accounts*
     - Follows*
     - PersonalTimeline*
+    - Profile*
     - TimelineDeliveryProcess*
   ignore:
     - PublicFeed::Configuration#call
     - Accounts::Configuration#call
     - Follows::Configuration#call
     - PersonalTimeline::Configuration#call
+    - Profile::Configuration#call

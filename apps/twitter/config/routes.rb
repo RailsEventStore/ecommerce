@@ -14,6 +14,7 @@ Rails.application.routes.draw do
   resources :tweets, only: [:create]
   resources :follows, only: [:index, :create, :destroy]
   get "/home", to: "home#index"
+  get "/users/:handle", to: "profiles#show", as: :profile
 
   root "feed#index"
 end

@@ -1,0 +1,15 @@
+<div class="max-w-xl mx-auto py-8 px-4 w-full">
+  <h1 class="text-2xl font-bold mb-6">@<span data-profile-handle><%= @handle %></span></h1>
+
+  <% if @posts.empty? %>
+    <p class="text-gray-500">No posts yet.</p>
+  <% else %>
+    <ul class="divide-y divide-gray-200">
+      <% @posts.each do |post| %>
+        <li class="py-4">
+          <p data-profile-post class="text-gray-800"><%= post.body %></p>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+</div>

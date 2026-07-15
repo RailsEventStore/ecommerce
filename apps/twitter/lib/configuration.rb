@@ -10,6 +10,7 @@ class Configuration
     enable_accounts_read_model(event_store)
     enable_follows_read_model(event_store)
     enable_personal_timeline_read_model(event_store)
+    enable_profile_read_model(event_store)
     enable_timeline_delivery_process(event_store, command_bus)
 
     Social::Configuration.new.call(event_store, command_bus)
@@ -40,6 +41,10 @@ class Configuration
 
   def enable_personal_timeline_read_model(event_store)
     PersonalTimeline::Configuration.new.call(event_store)
+  end
+
+  def enable_profile_read_model(event_store)
+    Profile::Configuration.new.call(event_store)
   end
 
   def enable_timeline_delivery_process(event_store, command_bus)

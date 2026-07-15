@@ -7,7 +7,7 @@
     <ul class="divide-y divide-gray-200">
       <% @entries.each do |entry| %>
         <li class="py-4">
-          <span class="font-semibold">@<span data-timeline-author><%= entry.author %></span></span>
+          <span class="font-semibold">@<%= link_to entry.author, profile_path(entry.author), data: { timeline_author: "" }, class: "hover:underline" %></span>
           <p data-timeline-body class="mt-1 text-gray-800"><%= entry.body %></p>
         </li>
       <% end %>
