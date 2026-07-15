@@ -1,4 +1,6 @@
-class TimelineDeliveryProcess < Infra::ProcessManager
+class TimelineDeliveryProcess
+  include RubyEventStore::ProcessManager.with_state { ProcessState }
+
   subscribes_to(
     Social::UserFollowed,
     Social::UserUnfollowed,
@@ -6,10 +8,6 @@ class TimelineDeliveryProcess < Infra::ProcessManager
   )
 
   private
-
-  def initial_state
-    ProcessState.new
-  end
 
   def act
     recipients.each { |recipient_id| deliver_post_to(recipient_id) } if state.post
