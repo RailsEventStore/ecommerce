@@ -23,11 +23,7 @@ gem "jbuilder"
 gem "rails_event_store", ">= 3.0", "< 4.0"
 gem "arkency-command_bus"
 gem "infra", path: "../../infra"
-gem "ruby_event_store-process_manager",
-  git: "https://github.com/RailsEventStore/rails_event_store.git",
-  ref: "ac9e73b69bc0",
-  glob: "contrib/ruby_event_store-process_manager/*.gemspec",
-  require: "ruby_event_store/process_manager"
+gem "ruby_event_store-process_manager", "~> 0.1.0"
 
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 gem "bcrypt", "~> 3.1"

@@ -34,11 +34,7 @@ group :test do
 end
 
 gem "infra", path: "../../infra"
-gem "ruby_event_store-process_manager",
-  git: "https://github.com/RailsEventStore/rails_event_store.git",
-  ref: "ac9e73b69bc0",
-  glob: "contrib/ruby_event_store-process_manager/*.gemspec",
-  require: "ruby_event_store/process_manager"
+gem "ruby_event_store-process_manager", "~> 0.1.0"
 
 gem "tzinfo-data"
 
