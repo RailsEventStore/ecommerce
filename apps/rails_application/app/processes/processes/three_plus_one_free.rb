@@ -1,5 +1,6 @@
 module Processes
-  class ThreePlusOneFree < Infra::ProcessManager
+  class ThreePlusOneFree
+    include RubyEventStore::ProcessManager.with_state { ProcessState }
 
     subscribes_to(
       Pricing::PriceItemAdded,
@@ -9,10 +10,6 @@ module Processes
     )
 
     private
-
-    def initial_state
-      ProcessState.new
-    end
 
     def act
       case [state.free_product, state.eligible_free_product]

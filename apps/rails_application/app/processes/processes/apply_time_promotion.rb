@@ -1,5 +1,6 @@
 module Processes
-  class ApplyTimePromotion < Infra::ProcessManager
+  class ApplyTimePromotion
+    include RubyEventStore::ProcessManager.with_state { ProcessState }
 
     subscribes_to(
       Stores::OfferRegistered,
@@ -13,10 +14,6 @@ module Processes
     )
 
     private
-
-    def initial_state
-      ProcessState.new
-    end
 
     def act
       return unless state.store_id

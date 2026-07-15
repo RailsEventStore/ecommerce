@@ -1,5 +1,6 @@
 module Processes
-  class ReleasePaymentOnOrderExpiration < Infra::ProcessManager
+  class ReleasePaymentOnOrderExpiration
+    include RubyEventStore::ProcessManager.with_state { ProcessState }
 
     subscribes_to(
       Payments::PaymentAuthorized,
@@ -10,10 +11,6 @@ module Processes
     )
 
     private
-
-    def initial_state
-      ProcessState.new
-    end
 
     def act
       release_payment if state.release?

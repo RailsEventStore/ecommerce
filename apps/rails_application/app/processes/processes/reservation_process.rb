@@ -1,5 +1,6 @@
 module Processes
-  class ReservationProcess < Infra::ProcessManager
+  class ReservationProcess
+    include RubyEventStore::ProcessManager.with_state { ProcessState }
 
     subscribes_to(
       Pricing::OfferAccepted,
@@ -8,10 +9,6 @@ module Processes
     )
 
     private
-
-    def initial_state
-      ProcessState.new
-    end
 
     def act
       case state

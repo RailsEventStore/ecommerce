@@ -1,5 +1,6 @@
 module Processes
-  class TotalOrderValue < Infra::ProcessManager
+  class TotalOrderValue
+    include RubyEventStore::ProcessManager.with_state { Offer }
 
     subscribes_to(
       Pricing::PriceItemAdded,
@@ -32,10 +33,6 @@ module Processes
     end
 
     private
-
-    def initial_state
-      Offer.new
-    end
 
     def publish_total_order_value(total_amount, discounted_amount, items)
       event_store.publish(

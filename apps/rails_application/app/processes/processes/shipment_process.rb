@@ -1,5 +1,6 @@
 module Processes
-  class ShipmentProcess < Infra::ProcessManager
+  class ShipmentProcess
+    include RubyEventStore::ProcessManager.with_state { ProcessState }
 
     subscribes_to(
       Shipping::ShippingAddressAddedToShipment,
@@ -9,10 +10,6 @@ module Processes
     )
 
     private
-
-    def initial_state
-      ProcessState.new
-    end
 
     def act
       case state
