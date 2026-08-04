@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if command -v pg_lsclusters >/dev/null; then
+  postgres_version="$(pg_lsclusters --no-header | awk 'NR == 1 { print $1 }')"
+  if [[ -n "$postgres_version" ]] && ! pg_isready --quiet; then
+    sudo pg_ctlcluster "$postgres_version" main start
+  fi
+fi

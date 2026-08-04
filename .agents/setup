@@ -1,0 +1,80 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+ruby_version="3.4.9"
+bundler_version="2.6.9"
+
+echo "Installing system dependencies"
+sudo apt-get update
+sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
+  autoconf \
+  build-essential \
+  curl \
+  libffi-dev \
+  libgdbm-dev \
+  libncurses-dev \
+  libpq-dev \
+  libreadline-dev \
+  libssl-dev \
+  libyaml-dev \
+  postgresql \
+  zlib1g-dev
+
+if [[ ! -x "$HOME/.local/bin/mise" ]]; then
+  echo "Installing mise"
+  curl --proto '=https' --tlsv1.2 -sSf https://mise.run | sh
+fi
+
+mkdir -p "$HOME/.config/ecommerce"
+cat > "$HOME/.config/ecommerce/orb-profile.sh" <<'EOF'
+export PATH="$HOME/.local/bin:$PATH"
+eval "$("$HOME/.local/bin/mise" activate bash)"
+EOF
+
+touch "$HOME/.bash_profile"
+profile_source='source "$HOME/.config/ecommerce/orb-profile.sh"'
+if ! grep -Fqx "$profile_source" "$HOME/.bash_profile"; then
+  printf '\n%s\n' "$profile_source" >> "$HOME/.bash_profile"
+fi
+
+export PATH="$HOME/.local/bin:$PATH"
+eval "$(mise activate bash)"
+
+echo "Installing Ruby $ruby_version"
+mise install "ruby@$ruby_version"
+mise use --global "ruby@$ruby_version"
+eval "$(mise activate bash)"
+gem install bundler --version "$bundler_version" --no-document
+
+echo "Starting PostgreSQL"
+postgres_version="$(pg_lsclusters --no-header | awk 'NR == 1 { print $1 }')"
+if ! pg_isready --quiet; then
+  sudo pg_ctlcluster "$postgres_version" main start
+fi
+
+database_password="$(python3 - "$repo_root/apps/rails_application/.env.test" <<'PY'
+import sys
+from pathlib import Path
+from urllib.parse import urlparse
+
+print(urlparse(Path(sys.argv[1]).read_text().strip().split("=", 1)[1]).password)
+PY
+)"
+escaped_database_password="${database_password//\'/\'\'}"
+printf "ALTER USER postgres PASSWORD '%s';\n" "$escaped_database_password" | sudo -u postgres psql --quiet
+
+database_role="$(id -un)"
+if ! sudo -u postgres psql --tuples-only --no-align --command "SELECT 1 FROM pg_roles WHERE rolname = '$database_role'" | grep -qx 1; then
+  sudo -u postgres createuser --superuser "$database_role"
+fi
+
+echo "Installing repository dependencies and preparing databases"
+make -C "$repo_root" install
+make -C "$repo_root/apps/rails_application" tailwind
+(
+  cd "$repo_root/apps/rails_application"
+  RAILS_ENV=test bin/rails db:test:prepare
+)
+
+echo "Orb setup complete"
