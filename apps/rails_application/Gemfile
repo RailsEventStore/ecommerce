@@ -15,6 +15,7 @@ gem "turbo-rails"
 gem "stimulus-rails"
 gem "importmap-rails", "~> 2.0"
 gem "rails_event_store",  ">= 3.0", "< 4.0"
+gem "ruby_event_store-browser", github: "RailsEventStore/rails_event_store", branch: "master", glob: "ruby_event_store-browser/*.gemspec"
 gem 'arbre'
 
 group :development do
@@ -34,7 +35,7 @@ group :test do
 end
 
 gem "infra", path: "../../infra"
-gem "ruby_event_store-process_manager", "~> 0.1.0"
+gem "ruby_event_store-process_manager", github: "RailsEventStore/rails_event_store", branch: "master", glob: "contrib/ruby_event_store-process_manager/*.gemspec"
 
 gem "tzinfo-data"
 

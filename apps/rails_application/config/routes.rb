@@ -1,3 +1,6 @@
+require "ruby_event_store/browser/app"
+require "ruby_event_store/process_manager/browser_extension"
+
 Rails.application.routes.draw do
   root "orders#index"
 
@@ -75,5 +78,9 @@ Rails.application.routes.draw do
   get "client/inbox", to: "client/inbox#index"
   post "client/inbox/mark_as_read", to: "client/inbox#mark_as_read"
 
-  mount RailsEventStore::Browser => "/res"
+  mount RubyEventStore::Browser::App.for(
+    event_store_locator: -> { Rails.configuration.event_store },
+    views_root: Rails.root.join("app/views/ruby_event_store_browser"),
+    extensions: [RubyEventStore::ProcessManager::BrowserExtension.new]
+  ) => "/res", as: "ruby_event_store_browser_app"
 end

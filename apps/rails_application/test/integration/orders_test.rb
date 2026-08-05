@@ -336,7 +336,31 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     assert_response(:not_found)
   end
 
+  def test_event_browser_displays_total_order_value_process_state
+    add_product_to_basket(event_browser_order_id, event_browser_product_id)
+
+    get "/res/streams/#{ERB::Util.url_encode("Processes::TotalOrderValue$#{event_browser_order_id}")}"
+
+    assert_select("a", text: "Process state", count: 1)
+
+    get css_select("a").find { |link| link.text == "Process state" }["href"]
+
+    assert_select("h1", "Process Processes::TotalOrderValue")
+    assert_select("h2", "Current state")
+    assert_select("h2", "Step by step")
+    assert_includes(response.body, event_browser_product_id)
+    assert_includes(response.body, "39")
+  end
+
   private
+
+  def event_browser_order_id
+    @event_browser_order_id ||= create_order
+  end
+
+  def event_browser_product_id
+    @event_browser_product_id ||= register_product("Async Remote", 39, 10)
+  end
 
   def retrieve_order_id_from_url
     request.path.split('/')[2]
@@ -420,17 +444,12 @@ class OrdersTest < InMemoryRESIntegrationTestCase
   end
 
   def assert_res_browser_order_history
-    get "/res/api/streams/Orders%24all/relationships/events"
-    event_names =
-      JSON
-        .load(body)
-        .fetch("data")
-        .map { |data| data.fetch("attributes").fetch("event_type") }
+    get "/res/streams/Orders%24all"
 
-    assert(event_names.include?("Fulfillment::OrderConfirmed"))
-    assert(event_names.include?("Pricing::PriceItemAdded"))
-    assert(event_names.include?("Processes::TotalOrderValueUpdated"))
-    assert(event_names.include?("Fulfillment::OrderRegistered"))
+    assert_select("a", text: "Fulfillment::OrderConfirmed")
+    assert_select("a", text: "Pricing::PriceItemAdded")
+    assert_select("a", text: "Processes::TotalOrderValueUpdated")
+    assert_select("a", text: "Fulfillment::OrderRegistered")
   end
 
   def assert_payment_gateway_value(value)
