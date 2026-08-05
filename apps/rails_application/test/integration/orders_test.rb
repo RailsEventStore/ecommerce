@@ -341,6 +341,8 @@ class OrdersTest < InMemoryRESIntegrationTestCase
 
     get "/res/streams/#{ERB::Util.url_encode("Processes::TotalOrderValue$#{event_browser_order_id}")}"
 
+    assert_select("a", text: "Pricing::PriceItemAdded", count: 1)
+    assert_select("a", text: "Processes::TotalOrderValueUpdated", count: 1)
     assert_select("a", text: "Process state", count: 1)
 
     get css_select("a").find { |link| link.text == "Process state" }["href"]
@@ -348,6 +350,8 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     assert_select("h1", "Process Processes::TotalOrderValue")
     assert_select("h2", "Current state")
     assert_select("h2", "Step by step")
+    assert_select("a", text: "Pricing::PriceItemAdded", count: 1)
+    assert_select("a", text: "Processes::TotalOrderValueUpdated", count: 1)
     assert_includes(response.body, event_browser_product_id)
     assert_includes(response.body, "39")
   end
