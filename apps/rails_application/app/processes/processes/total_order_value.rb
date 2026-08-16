@@ -59,7 +59,8 @@ module Processes
     end
 
     def apply_price_item_removed(event)
-      lines = state.lines.reject { |line| line.fetch(:product_id) == event.data.fetch(:product_id) }
+      lines = state.lines.dup
+      lines.delete_at(lines.map { |line| line.fetch(:product_id) }.index(event.data.fetch(:product_id)))
       state.with(lines:)
     end
 

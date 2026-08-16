@@ -53,6 +53,41 @@ module Processes
       end
     end
 
+    def test_total_order_value_calculation_for_2_items_of_the_same_product_and_1_item_removed
+      process = TotalOrderValue.new(event_store, command_bus)
+      product_id = SecureRandom.uuid
+      event_1 = price_item_added(product_id)
+      event_2 = price_item_added(product_id)
+      event_3 = Pricing::PriceItemRemoved.new(data: {
+        order_id: order_id,
+        product_id: product_id,
+        base_price: 100,
+        price: 100,
+        base_total_value: 100,
+        total_value: 100
+      })
+      event_store.append(event_1)
+      event_store.append(event_2)
+      event_store.append(event_3)
+      process.call(event_1)
+      process.call(event_2)
+
+      assert_events_contain(
+        "Processes::TotalOrderValue$#{event_3.data.fetch(:order_id)}",
+        Processes::TotalOrderValueUpdated.new(
+          data: {
+            total_amount: 100,
+            discounted_amount: 100,
+            order_id: order_id,
+            items: [
+              { product_id: product_id, quantity: 1, amount: 100 }
+            ]
+          }
+        )) do
+        process.call(event_3)
+      end
+    end
+
     def test_total_order_value_calculation_for_2_items_of_different_products
       process = TotalOrderValue.new(event_store, command_bus)
       product_id_1 = SecureRandom.uuid
