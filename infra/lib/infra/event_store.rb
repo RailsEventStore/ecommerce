@@ -71,8 +71,8 @@ module Infra
         }
       }
 
-      if defined?(ActiveSupport::TimeWithZone)
-        types_config[ActiveSupport::TimeWithZone] = {
+      if defined?(::ActiveSupport::TimeWithZone)
+        types_config[::ActiveSupport::TimeWithZone] = {
           serializer: ->(v) { v.iso8601(RubyEventStore::TIMESTAMP_PRECISION) },
           deserializer: ->(v) { Time.iso8601(v).in_time_zone },
           stored_type: ->(*) { "ActiveSupport::TimeWithZone" }
