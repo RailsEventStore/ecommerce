@@ -86,6 +86,20 @@ module Processes
       assert_command(Pricing::MakeProductFreeForOrder.new(order_id: order_id, product_id: cheapest_product_id))
     end
 
+    def test_only_one_unit_is_free_for_eight_order_lines
+      product_id = SecureRandom.uuid
+      order_id = SecureRandom.uuid
+      process = ThreePlusOneFree.new(event_store, command_bus)
+
+      given([
+        item_added_event(order_id, product_id, 20, times: 4),
+        product_made_for_free(order_id, product_id),
+        item_added_event(order_id, product_id, 20, times: 4)
+      ], process:)
+
+      assert_all_commands(Pricing::MakeProductFreeForOrder.new(order_id: order_id, product_id: product_id))
+    end
+
     def test_change_free_product_if_the_cheapest_order_line_is_removed
       product_id = SecureRandom.uuid
       cheapest_product_id = SecureRandom.uuid
