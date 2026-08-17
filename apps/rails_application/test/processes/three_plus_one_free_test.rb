@@ -72,6 +72,20 @@ module Processes
       assert_all_commands(Pricing::MakeProductFreeForOrder.new(order_id: order_id, product_id: product_id))
     end
 
+    def test_cheapest_product_is_based_on_undiscounted_price
+      product_id = SecureRandom.uuid
+      cheapest_product_id = SecureRandom.uuid
+      order_id = SecureRandom.uuid
+      process = ThreePlusOneFree.new(event_store, command_bus)
+
+      given([
+        item_added_event(order_id, product_id, 20, price: 0, times: 3),
+        item_added_event(order_id, cheapest_product_id, 10, price: 0)
+      ], process:)
+
+      assert_command(Pricing::MakeProductFreeForOrder.new(order_id: order_id, product_id: cheapest_product_id))
+    end
+
     def test_change_free_product_if_the_cheapest_order_line_is_removed
       product_id = SecureRandom.uuid
       cheapest_product_id = SecureRandom.uuid
@@ -104,10 +118,10 @@ module Processes
       Pricing::PriceSet.new(data: { product_id:, price: amount })
     end
 
-    def item_added_event(order_id, product_id, price, times: 1)
+    def item_added_event(order_id, product_id, base_price, price: base_price, times: 1)
       times.times.collect do |i|
         Pricing::PriceItemAdded.new(
-          data: { order_id:, product_id:, price:, base_price: price, base_total_value: (i+1) * price, total_value: (i+1) * price }
+          data: { order_id:, product_id:, price:, base_price:, base_total_value: (i+1) * base_price, total_value: (i+1) * price }
         )
       end
     end

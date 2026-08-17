@@ -25,7 +25,7 @@ module Processes
       product_id = event.data.fetch(:product_id)
       case event
       when Pricing::PriceItemAdded
-        lines = (state.lines + [{ product_id:, price: event.data.fetch(:price) }])
+        lines = (state.lines + [{ product_id:, price: event.data.fetch(:base_price) }])
         state.with(lines:)
       when Pricing::PriceItemRemoved
         lines = state.lines.dup
