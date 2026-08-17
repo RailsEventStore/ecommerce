@@ -73,7 +73,7 @@ module Pricing
     end
 
     def make_product_free(order_id, product_id)
-      raise FreeProductAlreadyMade if @list.contains_free_products?
+      raise FreeProductAlreadyMade if @free_product
       apply ProductMadeFreeForOrder.new(
         data: {
           order_id: order_id,
@@ -83,7 +83,7 @@ module Pricing
     end
 
     def remove_free_product(order_id, product_id)
-      return unless @list.contains_free_products?
+      return unless @free_product
       apply FreeProductRemovedFromOrder.new(
         data: {
           order_id: order_id,
@@ -157,10 +157,12 @@ module Pricing
     end
 
     on ProductMadeFreeForOrder do |event|
+      @free_product = event.data.fetch(:product_id)
       @list.set_free(event.data.fetch(:product_id))
     end
 
     on FreeProductRemovedFromOrder do |event|
+      @free_product = nil
       @list.restore_nonfree(event.data.fetch(:product_id))
     end
 
@@ -205,11 +207,6 @@ module Pricing
           item.with(price:)
         end
       end
-
-      def contains_free_products?
-        @items.any? { |item| item.price == 0 }
-      end
-
 
       def set_free(product_id)
         idx = @items.index { |item| item.product_id == product_id && item.price != 0 }

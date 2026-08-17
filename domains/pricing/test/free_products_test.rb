@@ -74,6 +74,19 @@ module Pricing
       end
     end
 
+    def test_free_product_assignment_survives_discount_recalculation
+      product_id = SecureRandom.uuid
+      order_id = SecureRandom.uuid
+      set_price(product_id, 20)
+      add_item(order_id, product_id)
+      run_command(MakeProductFreeForOrder.new(order_id: order_id, product_id: product_id))
+      run_command(SetPercentageDiscount.new(order_id: order_id, type: "test", amount: 10))
+
+      assert_raises FreeProductAlreadyMade do
+        run_command(MakeProductFreeForOrder.new(order_id: order_id, product_id: product_id))
+      end
+    end
+
     def test_making_product_free_possible_after_previous_free_product_was_removed
       product_1_id = SecureRandom.uuid
       set_price(product_1_id, 20)
