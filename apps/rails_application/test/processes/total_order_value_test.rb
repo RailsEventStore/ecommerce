@@ -180,6 +180,48 @@ module Processes
       end
     end
 
+    def test_free_product_is_removed_before_percentage_discount
+      process = TotalOrderValue.new(event_store, command_bus)
+      product_id = SecureRandom.uuid
+      cheapest_product_id = SecureRandom.uuid
+      events = [
+        price_item_added(product_id),
+        price_item_added(product_id),
+        price_item_added(cheapest_product_id, 50),
+        price_item_added(cheapest_product_id, 50),
+        Pricing::ProductMadeFreeForOrder.new(data: {
+          order_id: order_id,
+          product_id: cheapest_product_id
+        })
+      ]
+      discount = Pricing::PercentageDiscountSet.new(data: {
+        order_id: order_id,
+        type: "test_discount",
+        amount: 10
+      })
+      events.each do |event|
+        event_store.append(event)
+        process.call(event)
+      end
+      event_store.append(discount)
+
+      assert_events_contain(
+        "Processes::TotalOrderValue$#{order_id}",
+        Processes::TotalOrderValueUpdated.new(
+          data: {
+            total_amount: 250,
+            discounted_amount: 225,
+            order_id: order_id,
+            items: [
+              { product_id: product_id, quantity: 2, amount: 180 },
+              { product_id: cheapest_product_id, quantity: 2, amount: 45 }
+            ]
+          }
+        )) do
+        process.call(discount)
+      end
+    end
+
     def test_removing_free_product_restores_its_discounted_amount
       process = TotalOrderValue.new(event_store, command_bus)
       product_id = SecureRandom.uuid
