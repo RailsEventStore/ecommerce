@@ -127,6 +127,29 @@ module Pricing
       end
     end
 
+    def test_free_product_keeps_its_discounted_price
+      product_id = SecureRandom.uuid
+      order_id = SecureRandom.uuid
+      set_price(product_id, 20)
+      add_item(order_id, product_id)
+      run_command(SetPercentageDiscount.new(order_id: order_id, type: "test", amount: 10))
+      run_command(MakeProductFreeForOrder.new(order_id: order_id, product_id: product_id))
+
+      assert_events_contain(
+        stream_name(order_id),
+        PriceItemRemoved.new(
+          data: {
+            order_id: order_id,
+            product_id: product_id,
+            base_price: 20,
+            price: 18
+          }
+        )
+      ) do
+        run_command(RemovePriceItem.new(order_id: order_id, product_id: product_id))
+      end
+    end
+
     def test_removing_free_product_possible_if_it_is_already_set
       product_1_id = SecureRandom.uuid
       set_price(product_1_id, 20)

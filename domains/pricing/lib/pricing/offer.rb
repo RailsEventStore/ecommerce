@@ -158,12 +158,10 @@ module Pricing
 
     on ProductMadeFreeForOrder do |event|
       @free_product = event.data.fetch(:product_id)
-      @list.set_free(event.data.fetch(:product_id))
     end
 
     on FreeProductRemovedFromOrder do |event|
       @free_product = nil
-      @list.restore_nonfree(event.data.fetch(:product_id))
     end
 
     on CouponUsed do |event|
@@ -206,19 +204,6 @@ module Pricing
           price = discounts.inject(Discounts::NoPercentageDiscount.new, :add).apply(item.base_price)
           item.with(price:)
         end
-      end
-
-      def set_free(product_id)
-        idx = @items.index { |item| item.product_id == product_id && item.price != 0 }
-        old_item = @items.delete_at(idx)
-        @items << old_item.with(price: 0)
-      end
-
-      def restore_nonfree(product_id)
-        idx = @items.index { |item| item.product_id == product_id && item.price == 0 }
-        return unless idx
-        old_item = @items.delete_at(idx)
-        @items << old_item.with(price: old_item.base_price)
       end
 
       def lowest_price_item(product_id)
