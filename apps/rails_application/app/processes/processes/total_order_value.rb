@@ -7,7 +7,9 @@ module Processes
       Pricing::PriceItemRemoved,
       Pricing::PercentageDiscountSet,
       Pricing::PercentageDiscountChanged,
-      Pricing::PercentageDiscountRemoved
+      Pricing::PercentageDiscountRemoved,
+      Pricing::ProductMadeFreeForOrder,
+      Pricing::FreeProductRemovedFromOrder
     )
 
     def act
@@ -27,6 +29,10 @@ module Processes
         apply_percentage_discount_changed(event)
       when Pricing::PercentageDiscountRemoved
         apply_percentage_discount_removed(event)
+      when Pricing::ProductMadeFreeForOrder
+        state.with(free_product: event.data.fetch(:product_id))
+      when Pricing::FreeProductRemovedFromOrder
+        state.with(free_product: nil)
       else
         state
       end
@@ -88,13 +94,13 @@ module Processes
 
   end
 
-  Offer = Data.define(:lines, :discounts) do
-    def initialize(lines: [], discounts: [])
-      super(lines: lines.freeze, discounts: discounts.freeze)
+  Offer = Data.define(:lines, :discounts, :free_product) do
+    def initialize(lines: [], discounts: [], free_product: nil)
+      super(lines: lines.freeze, discounts: discounts.freeze, free_product:)
     end
 
     def subtotal
-      lines.sum { |line| line.fetch(:price) }
+      lines.sum { |line| line.fetch(:price) } - free_product_price
     end
 
     def total_discount_percentage
@@ -117,10 +123,23 @@ module Processes
       grouped = lines.group_by { |line| line.fetch(:product_id) }
       grouped.map do |product_id, lines_for_product|
         quantity = lines_for_product.size
-        base_amount = lines_for_product.sum { |line| line.fetch(:price) }
+        base_amount = lines_for_product.sum { |line| line.fetch(:price) } - free_product_price_for(product_id)
         amount = base_amount * discount_multiplier
         { product_id: product_id, quantity: quantity, amount: amount }
       end
+    end
+
+    private
+
+    def free_product_price
+      lines
+        .select { |line| line.fetch(:product_id) == free_product }
+        .map { |line| line.fetch(:price) }
+        .min || 0
+    end
+
+    def free_product_price_for(product_id)
+      product_id == free_product ? free_product_price : 0
     end
   end
 

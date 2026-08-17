@@ -180,6 +180,76 @@ module Processes
       end
     end
 
+    def test_removing_free_product_restores_its_discounted_amount
+      process = TotalOrderValue.new(event_store, command_bus)
+      product_id = SecureRandom.uuid
+      events = [
+        price_item_added(product_id),
+        price_item_added(product_id),
+        Pricing::ProductMadeFreeForOrder.new(data: {
+          order_id: order_id,
+          product_id: product_id
+        })
+      ]
+      free_product_removed = Pricing::FreeProductRemovedFromOrder.new(data: {
+        order_id: order_id,
+        product_id: product_id
+      })
+      events.each do |event|
+        event_store.append(event)
+        process.call(event)
+      end
+      event_store.append(free_product_removed)
+
+      assert_events_contain(
+        "Processes::TotalOrderValue$#{order_id}",
+        Processes::TotalOrderValueUpdated.new(
+          data: {
+            total_amount: 200,
+            discounted_amount: 200,
+            order_id: order_id,
+            items: [
+              { product_id: product_id, quantity: 2, amount: 200 }
+            ]
+          }
+        )) do
+        process.call(free_product_removed)
+      end
+    end
+
+    def test_cheapest_unit_is_free_when_product_units_have_different_prices
+      process = TotalOrderValue.new(event_store, command_bus)
+      product_id = SecureRandom.uuid
+      events = [
+        price_item_added(product_id),
+        price_item_added(product_id, 50)
+      ]
+      product_made_free = Pricing::ProductMadeFreeForOrder.new(data: {
+        order_id: order_id,
+        product_id: product_id
+      })
+      events.each do |event|
+        event_store.append(event)
+        process.call(event)
+      end
+      event_store.append(product_made_free)
+
+      assert_events_contain(
+        "Processes::TotalOrderValue$#{order_id}",
+        Processes::TotalOrderValueUpdated.new(
+          data: {
+            total_amount: 100,
+            discounted_amount: 100,
+            order_id: order_id,
+            items: [
+              { product_id: product_id, quantity: 2, amount: 100 }
+            ]
+          }
+        )) do
+        process.call(product_made_free)
+      end
+    end
+
     def test_changed_discount
       process = TotalOrderValue.new(event_store, command_bus)
       product_id = SecureRandom.uuid
@@ -625,14 +695,14 @@ module Processes
 
     private
 
-    def price_item_added(product_id = SecureRandom.uuid)
+    def price_item_added(product_id = SecureRandom.uuid, price = 100)
       Pricing::PriceItemAdded.new(data: {
         order_id: order_id,
-        price: 100,
+        price: price,
         product_id: product_id,
-        base_price: 100,
-        base_total_value: 100,
-        total_value: 100
+        base_price: price,
+        base_total_value: price,
+        total_value: price
       })
     end
   end
