@@ -13,7 +13,13 @@ module Processes
     )
 
     def act
-      publish_total_order_value(state.subtotal, state.discounted_value, state.per_product_discounted_totals)
+      publish_total_order_value(
+        state.subtotal,
+        state.discounted_value,
+        state.per_product_discounted_totals,
+        state.free_product,
+        state.free_product_saving
+      )
     end
 
     def apply(event)
@@ -40,13 +46,14 @@ module Processes
 
     private
 
-    def publish_total_order_value(total_amount, discounted_amount, items)
+    def publish_total_order_value(total_amount, discounted_amount, items, free_product_id, free_product_saving)
       event_store.publish(
         TotalOrderValueUpdated.new(data: {
           total_amount: total_amount,
           discounted_amount: discounted_amount,
           items: items,
-          order_id: @order_id
+          order_id: @order_id,
+          **(free_product_id && { free_product_id:, free_product_saving: })
         }),
         stream_name: "Processes::TotalOrderValue$#{@order_id}",
         expected_version: :auto
@@ -100,7 +107,14 @@ module Processes
     end
 
     def subtotal
-      lines.sum { |line| line.fetch(:price) } - free_product_price
+      lines.sum { |line| line.fetch(:price) } - free_product_saving
+    end
+
+    def free_product_saving
+      lines
+        .select { |line| line.fetch(:product_id) == free_product }
+        .map { |line| line.fetch(:price) }
+        .min || 0
     end
 
     def total_discount_percentage
@@ -131,15 +145,8 @@ module Processes
 
     private
 
-    def free_product_price
-      lines
-        .select { |line| line.fetch(:product_id) == free_product }
-        .map { |line| line.fetch(:price) }
-        .min || 0
-    end
-
     def free_product_price_for(product_id)
-      product_id == free_product ? free_product_price : 0
+      product_id == free_product ? free_product_saving : 0
     end
   end
 

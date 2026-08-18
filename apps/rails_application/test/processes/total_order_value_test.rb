@@ -212,6 +212,8 @@ module Processes
             total_amount: 250,
             discounted_amount: 225,
             order_id: order_id,
+            free_product_id: cheapest_product_id,
+            free_product_saving: 50,
             items: [
               { product_id: product_id, quantity: 2, amount: 180 },
               { product_id: cheapest_product_id, quantity: 2, amount: 45 }
@@ -283,6 +285,8 @@ module Processes
             total_amount: 100,
             discounted_amount: 100,
             order_id: order_id,
+            free_product_id: product_id,
+            free_product_saving: 50,
             items: [
               { product_id: product_id, quantity: 2, amount: 100 }
             ]

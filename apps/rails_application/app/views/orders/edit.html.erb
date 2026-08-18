@@ -58,6 +58,7 @@
   <% end %>
   </tbody>
   <tfoot class="border-t-4">
+    <tr class="border-t" id="<%= "orders_order_#{@order_id}_free_product_saving_row" %>"><%= render("free_product_saving", saving: number_to_currency(@order.free_product_saving)) if @order.free_product_id %></tr>
     <% if discounted_value != total_value %>
       <tr class="border-t">
         <td class="py-2" colspan="3">Before discounts</td>

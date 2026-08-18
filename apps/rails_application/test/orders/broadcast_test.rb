@@ -200,13 +200,43 @@ module Orders
         )
       )
 
-      assert_equal 2, in_memory_broadcast.result.size
+      assert_equal 3, in_memory_broadcast.result.size
       [
         { :stream_id => order_id, :target_id => order_id, :target => "total_value", :content => "$30.00" },
-        { :stream_id => order_id, :target_id => order_id, :target => "discounted_value", :content => "$30.00" }
+        { :stream_id => order_id, :target_id => order_id, :target => "discounted_value", :content => "$30.00" },
+        { :stream_id => order_id, :target_id => order_id, :target => "free_product_saving_row", :content => "" }
       ].each do |expected_broadcast|
         assert_includes in_memory_broadcast.result, expected_broadcast
       end
+    end
+
+    def test_broadcast_free_product_saving_appearing_changing_and_disappearing
+      order_id = SecureRandom.uuid
+      product_id = SecureRandom.uuid
+      cheaper_product_id = SecureRandom.uuid
+
+      Rails.configuration.event_store.publish(total_order_value_updated(order_id, product_id, 20))
+      assert_equal(
+        free_product_saving_broadcast(order_id, "$20.00"),
+        in_memory_broadcast.result.last
+      )
+
+      Rails.configuration.event_store.publish(total_order_value_updated(order_id, cheaper_product_id, 10))
+      assert_equal(
+        free_product_saving_broadcast(order_id, "$10.00"),
+        in_memory_broadcast.result.last
+      )
+
+      Rails.configuration.event_store.publish(Processes::TotalOrderValueUpdated.new(data: {
+        order_id: order_id,
+        discounted_amount: 40,
+        total_amount: 40,
+        items: []
+      }))
+      assert_equal(
+        { stream_id: order_id, target_id: order_id, target: "free_product_saving_row", content: "" },
+        in_memory_broadcast.result.last
+      )
     end
 
     def test_broadcast_update_discount
@@ -288,7 +318,7 @@ module Orders
         )
       )
 
-      assert_equal 3, in_memory_broadcast.result.size
+      assert_equal 4, in_memory_broadcast.result.size
       [
         { :stream_id => order_id, :target_id => order_id, :target => "percentage_discount", :content => 30 },
       ].each do |expected_broadcast|
@@ -297,6 +327,26 @@ module Orders
     end
 
     private
+
+    def total_order_value_updated(order_id, free_product_id, free_product_saving)
+      Processes::TotalOrderValueUpdated.new(data: {
+        order_id: order_id,
+        discounted_amount: 30,
+        total_amount: 30,
+        free_product_id: free_product_id,
+        free_product_saving: free_product_saving,
+        items: []
+      })
+    end
+
+    def free_product_saving_broadcast(order_id, saving)
+      {
+        stream_id: order_id,
+        target_id: order_id,
+        target: "free_product_saving_row",
+        content: %(<td class="py-2" colspan="3">3+1 — cheapest item free</td><td class="py-2">-#{saving}</td>)
+      }
+    end
 
     def in_memory_broadcast
       Rails.configuration.broadcaster

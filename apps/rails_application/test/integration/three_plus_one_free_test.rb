@@ -44,7 +44,43 @@ class ThreePlusOneFreeTest < InMemoryRESIntegrationTestCase
     assert_invoice_values(order_id)
   end
 
+  def test_displays_the_reward_as_it_qualifies_changes_and_is_removed
+    cheaper_product_id = register_product("Cheaper", 10, 10)
+    product_id = register_product("Product", 20, 10)
+    supply_product(cheaper_product_id, 1)
+    supply_product(product_id, 4)
+    order_id = create_order
+
+    3.times { add_product_to_basket(order_id, product_id) }
+    assert_no_promotion(order_id)
+
+    add_product_to_basket(order_id, product_id)
+    assert_promotion(order_id, "$20.00")
+
+    add_product_to_basket(order_id, cheaper_product_id)
+    assert_promotion(order_id, "$10.00")
+
+    post "/orders/#{order_id}/remove_item?product_id=#{cheaper_product_id}"
+    assert_promotion(order_id, "$20.00")
+
+    post "/orders/#{order_id}/remove_item?product_id=#{product_id}"
+    assert_no_promotion(order_id)
+  end
+
   private
+
+  def assert_promotion(order_id, saving)
+    get "/orders/#{order_id}/edit"
+    assert_select("tr#orders_order_#{order_id}_free_product_saving_row") do
+      assert_select("td", "3+1 — cheapest item free")
+      assert_select("td", "-#{saving}")
+    end
+  end
+
+  def assert_no_promotion(order_id)
+    get "/orders/#{order_id}/edit"
+    assert_select("tr#orders_order_#{order_id}_free_product_saving_row:empty")
+  end
 
   def assert_order_total(order_id, total)
     get "/orders/#{order_id}/edit"

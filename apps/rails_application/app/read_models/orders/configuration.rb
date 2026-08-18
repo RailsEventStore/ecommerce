@@ -71,7 +71,7 @@ module Orders
       event_store.subscribe(RemoveItemFromOrder.new, to: [Pricing::PriceItemRemoved])
       event_store.subscribe(UpdateDiscount.new, to: [Pricing::PercentageDiscountSet, Pricing::PercentageDiscountChanged])
       event_store.subscribe(RemoveDiscount.new, to: [Pricing::PercentageDiscountRemoved])
-      event_store.subscribe(UpdateOrderTotalValue.new, to: [Processes::TotalOrderValueUpdated])
+      event_store.subscribe(UpdateOrderTotalValue.new(FreeProductSavingRenderer.new), to: [Processes::TotalOrderValueUpdated])
       event_store.subscribe(RegisterProduct.new, to: [ProductCatalog::ProductRegistered])
       event_store.subscribe(ChangeProductName.new, to: [ProductCatalog::ProductNamed])
       event_store.subscribe(ChangeProductPrice.new, to: [Pricing::PriceSet])

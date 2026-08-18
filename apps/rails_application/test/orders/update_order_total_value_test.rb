@@ -37,6 +37,32 @@ module Orders
       assert_equal(0, order.discounted_value)
     end
 
+    def test_projects_and_removes_free_product_saving
+      order_id = SecureRandom.uuid
+      store_id = SecureRandom.uuid
+      free_product_id = SecureRandom.uuid
+      draft_order_in_store(order_id, store_id)
+
+      event_store.publish(Processes::TotalOrderValueUpdated.new(data: {
+        order_id: order_id,
+        discounted_amount: 30,
+        total_amount: 30,
+        free_product_id: free_product_id,
+        free_product_saving: 10,
+        items: []
+      }))
+
+      order = Orders.find_order_in_store(order_id, store_id)
+      assert_equal(free_product_id, order.free_product_id)
+      assert_equal(10, order.free_product_saving)
+
+      event_store.publish(total_order_value_updated(order_id))
+
+      order.reload
+      assert_nil(order.free_product_id)
+      assert_equal(0, order.free_product_saving)
+    end
+
     def test_stream
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
