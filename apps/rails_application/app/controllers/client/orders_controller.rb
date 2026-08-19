@@ -31,7 +31,12 @@ module Client
 
     def edit
       order_id = params[:id]
-      render html: ClientOrders::Rendering::EditOrder.build(view_context, order_id, current_store_id), layout: true
+      render html: ClientOrders::Rendering::EditOrder.build(
+        view_context,
+        order_id,
+        current_store_id,
+        ClientOrders::Rendering::FreeProductSaving.new
+      ), layout: true
     end
 
     def add_item

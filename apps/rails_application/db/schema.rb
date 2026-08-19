@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_17_000000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_19_000000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -79,6 +79,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_17_000000) do
     t.uuid "client_uid"
     t.datetime "created_at", null: false
     t.decimal "discounted_value", precision: 8, scale: 2
+    t.uuid "free_product_id"
+    t.decimal "free_product_saving", precision: 8, scale: 2, default: "0.0", null: false
     t.string "number"
     t.uuid "order_uid"
     t.decimal "percentage_discount", precision: 8, scale: 2

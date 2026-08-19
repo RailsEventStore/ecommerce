@@ -49,6 +49,10 @@ module ClientOrders
     TimePromotion.where(store_id: store_id).current
   end
 
+  def self.find_order(order_id)
+    Order.find_by_order_uid(order_id)
+  end
+
   class Configuration
     def call(event_store)
       event_store.subscribe(OrderHandlers::ExpireOrder.new, to: [Pricing::OfferExpired])
@@ -70,7 +74,10 @@ module ClientOrders
       event_store.subscribe(OrderHandlers::RemoveTimePromotionDiscount.new, to: [Pricing::PercentageDiscountRemoved])
       event_store.subscribe(OrderHandlers::UpdateDiscount.new, to: [Pricing::PercentageDiscountSet, Pricing::PercentageDiscountChanged])
       event_store.subscribe(OrderHandlers::RemoveDiscount.new, to: [Pricing::PercentageDiscountRemoved])
-      event_store.subscribe(OrderHandlers::UpdateOrderTotalValue.new, to: [Processes::TotalOrderValueUpdated])
+      event_store.subscribe(
+        OrderHandlers::UpdateOrderTotalValue.new(Rendering::FreeProductSaving.new),
+        to: [Processes::TotalOrderValueUpdated]
+      )
       event_store.subscribe(OrderHandlers::UpdatePaidOrdersSummary.new, to: [Fulfillment::OrderConfirmed])
 
       event_store.subscribe(CreateTimePromotion.new, to: [Pricing::TimePromotionCreated])

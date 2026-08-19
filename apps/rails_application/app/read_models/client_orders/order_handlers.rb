@@ -38,14 +38,21 @@ module ClientOrders
     end
 
     class UpdateOrderTotalValue
+      def initialize(free_product_saving_renderer)
+        @free_product_saving_renderer = free_product_saving_renderer
+      end
+
       def call(event)
         order = Order.find_or_create_by!(order_uid: event.data.fetch(:order_id)) { |order| order.state = "Draft" }
         order.discounted_value = event.data.fetch(:discounted_amount)
         order.total_value = event.data.fetch(:total_amount)
+        order.free_product_id = event.data.fetch(:free_product_id, nil)
+        order.free_product_saving = event.data.fetch(:free_product_saving, 0)
         order.save!
 
         broadcast_update(order.order_uid, "total_value", number_to_currency(order.total_value))
         broadcast_update(order.order_uid, "discounted_value", number_to_currency(order.discounted_value))
+        broadcast_update(order.order_uid, "free_product_saving_row", free_product_saving_row(order))
       end
 
       private
@@ -59,6 +66,10 @@ module ClientOrders
 
       def number_to_currency(number)
         ActiveSupport::NumberHelper.number_to_currency(number)
+      end
+
+      def free_product_saving_row(order)
+        @free_product_saving_renderer.call(order.free_product_saving) if order.free_product_id
       end
     end
 

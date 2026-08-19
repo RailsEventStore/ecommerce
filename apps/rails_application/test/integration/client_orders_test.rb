@@ -108,6 +108,32 @@ class ClientOrdersTest < InMemoryRESIntegrationTestCase
     assert_equal(204, response.status)
   end
 
+  def test_three_plus_one_reward_changes_as_client_updates_basket
+    enable_three_plus_one_free
+    customer_id = register_customer("Customer Shop")
+    cheaper_product_id = register_product("Cheaper", 10, 10)
+    product_id = register_product("Product", 20, 10)
+    supply_product(cheaper_product_id, 1)
+    supply_product(product_id, 4)
+    login(customer_id)
+    order_id = create_client_order
+
+    3.times { as_client_add_item_to_basket_for_order(product_id, order_id) }
+    assert_no_three_plus_one_reward(order_id)
+
+    as_client_add_item_to_basket_for_order(product_id, order_id)
+    assert_three_plus_one_reward(order_id, "$20.00")
+
+    as_client_add_item_to_basket_for_order(cheaper_product_id, order_id)
+    assert_three_plus_one_reward(order_id, "$10.00")
+
+    post "/client_orders/#{order_id}/remove_item?product_id=#{cheaper_product_id}"
+    assert_three_plus_one_reward(order_id, "$20.00")
+
+    post "/client_orders/#{order_id}/remove_item?product_id=#{product_id}"
+    assert_no_three_plus_one_reward(order_id)
+  end
+
   def test_adding_product_which_is_not_available_anymore
     customer_1_id = register_customer("Arkency")
     customer_2_id = register_customer("Customer Shop")
@@ -279,6 +305,29 @@ class ClientOrdersTest < InMemoryRESIntegrationTestCase
   end
 
   private
+
+  def enable_three_plus_one_free
+    Rails.configuration.event_store.subscribe(
+      Processes::ThreePlusOneFree.new(
+        Rails.configuration.event_store,
+        Rails.configuration.command_bus
+      ),
+      to: Processes::ThreePlusOneFree.subscribed_events
+    )
+  end
+
+  def assert_three_plus_one_reward(order_id, saving)
+    get "/client_orders/#{order_id}/edit"
+    assert_select("tr#client_orders_#{order_id}_free_product_saving_row") do
+      assert_select("td", "3+1 — cheapest item free")
+      assert_select("td", "-#{saving}")
+    end
+  end
+
+  def assert_no_three_plus_one_reward(order_id)
+    get "/client_orders/#{order_id}/edit"
+    assert_select("tr#client_orders_#{order_id}_free_product_saving_row:empty")
+  end
 
   def submit_order_for_customer(customer_id, order_id)
     post "/orders/#{order_id}/submit", params: { customer_id: customer_id }

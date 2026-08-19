@@ -5,7 +5,7 @@ module ClientOrders
       include ActionView::Helpers::FormTagHelper
       include ActionView::Helpers::UrlHelper
 
-      def self.build(view_context, order_id, store_id)
+      def self.build(view_context, order_id, store_id, free_product_saving_renderer)
         order = ClientOrders::Order.find_or_initialize_by(order_uid: order_id) do |order|
           order.total_value = 0
           order.discounted_value = 0
@@ -13,13 +13,13 @@ module ClientOrders
         order_lines = ClientOrders::OrderLine.where(order_uid: order_id)
         products = ClientOrders::Product.all
         time_promotions = ClientOrders.current_time_promotions_for_store(store_id)
-        new(Arbre::Context.new(nil, view_context)).build(order, order_lines, products, time_promotions)
+        new(Arbre::Context.new(nil, view_context)).build(order, order_lines, products, time_promotions, free_product_saving_renderer)
       end
 
-      def build(order, order_lines, products, time_promotions, attributes = {})
+      def build(order, order_lines, products, time_promotions, free_product_saving_renderer, attributes = {})
         super(attributes)
         div do
-          products_table(order, products, order_lines, time_promotions)
+          products_table(order, products, order_lines, time_promotions, free_product_saving_renderer)
           coupon_form(order)
           submit_form(order)
         end
@@ -27,11 +27,11 @@ module ClientOrders
 
       private
 
-      def products_table(order, products, order_lines, time_promotions)
+      def products_table(order, products, order_lines, time_promotions, free_product_saving_renderer)
         table class: "w-full" do
           headers_row
           products_rows(order, products, order_lines)
-          footer_rows(order, time_promotions)
+          footer_rows(order, time_promotions, free_product_saving_renderer)
         end
       end
 
@@ -69,12 +69,19 @@ module ClientOrders
         end
       end
 
-      def footer_rows(order, time_promotions)
+      def footer_rows(order, time_promotions, free_product_saving_renderer)
         tfoot class:"border-t-4" do
+          free_product_saving_row(order, free_product_saving_renderer)
           before_discounts_row(order) if order.percentage_discount || time_promotions.any?
           coupon_discount_row(order) if order.percentage_discount
           time_promotions_rows(time_promotions)
           total_row(order)
+        end
+      end
+
+      def free_product_saving_row(order, free_product_saving_renderer)
+        tr(class: "border-t", id: "client_orders_#{order.order_uid}_free_product_saving_row") do
+          text_node free_product_saving_renderer.call(order.free_product_saving) if order.free_product_id
         end
       end
 

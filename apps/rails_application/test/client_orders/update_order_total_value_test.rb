@@ -6,7 +6,10 @@ module ClientOrders
     cover "ClientOrders*"
 
     def configure(event_store, _command_bus)
-      ClientOrders::Configuration.new.call(event_store)
+      event_store.subscribe(
+        OrderHandlers::UpdateOrderTotalValue.new(Rendering::FreeProductSaving.new),
+        to: [Processes::TotalOrderValueUpdated]
+      )
     end
 
     def test_order_created_has_draft_state
@@ -18,8 +21,7 @@ module ClientOrders
 
       event_store.publish(Processes::TotalOrderValueUpdated.new(data: { order_id: order_id, discounted_amount: 0, total_amount: 10, items: [] }))
 
-      order = ClientOrders::Order.find_by(order_uid: order_id)
-      assert_equal "Draft", order.state
+      assert_equal("Draft", ClientOrders.find_order(order_id).state)
     end
 
     def test_broadcasts
@@ -34,7 +36,7 @@ module ClientOrders
           template: "$10.00"
         )
       )
-       assert_broadcast_on(
+      assert_broadcast_on(
         "client_orders_#{order_id}",
         turbo_stream_action_tag(
           action: "update",
@@ -44,7 +46,74 @@ module ClientOrders
       )
     end
 
+    def test_projects_and_removes_free_product_saving
+      order_id = SecureRandom.uuid
+      free_product_id = SecureRandom.uuid
+
+      event_store.publish(total_order_value_updated(order_id, free_product_id, 10))
+
+      assert_equal(free_product_id, ClientOrders.find_order(order_id).free_product_id)
+      assert_equal(10, ClientOrders.find_order(order_id).free_product_saving)
+
+      event_store.publish(Processes::TotalOrderValueUpdated.new(data: {
+        order_id: order_id,
+        discounted_amount: 40,
+        total_amount: 40,
+        items: []
+      }))
+
+      assert_nil(ClientOrders.find_order(order_id).free_product_id)
+      assert_equal(0, ClientOrders.find_order(order_id).free_product_saving)
+    end
+
+    def test_broadcasts_free_product_saving_appearing_changing_and_disappearing
+      order_id = SecureRandom.uuid
+
+      event_store.publish(total_order_value_updated(order_id, SecureRandom.uuid, 20))
+      assert_free_product_saving_broadcast(order_id, "$20.00")
+
+      event_store.publish(total_order_value_updated(order_id, SecureRandom.uuid, 10))
+      assert_free_product_saving_broadcast(order_id, "$10.00")
+
+      event_store.publish(Processes::TotalOrderValueUpdated.new(data: {
+        order_id: order_id,
+        discounted_amount: 40,
+        total_amount: 40,
+        items: []
+      }))
+      assert_broadcast_on(
+        "client_orders_#{order_id}",
+        turbo_stream_action_tag(
+          action: "update",
+          target: "client_orders_#{order_id}_free_product_saving_row",
+          template: ""
+        )
+      )
+    end
+
     private
+
+    def total_order_value_updated(order_id, free_product_id, free_product_saving)
+      Processes::TotalOrderValueUpdated.new(data: {
+        order_id: order_id,
+        discounted_amount: 30,
+        total_amount: 30,
+        free_product_id: free_product_id,
+        free_product_saving: free_product_saving,
+        items: []
+      })
+    end
+
+    def assert_free_product_saving_broadcast(order_id, saving)
+      assert_broadcast_on(
+        "client_orders_#{order_id}",
+        turbo_stream_action_tag(
+          action: "update",
+          target: "client_orders_#{order_id}_free_product_saving_row",
+          template: %(<td class="py-2" colspan="4">3+1 — cheapest item free</td>\n<td class="py-2">-#{saving}</td>)
+        )
+      )
+    end
 
     def item_added_to_basket(order_id, product_id)
       event_store.publish(Pricing::PriceItemAdded.new(data: { product_id: product_id, order_id: order_id }))
