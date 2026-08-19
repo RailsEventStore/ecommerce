@@ -7,7 +7,7 @@ module ClientOrders
 
     def configure(event_store, _command_bus)
       event_store.subscribe(
-        OrderHandlers::UpdateOrderTotalValue.new(Rendering::FreeProductSaving.new),
+        OrderHandlers::UpdateOrderTotalValue.new,
         to: [Processes::TotalOrderValueUpdated]
       )
     end
@@ -110,7 +110,7 @@ module ClientOrders
         turbo_stream_action_tag(
           action: "update",
           target: "client_orders_#{order_id}_free_product_saving_row",
-          template: %(<td class="py-2" colspan="4">3+1 — cheapest item free</td>\n<td class="py-2">-#{saving}</td>)
+          template: %(<td class="py-2" colspan="4">3+1 — cheapest item free</td>\n<td class="py-2">-#{saving}</td>\n)
         )
       )
     end

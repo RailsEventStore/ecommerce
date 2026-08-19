@@ -8,7 +8,7 @@ module ClientOrders
       def test_renders_safe_table_cells
         assert(rendered.html_safe?)
         assert_equal(
-          %(<td class="py-2" colspan="4">3+1 — cheapest item free</td>\n<td class="py-2">-$10.00</td>),
+          %(<td class="py-2" colspan="4">3+1 — cheapest item free</td>\n<td class="py-2">-$10.00</td>\n),
           rendered
         )
       end
@@ -16,7 +16,7 @@ module ClientOrders
       private
 
       def rendered
-        @rendered ||= FreeProductSaving.new.call(10)
+        @rendered ||= FreeProductSaving.call(10)
       end
     end
   end

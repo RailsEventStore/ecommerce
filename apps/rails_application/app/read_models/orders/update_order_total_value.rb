@@ -1,9 +1,5 @@
 module Orders
   class UpdateOrderTotalValue
-    def initialize(free_product_saving_renderer)
-      @free_product_saving_renderer = free_product_saving_renderer
-    end
-
     def call(event)
       order_id = event.data.fetch(:order_id)
       order = Order.find_or_create_by!(uid: order_id)
@@ -45,7 +41,7 @@ module Orders
     def free_product_saving_row(order)
       return "" unless order.free_product_id
 
-      @free_product_saving_renderer.call(number_to_currency(order.free_product_saving))
+      FreeProductSavingRenderer.call(number_to_currency(order.free_product_saving))
     end
   end
 end

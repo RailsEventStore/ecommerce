@@ -34,8 +34,7 @@ module Client
       render html: ClientOrders::Rendering::EditOrder.build(
         view_context,
         order_id,
-        current_store_id,
-        ClientOrders::Rendering::FreeProductSaving.new
+        current_store_id
       ), layout: true
     end
 

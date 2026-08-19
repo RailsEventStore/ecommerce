@@ -1,6 +1,6 @@
 module Orders
   class FreeProductSavingRenderer
-    def call(saving)
+    def self.call(saving)
       ApplicationController.render(
         partial: "orders/free_product_saving",
         locals: { saving: saving }

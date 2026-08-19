@@ -75,7 +75,7 @@ module ClientOrders
       event_store.subscribe(OrderHandlers::UpdateDiscount.new, to: [Pricing::PercentageDiscountSet, Pricing::PercentageDiscountChanged])
       event_store.subscribe(OrderHandlers::RemoveDiscount.new, to: [Pricing::PercentageDiscountRemoved])
       event_store.subscribe(
-        OrderHandlers::UpdateOrderTotalValue.new(Rendering::FreeProductSaving.new),
+        OrderHandlers::UpdateOrderTotalValue.new,
         to: [Processes::TotalOrderValueUpdated]
       )
       event_store.subscribe(OrderHandlers::UpdatePaidOrdersSummary.new, to: [Fulfillment::OrderConfirmed])

@@ -38,10 +38,6 @@ module ClientOrders
     end
 
     class UpdateOrderTotalValue
-      def initialize(free_product_saving_renderer)
-        @free_product_saving_renderer = free_product_saving_renderer
-      end
-
       def call(event)
         order = Order.find_or_create_by!(order_uid: event.data.fetch(:order_id)) { |order| order.state = "Draft" }
         order.discounted_value = event.data.fetch(:discounted_amount)
@@ -69,7 +65,7 @@ module ClientOrders
       end
 
       def free_product_saving_row(order)
-        @free_product_saving_renderer.call(order.free_product_saving) if order.free_product_id
+        Rendering::FreeProductSaving.call(order.free_product_saving) if order.free_product_id
       end
     end
 
