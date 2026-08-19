@@ -109,7 +109,6 @@ class ClientOrdersTest < InMemoryRESIntegrationTestCase
   end
 
   def test_three_plus_one_reward_changes_as_client_updates_basket
-    enable_three_plus_one_free
     customer_id = register_customer("Customer Shop")
     cheaper_product_id = register_product("Cheaper", 10, 10)
     product_id = register_product("Product", 20, 10)
@@ -135,7 +134,6 @@ class ClientOrdersTest < InMemoryRESIntegrationTestCase
   end
 
   def test_three_plus_one_reward_on_submitted_client_order
-    enable_three_plus_one_free
     customer_id = register_customer("Customer Shop")
     product_id = register_product("Product", 20, 10)
     supply_product(product_id, 4)
@@ -324,16 +322,6 @@ class ClientOrdersTest < InMemoryRESIntegrationTestCase
   end
 
   private
-
-  def enable_three_plus_one_free
-    Rails.configuration.event_store.subscribe(
-      Processes::ThreePlusOneFree.new(
-        Rails.configuration.event_store,
-        Rails.configuration.command_bus
-      ),
-      to: Processes::ThreePlusOneFree.subscribed_events
-    )
-  end
 
   def assert_three_plus_one_reward(order_id, saving)
     get "/client_orders/#{order_id}/edit"

@@ -4,13 +4,6 @@ class ThreePlusOneFreeTest < InMemoryRESIntegrationTestCase
   def setup
     super
     Rails.configuration.payment_gateway.call.reset
-    Rails.configuration.event_store.subscribe(
-      Processes::ThreePlusOneFree.new(
-        Rails.configuration.event_store,
-        Rails.configuration.command_bus
-      ),
-      to: Processes::ThreePlusOneFree.subscribed_events
-    )
     register_store("Store 1")
     add_available_vat_rate(10)
   end

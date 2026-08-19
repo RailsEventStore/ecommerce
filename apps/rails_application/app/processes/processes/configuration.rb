@@ -15,6 +15,7 @@ module Processes
       enable_reservation_process(event_store, command_bus)
       enable_welcome_message_process(event_store, command_bus)
       enable_total_order_value_process(event_store, command_bus)
+      enable_three_plus_one_free_process(event_store, command_bus)
       enable_invoice_generation_process(event_store, command_bus)
     end
 
