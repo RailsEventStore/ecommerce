@@ -134,6 +134,25 @@ class ClientOrdersTest < InMemoryRESIntegrationTestCase
     assert_no_three_plus_one_reward(order_id)
   end
 
+  def test_three_plus_one_reward_on_submitted_client_order
+    enable_three_plus_one_free
+    customer_id = register_customer("Customer Shop")
+    product_id = register_product("Product", 20, 10)
+    supply_product(product_id, 4)
+    login(customer_id)
+    order_id = create_client_order
+
+    4.times { as_client_add_item_to_basket_for_order(product_id, order_id) }
+    as_client_submit_order_for_customer(order_id)
+
+    assert_select("tfoot tr", text: /3\+1 — cheapest item free/) do
+      assert_select("td", "-$20.00")
+    end
+    assert_select("tfoot tr", text: /Total/) do
+      assert_select("td", "$60.00")
+    end
+  end
+
   def test_adding_product_which_is_not_available_anymore
     customer_1_id = register_customer("Arkency")
     customer_2_id = register_customer("Customer Shop")

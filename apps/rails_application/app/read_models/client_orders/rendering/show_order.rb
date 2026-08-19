@@ -75,10 +75,18 @@ module ClientOrders
 
       def footer_rows(order)
         tfoot class: "border-t-4" do
+          free_product_saving_row(order) if order.free_product_id
           before_discounts_row(order) if order.discounted_value != order.total_value
           general_discount_row(order) if order.percentage_discount
           time_promotion_row(order) if order.time_promotion_discount
           total_row(order)
+        end
+      end
+
+      def free_product_saving_row(order)
+        tr class: "border-t" do
+          td(class: "py-2", colspan: 3) { "3+1 — cheapest item free" }
+          td(class: "py-2 text-right") { "-#{number_to_currency(order.free_product_saving)}" }
         end
       end
 
