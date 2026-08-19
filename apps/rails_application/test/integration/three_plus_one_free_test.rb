@@ -39,6 +39,7 @@ class ThreePlusOneFreeTest < InMemoryRESIntegrationTestCase
     assert_order_total(order_id, "$162.00")
 
     submit_order(customer_id, order_id)
+    assert_order_show_promotion(order_id, "$20.00")
     post "/orders/#{order_id}/pay"
     assert_payment_gateway_value(162.0)
     assert_invoice_values(order_id)
@@ -80,6 +81,13 @@ class ThreePlusOneFreeTest < InMemoryRESIntegrationTestCase
   def assert_no_promotion(order_id)
     get "/orders/#{order_id}/edit"
     assert_select("tr#orders_order_#{order_id}_free_product_saving_row:empty")
+  end
+
+  def assert_order_show_promotion(order_id, saving)
+    get "/orders/#{order_id}"
+    assert_select("tfoot tr", text: /3\+1 — cheapest item free/) do
+      assert_select("td", "-#{saving}")
+    end
   end
 
   def assert_order_total(order_id, total)
