@@ -68,6 +68,7 @@ class ClientOrdersTest < InMemoryRESIntegrationTestCase
     order_id = create_client_order
     as_client_add_item_to_basket_for_order(async_remote_id, order_id)
     as_client_submit_order_for_customer(order_id)
+    assert_select("#notice", "Your order has been submitted")
     get "/client_orders"
     order_price =
       number_to_currency(Orders.find_order_in_store(order_id, @store_id).discounted_value)

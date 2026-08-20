@@ -43,6 +43,7 @@ class OrdersTest < InMemoryRESIntegrationTestCase
            "commit" => "Submit order"
          }
     follow_redirect!
+    assert_select("#notice", "Your order has been submitted")
     assert_select("td", "$123.30")
     assert_select("dd", "Submitted")
     assert_select("dd", "Shopify")

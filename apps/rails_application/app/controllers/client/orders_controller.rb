@@ -22,7 +22,7 @@ module Client
     rescue Pricing::Offer::IsEmpty
       redirect_to edit_client_order_path(params[:order_id]), alert: "You can't submit an empty order"
     else
-      redirect_to client_order_path(params[:order_id]), notice: "Your order is being submitted"
+      redirect_to client_order_path(params[:order_id]), notice: "Your order has been submitted"
     end
 
     def show

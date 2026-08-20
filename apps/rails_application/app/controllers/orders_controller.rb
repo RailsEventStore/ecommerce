@@ -80,7 +80,7 @@ class OrdersController < ApplicationController
   rescue Crm::Customer::NotExists
     redirect_to order_path(params[:id]), alert: "Order can not be submitted! Customer does not exist."
   else
-    redirect_to order_path(params[:id]), notice: "Your order is being submitted"
+    redirect_to order_path(params[:id]), notice: "Your order has been submitted"
   end
 
   def expire
