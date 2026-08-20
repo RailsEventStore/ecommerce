@@ -5,7 +5,10 @@ module Processes
     cover "Processes::ShipmentProcess*"
 
     def test_submit_and_authorize_shipment_when_order_confirmed_and_address_set
-      given([order_placed, order_confirmed, shipping_address_added], process:)
+      given(
+        [order_placed, order_confirmed, shipping_address_added, shipment_submitted, shipment_authorized],
+        process:
+      )
       assert_all_commands(
         Shipping::SubmitShipment.new(order_id:),
         Shipping::AuthorizeShipment.new(order_id:),
@@ -42,7 +45,10 @@ module Processes
     end
 
     def test_submit_and_authorize_shipment_with_store_registration
-      given([offer_registered, order_placed, order_confirmed, shipping_address_added], process:)
+      given(
+        [offer_registered, order_placed, order_confirmed, shipping_address_added, shipment_submitted],
+        process:
+      )
       assert_all_commands(
         Stores::RegisterShipment.new(shipment_id: order_id, store_id: store_id),
         Shipping::SubmitShipment.new(order_id:),
@@ -55,6 +61,30 @@ module Processes
       assert_all_commands(
         Stores::RegisterShipment.new(shipment_id: order_id, store_id: store_id),
         Shipping::SubmitShipment.new(order_id:),
+      )
+    end
+
+    def test_authorize_already_submitted_shipment_when_order_confirmed
+      given(
+        [offer_registered, shipping_address_added, order_placed, shipment_submitted, order_confirmed],
+        process:
+      )
+      assert_all_commands(
+        Stores::RegisterShipment.new(shipment_id: order_id, store_id: store_id),
+        Shipping::SubmitShipment.new(order_id:),
+        Shipping::AuthorizeShipment.new(order_id:),
+      )
+    end
+
+    def test_authorize_shipment_when_address_set_after_order_placed
+      given(
+        [offer_registered, order_placed, shipping_address_added, shipment_submitted, order_confirmed],
+        process:
+      )
+      assert_all_commands(
+        Stores::RegisterShipment.new(shipment_id: order_id, store_id: store_id),
+        Shipping::SubmitShipment.new(order_id:),
+        Shipping::AuthorizeShipment.new(order_id:),
       )
     end
 
@@ -71,6 +101,14 @@ module Processes
           postal_address: { line_1: "123 Some Street", line_2: "", line_3: "", line_4: "" },
         }
       )
+    end
+
+    def shipment_submitted
+      Shipping::ShipmentSubmitted.new(data: { order_id: order_id })
+    end
+
+    def shipment_authorized
+      Shipping::ShipmentAuthorized.new(data: { order_id: order_id })
     end
 
     def offer_registered

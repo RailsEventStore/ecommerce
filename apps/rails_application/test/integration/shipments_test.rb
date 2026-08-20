@@ -59,6 +59,19 @@ class ShipmentsTest < InMemoryRESIntegrationTestCase
     refute_select("td", "456 Store B Ave Apt 1 San Francisco US")
   end
 
+  def test_pay_order_after_shipment_was_submitted
+    store_id = register_store("Test Store")
+    add_available_vat_rate(10)
+    customer_id = register_customer("Shopify")
+    product_id = register_product("Async Remote", 39, 10)
+    order_id = create_shipment_in_store(customer_id, product_id, store_id, "123 Main Street")
+
+    post "/orders/#{order_id}/pay"
+    follow_redirect!
+
+    assert_select("td", text: "Paid")
+  end
+
   private
 
   def create_shipment_in_store(customer_id, product_id, store_id, address_line_1)

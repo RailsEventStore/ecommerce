@@ -4,6 +4,8 @@ module Processes
 
     subscribes_to(
       Shipping::ShippingAddressAddedToShipment,
+      Shipping::ShipmentSubmitted,
+      Shipping::ShipmentAuthorized,
       Fulfillment::OrderRegistered,
       Fulfillment::OrderConfirmed,
       Stores::OfferRegistered
@@ -12,26 +14,25 @@ module Processes
     private
 
     def act
-      case state
-      in { shipment: :address_set, order: :placed }
-        register_shipment
-        submit_shipment
-      in { shipment: :address_set, order: :confirmed }
-        register_shipment
-        submit_shipment
+      if state.ready_to_submit?
+        register_and_submit_shipment
+      elsif state.ready_to_authorize?
         authorize_shipment
-      else
       end
     end
 
     def apply(event)
       case event
       when Shipping::ShippingAddressAddedToShipment
-        state.with(shipment: :address_set)
+        state.with(shipping_address_set: true)
+      when Shipping::ShipmentSubmitted
+        state.with(shipment_submitted: true)
+      when Shipping::ShipmentAuthorized
+        state.with(shipment_authorized: true)
       when Fulfillment::OrderRegistered
-        state.with(order: :placed)
+        state.with(order_placed: true)
       when Fulfillment::OrderConfirmed
-        state.with(order: :confirmed)
+        state.with(order_confirmed: true)
       when Stores::OfferRegistered
         state.with(store_id: event.data.fetch(:store_id))
       end
@@ -48,7 +49,8 @@ module Processes
       )
     end
 
-    def submit_shipment
+    def register_and_submit_shipment
+      register_shipment
       command_bus.call(Shipping::SubmitShipment.new(order_id: id))
     end
 
@@ -60,8 +62,32 @@ module Processes
       event.data.fetch(:order_id)
     end
 
-    ProcessState = Data.define(:order, :shipment, :store_id) do
-      def initialize(order: nil, shipment: nil, store_id: nil) = super
+    ProcessState = Data.define(
+      :order_placed,
+      :order_confirmed,
+      :shipping_address_set,
+      :shipment_submitted,
+      :shipment_authorized,
+      :store_id
+    ) do
+      def initialize(
+        order_placed: false,
+        order_confirmed: false,
+        shipping_address_set: false,
+        shipment_submitted: false,
+        shipment_authorized: false,
+        store_id: nil
+      )
+        super
+      end
+
+      def ready_to_submit?
+        order_placed && shipping_address_set && !shipment_submitted
+      end
+
+      def ready_to_authorize?
+        order_confirmed && shipment_submitted && !shipment_authorized
+      end
     end
   end
 end
