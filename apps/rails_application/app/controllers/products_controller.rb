@@ -80,7 +80,7 @@ class ProductsController < ApplicationController
 
   def create_product(product_id, name)
     command_bus.(create_product_cmd(product_id))
-    command_bus.(name_product_cmd(product_id, name))
+    command_bus.(request_product_name_change_cmd(product_id, name))
     command_bus.(register_product_in_store_cmd(product_id))
   end
 
@@ -97,15 +97,15 @@ class ProductsController < ApplicationController
   end
 
   def set_product_name(product_id, name)
-    command_bus.(name_product_cmd(product_id, name))
+    command_bus.(request_product_name_change_cmd(product_id, name))
   end
 
   def create_product_cmd(product_id)
     ProductCatalog::RegisterProduct.new(product_id: product_id)
   end
 
-  def name_product_cmd(product_id, name)
-    ProductCatalog::NameProduct.new(product_id: product_id, name: name)
+  def request_product_name_change_cmd(product_id, name)
+    ProductCatalog::RequestProductNameChange.new(product_id: product_id, name: name)
   end
 
   def set_product_price_cmd(product_id, price)

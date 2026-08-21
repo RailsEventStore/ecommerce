@@ -37,6 +37,17 @@ class PublicOfferTest < InMemoryRESIntegrationTestCase
                  "Lowest recent price: $25.00"
   end
 
+  def test_product_with_rejected_name_is_not_published
+    client_id = register_customer("Arkency")
+    register_product("Curse word", 39, 10)
+
+    get "/clients"
+    login(client_id)
+    get "/client/products"
+    assert_select("td", { text: "Curse word", count: 0 })
+    assert_select("p", "No products to display.")
+  end
+
   def test_products_are_filtered_by_current_store
     client_id = register_customer("Arkency")
     store_1_id = register_store("Store 1")

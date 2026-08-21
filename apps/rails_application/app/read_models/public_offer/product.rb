@@ -15,6 +15,6 @@ module PublicOffer
   end
 
   def self.products_in_store(store_id)
-    Product.where(store_id: store_id)
+    Product.where(store_id: store_id).where.not(name: nil)
   end
 end
