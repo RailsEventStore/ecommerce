@@ -7,6 +7,25 @@ class ProductsTest < InMemoryRESIntegrationTestCase
     super
   end
 
+  def test_rejected_name_is_surfaced_on_products_list
+    register_store("Store 1")
+    add_available_vat_rate(10, "10S")
+    product_id = SecureRandom.uuid
+
+    post "/products",
+         params: {
+           "authenticity_token" => "[FILTERED]",
+           "product_id" => product_id,
+           "name" => "curse word",
+           :price => "20.01",
+           "vat_rate_code" => "10S"
+         }
+    follow_redirect!
+
+    assert_select "td", text: "[rejected name]"
+    refute_includes(response.body, "curse word")
+  end
+
   def test_happy_path
     register_store("Store 1")
     add_available_vat_rate(10, "10S")
