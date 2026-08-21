@@ -7,4 +7,14 @@ module ProductCatalog
     attribute :product_id, Infra::Types::UUID
     attribute :name, Infra::Types::String
   end
+
+  class RequestProductNameChange < Infra::Command
+    attribute :product_id, Infra::Types::UUID
+    attribute :name, Infra::Types::String
+  end
+
+  class ModerateProductName < Infra::Command
+    attribute :product_id, Infra::Types::UUID
+    attribute :name, Infra::Types::String
+  end
 end

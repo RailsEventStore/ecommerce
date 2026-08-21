@@ -14,9 +14,10 @@ require_relative "stores/lib/stores"
 
 module Ecommerce
   class Configuration
-    def initialize(number_generator: nil, payment_gateway: nil)
+    def initialize(number_generator: nil, payment_gateway: nil, product_name_moderation: nil)
       @number_generator = number_generator
       @payment_gateway = payment_gateway
+      @product_name_moderation = product_name_moderation
     end
 
     def call(event_store, command_bus)
@@ -37,7 +38,7 @@ module Ecommerce
         Shipping::Configuration.new,
         Pricing::Configuration.new,
         Taxes::Configuration.new,
-        ProductCatalog::Configuration.new,
+        ProductCatalog::Configuration.new(@product_name_moderation),
         Fulfillment::Configuration.new(@number_generator),
         Communication::Configuration.new,
         Stores::Configuration.new,
