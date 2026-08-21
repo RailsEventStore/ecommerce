@@ -55,6 +55,7 @@ module ClientOrders
 
   class Configuration
     def call(event_store)
+      event_store.subscribe(OrderHandlers::DraftOrder.new, to: [Pricing::OfferDrafted])
       event_store.subscribe(OrderHandlers::ExpireOrder.new, to: [Pricing::OfferExpired])
       event_store.subscribe(OrderHandlers::CancelOrder.new, to: [Fulfillment::OrderCancelled])
       event_store.subscribe(OrderHandlers::SubmitOrder.new, to: [Fulfillment::OrderRegistered])

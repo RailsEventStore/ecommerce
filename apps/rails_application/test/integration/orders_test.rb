@@ -75,6 +75,17 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     assert_select("td", "Expired")
   end
 
+  def test_expiring_order_without_items
+    get "/orders/new"
+    follow_redirect!
+
+    get "/orders"
+    assert_select("td", "Draft")
+    post "/orders/expire"
+    follow_redirect!
+    assert_select("td", "Expired")
+  end
+
   def test_cancel
     shopify_id = register_customer("Shopify")
 

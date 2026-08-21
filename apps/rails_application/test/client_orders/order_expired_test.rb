@@ -50,6 +50,30 @@ module ClientOrders
       assert_equal("Expired", orders.first.state)
     end
 
+    def test_order_expired_when_no_items_were_added
+      order_id = SecureRandom.uuid
+
+      event_store.publish(
+        Pricing::OfferDrafted.new(
+          data: {
+            order_id: order_id
+          }
+        )
+      )
+
+      event_store.publish(
+        Pricing::OfferExpired.new(
+          data: {
+            order_id: order_id
+          }
+        )
+      )
+
+      orders = Order.all
+      assert_equal(1, orders.count)
+      assert_equal("Expired", orders.first.state)
+    end
+
     private
 
     def event_store

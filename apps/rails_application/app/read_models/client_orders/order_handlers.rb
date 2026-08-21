@@ -1,5 +1,11 @@
 module ClientOrders
   module OrderHandlers
+    class DraftOrder
+      def call(event)
+        Order.create!(order_uid: event.data.fetch(:order_id), state: "Draft")
+      end
+    end
+
     class ConfirmOrder
       def call(event)
         order = Order.find_by(order_uid: event.data.fetch(:order_id))
