@@ -125,6 +125,28 @@ class ProductsTest < InMemoryRESIntegrationTestCase
     assert_select "span", "Name can't be blank"
   end
 
+  def test_registering_same_product_twice_renders_error
+    register_store("Store 1")
+    add_available_vat_rate(10, "10S")
+    register_customer("Arkency")
+    product_id = SecureRandom.uuid
+
+    params = {
+      "authenticity_token" => "[FILTERED]",
+      "product_id" => product_id,
+      "name" => "product name",
+      "price" => "20.01",
+      "vat_rate_code" => "10S"
+    }
+    post "/products", params: params
+    follow_redirect!
+
+    post "/products", params: params
+
+    assert_response :unprocessable_entity
+    assert_select "#notice", "Product was already registered"
+  end
+
   def test_products_are_filtered_by_current_store
     store_1_id = register_store("Store 1")
     store_2_id = register_store("Store 2")

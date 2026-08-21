@@ -50,11 +50,11 @@ class ProductsController < ApplicationController
 
     redirect_to products_path, notice: "Product was successfully created"
   rescue ProductCatalog::AlreadyRegistered
-    flash[:notice] = "Product was already registered"
-    render "new"
+    flash.now[:notice] = "Product was already registered"
+    render "new", status: :unprocessable_entity
   rescue Taxes::VatRateNotApplicable
-    flash[:notice] = "Selected VAT rate is not applicable"
-    render "new"
+    flash.now[:notice] = "Selected VAT rate is not applicable"
+    render "new", status: :unprocessable_entity
   end
 
   def update

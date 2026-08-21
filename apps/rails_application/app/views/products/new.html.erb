@@ -7,40 +7,38 @@
     <%= link_to 'Back', products_path %>
   <% end %>
 
-  <%= primary_form_action_button(data: { turbo_frame: "create_product" }) do %>
+  <%= primary_form_action_button do %>
     Create Product
   <% end %>
 <% end %>
 
-<%= turbo_frame_tag "create_product" do %>
-  <%= form_tag({ controller: "products", action: "create" }, method: "post", id: "form") do %>
-    <%= hidden_field_tag(:product_id, @product_id, data: { turbo_permanent: true }) %>
+<%= form_tag({ controller: "products", action: "create" }, method: "post", id: "form") do %>
+  <%= hidden_field_tag(:product_id, @product_id, data: { turbo_permanent: true }) %>
 
-    <div>
-      <label for="name" class="block font-bold">
-        Name
-      </label>
-      <%= text_field_tag :name, "", required: true, class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-xs sm:text-sm border-gray-300 rounded-md", data: { turbo_permanent: true } %>
-    </div>
-    <div class="mt-2">
-      <label for="price" class="block font-bold">
-        Price
-      </label>
-      <%= number_field_tag :price, nil, min: 0, step: 0.01, required: true, class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-xs sm:text-sm border-gray-300 rounded-md", data: { turbo_permanent: true } %>
-    </div>
-    <div class="mt-2">
-      <label for="vat_rate" class="block font-bold">
-        VAT rate
-      </label>
-      <%= select_tag :vat_rate_code, options_from_collection_for_select(VatRates::AvailableVatRate.all, :code, :code), class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-xs sm:text-sm border-gray-300 rounded-md", data: { turbo_permanent: true } %>
-    </div>
+  <div>
+    <label for="name" class="block font-bold">
+      Name
+    </label>
+    <%= text_field_tag :name, "", required: true, class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-xs sm:text-sm border-gray-300 rounded-md", data: { turbo_permanent: true } %>
+  </div>
+  <div class="mt-2">
+    <label for="price" class="block font-bold">
+      Price
+    </label>
+    <%= number_field_tag :price, nil, min: 0, step: 0.01, required: true, class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-xs sm:text-sm border-gray-300 rounded-md", data: { turbo_permanent: true } %>
+  </div>
+  <div class="mt-2">
+    <label for="vat_rate" class="block font-bold">
+      VAT rate
+    </label>
+    <%= select_tag :vat_rate_code, options_from_collection_for_select(VatRates::AvailableVatRate.all, :code, :code), class: "mt-1 focus:ring-blue-500 focus:border-blue-500 block shadow-xs sm:text-sm border-gray-300 rounded-md", data: { turbo_permanent: true } %>
+  </div>
 
-    <% if defined?(errors) %>
-      <% errors.each do |error| %>
-        <div class="mt-2 text-red-600">
-          <span><%= error.full_message %></span>
-        </div>
-      <% end %>
+  <% if defined?(errors) %>
+    <% errors.each do |error| %>
+      <div class="mt-2 text-red-600">
+        <span><%= error.full_message %></span>
+      </div>
     <% end %>
   <% end %>
 <% end %>
