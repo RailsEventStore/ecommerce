@@ -12,6 +12,7 @@ module ClientOrders
       customer_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
+      draft_order(order_id)
       event_store.publish(ProductCatalog::ProductRegistered.new(data: { product_id: product_id }))
       event_store.publish(ProductCatalog::ProductNamed.new(data: { product_id: product_id, name: "Async Remote" }))
       event_store.publish(Pricing::PriceSet.new(data: { product_id: product_id, price: 39 }))
@@ -53,13 +54,7 @@ module ClientOrders
     def test_order_expired_when_no_items_were_added
       order_id = SecureRandom.uuid
 
-      event_store.publish(
-        Pricing::OfferDrafted.new(
-          data: {
-            order_id: order_id
-          }
-        )
-      )
+      draft_order(order_id)
 
       event_store.publish(
         Pricing::OfferExpired.new(
@@ -75,6 +70,10 @@ module ClientOrders
     end
 
     private
+
+    def draft_order(order_id)
+      event_store.publish(Pricing::OfferDrafted.new(data: { order_id: order_id }))
+    end
 
     def event_store
       Rails.configuration.event_store

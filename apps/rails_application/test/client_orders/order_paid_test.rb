@@ -11,6 +11,7 @@ module ClientOrders
     def test_order_confirmed
       customer_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
+      draft_order(order_id)
       product_id = SecureRandom.uuid
 
       event_store.publish(Crm::CustomerRegistered.new(data: { customer_id: customer_id, name: "John Doe" }))
@@ -75,6 +76,10 @@ module ClientOrders
     end
 
     private
+
+    def draft_order(order_id)
+      event_store.publish(Pricing::OfferDrafted.new(data: { order_id: order_id }))
+    end
 
     def event_store
       Rails.configuration.event_store

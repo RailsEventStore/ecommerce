@@ -12,6 +12,7 @@ module ClientOrders
       customer_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
+      draft_order(order_id)
 
       customer_registered(customer_id)
       prepare_product(product_id)
@@ -31,6 +32,7 @@ module ClientOrders
       customer_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
+      draft_order(order_id)
 
       customer_registered(customer_id)
       prepare_product(product_id)
@@ -51,6 +53,10 @@ module ClientOrders
     end
 
     private
+
+    def draft_order(order_id)
+      event_store.publish(Pricing::OfferDrafted.new(data: { order_id: order_id }))
+    end
 
     def set_time_promotion_discount(order_id, amount)
       event_store.publish(Pricing::PercentageDiscountSet.new(

@@ -16,6 +16,7 @@ module ClientOrders
       customer_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
+      draft_order(order_id)
       customer_registered(customer_id)
       prepare_product(product_id)
 
@@ -26,6 +27,7 @@ module ClientOrders
 
     def test_broadcasts
       order_id = SecureRandom.uuid
+      draft_order(order_id)
       event_store.publish(Processes::TotalOrderValueUpdated.new(data: { order_id: order_id, discounted_amount: 0, total_amount: 10, items: [] }))
 
       assert_broadcast_on(
@@ -48,6 +50,7 @@ module ClientOrders
 
     def test_projects_and_removes_free_product_saving
       order_id = SecureRandom.uuid
+      draft_order(order_id)
       free_product_id = SecureRandom.uuid
 
       event_store.publish(total_order_value_updated(order_id, free_product_id, 10))
@@ -68,6 +71,7 @@ module ClientOrders
 
     def test_broadcasts_free_product_saving_appearing_changing_and_disappearing
       order_id = SecureRandom.uuid
+      draft_order(order_id)
 
       event_store.publish(total_order_value_updated(order_id, SecureRandom.uuid, 20))
       assert_free_product_saving_broadcast(order_id, "$20.00")
@@ -92,6 +96,10 @@ module ClientOrders
     end
 
     private
+
+    def draft_order(order_id)
+      event_store.publish(Pricing::OfferDrafted.new(data: { order_id: order_id }))
+    end
 
     def total_order_value_updated(order_id, free_product_id, free_product_saving)
       Processes::TotalOrderValueUpdated.new(data: {

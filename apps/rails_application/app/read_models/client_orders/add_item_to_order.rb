@@ -14,7 +14,6 @@ module ClientOrders
     def persist_item(event)
       order_id = event.data.fetch(:order_id)
       product_id = event.data.fetch(:product_id)
-      create_draft_order(order_id)
       item =
         find(order_id, product_id) ||
         create(order_id, product_id)
@@ -42,11 +41,6 @@ module ClientOrders
         "client_orders_#{order_id}",
         target: "client_orders_#{product_id}_#{target}",
         html: content)
-    end
-
-    def create_draft_order(uid)
-      return if Order.where(order_uid: uid).exists?
-      Order.create!(order_uid: uid, state: "Draft")
     end
 
     def find(order_uid, product_id)

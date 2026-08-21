@@ -15,6 +15,7 @@ module ClientOrders
       event_store.publish(Pricing::PriceSet.new(data: { product_id: product_id, price: 49 }))
 
       order_id = SecureRandom.uuid
+      draft_order(order_id)
 
       event_store.publish(
         Pricing::PriceItemAdded.new(
@@ -51,6 +52,7 @@ module ClientOrders
       event_store.publish(Pricing::PriceSet.new(data: { product_id: product_id, price: 49 }))
 
       order_id = SecureRandom.uuid
+      draft_order(order_id)
       event_store.publish(
         Pricing::PriceItemAdded.new(
           data: {
@@ -104,6 +106,7 @@ module ClientOrders
       event_store.publish(Pricing::PriceSet.new(data: { product_id: another_product_id, price: 20 }))
 
       order_id = SecureRandom.uuid
+      draft_order(order_id)
       event_store.publish(
         Pricing::PriceItemAdded.new(
           data: {
@@ -153,6 +156,10 @@ module ClientOrders
     end
 
     private
+
+    def draft_order(order_id)
+      event_store.publish(Pricing::OfferDrafted.new(data: { order_id: order_id }))
+    end
 
     def event_store
       Rails.configuration.event_store

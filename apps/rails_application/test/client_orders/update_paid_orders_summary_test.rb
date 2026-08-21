@@ -13,6 +13,7 @@ module ClientOrders
       other_customer_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
+      draft_order(order_id)
 
       register_product(product_id)
       name_product(product_id, "Async Remote")
@@ -26,6 +27,7 @@ module ClientOrders
       assert_equal(3.to_d, customer.paid_orders_summary)
 
       order_id = SecureRandom.uuid
+      draft_order(order_id)
       add_item_to_basket(order_id, product_id)
       add_item_to_basket(order_id, product_id)
       confirm_order(customer_id, order_id, 6)
@@ -35,6 +37,10 @@ module ClientOrders
     end
 
     private
+
+    def draft_order(order_id)
+      event_store.publish(Pricing::OfferDrafted.new(data: { order_id: order_id }))
+    end
 
     def register_customer(customer_id)
       event_store.publish(Crm::CustomerRegistered.new(data: { customer_id: customer_id, name: "John Doe" }))

@@ -23,6 +23,7 @@ module Client
 
         run_command(Crm::RegisterCustomer.new(customer_id: customer_id, name: "John Doe"))
         prepare_product(product_id, "Async Remote", 49)
+        run_command(Pricing::DraftOffer.new(order_id: order_id))
         run_command(Pricing::AddPriceItem.new(order_id: order_id, product_id: product_id, price: 49))
 
         Client::Orders::SubmitService.call(order_id: order_id, customer_id: customer_id)
@@ -41,6 +42,7 @@ module Client
 
         run_command(Crm::RegisterCustomer.new(customer_id: customer_id, name: "John Doe"))
         prepare_product(product_id, "Async Remote", 49)
+        run_command(Pricing::DraftOffer.new(order_id: order_id))
         run_command(Inventory::Supply.new(product_id: product_id, quantity: 1))
         run_command(Inventory::Reserve.new(product_id: product_id, quantity: 1))
         run_command(Pricing::AddPriceItem.new(order_id: order_id, product_id: product_id, price: 49))
