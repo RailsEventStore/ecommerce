@@ -23,6 +23,12 @@ Use this skill when asked to commit changes, group changes into commits, or prep
 ## Atomic commits
 
 - Each commit must leave the test suite green (`make test` must pass)
+- Each commit must be releasable and deployable on its own: green tests and
+  no half-wired user-facing behavior. Dormant code (a handler or process
+  manager nothing triggers yet) is fine
+- When building a feature with /new-feature, one slice = one commit: commit
+  at the end of each slice instead of carving up a large finished diff
+  afterward
 - Group related changes together — a commit should represent one logical change
 - If a change spans multiple files but serves one purpose, it belongs in one commit
 - Order commits so each builds on the previous without breaking tests
