@@ -7,6 +7,7 @@ module Processes
       enable_shipment_sync(event_store, command_bus)
       set_invoice_payment_date_when_order_confirmed(event_store, command_bus)
       enable_product_name_sync(event_store, command_bus)
+      enable_product_name_moderation_process(event_store, command_bus)
       confirm_order_on_payment_captured(event_store, command_bus)
       enable_apply_time_promotion_process(event_store, command_bus)
 
@@ -52,6 +53,16 @@ module Processes
           Fulfillment::OrderConfirmed,
           Payments::PaymentAuthorized,
           Payments::PaymentReleased
+        ]
+      )
+    end
+
+    def enable_product_name_moderation_process(event_store, command_bus)
+      event_store.subscribe(
+        ProductNameModeration.new(command_bus),
+        to: [
+          ProductCatalog::ProductNameChangeRequested,
+          ProductCatalog::ProductNameApproved
         ]
       )
     end
