@@ -1,5 +1,6 @@
 require_relative "../../../domains/configuration"
 require_relative "../../../infra/lib/infra"
+require_relative "purgo_malum_client"
 
 class Configuration
   def call(event_store, command_bus)
@@ -26,7 +27,8 @@ class Configuration
 
     Ecommerce::Configuration.new(
       number_generator: Rails.configuration.number_generator,
-      payment_gateway: Rails.configuration.payment_gateway
+      payment_gateway: Rails.configuration.payment_gateway,
+      product_name_moderation: Rails.configuration.product_name_moderation.call
     ).call(event_store, command_bus)
   end
 

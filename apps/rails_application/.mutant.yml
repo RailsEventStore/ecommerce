@@ -33,6 +33,7 @@ matcher:
     - Admin*
     - Products*
     - PublicOffer*
+    - PurgoMalumClient*
     - TimePromotions*
     - Returns*
     - Architecture*

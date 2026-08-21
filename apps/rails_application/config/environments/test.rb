@@ -50,4 +50,5 @@ Rails.application.configure do
   # --- Ecommerce ---
   config.number_generator = ->{ Fulfillment::FakeNumberGenerator.new }
   config.payment_gateway = -> { @gateway ||= Payments::FakeGateway.new }
+  config.product_name_moderation = -> { ProductCatalog::FakeNameModeration.new }
 end

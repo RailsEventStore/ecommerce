@@ -71,4 +71,5 @@ Rails.application.configure do
   # --- Ecommerce ---
   config.number_generator = ->{ Fulfillment::NumberGenerator.new }
   config.payment_gateway = -> { @gateway ||= Payments::FakeGateway.new }
+  config.product_name_moderation = -> { PurgoMalumClient.new }
 end
