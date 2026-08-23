@@ -58,6 +58,8 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     verify_invoice_generation(order_id)
 
     assert_res_browser_order_history
+    assert_res_browser_process_manager_view(order_id)
+    assert_res_browser_swimlane(order_id)
   end
 
   def test_expiring_orders
@@ -466,6 +468,44 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     assert_select("a", text: "Pricing::PriceItemAdded")
     assert_select("a", text: "Processes::TotalOrderValueUpdated")
     assert_select("a", text: "Fulfillment::OrderRegistered")
+  end
+
+  def assert_res_browser_process_manager_view(order_id)
+    get "/res/streams/#{Rack::Utils.escape(reservation_process_stream(order_id))}"
+    assert_select("a", text: "Process state")
+
+    get "/res/process_managers/#{Rack::Utils.escape(reservation_process_stream(order_id))}"
+    assert_select("h1", text: "Process Processes::ReservationProcess")
+    assert_select("h2", text: "Current state")
+    assert_select("span", text: %r{"confirmed"})
+    assert_select("h2", text: "Step by step")
+    assert_select("a", text: "Pricing::OfferAccepted")
+    assert_select("a", text: "Fulfillment::OrderConfirmed")
+  end
+
+  def assert_res_browser_swimlane(order_id)
+    get "/res/swimlane", params: { streams: order_flow_streams(order_id) }
+    assert_select("h1", text: "Comparing #{order_flow_streams(order_id).join(", ")}")
+    order_flow_streams(order_id).each do |stream_name|
+      assert_select("th span", text: stream_name)
+    end
+    assert_select("td a", text: "Pricing::OfferAccepted")
+    assert_select("td a", text: "Fulfillment::OrderRegistered")
+    assert_select("td a", text: "Payments::PaymentCaptured")
+    assert_select("td a", text: "Shipping::ShipmentAuthorized")
+  end
+
+  def order_flow_streams(order_id)
+    [
+      "Pricing::Offer$#{order_id}",
+      "Fulfillment::Order$#{order_id}",
+      "Payments::Payment$#{order_id}",
+      "Shipping::Shipment$#{order_id}"
+    ]
+  end
+
+  def reservation_process_stream(order_id)
+    "Processes::ReservationProcess$#{order_id}"
   end
 
   def assert_payment_gateway_value(value)

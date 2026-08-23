@@ -11,6 +11,15 @@ GIT
   remote: https://github.com/RailsEventStore/rails_event_store.git
   revision: ece8f3136448695d34b7dce2874c6d1822a0340c
   branch: master
+  glob: contrib/ruby_event_store-process_manager/*.gemspec
+  specs:
+    ruby_event_store-process_manager (0.2.0)
+      ruby_event_store (>= 1.0.0, < 4.0.0)
+
+GIT
+  remote: https://github.com/RailsEventStore/rails_event_store.git
+  revision: ece8f3136448695d34b7dce2874c6d1822a0340c
+  branch: master
   glob: rails_event_store/*.gemspec
   specs:
     rails_event_store (3.0.0)
@@ -32,15 +41,6 @@ GIT
     ruby_event_store-active_record (3.0.0)
       activerecord (>= 6.0)
       ruby_event_store (= 3.0.0)
-
-GIT
-  remote: https://github.com/RailsEventStore/rails_event_store.git
-  revision: ece8f3136448695d34b7dce2874c6d1822a0340c
-  branch: master
-  glob: contrib/ruby_event_store-process_manager/*.gemspec
-  specs:
-    ruby_event_store-process_manager (0.2.0)
-      ruby_event_store (>= 1.0.0, < 4.0.0)
 
 GIT
   remote: https://github.com/RailsEventStore/rails_event_store.git
