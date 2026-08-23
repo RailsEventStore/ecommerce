@@ -26,13 +26,13 @@ module Processes
 
     def test_rescues_not_possible_to_assign_discount_twice
       create_active_time_promotion(store_id, 50)
-      failing_process = ApplyTimePromotion.new(event_store, FailingCommandBus.new(Pricing::NotPossibleToAssignDiscountTwice))
+      failing_process = ApplyTimePromotion.new.with(event_store: event_store, command_bus: FailingCommandBus.new(Pricing::NotPossibleToAssignDiscountTwice))
 
       given([offer_registered, price_item_added], process: failing_process)
     end
 
     def test_rescues_not_possible_to_remove_without_discount
-      failing_process = ApplyTimePromotion.new(event_store, FailingCommandBus.new(Pricing::NotPossibleToRemoveWithoutDiscount))
+      failing_process = ApplyTimePromotion.new.with(event_store: event_store, command_bus: FailingCommandBus.new(Pricing::NotPossibleToRemoveWithoutDiscount))
 
       given([offer_registered, price_item_added], process: failing_process)
     end
@@ -50,7 +50,7 @@ module Processes
     private
 
     def process
-      ApplyTimePromotion.new(event_store, command_bus)
+      ApplyTimePromotion.new.with(event_store: event_store, command_bus: command_bus)
     end
 
     class FailingCommandBus

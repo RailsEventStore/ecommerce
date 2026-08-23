@@ -2,4 +2,7 @@ source "https://rubygems.org"
 
 eval_gemfile "Gemfile.test"
 
+gem "ruby_event_store", github: "RailsEventStore/rails_event_store", branch: "master", glob: "ruby_event_store/*.gemspec"
+gem "aggregate_root", github: "RailsEventStore/rails_event_store", branch: "master", glob: "aggregate_root/*.gemspec"
+
 gemspec

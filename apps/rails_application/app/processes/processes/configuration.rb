@@ -24,7 +24,7 @@ module Processes
 
     def enable_shipment_process(event_store, command_bus)
       event_store.subscribe(
-        ShipmentProcess.new(event_store, command_bus),
+        ShipmentProcess.new.with(event_store: event_store, command_bus: command_bus),
         to: ShipmentProcess.subscribed_events
       )
     end
@@ -46,7 +46,7 @@ module Processes
 
     def enable_release_payment_on_order_expiration(event_store, command_bus)
       event_store.subscribe(
-        ReleasePaymentOnOrderExpiration.new(event_store, command_bus),
+        ReleasePaymentOnOrderExpiration.new.with(event_store: event_store, command_bus: command_bus),
         to: [
           Pricing::OfferExpired,
           Fulfillment::OrderRegistered,
@@ -89,14 +89,14 @@ module Processes
 
     def enable_three_plus_one_free_process(event_store, command_bus)
       event_store.subscribe(
-        ThreePlusOneFree.new(event_store, command_bus),
+        ThreePlusOneFree.new.with(event_store: event_store, command_bus: command_bus),
         to: ThreePlusOneFree.subscribed_events
       )
     end
 
     def enable_reservation_process(event_store, command_bus)
       event_store.subscribe(
-        ReservationProcess.new(event_store, command_bus),
+        ReservationProcess.new.with(event_store: event_store, command_bus: command_bus),
         to: ReservationProcess.subscribed_events
       )
     end
@@ -116,21 +116,21 @@ module Processes
 
     def enable_total_order_value_process(event_store, command_bus)
       event_store.subscribe(
-        TotalOrderValue.new(event_store, command_bus),
+        TotalOrderValue.new.with(event_store: event_store, command_bus: command_bus),
         to: TotalOrderValue.subscribed_events
       )
     end
 
     def enable_invoice_generation_process(event_store, command_bus)
       event_store.subscribe(
-        InvoiceGeneration.new(event_store, command_bus),
+        InvoiceGeneration.new.with(event_store: event_store, command_bus: command_bus),
         to: InvoiceGeneration.subscribed_events
       )
     end
 
     def enable_apply_time_promotion_process(event_store, command_bus)
       event_store.subscribe(
-        ApplyTimePromotion.new(event_store, command_bus),
+        ApplyTimePromotion.new.with(event_store: event_store, command_bus: command_bus),
         to: ApplyTimePromotion.subscribed_events
       )
     end

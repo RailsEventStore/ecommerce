@@ -1,3 +1,21 @@
+GIT
+  remote: https://github.com/RailsEventStore/rails_event_store.git
+  revision: ece8f3136448695d34b7dce2874c6d1822a0340c
+  branch: master
+  glob: aggregate_root/*.gemspec
+  specs:
+    aggregate_root (3.0.0)
+      ruby_event_store (= 3.0.0)
+
+GIT
+  remote: https://github.com/RailsEventStore/rails_event_store.git
+  revision: ece8f3136448695d34b7dce2874c6d1822a0340c
+  branch: master
+  glob: ruby_event_store/*.gemspec
+  specs:
+    ruby_event_store (3.0.0)
+      concurrent-ruby (~> 1.0, >= 1.1.6)
+
 PATH
   remote: .
   specs:
@@ -23,8 +41,6 @@ GEM
       minitest (>= 5.1)
       mutex_m
       tzinfo (~> 2.0)
-    aggregate_root (3.0.0)
-      ruby_event_store (= 3.0.0)
     arkency-command_bus (0.4.1)
       concurrent-ruby
     ast (2.4.2)
@@ -102,8 +118,6 @@ GEM
     reline (0.6.1)
       io-console (~> 0.5)
     ruby2_keywords (0.0.5)
-    ruby_event_store (3.0.0)
-      concurrent-ruby (~> 1.0, >= 1.1.6)
     ruby_event_store-transformations (0.2.0)
       activesupport (>= 6.0)
       ruby_event_store (>= 2.0.0, < 4.0.0)
@@ -124,9 +138,11 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
+  aggregate_root!
   infra!
   minitest (~> 6.0)!
   mutant-minitest (= 0.15.1)!
+  ruby_event_store!
 
 BUNDLED WITH
    2.6.9

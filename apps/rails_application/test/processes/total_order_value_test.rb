@@ -5,7 +5,7 @@ module Processes
     cover "Processes::TotalOrderValue"
 
     def test_total_order_value_calculation_for_1_item
-      process = TotalOrderValue.new(event_store, command_bus)
+      process = TotalOrderValue.new.with(event_store: event_store, command_bus: command_bus)
       event = price_item_added
 
       event_store.append(event)
@@ -27,7 +27,7 @@ module Processes
     end
 
     def test_total_order_value_calculation_for_2_items_of_the_same_product
-      process = TotalOrderValue.new(event_store, command_bus)
+      process = TotalOrderValue.new.with(event_store: event_store, command_bus: command_bus)
       product_id = SecureRandom.uuid
       event_1 = price_item_added(product_id)
       event_2 = price_item_added(product_id)
@@ -54,7 +54,7 @@ module Processes
     end
 
     def test_total_order_value_calculation_for_2_items_of_the_same_product_and_1_item_removed
-      process = TotalOrderValue.new(event_store, command_bus)
+      process = TotalOrderValue.new.with(event_store: event_store, command_bus: command_bus)
       product_id = SecureRandom.uuid
       event_1 = price_item_added(product_id)
       event_2 = price_item_added(product_id)
@@ -89,7 +89,7 @@ module Processes
     end
 
     def test_total_order_value_calculation_for_2_items_of_different_products
-      process = TotalOrderValue.new(event_store, command_bus)
+      process = TotalOrderValue.new.with(event_store: event_store, command_bus: command_bus)
       product_id_1 = SecureRandom.uuid
       product_id_2 = SecureRandom.uuid
       event_1 = price_item_added(product_id_1)
@@ -118,7 +118,7 @@ module Processes
     end
 
     def test_total_order_value_calculation_for_2_items_of_different_products_and_1_item_removed
-      process = TotalOrderValue.new(event_store, command_bus)
+      process = TotalOrderValue.new.with(event_store: event_store, command_bus: command_bus)
       product_id_1 = SecureRandom.uuid
       product_id_2 = SecureRandom.uuid
       event_1 = price_item_added(product_id_1)
@@ -153,7 +153,7 @@ module Processes
     end
 
     def test_with_discount
-      process = TotalOrderValue.new(event_store, command_bus)
+      process = TotalOrderValue.new.with(event_store: event_store, command_bus: command_bus)
       product_id = SecureRandom.uuid
       event_1 = price_item_added(product_id)
       event_2 = Pricing::PercentageDiscountSet.new(data: {
@@ -181,7 +181,7 @@ module Processes
     end
 
     def test_free_product_is_removed_before_percentage_discount
-      process = TotalOrderValue.new(event_store, command_bus)
+      process = TotalOrderValue.new.with(event_store: event_store, command_bus: command_bus)
       product_id = SecureRandom.uuid
       cheapest_product_id = SecureRandom.uuid
       events = [
@@ -225,7 +225,7 @@ module Processes
     end
 
     def test_removing_free_product_restores_its_discounted_amount
-      process = TotalOrderValue.new(event_store, command_bus)
+      process = TotalOrderValue.new.with(event_store: event_store, command_bus: command_bus)
       product_id = SecureRandom.uuid
       events = [
         price_item_added(product_id),
@@ -262,7 +262,7 @@ module Processes
     end
 
     def test_cheapest_unit_is_free_when_product_units_have_different_prices
-      process = TotalOrderValue.new(event_store, command_bus)
+      process = TotalOrderValue.new.with(event_store: event_store, command_bus: command_bus)
       product_id = SecureRandom.uuid
       events = [
         price_item_added(product_id),
@@ -297,7 +297,7 @@ module Processes
     end
 
     def test_changed_discount
-      process = TotalOrderValue.new(event_store, command_bus)
+      process = TotalOrderValue.new.with(event_store: event_store, command_bus: command_bus)
       product_id = SecureRandom.uuid
       event_1 = price_item_added(product_id)
       event_2 = Pricing::PercentageDiscountSet.new(data: {
@@ -332,7 +332,7 @@ module Processes
     end
 
     def test_removed_discount
-      process = TotalOrderValue.new(event_store, command_bus)
+      process = TotalOrderValue.new.with(event_store: event_store, command_bus: command_bus)
       product_id = SecureRandom.uuid
       event_1 = price_item_added(product_id)
       event_2 = Pricing::PercentageDiscountSet.new(data: {
@@ -366,7 +366,7 @@ module Processes
     end
 
     def test_remove_specific_discount_when_multiple_discounts_exist
-      process = TotalOrderValue.new(event_store, command_bus)
+      process = TotalOrderValue.new.with(event_store: event_store, command_bus: command_bus)
       product_id = SecureRandom.uuid
       
       event_1 = price_item_added(product_id)
@@ -411,7 +411,7 @@ module Processes
     end
 
     def test_discount_capped_at_100_percent_via_multiple_discounts
-      process = TotalOrderValue.new(event_store, command_bus)
+      process = TotalOrderValue.new.with(event_store: event_store, command_bus: command_bus)
       product_id = SecureRandom.uuid
       
       event_1 = price_item_added(product_id)
@@ -459,7 +459,7 @@ module Processes
     end
 
     def test_multiple_discounts_exceeding_100_percent
-      process = TotalOrderValue.new(event_store, command_bus)
+      process = TotalOrderValue.new.with(event_store: event_store, command_bus: command_bus)
       product_id = SecureRandom.uuid
       
       event_1 = price_item_added(product_id)
@@ -499,7 +499,7 @@ module Processes
     end
 
     def test_discount_exactly_100_percent
-      process = TotalOrderValue.new(event_store, command_bus)
+      process = TotalOrderValue.new.with(event_store: event_store, command_bus: command_bus)
       product_id = SecureRandom.uuid
       
       event_1 = price_item_added(product_id)
@@ -531,7 +531,7 @@ module Processes
     end
 
     def test_setting_same_discount_type_twice_replaces_first
-      process = TotalOrderValue.new(event_store, command_bus)
+      process = TotalOrderValue.new.with(event_store: event_store, command_bus: command_bus)
       product_id = SecureRandom.uuid
       
       event_1 = price_item_added(product_id)
@@ -571,7 +571,7 @@ module Processes
     end
 
     def test_changing_discount_with_different_amount
-      process = TotalOrderValue.new(event_store, command_bus)
+      process = TotalOrderValue.new.with(event_store: event_store, command_bus: command_bus)
       product_id = SecureRandom.uuid
       
       event_1 = price_item_added(product_id)
@@ -610,7 +610,7 @@ module Processes
     end
 
     def test_changing_specific_discount_preserves_other_discounts
-      process = TotalOrderValue.new(event_store, command_bus)
+      process = TotalOrderValue.new.with(event_store: event_store, command_bus: command_bus)
       product_id = SecureRandom.uuid
       
       event_1 = price_item_added(product_id)
@@ -658,7 +658,7 @@ module Processes
     end
 
     def test_discount_hash_structure_integrity_after_change
-      process = TotalOrderValue.new(event_store, command_bus)
+      process = TotalOrderValue.new.with(event_store: event_store, command_bus: command_bus)
       product_id = SecureRandom.uuid
       
       event_1 = price_item_added(product_id)
@@ -729,7 +729,7 @@ module Processes
       store = RubyEventStore::Client.new(
         repository: RubyEventStore::InMemoryRepository.new
       )
-      process = TotalOrderValue.new(store, command_bus)
+      process = TotalOrderValue.new.with(event_store: store, command_bus: command_bus)
       event = price_item_added
       store.append(event)
 

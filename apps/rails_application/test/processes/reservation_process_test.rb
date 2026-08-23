@@ -5,7 +5,7 @@ module Processes
     cover "Processes::ReservationProcess*"
 
     def test_happy_path
-      process = ReservationProcess.new(event_store, command_bus)
+      process = ReservationProcess.new.with(event_store: event_store, command_bus: command_bus)
 
       given([offer_accepted], process:)
 
@@ -18,9 +18,9 @@ module Processes
 
     def test_rejects_order_and_compensates_stock_when_sth_is_unavailable
       failing_command = Inventory::Reserve.new(product_id: product_id, quantity: 1)
-      process = ReservationProcess.new(
-        event_store,
-        EnhancedFakeCommandBus.new(command_bus, failing_command => Inventory::InventoryEntry::InventoryNotAvailable)
+      process = ReservationProcess.new.with(
+        event_store: event_store,
+        command_bus: EnhancedFakeCommandBus.new(command_bus, failing_command => Inventory::InventoryEntry::InventoryNotAvailable)
       )
 
       given([offer_accepted], process:)
@@ -34,7 +34,7 @@ module Processes
     end
 
     def test_release_stock_when_order_is_cancelled
-      process = ReservationProcess.new(event_store, command_bus)
+      process = ReservationProcess.new.with(event_store: event_store, command_bus: command_bus)
       given([offer_accepted], process:)
       command_bus.clear_all_received
 
@@ -47,7 +47,7 @@ module Processes
     end
 
     def test_dispatch_stock_when_order_is_confirmed
-      process = ReservationProcess.new(event_store, command_bus)
+      process = ReservationProcess.new.with(event_store: event_store, command_bus: command_bus)
       given([offer_accepted], process:)
       command_bus.clear_all_received
 

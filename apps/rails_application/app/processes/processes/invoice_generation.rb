@@ -4,11 +4,6 @@ module Processes
   class InvoiceGeneration
     include RubyEventStore::ProcessManager.with_state { Invoice }
 
-    def initialize(event_store, command_bus)
-      super
-      @vat_rate_catalog = Taxes::VatRateCatalog.new(event_store)
-    end
-
     subscribes_to(
       Processes::TotalOrderValueUpdated,
       Fulfillment::OrderRegistered,
@@ -23,6 +18,10 @@ module Processes
     end
 
     private
+
+    def vat_rate_catalog
+      @vat_rate_catalog ||= Taxes::VatRateCatalog.new(event_store)
+    end
 
     def register_invoice
       return unless state.store_id
@@ -58,7 +57,7 @@ module Processes
     end
 
     def create_invoice_items_for_product(product_id, quantity, discounted_amount)
-      vat_rate = @vat_rate_catalog.vat_rate_for(product_id)
+      vat_rate = vat_rate_catalog.vat_rate_for(product_id)
       unit_prices = Invoices::MoneySplitter.new(discounted_amount, quantity).call
       unit_prices.tally.each do |unit_price, quantity|
         command_bus.call(

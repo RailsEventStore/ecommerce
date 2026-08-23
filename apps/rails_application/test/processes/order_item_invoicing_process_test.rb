@@ -14,7 +14,7 @@ module Processes
     def test_invoice_item_being_created
       event_store.publish(Taxes::VatRateSet.new(data: { product_id: @product_id, vat_rate: @vat_rate }))
       
-      process = InvoiceGeneration.new(event_store, command_bus)
+      process = InvoiceGeneration.new.with(event_store: event_store, command_bus: command_bus)
 
       publish_total_value_updated(process, [
         { product_id: @product_id, quantity: @quantity, amount: 90 }

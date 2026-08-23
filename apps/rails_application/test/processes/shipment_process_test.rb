@@ -91,7 +91,7 @@ module Processes
     private
 
     def process
-      ShipmentProcess.new(event_store, command_bus)
+      ShipmentProcess.new.with(event_store: event_store, command_bus: command_bus)
     end
 
     def shipping_address_added

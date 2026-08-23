@@ -13,7 +13,7 @@ module Processes
       @product_2_id = SecureRandom.uuid
       event_store.publish(Taxes::VatRateSet.new(data: { product_id: @product_2_id, vat_rate: @vat_rate }))
 
-      @process = InvoiceGeneration.new(event_store, command_bus)
+      @process = InvoiceGeneration.new.with(event_store: event_store, command_bus: command_bus)
     end
 
     def test_calculates_sub_amounts
