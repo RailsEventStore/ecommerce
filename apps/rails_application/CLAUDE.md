@@ -21,7 +21,8 @@
 
 # Architecture
 
-- The current list of architectural components (bounded contexts, read models, processes) is defined in `config/architecture.yml`
+- The current list of architectural components (bounded contexts, read models, processes) is defined in `config/architecture.yml` and loaded by the root `Archspec.rb`
+- Accepted architecture violations are generated in `archspec_todo.yml` with `make architecture-baseline`
 
 # Process managers
 
