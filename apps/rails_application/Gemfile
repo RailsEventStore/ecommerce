@@ -29,6 +29,7 @@ group :development do
 end
 
 group :development, :test do
+  gem "archspec", "~> 1.0"
   gem "byebug", platforms: %i[mri mingw x64_mingw]
   gem "dotenv-rails"
 end

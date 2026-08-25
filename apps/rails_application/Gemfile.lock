@@ -152,6 +152,8 @@ GEM
       uri (>= 0.13.1)
     arbre (2.2.1)
       activesupport (>= 7.0)
+    archspec (1.0.1)
+      prism (>= 1.0)
     arkency-command_bus (0.4.1)
       concurrent-ruby
     ast (2.4.3)
@@ -442,6 +444,7 @@ PLATFORMS
 DEPENDENCIES
   aggregate_root!
   arbre
+  archspec (~> 1.0)
   bootsnap (>= 1.9.2)
   bundler-audit
   byebug

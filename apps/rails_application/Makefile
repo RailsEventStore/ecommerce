@@ -32,7 +32,10 @@ mutate-changes: ## Run incremental mutation tests on changes
 	@echo "Running incremental mutation tests against $(GIT_BASE_SHA)..."
 	@RAILS_ENV=test bundle exec mutant run --since $(GIT_BASE_SHA)
 
-test: ## Run all tests
+architecture: ## Check repository architecture boundaries
+	@cd ../.. && BUNDLE_GEMFILE=apps/rails_application/Gemfile bundle exec archspec check
+
+test: architecture ## Run all tests
 	@echo "Running all tests..."
 	@BROWSERSLIST_IGNORE_OLD_DATA=1 bin/rails test
 
@@ -49,4 +52,4 @@ test-mutant-runner: tailwind ## Run tests with parallel jobs using mutant test r
 	@bundle exec mutant test $(MUTANT_OPTS)
 
 .DEFAULT_GOAL := help
-.PHONY: install dev tailwind mutate mutate-changes test help css web test-mutant-runner
+.PHONY: install dev tailwind mutate mutate-changes architecture test help css web test-mutant-runner
