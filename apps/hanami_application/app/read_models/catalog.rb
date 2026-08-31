@@ -6,24 +6,20 @@ module HanamiApplication
     class Catalog
       Product = Data.define(:id, :name, :price)
 
-      def initialize
-        @products = {}
+      def initialize(products)
+        @products = products
       end
 
       def subscribe(event_store)
         handlers.each { |event_type, handler| event_store.subscribe(handler, to: [event_type]) }
       end
 
-      def apply(event)
-        handlers[event.class]&.call(event)
-      end
-
       def all
-        @products.values.sort_by { |product| product.name.to_s }
+        @products.order(:name).to_a.map { |row| build(row) }
       end
 
       def find(product_id)
-        @products.fetch(product_id)
+        build(@products.by_pk(product_id).one!)
       end
 
       private
@@ -37,24 +33,19 @@ module HanamiApplication
       end
 
       def register_product(event)
-        product_id = event.data.fetch(:product_id)
-        @products[product_id] = Product.new(id: product_id, name: nil, price: nil)
+        @products.insert(id: event.data.fetch(:product_id))
       end
 
       def name_product(event)
-        update(event.data.fetch(:product_id)) do |product|
-          product.with(name: event.data.fetch(:name))
-        end
+        @products.by_pk(event.data.fetch(:product_id)).update(name: event.data.fetch(:name))
       end
 
       def set_price(event)
-        update(event.data.fetch(:product_id)) do |product|
-          product.with(price: event.data.fetch(:price))
-        end
+        @products.by_pk(event.data.fetch(:product_id)).update(price: event.data.fetch(:price))
       end
 
-      def update(product_id)
-        @products[product_id] = yield(@products.fetch(product_id))
+      def build(row)
+        Product.new(id: row[:id], name: row[:name], price: row[:price])
       end
     end
   end

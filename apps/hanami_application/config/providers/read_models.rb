@@ -5,13 +5,8 @@ Hanami.app.register_provider :read_models do
     target.start :event_store
     event_store = target["event_store"]
 
-    catalog = HanamiApplication::ReadModels::Catalog.new
-    orders = HanamiApplication::ReadModels::Orders.new
-
-    event_store.read.each do |event|
-      catalog.apply(event)
-      orders.apply(event)
-    end
+    catalog = HanamiApplication::ReadModels::Catalog.new(target["relations.products"])
+    orders = HanamiApplication::ReadModels::Orders.new(target["relations.orders"], target["relations.order_lines"])
 
     catalog.subscribe(event_store)
     orders.subscribe(event_store)

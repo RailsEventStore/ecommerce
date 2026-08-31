@@ -16,20 +16,20 @@ module HanamiApplication
         end
       end
 
-      def initialize
-        @orders = {}
+      def initialize(orders, order_lines)
+        @orders = orders
+        @order_lines = order_lines
       end
 
       def subscribe(event_store)
         handlers.each { |event_type, handler| event_store.subscribe(handler, to: [event_type]) }
       end
 
-      def apply(event)
-        handlers[event.class]&.call(event)
-      end
-
       def find(order_id)
-        @orders[order_id]
+        row = @orders.by_pk(order_id).one
+        return unless row
+
+        Order.new(id: row[:id], state: row[:state].to_sym, number: row[:number], lines: lines_for(order_id))
       end
 
       private
@@ -46,47 +46,60 @@ module HanamiApplication
       end
 
       def draft_order(event)
-        order_id = event.data.fetch(:order_id)
-        @orders[order_id] = Order.new(id: order_id, state: :draft, number: nil, lines: {})
+        @orders.insert(id: event.data.fetch(:order_id), state: "draft")
       end
 
       def add_line(event)
-        product_id = event.data.fetch(:product_id)
-        update(event) do |order|
-          line = order.lines[product_id] || Line.new(product_id: product_id, price: event.data.fetch(:price), quantity: 0)
-          order.with(lines: order.lines.merge(product_id => line.with(quantity: line.quantity + 1)))
+        line = line_for(event)
+        if (existing = line.one)
+          line.update(quantity: existing[:quantity] + 1)
+        else
+          @order_lines.insert(
+            order_id: event.data.fetch(:order_id),
+            product_id: event.data.fetch(:product_id),
+            price: event.data.fetch(:price),
+            quantity: 1
+          )
         end
       end
 
       def remove_line(event)
-        product_id = event.data.fetch(:product_id)
-        update(event) do |order|
-          line = order.lines.fetch(product_id)
-          lines =
-            if line.quantity > 1
-              order.lines.merge(product_id => line.with(quantity: line.quantity - 1))
-            else
-              order.lines.except(product_id)
-            end
-          order.with(lines: lines)
+        line = line_for(event)
+        existing = line.one!
+        if existing[:quantity] > 1
+          line.update(quantity: existing[:quantity] - 1)
+        else
+          line.delete
         end
       end
 
       def submit_order(event)
-        update(event) { |order| order.with(state: :submitted) }
+        update_order(event, state: "submitted")
       end
 
       def number_order(event)
-        update(event) { |order| order.with(number: event.data.fetch(:order_number)) }
+        update_order(event, number: event.data.fetch(:order_number))
       end
 
       def deliver_order(event)
-        update(event) { |order| order.with(state: :delivered) }
+        update_order(event, state: "delivered")
       end
 
-      def update(event)
-        order_id = event.data.fetch(:order_id)
-        @orders[order_id] = yield(@orders.fetch(order_id))
+      def update_order(event, attributes)
+        @orders.by_pk(event.data.fetch(:order_id)).update(attributes)
+      end
+
+      def line_for(event)
+        @order_lines.where(
+          order_id: event.data.fetch(:order_id),
+          product_id: event.data.fetch(:product_id)
+        )
+      end
+
+      def lines_for(order_id)
+        @order_lines.where(order_id: order_id).to_a.to_h do |row|
+          [row[:product_id], Line.new(product_id: row[:product_id], price: row[:price], quantity: row[:quantity])]
+        end
       end
     end
   end
