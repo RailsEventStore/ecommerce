@@ -1,0 +1,17 @@
+name: pricing_catalog_rails_app
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ruby-3.3.7
+          bundler-cache: true
+          working-directory: apps/pricing_catalog_rails_app
+      - run: make test
+        working-directory: apps/pricing_catalog_rails_app
