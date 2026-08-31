@@ -1,0 +1,26 @@
+<h1>Order <%= order.number %></h1>
+
+<table>
+  <thead>
+    <tr><th>Product</th><th>Quantity</th><th>Price</th><th>Value</th></tr>
+  </thead>
+  <tbody>
+    <% lines.each do |line| %>
+      <tr>
+        <td><%= line[:name] %></td>
+        <td><%= line[:quantity] %></td>
+        <td><%= format_price(line[:price]) %></td>
+        <td><%= format_price(line[:value]) %></td>
+      </tr>
+    <% end %>
+  </tbody>
+  <tfoot>
+    <tr><td colspan="3">Total</td><td><%= format_price(order.total) %></td></tr>
+  </tfoot>
+</table>
+
+<% if order.state == :delivered %>
+  <p class="delivered">📦 Your order has been delivered. Thank you for shopping with us!</p>
+<% end %>
+
+<p><a href="<%= routes.path(:root) %>">Continue shopping</a></p>

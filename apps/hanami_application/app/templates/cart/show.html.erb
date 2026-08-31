@@ -1,0 +1,39 @@
+<h1>Your cart</h1>
+
+<form action="<%= routes.path(:add_item) %>" method="post" class="add-item">
+  <input type="hidden" name="_csrf_token" value="<%= csrf_token %>">
+  <select name="product_id">
+    <% products.each do |product| %>
+      <option value="<%= product.id %>"><%= product.name %> — <%= format_price(product.price) %></option>
+    <% end %>
+  </select>
+  <button type="submit">Add to cart</button>
+</form>
+
+<% if lines.any? %>
+  <table>
+    <thead>
+      <tr><th>Product</th><th>Quantity</th><th>Price</th><th>Value</th></tr>
+    </thead>
+    <tbody>
+      <% lines.each do |line| %>
+        <tr>
+          <td><%= line[:name] %></td>
+          <td><%= line[:quantity] %></td>
+          <td><%= format_price(line[:price]) %></td>
+          <td><%= format_price(line[:value]) %></td>
+        </tr>
+      <% end %>
+    </tbody>
+    <tfoot>
+      <tr><td colspan="3">Total</td><td><%= format_price(total) %></td></tr>
+    </tfoot>
+  </table>
+
+  <form action="<%= routes.path(:submit) %>" method="post">
+    <input type="hidden" name="_csrf_token" value="<%= csrf_token %>">
+    <button type="submit">Submit order</button>
+  </form>
+<% else %>
+  <p>Your cart is empty.</p>
+<% end %>

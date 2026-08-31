@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ecommerce · Hanami</title>
+    <style>
+      body { font-family: system-ui, sans-serif; max-width: 40rem; margin: 2rem auto; padding: 0 1rem; color: #222; }
+      table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+      th, td { border-bottom: 1px solid #ddd; padding: 0.5rem; text-align: left; }
+      tfoot td { font-weight: bold; }
+      .add-item { margin: 1rem 0; }
+      .notice { background: #e6f4ea; border: 1px solid #b7dfc2; padding: 0.5rem 1rem; }
+      .alert { background: #fdecea; border: 1px solid #f5c6c2; padding: 0.5rem 1rem; }
+      .delivered { background: #e6f4ea; border: 1px solid #b7dfc2; padding: 1rem; font-size: 1.1rem; }
+      button { cursor: pointer; }
+    </style>
+  </head>
+  <body>
+    <% if flash[:notice] %><p class="notice"><%= flash[:notice] %></p><% end %>
+    <% if flash[:alert] %><p class="alert"><%= flash[:alert] %></p><% end %>
+    <%= yield %>
+  </body>
+</html>

@@ -1,0 +1,41 @@
+# frozen_string_literal: true
+
+source "https://rubygems.org"
+
+gem "hanami", "~> 3.0.0"
+gem "hanami-action", "~> 3.0.0"
+gem "hanami-router", "~> 3.0.0"
+gem "hanami-view", "~> 3.0.0"
+
+gem "dry-types", "~> 1.7"
+gem "dry-operation", ">= 1.0.1"
+gem "dry-validation", "~> 1.11"
+gem "i18n", "~> 1.14"
+gem "puma", ">= 7.1"
+gem "rake"
+
+gem "infra", path: "../../infra"
+gem "activesupport"
+gem "minitest"
+
+group :development do
+  gem "hanami-webconsole", "~> 3.0.0"
+end
+
+group :development, :test do
+  gem "dotenv"
+end
+
+group :cli, :development do
+  gem "hanami-reloader", "~> 3.0.0"
+end
+
+group :cli, :development, :test do
+  gem "hanami-minitest", "~> 3.0.0"
+end
+
+group :test do
+  # Web integration
+  gem "capybara"
+  gem "rack-test"
+end
