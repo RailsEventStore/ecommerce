@@ -19,7 +19,7 @@ gem "tailwindcss-rails"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 gem "jbuilder"
 
-gem "rails_event_store", ">= 2.15.0", "< 3.0"
+gem "rails_event_store", ">= 3.1.0", "< 4.0"
 gem "arkency-command_bus"
 gem "infra", path: "../../infra"
 
