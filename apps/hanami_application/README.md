@@ -27,6 +27,8 @@ Actions and views resolve these through `Deps`, e.g. `include Deps["command_bus"
 
 Events are persisted to SQLite via `ruby_event_store-sequel`, and read models are persisted alongside them: event handlers project into regular tables through ROM relations, just like the Rails app projects into ActiveRecord models. Everything survives restarts. The event store client uses the same mapper as the Rails app's `RailsEventStore::JSONClient` (`Infra::EventStore.default_mapper`), so `BigDecimal` prices and symbol keys round-trip through JSON.
 
+Command dispatch is transactional: [TransactionalCommandBus](app/transactional_command_bus.rb) wraps every `command_bus.call` in a Sequel transaction on the shared connection, so the event append, the read model projections and any commands dispatched by process managers commit or roll back as one unit.
+
 The database URL defaults to `sqlite://db/hanami_application_<env>.sqlite` in [config/providers/db.rb](config/providers/db.rb) and can be overridden with `DATABASE_URL`. Tests get a fresh database on every run ([test/test_helper.rb](test/test_helper.rb) deletes it and runs `hanami db prepare`).
 
 ## Gotchas vs the Rails application
