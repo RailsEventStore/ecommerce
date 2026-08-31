@@ -36,6 +36,12 @@ test-twitter-app:
 mutate-twitter-app:
 	@make -C apps/twitter mutate
 
+install-hanami-app:
+	@make -C apps/hanami_application install
+
+test-hanami-app:
+	@make -C apps/hanami_application test
+
 install-infra:
 	@make -C infra install
 
@@ -48,9 +54,9 @@ mutate-infra:
 dev:
 	@make -C apps/rails_application dev
 
-install: install-infra install-rails install-crm-app install-twitter-app $(addprefix install-, $(CONTEXTS)) ## Install all dependencies
+install: install-infra install-rails install-crm-app install-twitter-app install-hanami-app $(addprefix install-, $(CONTEXTS)) ## Install all dependencies
 
-test: test-infra test-rails test-crm-app test-twitter-app $(addprefix test-, $(CONTEXTS)) ## Run all unit tests
+test: test-infra test-rails test-crm-app test-twitter-app test-hanami-app $(addprefix test-, $(CONTEXTS)) ## Run all unit tests
 
 mutate: mutate-infra mutate-rails mutate-crm-app mutate-twitter-app $(addprefix mutate-, $(CONTEXTS)) ## Run all mutation coverage
 
