@@ -11,9 +11,11 @@ module HanamiApplication
       end
 
       def subscribe(event_store)
-        event_store.subscribe(method(:register_product), to: [ProductCatalog::ProductRegistered])
-        event_store.subscribe(method(:name_product), to: [ProductCatalog::ProductNamed])
-        event_store.subscribe(method(:set_price), to: [Pricing::PriceSet])
+        handlers.each { |event_type, handler| event_store.subscribe(handler, to: [event_type]) }
+      end
+
+      def apply(event)
+        handlers[event.class]&.call(event)
       end
 
       def all
@@ -25,6 +27,14 @@ module HanamiApplication
       end
 
       private
+
+      def handlers
+        {
+          ProductCatalog::ProductRegistered => method(:register_product),
+          ProductCatalog::ProductNamed => method(:name_product),
+          Pricing::PriceSet => method(:set_price)
+        }
+      end
 
       def register_product(event)
         product_id = event.data.fetch(:product_id)

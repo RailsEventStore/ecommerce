@@ -7,6 +7,12 @@ Hanami.app.register_provider :read_models do
 
     catalog = HanamiApplication::ReadModels::Catalog.new
     orders = HanamiApplication::ReadModels::Orders.new
+
+    event_store.read.each do |event|
+      catalog.apply(event)
+      orders.apply(event)
+    end
+
     catalog.subscribe(event_store)
     orders.subscribe(event_store)
 

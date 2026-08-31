@@ -5,6 +5,8 @@ Hanami.app.register_provider :seeds do
     target.start :command_bus
     target.start :read_models
 
+    next unless target["read_models.catalog"].all.empty?
+
     command_bus = target["command_bus"]
 
     {

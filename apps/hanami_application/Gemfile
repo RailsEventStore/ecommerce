@@ -7,6 +7,9 @@ gem "hanami-action", "~> 3.0.0"
 gem "hanami-router", "~> 3.0.0"
 gem "hanami-view", "~> 3.0.0"
 
+gem "hanami-db", "~> 3.0.0"
+gem "sqlite3"
+
 gem "dry-types", "~> 1.7"
 gem "dry-operation", ">= 1.0.1"
 gem "dry-validation", "~> 1.11"
@@ -15,6 +18,7 @@ gem "puma", ">= 7.1"
 gem "rake"
 
 gem "infra", path: "../../infra"
+gem "ruby_event_store-sequel"
 gem "activesupport"
 gem "minitest"
 

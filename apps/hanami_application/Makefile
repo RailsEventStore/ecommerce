@@ -1,5 +1,6 @@
 install:
 	@bundle install
+	@bundle exec hanami db prepare
 
 dev:
 	@bundle exec hanami dev

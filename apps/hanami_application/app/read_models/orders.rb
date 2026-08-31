@@ -21,12 +21,11 @@ module HanamiApplication
       end
 
       def subscribe(event_store)
-        event_store.subscribe(method(:draft_order), to: [Pricing::OfferDrafted])
-        event_store.subscribe(method(:add_line), to: [Pricing::PriceItemAdded])
-        event_store.subscribe(method(:remove_line), to: [Pricing::PriceItemRemoved])
-        event_store.subscribe(method(:submit_order), to: [Pricing::OfferAccepted])
-        event_store.subscribe(method(:number_order), to: [Fulfillment::OrderRegistered])
-        event_store.subscribe(method(:deliver_order), to: [Fulfillment::OrderConfirmed])
+        handlers.each { |event_type, handler| event_store.subscribe(handler, to: [event_type]) }
+      end
+
+      def apply(event)
+        handlers[event.class]&.call(event)
       end
 
       def find(order_id)
@@ -34,6 +33,17 @@ module HanamiApplication
       end
 
       private
+
+      def handlers
+        {
+          Pricing::OfferDrafted => method(:draft_order),
+          Pricing::PriceItemAdded => method(:add_line),
+          Pricing::PriceItemRemoved => method(:remove_line),
+          Pricing::OfferAccepted => method(:submit_order),
+          Fulfillment::OrderRegistered => method(:number_order),
+          Fulfillment::OrderConfirmed => method(:deliver_order)
+        }
+      end
 
       def draft_order(event)
         order_id = event.data.fetch(:order_id)
