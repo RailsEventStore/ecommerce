@@ -1,4 +1,6 @@
-GIT_BASE_SHA ?= $(shell git merge-base HEAD origin/master)
+# Fall back to merge-base when GIT_BASE_SHA is empty or the git null SHA
+# (push of a new branch sets github.event.before to 0000…0).
+GIT_BASE_SHA := $(or $(filter-out 0000000000000000000000000000000000000000,$(GIT_BASE_SHA)),$(shell git merge-base HEAD origin/master))
 
 install:
 	@bundle install
