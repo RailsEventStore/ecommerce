@@ -16,12 +16,17 @@ class Configuration
     Processes::Configuration.new.call(event_store, command_bus)
 
     enable_applications_read_model(event_store)
+    enable_policy_list_read_model(event_store)
   end
 
   private
 
   def enable_applications_read_model(event_store)
     Applications::Configuration.new.call(event_store)
+  end
+
+  def enable_policy_list_read_model(event_store)
+    PolicyList::Configuration.new.call(event_store)
   end
 
   def enable_res_infra_event_linking(event_store)

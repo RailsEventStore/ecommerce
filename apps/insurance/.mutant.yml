@@ -11,7 +11,10 @@ matcher:
   subjects:
     - Processes*
     - Applications*
+    - PolicyList*
   ignore:
     - Processes::Configuration#call
     - Applications::Configuration#call
     - Applications::Application*
+    - PolicyList::Configuration#call
+    - PolicyList::Policy*
