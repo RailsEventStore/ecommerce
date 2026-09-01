@@ -15,13 +15,13 @@ module Policies
       apply PolicyIssued.new(data: { policy_id: @id, premium: premium })
     end
 
-    def activate
+    def put_in_force
       raise InvalidState unless @state.equal?(:issued)
-      apply PolicyActivated.new(data: { policy_id: @id })
+      apply PolicyInForce.new(data: { policy_id: @id })
     end
 
     def terminate
-      raise InvalidState unless @state.equal?(:active)
+      raise InvalidState unless @state.equal?(:in_force)
       apply PolicyTerminated.new(data: { policy_id: @id })
     end
 
@@ -29,8 +29,8 @@ module Policies
       @state = :issued
     end
 
-    on PolicyActivated do |event|
-      @state = :active
+    on PolicyInForce do |event|
+      @state = :in_force
     end
 
     on PolicyTerminated do |event|

@@ -2,7 +2,7 @@ require "test_helper"
 
 class ClaimsTest < InMemoryRESIntegrationTestCase
   def test_reported_damage_is_listed
-    issue_active_policy(policy_id)
+    issue_in_force_policy(policy_id)
 
     report_loss(claim_id, policy_id, "Flooded kitchen")
 
@@ -11,8 +11,8 @@ class ClaimsTest < InMemoryRESIntegrationTestCase
     assert_select("td", "reported")
   end
 
-  def test_assessed_loss_on_active_policy_is_settled_automatically
-    issue_active_policy(policy_id)
+  def test_assessed_loss_on_in_force_policy_is_settled_automatically
+    issue_in_force_policy(policy_id)
     report_loss(claim_id, policy_id, "Flooded kitchen")
 
     post "/claims/#{claim_id}/assess", params: { amount: "300" }
@@ -22,7 +22,7 @@ class ClaimsTest < InMemoryRESIntegrationTestCase
     assert_select("td", "settled")
   end
 
-  def test_assessed_loss_without_active_policy_is_not_settled
+  def test_assessed_loss_without_in_force_policy_is_not_settled
     issue_policy_without_payment(policy_id)
     report_loss(claim_id, policy_id, "Flooded kitchen")
 
@@ -60,7 +60,7 @@ class ClaimsTest < InMemoryRESIntegrationTestCase
     post "/applications/#{id}/accept_offer"
   end
 
-  def issue_active_policy(id)
+  def issue_in_force_policy(id)
     issue_policy_without_payment(id)
     post "/policies/#{id}/pay_premium"
   end

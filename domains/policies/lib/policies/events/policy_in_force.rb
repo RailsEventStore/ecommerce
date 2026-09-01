@@ -1,9 +1,7 @@
 # frozen_string_literal: true
 
 module Policies
-  class ActivatePolicy < Infra::Command
+  class PolicyInForce < Infra::Event
     attribute :policy_id, Infra::Types::UUID
-
-    alias aggregate_id policy_id
   end
 end

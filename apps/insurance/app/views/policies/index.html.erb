@@ -1,7 +1,7 @@
 <div class="flex items-start justify-between mb-6">
   <div>
     <h1 class="text-2xl font-bold tracking-tight">Policies</h1>
-    <p class="mt-1 text-sm text-slate-500">Issued from accepted offers — active once the premium is paid.</p>
+    <p class="mt-1 text-sm text-slate-500">Issued from accepted offers — in force once the premium is paid.</p>
   </div>
 </div>
 
@@ -32,7 +32,7 @@
             <% case policy.state %>
             <% when "issued" %>
               <%= button_to "Pay premium", pay_premium_policy_path(policy.policy_id), class: "px-3 py-1.5 text-sm font-medium rounded-md bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer" %>
-            <% when "active" %>
+            <% when "in force" %>
               <%= button_to "Terminate", terminate_policy_path(policy.policy_id), class: "px-3 py-1.5 text-sm font-medium rounded-md border border-rose-200 text-rose-600 bg-white hover:bg-rose-50 cursor-pointer" %>
             <% end %>
           </div>

@@ -3,7 +3,7 @@ module Processes
     include RubyEventStore::ProcessManager.with_state { ProcessState }
 
     subscribes_to(
-      Policies::PolicyActivated,
+      Policies::PolicyInForce,
       Policies::PolicyTerminated,
       Claims::LossAssessed,
       Claims::ClaimSettled
@@ -16,15 +16,15 @@ module Processes
     end
 
     def payable?
-      state.policy_active && !state.assessed_claim_id.nil?
+      state.policy_in_force && !state.assessed_claim_id.nil?
     end
 
     def apply(event)
       case event
-      when Policies::PolicyActivated
-        state.with(policy_active: true)
+      when Policies::PolicyInForce
+        state.with(policy_in_force: true)
       when Policies::PolicyTerminated
-        state.with(policy_active: false)
+        state.with(policy_in_force: false)
       when Claims::LossAssessed
         state.with(assessed_claim_id: event.data.fetch(:claim_id))
       when Claims::ClaimSettled
@@ -36,8 +36,8 @@ module Processes
       event.data.fetch(:policy_id)
     end
 
-    ProcessState = Data.define(:policy_active, :assessed_claim_id) do
-      def initialize(policy_active: false, assessed_claim_id: nil)
+    ProcessState = Data.define(:policy_in_force, :assessed_claim_id) do
+      def initialize(policy_in_force: false, assessed_claim_id: nil)
         super
       end
     end

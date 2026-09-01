@@ -18,8 +18,8 @@ module PolicyList
           premium: event.data.fetch(:premium),
           state: "issued"
         )
-      when Policies::PolicyActivated
-        find_policy(event).update!(state: "active")
+      when Policies::PolicyInForce
+        find_policy(event).update!(state: "in force")
       when Policies::PolicyTerminated
         find_policy(event).update!(state: "terminated")
       end
@@ -36,7 +36,7 @@ module PolicyList
     def call(event_store)
       event_store.subscribe(EventHandler.new, to: [
         Policies::PolicyIssued,
-        Policies::PolicyActivated,
+        Policies::PolicyInForce,
         Policies::PolicyTerminated
       ])
     end

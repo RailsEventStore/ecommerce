@@ -5,7 +5,7 @@ module ApplicationHelper
     "priced" => "bg-sky-100 text-sky-800",
     "accepted" => "bg-emerald-100 text-emerald-800",
     "issued" => "bg-sky-100 text-sky-800",
-    "active" => "bg-emerald-100 text-emerald-800",
+    "in force" => "bg-emerald-100 text-emerald-800",
     "terminated" => "bg-rose-100 text-rose-700",
     "reported" => "bg-amber-100 text-amber-800",
     "assessed" => "bg-sky-100 text-sky-800",

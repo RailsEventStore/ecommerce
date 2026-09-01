@@ -10,7 +10,7 @@ module Processes
         to: [Policies::PolicyIssued]
       )
       event_store.subscribe(
-        ActivatePolicyOnPaymentCaptured.new(command_bus),
+        PutPolicyInForceOnPaymentCaptured.new(command_bus),
         to: [Payments::PaymentCaptured]
       )
       event_store.subscribe(

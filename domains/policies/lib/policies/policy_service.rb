@@ -13,14 +13,14 @@ module Policies
     end
   end
 
-  class OnActivatePolicy
+  class OnPutPolicyInForce
     def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)
     end
 
     def call(command)
       @repository.with_aggregate(Policy, command.aggregate_id) do |policy|
-        policy.activate
+        policy.put_in_force
       end
     end
   end

@@ -9,16 +9,16 @@ class PoliciesTest < InMemoryRESIntegrationTestCase
     assert_select("td", "issued")
   end
 
-  def test_paying_premium_activates_policy
+  def test_paying_premium_puts_policy_in_force
     go_through_underwriting(application_id)
 
     post "/policies/#{application_id}/pay_premium"
     follow_redirect!
 
-    assert_select("td", "active")
+    assert_select("td", "in force")
   end
 
-  def test_active_policy_can_be_terminated
+  def test_in_force_policy_can_be_terminated
     go_through_underwriting(application_id)
     post "/policies/#{application_id}/pay_premium"
 

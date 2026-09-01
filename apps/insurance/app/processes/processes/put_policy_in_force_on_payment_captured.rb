@@ -1,12 +1,12 @@
 module Processes
-  class ActivatePolicyOnPaymentCaptured
+  class PutPolicyInForceOnPaymentCaptured
     def initialize(command_bus)
       @command_bus = command_bus
     end
 
     def call(event)
       command_bus.call(
-        Policies::ActivatePolicy.new(policy_id: event.data.fetch(:order_id))
+        Policies::PutPolicyInForce.new(policy_id: event.data.fetch(:order_id))
       )
     end
 

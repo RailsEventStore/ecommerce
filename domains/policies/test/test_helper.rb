@@ -20,8 +20,8 @@ module Policies
       act(IssuePolicy.new(policy_id: policy_id, premium: premium))
     end
 
-    def activate_policy(policy_id)
-      act(ActivatePolicy.new(policy_id: policy_id))
+    def put_policy_in_force(policy_id)
+      act(PutPolicyInForce.new(policy_id: policy_id))
     end
 
     def terminate_policy(policy_id)

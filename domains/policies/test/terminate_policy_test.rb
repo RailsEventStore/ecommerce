@@ -7,7 +7,7 @@ module Policies
     def test_active_policy_can_be_terminated
       policy_id = SecureRandom.uuid
       issue_policy(policy_id)
-      activate_policy(policy_id)
+      put_policy_in_force(policy_id)
 
       assert_events(
         stream(policy_id),
@@ -27,7 +27,7 @@ module Policies
     def test_policy_can_not_be_terminated_twice
       policy_id = SecureRandom.uuid
       issue_policy(policy_id)
-      activate_policy(policy_id)
+      put_policy_in_force(policy_id)
       terminate_policy(policy_id)
 
       assert_raises(Policy::InvalidState) do
