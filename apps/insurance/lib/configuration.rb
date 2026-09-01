@@ -12,6 +12,8 @@ class Configuration
     Policies::Configuration.new.call(event_store, command_bus)
     Claims::Configuration.new(Rails.configuration.payout_gateway).call(event_store, command_bus)
     Payments::Configuration.new(Rails.configuration.payment_gateway).call(event_store, command_bus)
+
+    Processes::Configuration.new.call(event_store, command_bus)
   end
 
   private

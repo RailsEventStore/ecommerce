@@ -8,5 +8,7 @@ coverage_criteria:
   timeout: true
   process_abort: true
 matcher:
-  subjects: []
-  ignore: []
+  subjects:
+    - Processes*
+  ignore:
+    - Processes::Configuration#call
