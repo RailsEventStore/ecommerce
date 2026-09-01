@@ -36,6 +36,15 @@ test-twitter-app:
 mutate-twitter-app:
 	@make -C apps/twitter mutate
 
+install-insurance-app:
+	@make -C apps/insurance install
+
+test-insurance-app:
+	@make -C apps/insurance test
+
+mutate-insurance-app:
+	@make -C apps/insurance mutate
+
 install-hanami-app:
 	@make -C apps/hanami_application install
 
@@ -54,11 +63,11 @@ mutate-infra:
 dev:
 	@make -C apps/rails_application dev
 
-install: install-infra install-rails install-crm-app install-twitter-app install-hanami-app $(addprefix install-, $(CONTEXTS)) ## Install all dependencies
+install: install-infra install-rails install-crm-app install-twitter-app install-insurance-app install-hanami-app $(addprefix install-, $(CONTEXTS)) ## Install all dependencies
 
-test: test-infra test-rails test-crm-app test-twitter-app test-hanami-app $(addprefix test-, $(CONTEXTS)) ## Run all unit tests
+test: test-infra test-rails test-crm-app test-twitter-app test-insurance-app test-hanami-app $(addprefix test-, $(CONTEXTS)) ## Run all unit tests
 
-mutate: mutate-infra mutate-rails mutate-crm-app mutate-twitter-app $(addprefix mutate-, $(CONTEXTS)) ## Run all mutation coverage
+mutate: mutate-infra mutate-rails mutate-crm-app mutate-twitter-app mutate-insurance-app $(addprefix mutate-, $(CONTEXTS)) ## Run all mutation coverage
 
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
