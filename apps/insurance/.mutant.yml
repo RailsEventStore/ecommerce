@@ -12,9 +12,12 @@ matcher:
     - Processes*
     - Applications*
     - PolicyList*
+    - ClaimList*
   ignore:
     - Processes::Configuration#call
     - Applications::Configuration#call
     - Applications::Application*
     - PolicyList::Configuration#call
     - PolicyList::Policy*
+    - ClaimList::Configuration#call
+    - ClaimList::Claim*

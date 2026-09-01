@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_01_021000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_01_022000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -20,6 +20,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_01_021000) do
     t.datetime "created_at", null: false
     t.decimal "premium"
     t.string "risk_class"
+    t.string "state"
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "claims", force: :cascade do |t|
+    t.decimal "amount"
+    t.uuid "claim_id"
+    t.datetime "created_at", null: false
+    t.string "description"
+    t.uuid "policy_id"
     t.string "state"
     t.datetime "updated_at", null: false
   end

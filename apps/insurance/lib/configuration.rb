@@ -17,6 +17,7 @@ class Configuration
 
     enable_applications_read_model(event_store)
     enable_policy_list_read_model(event_store)
+    enable_claim_list_read_model(event_store)
   end
 
   private
@@ -27,6 +28,10 @@ class Configuration
 
   def enable_policy_list_read_model(event_store)
     PolicyList::Configuration.new.call(event_store)
+  end
+
+  def enable_claim_list_read_model(event_store)
+    ClaimList::Configuration.new.call(event_store)
   end
 
   def enable_res_infra_event_linking(event_store)
