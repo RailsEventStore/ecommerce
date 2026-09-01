@@ -1,0 +1,13 @@
+requires:
+  - ./test/test_helper
+integration: minitest
+usage: opensource
+coverage_criteria:
+  process_abort: true
+matcher:
+  subjects:
+    - Claims*
+  ignore:
+    - Claims::Test*
+    - Claims::Configuration#call
+    - Claims::Configuration#initialize
