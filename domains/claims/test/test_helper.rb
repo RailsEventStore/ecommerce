@@ -19,16 +19,16 @@ module Claims
       "Claims::Claim$#{claim_id}"
     end
 
-    def report_damage(claim_id, policy_id, description = "Flooded kitchen")
-      act(ReportDamage.new(claim_id: claim_id, policy_id: policy_id, description: description))
+    def report_loss(claim_id, policy_id, description = "Flooded kitchen")
+      act(ReportLoss.new(claim_id: claim_id, policy_id: policy_id, description: description))
     end
 
-    def evaluate_damage(claim_id, amount = BigDecimal("300"))
-      act(EvaluateDamage.new(claim_id: claim_id, amount: amount))
+    def assess_loss(claim_id, amount = BigDecimal("300"))
+      act(AssessLoss.new(claim_id: claim_id, amount: amount))
     end
 
-    def pay_compensation(claim_id)
-      act(PayCompensation.new(claim_id: claim_id))
+    def settle_claim(claim_id)
+      act(SettleClaim.new(claim_id: claim_id))
     end
   end
 end

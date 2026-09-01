@@ -10,34 +10,34 @@ module Claims
       @id = id
     end
 
-    def report_damage(policy_id, description)
+    def report_loss(policy_id, description)
       raise InvalidState if @state
-      apply DamageReported.new(data: { claim_id: @id, policy_id: policy_id, description: description })
+      apply LossReported.new(data: { claim_id: @id, policy_id: policy_id, description: description })
     end
 
-    def evaluate_damage(amount)
+    def assess_loss(amount)
       raise InvalidState unless @state.equal?(:reported)
-      apply DamageEvaluated.new(data: { claim_id: @id, policy_id: @policy_id, amount: amount })
+      apply LossAssessed.new(data: { claim_id: @id, policy_id: @policy_id, amount: amount })
     end
 
-    def pay_compensation(gateway)
-      raise InvalidState unless @state.equal?(:evaluated)
+    def settle(gateway)
+      raise InvalidState unless @state.equal?(:assessed)
       gateway.pay_out(@id, @amount)
-      apply CompensationPaid.new(data: { claim_id: @id, policy_id: @policy_id, amount: @amount })
+      apply ClaimSettled.new(data: { claim_id: @id, policy_id: @policy_id, amount: @amount })
     end
 
-    on DamageReported do |event|
+    on LossReported do |event|
       @state = :reported
       @policy_id = event.data.fetch(:policy_id)
     end
 
-    on DamageEvaluated do |event|
-      @state = :evaluated
+    on LossAssessed do |event|
+      @state = :assessed
       @amount = event.data.fetch(:amount)
     end
 
-    on CompensationPaid do |event|
-      @state = :paid
+    on ClaimSettled do |event|
+      @state = :settled
     end
   end
 end

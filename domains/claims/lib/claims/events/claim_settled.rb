@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 module Claims
-  class DamageReported < Infra::Event
+  class ClaimSettled < Infra::Event
     attribute :claim_id, Infra::Types::UUID
     attribute :policy_id, Infra::Types::UUID
-    attribute :description, Infra::Types::String
+    attribute :amount, Infra::Types::Price
   end
 end

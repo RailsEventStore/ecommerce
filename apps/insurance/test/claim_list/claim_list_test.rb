@@ -8,9 +8,9 @@ module ClaimList
       ClaimList::Configuration.new.call(event_store)
     end
 
-    def test_damage_reported
-      report_damage(claim_id, policy_id, "Flooded kitchen")
-      report_damage(other_claim_id, policy_id, "Broken window")
+    def test_loss_reported
+      report_loss(claim_id, policy_id, "Flooded kitchen")
+      report_loss(other_claim_id, policy_id, "Broken window")
 
       assert_equal(2, ClaimList.all.count)
       assert_equal([other_claim_id, claim_id], ClaimList.all.map(&:claim_id))
@@ -20,26 +20,26 @@ module ClaimList
       assert_equal("reported", claim.state)
     end
 
-    def test_damage_evaluated
-      report_damage(claim_id, policy_id, "Flooded kitchen")
-      report_damage(other_claim_id, policy_id, "Broken window")
-      evaluate_damage(claim_id, BigDecimal("300"))
+    def test_loss_assessed
+      report_loss(claim_id, policy_id, "Flooded kitchen")
+      report_loss(other_claim_id, policy_id, "Broken window")
+      assess_loss(claim_id, BigDecimal("300"))
 
       claim = ClaimList.all.find_by!(claim_id: claim_id)
       assert_equal(BigDecimal("300"), claim.amount)
-      assert_equal("evaluated", claim.state)
+      assert_equal("assessed", claim.state)
       other = ClaimList.all.find_by!(claim_id: other_claim_id)
       assert_nil(other.amount)
       assert_equal("reported", other.state)
     end
 
-    def test_compensation_paid
-      report_damage(claim_id, policy_id, "Flooded kitchen")
-      report_damage(other_claim_id, policy_id, "Broken window")
-      evaluate_damage(claim_id, BigDecimal("300"))
-      pay_compensation(claim_id, BigDecimal("300"))
+    def test_claim_settled
+      report_loss(claim_id, policy_id, "Flooded kitchen")
+      report_loss(other_claim_id, policy_id, "Broken window")
+      assess_loss(claim_id, BigDecimal("300"))
+      settle_claim(claim_id, BigDecimal("300"))
 
-      assert_equal("paid", ClaimList.all.find_by!(claim_id: claim_id).state)
+      assert_equal("settled", ClaimList.all.find_by!(claim_id: claim_id).state)
       assert_equal("reported", ClaimList.all.find_by!(claim_id: other_claim_id).state)
     end
 
@@ -57,21 +57,21 @@ module ClaimList
       @policy_id ||= SecureRandom.uuid
     end
 
-    def report_damage(id, pid, description)
+    def report_loss(id, pid, description)
       event_store.publish(
-        Claims::DamageReported.new(data: { claim_id: id, policy_id: pid, description: description })
+        Claims::LossReported.new(data: { claim_id: id, policy_id: pid, description: description })
       )
     end
 
-    def evaluate_damage(id, amount)
+    def assess_loss(id, amount)
       event_store.publish(
-        Claims::DamageEvaluated.new(data: { claim_id: id, policy_id: policy_id, amount: amount })
+        Claims::LossAssessed.new(data: { claim_id: id, policy_id: policy_id, amount: amount })
       )
     end
 
-    def pay_compensation(id, amount)
+    def settle_claim(id, amount)
       event_store.publish(
-        Claims::CompensationPaid.new(data: { claim_id: id, policy_id: policy_id, amount: amount })
+        Claims::ClaimSettled.new(data: { claim_id: id, policy_id: policy_id, amount: amount })
       )
     end
   end

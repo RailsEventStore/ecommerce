@@ -1,9 +1,11 @@
 # frozen_string_literal: true
 
 module Claims
-  class CompensationPaid < Infra::Event
+  class ReportLoss < Infra::Command
     attribute :claim_id, Infra::Types::UUID
     attribute :policy_id, Infra::Types::UUID
-    attribute :amount, Infra::Types::Price
+    attribute :description, Infra::Types::String
+
+    alias aggregate_id claim_id
   end
 end

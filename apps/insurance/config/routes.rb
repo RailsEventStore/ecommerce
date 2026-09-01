@@ -20,7 +20,7 @@ Rails.application.routes.draw do
 
   resources :claims, only: [:index, :new, :create] do
     member do
-      post :evaluate
+      post :assess
     end
   end
 end

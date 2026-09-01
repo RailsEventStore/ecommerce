@@ -1,9 +1,9 @@
 <div class="flex items-start justify-between mb-6">
   <div>
     <h1 class="text-2xl font-bold tracking-tight">Claims</h1>
-    <p class="mt-1 text-sm text-slate-500">Evaluated damage on an active policy is compensated automatically.</p>
+    <p class="mt-1 text-sm text-slate-500">Assessed losses on an active policy are settled automatically.</p>
   </div>
-  <%= link_to "Report damage", new_claim_path, class: "px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white text-sm font-medium rounded-lg shadow-sm" %>
+  <%= link_to "Report a loss", new_claim_path, class: "px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white text-sm font-medium rounded-lg shadow-sm" %>
 </div>
 
 <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
@@ -35,9 +35,9 @@
         <td class="px-5 py-3">
           <div class="flex justify-end">
             <% if claim.state == "reported" %>
-              <%= form_with url: evaluate_claim_path(claim.claim_id), method: :post, class: "flex items-center gap-2" do %>
+              <%= form_with url: assess_claim_path(claim.claim_id), method: :post, class: "flex items-center gap-2" do %>
                 <%= number_field_tag :amount, nil, min: 1, step: 0.01, required: true, placeholder: "Amount", class: "w-28 rounded-md border-slate-300 text-sm py-1.5" %>
-                <%= submit_tag "Evaluate damage", class: "px-3 py-1.5 text-sm font-medium rounded-md border border-slate-300 bg-white hover:bg-slate-50 cursor-pointer" %>
+                <%= submit_tag "Assess loss", class: "px-3 py-1.5 text-sm font-medium rounded-md border border-slate-300 bg-white hover:bg-slate-50 cursor-pointer" %>
               <% end %>
             <% end %>
           </div>

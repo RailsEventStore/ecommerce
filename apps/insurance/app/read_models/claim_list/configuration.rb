@@ -12,17 +12,17 @@ module ClaimList
   class EventHandler
     def call(event)
       case event
-      when Claims::DamageReported
+      when Claims::LossReported
         Claim.create!(
           claim_id: event.data.fetch(:claim_id),
           policy_id: event.data.fetch(:policy_id),
           description: event.data.fetch(:description),
           state: "reported"
         )
-      when Claims::DamageEvaluated
-        find_claim(event).update!(amount: event.data.fetch(:amount), state: "evaluated")
-      when Claims::CompensationPaid
-        find_claim(event).update!(state: "paid")
+      when Claims::LossAssessed
+        find_claim(event).update!(amount: event.data.fetch(:amount), state: "assessed")
+      when Claims::ClaimSettled
+        find_claim(event).update!(state: "settled")
       end
     end
 
@@ -36,9 +36,9 @@ module ClaimList
   class Configuration
     def call(event_store)
       event_store.subscribe(EventHandler.new, to: [
-        Claims::DamageReported,
-        Claims::DamageEvaluated,
-        Claims::CompensationPaid
+        Claims::LossReported,
+        Claims::LossAssessed,
+        Claims::ClaimSettled
       ])
     end
   end

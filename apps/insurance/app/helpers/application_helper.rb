@@ -8,8 +8,8 @@ module ApplicationHelper
     "active" => "bg-emerald-100 text-emerald-800",
     "terminated" => "bg-rose-100 text-rose-700",
     "reported" => "bg-amber-100 text-amber-800",
-    "evaluated" => "bg-sky-100 text-sky-800",
-    "paid" => "bg-emerald-100 text-emerald-800"
+    "assessed" => "bg-sky-100 text-sky-800",
+    "settled" => "bg-emerald-100 text-emerald-800"
   }.freeze
 
   def nav_link(label, path)

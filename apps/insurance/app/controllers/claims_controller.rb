@@ -10,19 +10,19 @@ class ClaimsController < ApplicationController
 
   def create
     command_bus.call(
-      Claims::ReportDamage.new(
+      Claims::ReportLoss.new(
         claim_id: params[:claim_id],
         policy_id: params[:policy_id],
         description: params[:description]
       )
     )
-    redirect_to claims_path, notice: "Damage reported"
+    redirect_to claims_path, notice: "Loss reported"
   end
 
-  def evaluate
+  def assess
     command_bus.call(
-      Claims::EvaluateDamage.new(claim_id: params[:id], amount: params[:amount].to_d)
+      Claims::AssessLoss.new(claim_id: params[:id], amount: params[:amount].to_d)
     )
-    redirect_to claims_path, notice: "Damage evaluated"
+    redirect_to claims_path, notice: "Loss assessed"
   end
 end
