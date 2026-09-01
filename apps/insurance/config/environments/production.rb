@@ -87,4 +87,7 @@ Rails.application.configure do
   #
   # Skip DNS rebinding protection for the default health check endpoint.
   # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
+
+  config.payment_gateway = -> { @payment_gateway ||= Payments::FakeGateway.new }
+  config.payout_gateway = -> { @payout_gateway ||= Claims::FakeGateway.new }
 end
