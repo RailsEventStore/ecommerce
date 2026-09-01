@@ -1,35 +1,41 @@
-<div class="w-full">
-  <div class="flex justify-between items-center mb-4">
-    <h1 class="text-2xl font-bold">Policies</h1>
-    <div>
-      <%= link_to "Applications", applications_path, class: "px-3 py-2 border rounded-md" %>
-      <%= link_to "Claims", claims_path, class: "px-3 py-2 border rounded-md" %>
-    </div>
+<div class="flex items-start justify-between mb-6">
+  <div>
+    <h1 class="text-2xl font-bold tracking-tight">Policies</h1>
+    <p class="mt-1 text-sm text-slate-500">Issued from accepted offers — active once the premium is paid.</p>
   </div>
+</div>
 
-  <table class="w-full">
-    <thead>
+<div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+  <table class="w-full text-sm">
+    <thead class="bg-slate-50 text-xs uppercase tracking-wider text-slate-500">
     <tr>
-      <th class="text-left py-2">Policy</th>
-      <th class="text-left py-2">Premium</th>
-      <th class="text-left py-2">State</th>
-      <th class="text-left py-2">Actions</th>
+      <th class="text-left px-5 py-3 font-medium">Policy</th>
+      <th class="text-left px-5 py-3 font-medium">Premium</th>
+      <th class="text-left px-5 py-3 font-medium">State</th>
+      <th class="text-right px-5 py-3 font-medium">Next step</th>
     </tr>
     </thead>
 
-    <tbody>
+    <tbody class="divide-y divide-slate-100">
+    <% if @policies.empty? %>
+      <tr>
+        <td colspan="4" class="px-5 py-12 text-center text-slate-400">No policies yet — accept an application offer first.</td>
+      </tr>
+    <% end %>
     <% @policies.each do |policy| %>
-      <tr class="border-t">
-        <td class="py-2"><%= policy.policy_id %></td>
-        <td class="py-2"><%= number_to_currency(policy.premium) %></td>
-        <td class="py-2"><%= policy.state %></td>
-        <td class="py-2">
-          <% case policy.state %>
-          <% when "issued" %>
-            <%= button_to "Pay premium", pay_premium_policy_path(policy.policy_id), class: "px-2 py-1 border rounded-md" %>
-          <% when "active" %>
-            <%= button_to "Terminate", terminate_policy_path(policy.policy_id), class: "px-2 py-1 border rounded-md" %>
-          <% end %>
+      <tr class="hover:bg-slate-50">
+        <td class="px-5 py-3"><%= short_uuid(policy.policy_id) %></td>
+        <td class="px-5 py-3 font-medium"><%= number_to_currency(policy.premium) %></td>
+        <td class="px-5 py-3"><%= state_badge(policy.state) %></td>
+        <td class="px-5 py-3">
+          <div class="flex justify-end">
+            <% case policy.state %>
+            <% when "issued" %>
+              <%= button_to "Pay premium", pay_premium_policy_path(policy.policy_id), class: "px-3 py-1.5 text-sm font-medium rounded-md bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer" %>
+            <% when "active" %>
+              <%= button_to "Terminate", terminate_policy_path(policy.policy_id), class: "px-3 py-1.5 text-sm font-medium rounded-md border border-rose-200 text-rose-600 bg-white hover:bg-rose-50 cursor-pointer" %>
+            <% end %>
+          </div>
         </td>
       </tr>
     <% end %>

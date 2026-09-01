@@ -1,31 +1,52 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= content_for(:title) || "Insurance" %></title>
+    <title><%= content_for(:title) || "Polisa — Insurance Portal" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="Insurance">
+    <meta name="application-name" content="Polisa">
     <meta name="mobile-web-app-capable" content="yes">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
     <%= yield :head %>
 
-    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
-    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
-
     <link rel="icon" href="/icon.png" type="image/png">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
 
-    <%# Includes all stylesheet files in app/assets/stylesheets %>
+    <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
-    <main class="container mx-auto mt-28 px-5 flex">
+  <body class="min-h-screen bg-slate-100 text-slate-900 antialiased">
+    <header class="bg-slate-900 text-white shadow-md">
+      <div class="max-w-6xl mx-auto px-5 h-16 flex items-center justify-between">
+        <%= link_to root_path, class: "flex items-center gap-2.5" do %>
+          <svg class="w-7 h-7 text-sky-400" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M12 2.25c-.203 0-.406.043-.595.13L4.53 5.51a1.5 1.5 0 0 0-.78 1.314v5.176c0 2.786 1.31 5.28 3.03 7.163 1.72 1.881 3.842 3.166 5.22 3.588a1.5 1.5 0 0 0 .001 0c1.377-.422 3.5-1.707 5.22-3.588 1.72-1.884 3.029-4.377 3.029-7.163V6.824a1.5 1.5 0 0 0-.78-1.314l-6.875-3.13A1.44 1.44 0 0 0 12 2.25Zm3.53 8.03a.75.75 0 1 0-1.06-1.06L11 12.69l-1.47-1.47a.75.75 0 1 0-1.06 1.06l2 2a.75.75 0 0 0 1.06 0l4-4Z" clip-rule="evenodd"/>
+          </svg>
+          <span class="text-lg font-semibold tracking-tight">Polisa</span>
+          <span class="hidden sm:inline text-xs font-medium text-slate-400 uppercase tracking-widest mt-0.5">Insurance Portal</span>
+        <% end %>
+        <nav class="flex items-center gap-1">
+          <%= nav_link "Applications", applications_path %>
+          <%= nav_link "Policies", policies_path %>
+          <%= nav_link "Claims", claims_path %>
+        </nav>
+      </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-5 py-10">
+      <% if notice %>
+        <div class="mb-6 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800"><%= notice %></div>
+      <% end %>
       <%= yield %>
     </main>
+
+    <footer class="max-w-6xl mx-auto px-5 pb-8 text-xs text-slate-400">
+      Polisa Insurance — coverage you can reason about.
+    </footer>
   </body>
 </html>

@@ -1,45 +1,51 @@
-<div class="w-full">
-  <div class="flex justify-between items-center mb-4">
-    <h1 class="text-2xl font-bold">Applications</h1>
-    <div>
-      <%= link_to "New application", new_application_path, class: "px-3 py-2 bg-blue-600 text-white rounded-md" %>
-      <%= link_to "Policies", policies_path, class: "px-3 py-2 border rounded-md" %>
-      <%= link_to "Claims", claims_path, class: "px-3 py-2 border rounded-md" %>
-    </div>
+<div class="flex items-start justify-between mb-6">
+  <div>
+    <h1 class="text-2xl font-bold tracking-tight">Applications</h1>
+    <p class="mt-1 text-sm text-slate-500">Underwriting pipeline: submit, evaluate risk, price and accept.</p>
   </div>
+  <%= link_to "New application", new_application_path, class: "px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white text-sm font-medium rounded-lg shadow-sm" %>
+</div>
 
-  <table class="w-full">
-    <thead>
+<div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+  <table class="w-full text-sm">
+    <thead class="bg-slate-50 text-xs uppercase tracking-wider text-slate-500">
     <tr>
-      <th class="text-left py-2">Application</th>
-      <th class="text-left py-2">Coverage</th>
-      <th class="text-left py-2">Risk class</th>
-      <th class="text-left py-2">Premium</th>
-      <th class="text-left py-2">State</th>
-      <th class="text-left py-2">Actions</th>
+      <th class="text-left px-5 py-3 font-medium">Application</th>
+      <th class="text-left px-5 py-3 font-medium">Coverage</th>
+      <th class="text-left px-5 py-3 font-medium">Risk class</th>
+      <th class="text-left px-5 py-3 font-medium">Premium</th>
+      <th class="text-left px-5 py-3 font-medium">State</th>
+      <th class="text-right px-5 py-3 font-medium">Next step</th>
     </tr>
     </thead>
 
-    <tbody>
+    <tbody class="divide-y divide-slate-100">
+    <% if @applications.empty? %>
+      <tr>
+        <td colspan="6" class="px-5 py-12 text-center text-slate-400">No applications yet — start by submitting one.</td>
+      </tr>
+    <% end %>
     <% @applications.each do |application| %>
-      <tr class="border-t">
-        <td class="py-2"><%= application.application_id %></td>
-        <td class="py-2"><%= number_to_currency(application.coverage_amount) %></td>
-        <td class="py-2"><%= application.risk_class %></td>
-        <td class="py-2"><%= number_to_currency(application.premium) if application.premium %></td>
-        <td class="py-2"><%= application.state %></td>
-        <td class="py-2">
-          <% case application.state %>
-          <% when "submitted" %>
-            <%= form_with url: evaluate_risk_application_path(application.application_id), method: :post do %>
-              <%= select_tag :risk_class, options_for_select(%w[low standard high], "standard") %>
-              <%= submit_tag "Evaluate risk", class: "px-2 py-1 border rounded-md" %>
+      <tr class="hover:bg-slate-50">
+        <td class="px-5 py-3"><%= short_uuid(application.application_id) %></td>
+        <td class="px-5 py-3 font-medium"><%= number_to_currency(application.coverage_amount) %></td>
+        <td class="px-5 py-3"><%= application.risk_class %></td>
+        <td class="px-5 py-3 font-medium"><%= number_to_currency(application.premium) if application.premium %></td>
+        <td class="px-5 py-3"><%= state_badge(application.state) %></td>
+        <td class="px-5 py-3">
+          <div class="flex justify-end">
+            <% case application.state %>
+            <% when "submitted" %>
+              <%= form_with url: evaluate_risk_application_path(application.application_id), method: :post, class: "flex items-center gap-2" do %>
+                <%= select_tag :risk_class, options_for_select(%w[low standard high], "standard"), class: "rounded-md border-slate-300 text-sm py-1.5" %>
+                <%= submit_tag "Evaluate risk", class: "px-3 py-1.5 text-sm font-medium rounded-md border border-slate-300 bg-white hover:bg-slate-50 cursor-pointer" %>
+              <% end %>
+            <% when "risk evaluated" %>
+              <%= button_to "Calculate premium", calculate_premium_application_path(application.application_id), class: "px-3 py-1.5 text-sm font-medium rounded-md border border-slate-300 bg-white hover:bg-slate-50 cursor-pointer" %>
+            <% when "priced" %>
+              <%= button_to "Accept offer", accept_offer_application_path(application.application_id), class: "px-3 py-1.5 text-sm font-medium rounded-md bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer" %>
             <% end %>
-          <% when "risk evaluated" %>
-            <%= button_to "Calculate premium", calculate_premium_application_path(application.application_id), class: "px-2 py-1 border rounded-md" %>
-          <% when "priced" %>
-            <%= button_to "Accept offer", accept_offer_application_path(application.application_id), class: "px-2 py-1 border rounded-md" %>
-          <% end %>
+          </div>
         </td>
       </tr>
     <% end %>

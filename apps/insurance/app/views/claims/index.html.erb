@@ -1,40 +1,46 @@
-<div class="w-full">
-  <div class="flex justify-between items-center mb-4">
-    <h1 class="text-2xl font-bold">Claims</h1>
-    <div>
-      <%= link_to "Report damage", new_claim_path, class: "px-3 py-2 bg-blue-600 text-white rounded-md" %>
-      <%= link_to "Applications", applications_path, class: "px-3 py-2 border rounded-md" %>
-      <%= link_to "Policies", policies_path, class: "px-3 py-2 border rounded-md" %>
-    </div>
+<div class="flex items-start justify-between mb-6">
+  <div>
+    <h1 class="text-2xl font-bold tracking-tight">Claims</h1>
+    <p class="mt-1 text-sm text-slate-500">Evaluated damage on an active policy is compensated automatically.</p>
   </div>
+  <%= link_to "Report damage", new_claim_path, class: "px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white text-sm font-medium rounded-lg shadow-sm" %>
+</div>
 
-  <table class="w-full">
-    <thead>
+<div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+  <table class="w-full text-sm">
+    <thead class="bg-slate-50 text-xs uppercase tracking-wider text-slate-500">
     <tr>
-      <th class="text-left py-2">Claim</th>
-      <th class="text-left py-2">Policy</th>
-      <th class="text-left py-2">Description</th>
-      <th class="text-left py-2">Amount</th>
-      <th class="text-left py-2">State</th>
-      <th class="text-left py-2">Actions</th>
+      <th class="text-left px-5 py-3 font-medium">Claim</th>
+      <th class="text-left px-5 py-3 font-medium">Policy</th>
+      <th class="text-left px-5 py-3 font-medium">Description</th>
+      <th class="text-left px-5 py-3 font-medium">Amount</th>
+      <th class="text-left px-5 py-3 font-medium">State</th>
+      <th class="text-right px-5 py-3 font-medium">Next step</th>
     </tr>
     </thead>
 
-    <tbody>
+    <tbody class="divide-y divide-slate-100">
+    <% if @claims.empty? %>
+      <tr>
+        <td colspan="6" class="px-5 py-12 text-center text-slate-400">No claims reported.</td>
+      </tr>
+    <% end %>
     <% @claims.each do |claim| %>
-      <tr class="border-t">
-        <td class="py-2"><%= claim.claim_id %></td>
-        <td class="py-2"><%= claim.policy_id %></td>
-        <td class="py-2"><%= claim.description %></td>
-        <td class="py-2"><%= number_to_currency(claim.amount) if claim.amount %></td>
-        <td class="py-2"><%= claim.state %></td>
-        <td class="py-2">
-          <% if claim.state == "reported" %>
-            <%= form_with url: evaluate_claim_path(claim.claim_id), method: :post do %>
-              <%= number_field_tag :amount, nil, min: 1, step: 0.01, required: true %>
-              <%= submit_tag "Evaluate damage", class: "px-2 py-1 border rounded-md" %>
+      <tr class="hover:bg-slate-50">
+        <td class="px-5 py-3"><%= short_uuid(claim.claim_id) %></td>
+        <td class="px-5 py-3"><%= short_uuid(claim.policy_id) %></td>
+        <td class="px-5 py-3"><%= claim.description %></td>
+        <td class="px-5 py-3 font-medium"><%= number_to_currency(claim.amount) if claim.amount %></td>
+        <td class="px-5 py-3"><%= state_badge(claim.state) %></td>
+        <td class="px-5 py-3">
+          <div class="flex justify-end">
+            <% if claim.state == "reported" %>
+              <%= form_with url: evaluate_claim_path(claim.claim_id), method: :post, class: "flex items-center gap-2" do %>
+                <%= number_field_tag :amount, nil, min: 1, step: 0.01, required: true, placeholder: "Amount", class: "w-28 rounded-md border-slate-300 text-sm py-1.5" %>
+                <%= submit_tag "Evaluate damage", class: "px-3 py-1.5 text-sm font-medium rounded-md border border-slate-300 bg-white hover:bg-slate-50 cursor-pointer" %>
+              <% end %>
             <% end %>
-          <% end %>
+          </div>
         </td>
       </tr>
     <% end %>
