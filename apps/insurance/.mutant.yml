@@ -10,5 +10,8 @@ coverage_criteria:
 matcher:
   subjects:
     - Processes*
+    - Applications*
   ignore:
     - Processes::Configuration#call
+    - Applications::Configuration#call
+    - Applications::Application*
