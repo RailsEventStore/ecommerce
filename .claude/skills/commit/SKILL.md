@@ -30,6 +30,10 @@ Use this skill when asked to commit changes, group changes into commits, or prep
   at the end of each slice instead of carving up a large finished diff
   afterward
 - Group related changes together — a commit should represent one logical change
+- Never commit generated or transient tool output (e.g. `.mutant/results/*.json`,
+  coverage reports, logs, tmp files). Review untracked files in `git status`
+  before staging — stage files explicitly instead of `git add .` / `git add -A`,
+  and gitignore recurring artifacts
 - If a change spans multiple files but serves one purpose, it belongs in one commit
 - Order commits so each builds on the previous without breaking tests
 - When splitting a large changeset into commits, verify each commit independently:

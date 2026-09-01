@@ -230,6 +230,12 @@ matcher:
 
 As each read model is added, append its namespace to `subjects` (e.g. `- Tweets*`) and its AR model + `Configuration#call` to `ignore`. See `apps/crm/.mutant.yml` for a fully-populated example.
 
+Mutant writes per-run result JSONs to `.mutant/results/`. These are transient artifacts and must never be committed — add this line to the app's `.gitignore` now:
+
+```
+/.mutant/results/
+```
+
 ### 10. Register in root Makefile
 
 Add targets to the root `Makefile`:
