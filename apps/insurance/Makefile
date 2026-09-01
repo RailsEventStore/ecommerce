@@ -10,7 +10,7 @@ architecture:
 test: architecture
 	@bin/rails test
 
-mutate:
+mutate: tailwind
 	@RAILS_ENV=test bundle exec mutant run
 
 tailwind:
