@@ -1,0 +1,18 @@
+<div class="w-full">
+  <h1 class="text-2xl font-bold mb-4">Report damage</h1>
+
+  <%= form_with url: claims_path, method: :post do %>
+    <%= hidden_field_tag :claim_id, @claim_id %>
+
+    <label for="policy_id" class="block font-bold">Policy</label>
+    <%= select_tag :policy_id, options_from_collection_for_select(@policies, :policy_id, :policy_id), class: "mt-1 block border-gray-300 rounded-md" %>
+
+    <label for="description" class="block font-bold mt-4">Description</label>
+    <%= text_field_tag :description, "", required: true, class: "mt-1 block border-gray-300 rounded-md" %>
+
+    <div class="mt-4">
+      <%= submit_tag "Report damage", class: "px-3 py-2 bg-blue-600 text-white rounded-md" %>
+      <%= link_to "Back", claims_path, class: "px-3 py-2 border rounded-md" %>
+    </div>
+  <% end %>
+</div>

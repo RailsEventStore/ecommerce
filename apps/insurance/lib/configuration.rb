@@ -13,11 +13,11 @@ class Configuration
     Claims::Configuration.new(Rails.configuration.payout_gateway).call(event_store, command_bus)
     Payments::Configuration.new(Rails.configuration.payment_gateway).call(event_store, command_bus)
 
-    Processes::Configuration.new.call(event_store, command_bus)
-
     enable_applications_read_model(event_store)
     enable_policy_list_read_model(event_store)
     enable_claim_list_read_model(event_store)
+
+    Processes::Configuration.new.call(event_store, command_bus)
   end
 
   private

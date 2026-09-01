@@ -1,0 +1,43 @@
+<div class="w-full">
+  <div class="flex justify-between items-center mb-4">
+    <h1 class="text-2xl font-bold">Claims</h1>
+    <div>
+      <%= link_to "Report damage", new_claim_path, class: "px-3 py-2 bg-blue-600 text-white rounded-md" %>
+      <%= link_to "Applications", applications_path, class: "px-3 py-2 border rounded-md" %>
+      <%= link_to "Policies", policies_path, class: "px-3 py-2 border rounded-md" %>
+    </div>
+  </div>
+
+  <table class="w-full">
+    <thead>
+    <tr>
+      <th class="text-left py-2">Claim</th>
+      <th class="text-left py-2">Policy</th>
+      <th class="text-left py-2">Description</th>
+      <th class="text-left py-2">Amount</th>
+      <th class="text-left py-2">State</th>
+      <th class="text-left py-2">Actions</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <% @claims.each do |claim| %>
+      <tr class="border-t">
+        <td class="py-2"><%= claim.claim_id %></td>
+        <td class="py-2"><%= claim.policy_id %></td>
+        <td class="py-2"><%= claim.description %></td>
+        <td class="py-2"><%= number_to_currency(claim.amount) if claim.amount %></td>
+        <td class="py-2"><%= claim.state %></td>
+        <td class="py-2">
+          <% if claim.state == "reported" %>
+            <%= form_with url: evaluate_claim_path(claim.claim_id), method: :post do %>
+              <%= number_field_tag :amount, nil, min: 1, step: 0.01, required: true %>
+              <%= submit_tag "Evaluate damage", class: "px-2 py-1 border rounded-md" %>
+            <% end %>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+</div>

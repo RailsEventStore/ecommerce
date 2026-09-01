@@ -1,0 +1,38 @@
+<div class="w-full">
+  <div class="flex justify-between items-center mb-4">
+    <h1 class="text-2xl font-bold">Policies</h1>
+    <div>
+      <%= link_to "Applications", applications_path, class: "px-3 py-2 border rounded-md" %>
+      <%= link_to "Claims", claims_path, class: "px-3 py-2 border rounded-md" %>
+    </div>
+  </div>
+
+  <table class="w-full">
+    <thead>
+    <tr>
+      <th class="text-left py-2">Policy</th>
+      <th class="text-left py-2">Premium</th>
+      <th class="text-left py-2">State</th>
+      <th class="text-left py-2">Actions</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <% @policies.each do |policy| %>
+      <tr class="border-t">
+        <td class="py-2"><%= policy.policy_id %></td>
+        <td class="py-2"><%= number_to_currency(policy.premium) %></td>
+        <td class="py-2"><%= policy.state %></td>
+        <td class="py-2">
+          <% case policy.state %>
+          <% when "issued" %>
+            <%= button_to "Pay premium", pay_premium_policy_path(policy.policy_id), class: "px-2 py-1 border rounded-md" %>
+          <% when "active" %>
+            <%= button_to "Terminate", terminate_policy_path(policy.policy_id), class: "px-2 py-1 border rounded-md" %>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+</div>
