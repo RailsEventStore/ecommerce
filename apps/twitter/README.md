@@ -51,7 +51,7 @@ Two feed read models:
 
 ## Stack
 
-- Ruby 4.0.1, Rails 8.1, PostgreSQL
+- Ruby 4.0.7, Rails 8.1, PostgreSQL
 - [RailsEventStore](https://railseventstore.org) 3.0 — an event-sourced write model, read models as projections
 - Part of a monorepo; the write-side `Social` domain lives in `../../domains/social`
 
