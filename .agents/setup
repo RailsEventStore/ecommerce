@@ -2,7 +2,7 @@
 set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-ruby_version="3.4.9"
+ruby_version="4.0.7"
 bundler_version="2.6.9"
 
 echo "Installing system dependencies"
@@ -19,6 +19,7 @@ sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
   libssl-dev \
   libyaml-dev \
   postgresql \
+  sqlite3 \
   zlib1g-dev
 
 if [[ ! -x "$HOME/.local/bin/mise" ]]; then
@@ -29,7 +30,7 @@ fi
 mkdir -p "$HOME/.config/ecommerce"
 cat > "$HOME/.config/ecommerce/orb-profile.sh" <<'EOF'
 export PATH="$HOME/.local/bin:$PATH"
-eval "$("$HOME/.local/bin/mise" activate bash)"
+eval "$("$HOME/.local/bin/mise" env --shell bash)"
 EOF
 
 touch "$HOME/.bash_profile"
@@ -39,12 +40,12 @@ if ! grep -Fqx "$profile_source" "$HOME/.bash_profile"; then
 fi
 
 export PATH="$HOME/.local/bin:$PATH"
-eval "$(mise activate bash)"
+eval "$(mise env --shell bash)"
 
 echo "Installing Ruby $ruby_version"
 mise install "ruby@$ruby_version"
 mise use --global "ruby@$ruby_version"
-eval "$(mise activate bash)"
+eval "$(mise env --shell bash)"
 gem install bundler --version "$bundler_version" --no-document
 
 echo "Starting PostgreSQL"
