@@ -35,6 +35,30 @@ jobs:
         if: always()
         continue-on-error: true
 
+  app-test:
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: crm_test
+          POSTGRES_PASSWORD: secret
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ruby-4.0.7
+          bundler-cache: true
+          working-directory: apps/crm
+      - run: make test
+        working-directory: apps/crm
+        env:
+          DATABASE_URL: "postgres://postgres:secret@localhost:5432/crm_test"
+          RAILS_ENV: test
+
   mutate:
     runs-on: ubuntu-24.04
     strategy:
@@ -65,3 +89,27 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.CI_WEBHOOK }}
         if: always()
         continue-on-error: true
+
+  app-mutate:
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: crm_test
+          POSTGRES_PASSWORD: secret
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ruby-4.0.7
+          bundler-cache: true
+          working-directory: apps/crm
+      - run: make mutate
+        working-directory: apps/crm
+        env:
+          DATABASE_URL: "postgres://postgres:secret@localhost:5432/crm_test"
+          RAILS_ENV: test

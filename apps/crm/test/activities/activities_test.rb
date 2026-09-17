@@ -13,6 +13,7 @@ module Activities
       assert_equal("contact", contacts.last.entity_type)
       assert_equal(contact_id, contacts.last.entity_uid)
       assert_equal("Contact registered: Alice", contacts.last.action)
+      assert_equal("contact", Activities.const_get(:EntityName).find_by!(entity_uid: contact_id).entity_type)
     end
 
     def test_contact_email_set
@@ -23,6 +24,7 @@ module Activities
 
       emails = Activities.all.select { |a| a.action.include?("Contact email set") }
       assert_equal(2, emails.count)
+      assert_equal("contact", emails.last.entity_type)
       assert_equal(contact_id, emails.last.entity_uid)
       assert_equal("Contact email set: alice@example.com", emails.last.action)
     end
@@ -35,6 +37,7 @@ module Activities
 
       phones = Activities.all.select { |a| a.action.include?("Contact phone set") }
       assert_equal(2, phones.count)
+      assert_equal("contact", phones.last.entity_type)
       assert_equal(contact_id, phones.last.entity_uid)
       assert_equal("Contact phone set: +1234567890", phones.last.action)
     end
@@ -47,6 +50,7 @@ module Activities
 
       linkedins = Activities.all.select { |a| a.action.include?("Contact LinkedIn URL set") }
       assert_equal(2, linkedins.count)
+      assert_equal("contact", linkedins.last.entity_type)
       assert_equal(contact_id, linkedins.last.entity_uid)
       assert_equal("Contact LinkedIn URL set: https://linkedin.com/in/alice", linkedins.last.action)
     end
@@ -60,6 +64,7 @@ module Activities
       assert_equal(company_id, companies.last.entity_uid)
       assert_equal("Company registered: Arkency", companies.last.action)
       assert_equal("company", companies.last.entity_type)
+      assert_equal("company", Activities.const_get(:EntityName).find_by!(entity_uid: company_id).entity_type)
     end
 
     def test_company_linkedin_url_set
@@ -70,6 +75,7 @@ module Activities
 
       linkedins = Activities.all.select { |a| a.action.include?("Company LinkedIn URL set") }
       assert_equal(2, linkedins.count)
+      assert_equal("company", linkedins.last.entity_type)
       assert_equal(company_id, linkedins.last.entity_uid)
       assert_equal("Company LinkedIn URL set: https://linkedin.com/company/arkency", linkedins.last.action)
     end
@@ -108,6 +114,7 @@ module Activities
 
       stages = Activities.all.select { |a| a.action.include?("Stage removed from pipeline") }
       assert_equal(2, stages.count)
+      assert_equal("pipeline", stages.last.entity_type)
       assert_equal(pipeline_id, stages.last.entity_uid)
       assert_equal("Stage removed from pipeline: Negotiation", stages.last.action)
     end
@@ -121,6 +128,7 @@ module Activities
       assert_equal(deal_id, deals.last.entity_uid)
       assert_equal("Deal created: Big Deal", deals.last.action)
       assert_equal("deal", deals.last.entity_type)
+      assert_equal("deal", Activities.const_get(:EntityName).find_by!(entity_uid: deal_id).entity_type)
     end
 
     def test_deal_value_set
@@ -131,6 +139,7 @@ module Activities
 
       values = Activities.all.select { |a| a.action.include?("Deal value set") }
       assert_equal(2, values.count)
+      assert_equal("deal", values.last.entity_type)
       assert_equal(deal_id, values.last.entity_uid)
       assert_equal("Deal value set: 10000", values.last.action)
     end
@@ -143,6 +152,7 @@ module Activities
 
       dates = Activities.all.select { |a| a.action.include?("Deal expected close date set") }
       assert_equal(2, dates.count)
+      assert_equal("deal", dates.last.entity_type)
       assert_equal(deal_id, dates.last.entity_uid)
       assert_equal("Deal expected close date set: 2026-03-01", dates.last.action)
     end
@@ -155,6 +165,7 @@ module Activities
 
       moves = Activities.all.select { |a| a.action.include?("Deal moved to stage") }
       assert_equal(2, moves.count)
+      assert_equal("deal", moves.last.entity_type)
       assert_equal(deal_id, moves.last.entity_uid)
       assert_equal("Deal moved to stage: Negotiation", moves.last.action)
     end
