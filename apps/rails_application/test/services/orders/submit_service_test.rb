@@ -37,7 +37,7 @@ module Orders
 
       run_command(Crm::RegisterCustomer.new(customer_id: customer_id, name: "John Doe"))
       prepare_product(product_id, "Async Remote", 49)
-      run_command(Inventory::Supply.new(product_id: product_id, quantity: 1))
+      run_command(Inventory::Supply.new(product_id, 1))
       run_command(Inventory::Reserve.new(product_id: product_id, quantity: 1))
       run_command(Pricing::AddPriceItem.new(order_id: order_id, product_id: product_id, price: 49))
       prepare_product(another_product_id, "Fearless Refactoring", 49)

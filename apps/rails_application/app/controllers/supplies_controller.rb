@@ -33,7 +33,7 @@ class SuppliesController < ApplicationController
 
   def supply(product_id, quantity)
     command_bus.(
-      Inventory::Supply.new(product_id: product_id, quantity: quantity)
+      Inventory::Supply.new(product_id, quantity)
     )
   end
 

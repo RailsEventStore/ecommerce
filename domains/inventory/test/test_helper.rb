@@ -29,7 +29,7 @@ module Inventory
     end
 
     def supply(product_id, quantity)
-      Supply.new(product_id: product_id, quantity: quantity)
+      Supply.new(product_id, quantity)
     end
 
     def cancel_reservation(order_id)
