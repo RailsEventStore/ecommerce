@@ -9,27 +9,27 @@ module Processes
 
       given([offer_accepted], process:)
 
-      assert_all_commands(
-        Inventory::Reserve.new(product_id: product_id, quantity: 1),
-        Inventory::Reserve.new(product_id: another_product_id, quantity: 2),
-        Fulfillment::RegisterOrder.new(order_id: order_id),
-      )
+      assert_equal(3, command_bus.all_received.size)
+      assert_inventory_command(0, Inventory::Reserve, product_id, 1)
+      assert_inventory_command(1, Inventory::Reserve, another_product_id, 2)
+      assert_equal(Fulfillment::RegisterOrder.new(order_id: order_id), command_bus.all_received.fetch(2))
     end
 
     def test_rejects_order_and_compensates_stock_when_sth_is_unavailable
-      failing_command = Inventory::Reserve.new(product_id: product_id, quantity: 1)
       process = ReservationProcess.new.with(
         event_store: event_store,
-        command_bus: EnhancedFakeCommandBus.new(command_bus, failing_command => Inventory::InventoryEntry::InventoryNotAvailable)
+        command_bus: FailingReserveCommandBus.new(command_bus, product_id)
       )
 
       given([offer_accepted], process:)
 
-      assert_all_commands(
-        failing_command,
-        Inventory::Reserve.new(product_id: another_product_id, quantity: 2),
-        Inventory::Release.new(product_id: another_product_id, quantity: 2),
+      assert_equal(4, command_bus.all_received.size)
+      assert_inventory_command(0, Inventory::Reserve, product_id, 1)
+      assert_inventory_command(1, Inventory::Reserve, another_product_id, 2)
+      assert_inventory_command(2, Inventory::Release, another_product_id, 2)
+      assert_equal(
         Pricing::RejectOffer.new(order_id: order_id, reason: "Some products were unavailable", unavailable_product_ids: [product_id]),
+        command_bus.all_received.fetch(3)
       )
     end
 
@@ -40,10 +40,9 @@ module Processes
 
       given([order_cancelled], process:)
 
-      assert_all_commands(
-        Inventory::Release.new(product_id: product_id, quantity: 1),
-        Inventory::Release.new(product_id: another_product_id, quantity: 2)
-      )
+      assert_equal(2, command_bus.all_received.size)
+      assert_inventory_command(0, Inventory::Release, product_id, 1)
+      assert_inventory_command(1, Inventory::Release, another_product_id, 2)
     end
 
     def test_dispatch_stock_when_order_is_confirmed
@@ -53,10 +52,9 @@ module Processes
 
       given([order_confirmed], process:)
 
-      assert_all_commands(
-        Inventory::Dispatch.new(product_id: product_id, quantity: 1),
-        Inventory::Dispatch.new(product_id: another_product_id, quantity: 2)
-      )
+      assert_equal(2, command_bus.all_received.size)
+      assert_inventory_command(0, Inventory::Dispatch, product_id, 1)
+      assert_inventory_command(1, Inventory::Dispatch, another_product_id, 2)
     end
 
     private
@@ -89,15 +87,23 @@ module Processes
       )
     end
 
-    class EnhancedFakeCommandBus < SimpleDelegator
-      def initialize(command_bus, command_error_hash = {})
+    def assert_inventory_command(index, command_class, product_id, quantity)
+      assert_instance_of(command_class, command_bus.all_received.fetch(index))
+      assert_equal(product_id, command_bus.all_received.fetch(index).product_id)
+      assert_equal(quantity, command_bus.all_received.fetch(index).quantity)
+    end
+
+    class FailingReserveCommandBus < SimpleDelegator
+      def initialize(command_bus, product_id)
         super(command_bus)
-        @command_error_hash = command_error_hash
+        @product_id = product_id
       end
 
       def call(command)
         super(command)
-        raise @command_error_hash[command] if @command_error_hash[command]
+        if command.instance_of?(Inventory::Reserve) && command.product_id == @product_id
+          raise Inventory::InventoryEntry::InventoryNotAvailable
+        end
       end
     end
   end

@@ -45,7 +45,7 @@ module Processes
       unavailable_products = []
       reserved_products = []
       state.order_lines.each do |product_id, quantity|
-        command_bus.(Inventory::Reserve.new(product_id: product_id, quantity: quantity))
+        command_bus.(Inventory::Reserve.new(product_id, quantity))
         reserved_products << product_id
       rescue Inventory::InventoryEntry::InventoryNotAvailable
         unavailable_products << product_id
@@ -59,13 +59,13 @@ module Processes
 
     def release_stock(product_ids)
       state.order_lines.slice(*product_ids).each do |product_id, quantity|
-        command_bus.(Inventory::Release.new(product_id: product_id, quantity: quantity))
+        command_bus.(Inventory::Release.new(product_id, quantity))
       end
     end
 
     def dispatch_stock
       state.order_lines.each do |product_id, quantity|
-        command_bus.(Inventory::Dispatch.new(product_id: product_id, quantity: quantity))
+        command_bus.(Inventory::Dispatch.new(product_id, quantity))
       end
     end
 

@@ -17,23 +17,20 @@ module Inventory
     end
 
     def reserve(product_id, quantity)
-      Reserve.new(product_id: product_id, quantity: quantity)
+      Reserve.new(product_id, quantity)
     end
 
     def release(product_id, quantity)
-      Release.new(product_id: product_id, quantity: quantity)
+      Release.new(product_id, quantity)
     end
 
     def dispatch(product_id, quantity)
-      Dispatch.new(product_id: product_id, quantity: quantity)
+      Dispatch.new(product_id, quantity)
     end
 
     def supply(product_id, quantity)
       Supply.new(product_id, quantity)
     end
 
-    def cancel_reservation(order_id)
-      Release.new(order_id: order_id)
-    end
   end
 end

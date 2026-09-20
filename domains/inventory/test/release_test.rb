@@ -10,7 +10,7 @@ module Inventory
         inventory_entry_stream(product_id),
         StockReleased.new(data: { product_id: product_id, quantity: 1 })
       ) do
-        act(Release.new(product_id: product_id, quantity: 1))
+        act(Release.new(product_id, 1))
       end
     end
 
@@ -23,7 +23,7 @@ module Inventory
         StockReleased.new(data: { product_id: product_id, quantity: 1 }),
         AvailabilityChanged.new(data: { product_id: product_id, available: 1 })
       ) do
-        act(Release.new(product_id: product_id, quantity: 1))
+        act(Release.new(product_id, 1))
       end
     end
 
@@ -33,7 +33,7 @@ module Inventory
       assert_raises(
         InventoryEntry::InventoryNotEvenReserved
       ) do
-        act(Release.new(product_id: product_id, quantity: 1))
+        act(Release.new(product_id, 1))
       end
     end
   end

@@ -1,6 +1,17 @@
 module Inventory
-  class Reserve < Infra::Command
-    attribute :product_id, Infra::Types::UUID
-    attribute :quantity, Infra::Types::Coercible::Integer.constrained(gteq: 1)
+  class Reserve
+    UUID = /\A[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\z/i
+
+    attr_reader :product_id, :quantity
+
+    def initialize(product_id, quantity)
+      @product_id = product_id
+      @quantity = Integer(quantity)
+      valid = UUID.match?(@product_id) && @quantity >= 1
+    rescue ArgumentError, TypeError
+      raise Infra::Command::Invalid
+    else
+      raise Infra::Command::Invalid unless valid
+    end
   end
 end
