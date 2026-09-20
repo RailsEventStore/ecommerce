@@ -7,8 +7,8 @@ module Processes
     def call(event)
       command_bus.call(
         Policies::IssuePolicy.new(
-          policy_id: event.data.fetch(:application_id),
-          premium: event.data.fetch(:premium)
+          event.data.fetch(:application_id),
+          event.data.fetch(:premium)
         )
       )
     end

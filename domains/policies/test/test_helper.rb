@@ -17,15 +17,15 @@ module Policies
     end
 
     def issue_policy(policy_id, premium = BigDecimal("50"))
-      act(IssuePolicy.new(policy_id: policy_id, premium: premium))
+      act(IssuePolicy.new(policy_id, premium))
     end
 
     def put_policy_in_force(policy_id)
-      act(PutPolicyInForce.new(policy_id: policy_id))
+      act(PutPolicyInForce.new(policy_id))
     end
 
     def terminate_policy(policy_id)
-      act(TerminatePolicy.new(policy_id: policy_id))
+      act(TerminatePolicy.new(policy_id))
     end
   end
 end

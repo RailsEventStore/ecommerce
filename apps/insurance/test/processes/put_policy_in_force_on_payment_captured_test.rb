@@ -12,7 +12,8 @@ module Processes
         Payments::PaymentCaptured.new(data: { order_id: policy_id })
       )
 
-      assert_command(Policies::PutPolicyInForce.new(policy_id: policy_id))
+      assert_instance_of(Policies::PutPolicyInForce, command_bus.received)
+      assert_equal(policy_id, command_bus.received.policy_id)
     end
   end
 end

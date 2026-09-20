@@ -6,7 +6,7 @@ module Processes
 
     def call(event)
       command_bus.call(
-        Policies::PutPolicyInForce.new(policy_id: event.data.fetch(:order_id))
+        Policies::PutPolicyInForce.new(event.data.fetch(:order_id))
       )
     end
 

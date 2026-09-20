@@ -12,7 +12,7 @@ class PoliciesController < ApplicationController
   end
 
   def terminate
-    command_bus.call(Policies::TerminatePolicy.new(policy_id: params[:id]))
+    command_bus.call(Policies::TerminatePolicy.new(params[:id]))
     redirect_to policies_path, notice: "Policy terminated"
   end
 end
