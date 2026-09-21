@@ -25,10 +25,10 @@ class CouponsController < ApplicationController
   def create_coupon(coupon_id)
     command_bus.(
       Pricing::RegisterCoupon.new(
-        coupon_id: coupon_id,
-        name: params[:name],
-        code: params[:code],
-        discount: params[:discount]
+        coupon_id,
+        params[:name],
+        params[:code],
+        params[:discount]
       )
     )
     command_bus.(

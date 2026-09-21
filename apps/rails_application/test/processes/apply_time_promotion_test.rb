@@ -9,13 +9,13 @@ module Processes
 
       given([offer_registered, price_item_added], process:)
 
-      assert_command(Pricing::SetTimePromotionDiscount.new(order_id: order_id, amount: 50))
+      assert_pricing_command(Pricing::SetTimePromotionDiscount, 50)
     end
 
     def test_removes_time_promotion_when_no_active_promotion
       given([offer_registered, price_item_added], process:)
 
-      assert_command(Pricing::RemoveTimePromotionDiscount.new(order_id: order_id))
+      assert_pricing_command(Pricing::RemoveTimePromotionDiscount)
     end
 
     def test_does_nothing_when_order_has_no_store
@@ -44,10 +44,17 @@ module Processes
 
       given([offer_registered, price_item_added], process:)
 
-      assert_command(Pricing::SetTimePromotionDiscount.new(order_id: order_id, amount: 50))
+      assert_pricing_command(Pricing::SetTimePromotionDiscount, 50)
     end
 
     private
+
+    def assert_pricing_command(command_class, amount = nil)
+      command = command_bus.all_received.fetch(0)
+      assert_instance_of(command_class, command)
+      assert_equal(order_id, command.order_id)
+      assert_equal(amount.to_d, command.amount) unless amount.nil?
+    end
 
     def process
       ApplyTimePromotion.new.with(event_store: event_store, command_bus: command_bus)

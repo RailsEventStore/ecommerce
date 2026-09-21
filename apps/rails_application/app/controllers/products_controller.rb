@@ -109,7 +109,7 @@ class ProductsController < ApplicationController
   end
 
   def set_product_price_cmd(product_id, price)
-    Pricing::SetPrice.new(product_id: product_id, price: price)
+    Pricing::SetPrice.new(product_id, price)
   end
 
   def set_product_vat_rate_cmd(product_id, vat_rate_code)
@@ -118,9 +118,9 @@ class ProductsController < ApplicationController
 
   def set_product_future_price_cmd(product_id, price, valid_since)
     Pricing::SetFuturePrice.new(
-      product_id: product_id,
-      price: price,
-      valid_since: valid_since
+      product_id,
+      price,
+      valid_since
     )
   end
 

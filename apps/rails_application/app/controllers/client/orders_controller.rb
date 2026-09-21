@@ -8,7 +8,7 @@ module Client
     def new
       order_id = SecureRandom.uuid
       ActiveRecord::Base.transaction do
-        command_bus.(Pricing::DraftOffer.new(order_id: order_id))
+        command_bus.(Pricing::DraftOffer.new(order_id))
         command_bus.(Stores::RegisterOffer.new(current_store_id, order_id))
       end
       redirect_to edit_client_order_path(order_id)
@@ -48,9 +48,9 @@ module Client
       ActiveRecord::Base.transaction do
         command_bus.(
           Pricing::AddPriceItem.new(
-            order_id: params[:id],
-            product_id: params[:product_id],
-            price: price
+            params[:id],
+            params[:product_id],
+            price
           )
         )
       end
@@ -59,8 +59,8 @@ module Client
     def remove_item
       command_bus.(
         Pricing::RemovePriceItem.new(
-          order_id: params[:id],
-          product_id: params[:product_id]
+          params[:id],
+          params[:product_id]
         )
       )
     end
@@ -83,7 +83,7 @@ module Client
     private
 
     def use_coupon_cmd(order_id, coupon_id, discount)
-      Pricing::UseCoupon.new(order_id: order_id, coupon_id: coupon_id, discount: discount)
+      Pricing::UseCoupon.new(order_id, coupon_id, discount)
     end
   end
 end

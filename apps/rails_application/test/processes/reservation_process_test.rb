@@ -28,10 +28,11 @@ module Processes
       assert_inventory_command(0, Inventory::Reserve, product_id, 1)
       assert_inventory_command(1, Inventory::Reserve, another_product_id, 2)
       assert_inventory_command(2, Inventory::Release, another_product_id, 2)
-      assert_equal(
-        Pricing::RejectOffer.new(order_id: order_id, reason: "Some products were unavailable", unavailable_product_ids: [product_id]),
-        command_bus.all_received.fetch(3)
-      )
+      command = command_bus.all_received.fetch(3)
+      assert_instance_of(Pricing::RejectOffer, command)
+      assert_equal(order_id, command.order_id)
+      assert_equal("Some products were unavailable", command.reason)
+      assert_equal([product_id], command.unavailable_product_ids)
     end
 
     def test_release_stock_when_order_is_cancelled

@@ -23,7 +23,7 @@ module Pricing
         )
       ) do
         run_command(
-          Pricing::MakeProductFreeForOrder.new(order_id: order_id, product_id: product_1_id)
+          Pricing::MakeProductFreeForOrder.new(order_id, product_1_id)
         )
       end
     end
@@ -49,7 +49,7 @@ module Pricing
         )
       ) do
         run_command(
-          Pricing::MakeProductFreeForOrder.new(order_id: order_id, product_id: cheaper_product)
+          Pricing::MakeProductFreeForOrder.new(order_id, cheaper_product)
         )
       end
     end
@@ -64,12 +64,12 @@ module Pricing
       add_item(order_id, product_1_id)
 
       run_command(
-        Pricing::MakeProductFreeForOrder.new(order_id: order_id, product_id: product_1_id)
+        Pricing::MakeProductFreeForOrder.new(order_id, product_1_id)
       )
 
       assert_raises FreeProductAlreadyMade do
         run_command(
-          Pricing::MakeProductFreeForOrder.new(order_id: order_id, product_id: product_1_id)
+          Pricing::MakeProductFreeForOrder.new(order_id, product_1_id)
         )
       end
     end
@@ -79,11 +79,11 @@ module Pricing
       order_id = SecureRandom.uuid
       set_price(product_id, 20)
       add_item(order_id, product_id)
-      run_command(MakeProductFreeForOrder.new(order_id: order_id, product_id: product_id))
-      run_command(SetPercentageDiscount.new(order_id: order_id, type: "test", amount: 10))
+      run_command(MakeProductFreeForOrder.new(order_id, product_id))
+      run_command(SetPercentageDiscount.new(order_id, 10))
 
       assert_raises FreeProductAlreadyMade do
-        run_command(MakeProductFreeForOrder.new(order_id: order_id, product_id: product_id))
+        run_command(MakeProductFreeForOrder.new(order_id, product_id))
       end
     end
 
@@ -97,19 +97,19 @@ module Pricing
       add_item(order_id, product_1_id)
 
       run_command(
-        Pricing::MakeProductFreeForOrder.new(order_id: order_id, product_id: product_1_id)
+        Pricing::MakeProductFreeForOrder.new(order_id, product_1_id)
       )
 
       run_command(
-        Pricing::RemovePriceItem.new(order_id: order_id, product_id: product_1_id)
+        Pricing::RemovePriceItem.new(order_id, product_1_id)
       )
 
       run_command(
-        Pricing::RemoveFreeProductFromOrder.new(order_id: order_id, product_id: product_1_id)
+        Pricing::RemoveFreeProductFromOrder.new(order_id, product_1_id)
       )
 
       run_command(
-        Pricing::AddPriceItem.new(order_id: order_id, product_id: product_1_id, price: 20)
+        Pricing::AddPriceItem.new(order_id, product_1_id, 20)
       )
 
       assert_events_contain(
@@ -122,7 +122,7 @@ module Pricing
         )
       ) do
         run_command(
-          Pricing::MakeProductFreeForOrder.new(order_id: order_id, product_id: product_1_id)
+          Pricing::MakeProductFreeForOrder.new(order_id, product_1_id)
         )
       end
     end
@@ -132,8 +132,8 @@ module Pricing
       order_id = SecureRandom.uuid
       set_price(product_id, 20)
       add_item(order_id, product_id)
-      run_command(SetPercentageDiscount.new(order_id: order_id, type: "test", amount: 10))
-      run_command(MakeProductFreeForOrder.new(order_id: order_id, product_id: product_id))
+      run_command(SetPercentageDiscount.new(order_id, 10))
+      run_command(MakeProductFreeForOrder.new(order_id, product_id))
 
       assert_events_contain(
         stream_name(order_id),
@@ -146,7 +146,7 @@ module Pricing
           }
         )
       ) do
-        run_command(RemovePriceItem.new(order_id: order_id, product_id: product_id))
+        run_command(RemovePriceItem.new(order_id, product_id))
       end
     end
 
@@ -160,7 +160,7 @@ module Pricing
       add_item(order_id, product_1_id)
 
       run_command(
-        Pricing::MakeProductFreeForOrder.new(order_id: order_id, product_id: product_1_id)
+        Pricing::MakeProductFreeForOrder.new(order_id, product_1_id)
       )
 
       assert_events_contain(
@@ -173,7 +173,7 @@ module Pricing
         )
       ) do
         run_command(
-          Pricing::RemoveFreeProductFromOrder.new(order_id: order_id, product_id: product_1_id)
+          Pricing::RemoveFreeProductFromOrder.new(order_id, product_1_id)
         )
       end
     end
@@ -186,7 +186,7 @@ module Pricing
 
       assert_no_events(stream_name(order_id)) do
         run_command(
-          Pricing::RemoveFreeProductFromOrder.new(order_id: order_id, product_id: product_1_id)
+          Pricing::RemoveFreeProductFromOrder.new(order_id, product_1_id)
         )
       end
     end
@@ -201,16 +201,16 @@ module Pricing
       add_item(order_id, product_1_id)
 
       run_command(
-        Pricing::MakeProductFreeForOrder.new(order_id: order_id, product_id: product_1_id)
+        Pricing::MakeProductFreeForOrder.new(order_id, product_1_id)
       )
 
       run_command(
-        Pricing::RemoveFreeProductFromOrder.new(order_id: order_id, product_id: product_1_id)
+        Pricing::RemoveFreeProductFromOrder.new(order_id, product_1_id)
       )
 
       assert_no_events(stream_name(order_id)) do
         run_command(
-          Pricing::RemoveFreeProductFromOrder.new(order_id: order_id, product_id: product_1_id)
+          Pricing::RemoveFreeProductFromOrder.new(order_id, product_1_id)
         )
       end
     end

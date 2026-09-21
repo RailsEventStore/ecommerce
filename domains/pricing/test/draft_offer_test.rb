@@ -17,7 +17,7 @@ module Pricing
     private
 
     def draft_offer(order_id)
-      run_command(DraftOffer.new(order_id: order_id))
+      run_command(DraftOffer.new(order_id))
     end
   end
 end

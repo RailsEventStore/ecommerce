@@ -3,7 +3,7 @@ class RegisterProduct
     product_id = SecureRandom.uuid
     command_bus.(ProductCatalog::RegisterProduct.new(product_id))
     command_bus.(ProductCatalog::NameProduct.new(product_id, name))
-    command_bus.(Pricing::SetPrice.new(product_id: product_id, price: price))
+    command_bus.(Pricing::SetPrice.new(product_id, price))
   end
 
   private

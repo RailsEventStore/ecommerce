@@ -75,7 +75,7 @@ module Processes
 
     def reject_order(unavailable_product_ids)
       command_bus.(Pricing::RejectOffer.new(
-        order_id: id, reason: "Some products were unavailable", unavailable_product_ids:)
+        id, "Some products were unavailable", unavailable_product_ids)
       )
     end
 

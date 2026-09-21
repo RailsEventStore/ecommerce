@@ -118,15 +118,15 @@ module Pricing
     private
 
     def accept_offer(order_id)
-      run_command(AcceptOffer.new(order_id:))
+      run_command(AcceptOffer.new(order_id))
     end
 
     def reject_offer(order_id, *product_ids)
-      run_command(RejectOffer.new(order_id:, reason: "Some products were unavailable", unavailable_product_ids: product_ids))
+      run_command(RejectOffer.new(order_id, "Some products were unavailable", product_ids))
     end
 
     def expire_offer(order_id)
-      run_command(ExpireOffer.new(order_id:))
+      run_command(ExpireOffer.new(order_id))
     end
   end
 end

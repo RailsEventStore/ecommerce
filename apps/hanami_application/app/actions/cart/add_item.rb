@@ -14,7 +14,7 @@ module HanamiApplication
           product = catalog.find(request.params[:product_id])
           order_id = request.session[:order_id] || draft_offer
           command_bus.call(
-            Pricing::AddPriceItem.new(order_id: order_id, product_id: product.id, price: product.price)
+            Pricing::AddPriceItem.new(order_id, product.id, product.price)
           )
           request.session[:order_id] = order_id
           response.flash[:notice] = "#{product.name} added to cart"
@@ -25,7 +25,7 @@ module HanamiApplication
 
         def draft_offer
           SecureRandom.uuid.tap do |order_id|
-            command_bus.call(Pricing::DraftOffer.new(order_id: order_id))
+            command_bus.call(Pricing::DraftOffer.new(order_id))
           end
         end
       end

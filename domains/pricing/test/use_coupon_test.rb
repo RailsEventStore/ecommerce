@@ -24,7 +24,7 @@ module Pricing
         )
       ) do
         run_command(
-          Pricing::UseCoupon.new(order_id: order_id, coupon_id: coupon_id, discount: 10)
+          Pricing::UseCoupon.new(order_id, coupon_id, 10)
         )
       end
     end

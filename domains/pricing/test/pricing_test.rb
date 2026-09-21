@@ -70,7 +70,7 @@ module Pricing
         )
       ) do
         run_command(
-          Pricing::SetPercentageDiscount.new(order_id: order_id, type: Pricing::Discounts::GENERAL_DISCOUNT, amount: 10)
+          Pricing::SetPercentageDiscount.new(order_id, 10)
         )
       end
       assert_events_contain(
@@ -84,7 +84,7 @@ module Pricing
         )
       ) do
         run_command(
-          Pricing::ChangePercentageDiscount.new(order_id: order_id, amount: 50)
+          Pricing::ChangePercentageDiscount.new(order_id, 50)
         )
       end
       assert_events_contain(
@@ -97,7 +97,7 @@ module Pricing
         )
       ) do
         run_command(
-          Pricing::RemovePercentageDiscount.new(order_id: order_id, type: Pricing::Discounts::GENERAL_DISCOUNT)
+          Pricing::RemovePercentageDiscount.new(order_id)
         )
       end
     end
@@ -119,7 +119,7 @@ module Pricing
         )
       ) do
         run_command(
-          Pricing::SetPercentageDiscount.new(order_id: order_id, amount: 100)
+          Pricing::SetPercentageDiscount.new(order_id, 100)
         )
       end
     end
@@ -130,11 +130,11 @@ module Pricing
       order_id = SecureRandom.uuid
       add_item(order_id, product_1_id)
       run_command(
-        Pricing::SetPercentageDiscount.new(order_id: order_id, amount: 10)
+        Pricing::SetPercentageDiscount.new(order_id, 10)
       )
       assert_raises NotPossibleToAssignDiscountTwice do
         run_command(
-          Pricing::SetPercentageDiscount.new(order_id: order_id, amount: 20)
+          Pricing::SetPercentageDiscount.new(order_id, 20)
         )
       end
     end
@@ -145,15 +145,15 @@ module Pricing
       order_id = SecureRandom.uuid
       add_item(order_id, product_1_id)
       run_command(
-        Pricing::SetPercentageDiscount.new(order_id: order_id, amount: 10)
+        Pricing::SetPercentageDiscount.new(order_id, 10)
       )
       run_command(
-        Pricing::ChangePercentageDiscount.new(order_id: order_id, amount: 20)
+        Pricing::ChangePercentageDiscount.new(order_id, 20)
       )
 
       assert_raises NotPossibleToAssignDiscountTwice do
         run_command(
-          Pricing::SetPercentageDiscount.new(order_id: order_id, amount: 20)
+          Pricing::SetPercentageDiscount.new(order_id, 20)
         )
       end
     end
@@ -166,7 +166,7 @@ module Pricing
 
       assert_raises NotPossibleToChangeDiscount do
         run_command(
-          Pricing::ChangePercentageDiscount.new(order_id: order_id, amount: 20)
+          Pricing::ChangePercentageDiscount.new(order_id, 20)
         )
       end
     end
@@ -177,15 +177,15 @@ module Pricing
       order_id = SecureRandom.uuid
       add_item(order_id, product_1_id)
       run_command(
-        Pricing::SetPercentageDiscount.new(order_id: order_id, amount: 10)
+        Pricing::SetPercentageDiscount.new(order_id, 10)
       )
       run_command(
-        Pricing::RemovePercentageDiscount.new(order_id: order_id)
+        Pricing::RemovePercentageDiscount.new(order_id)
       )
 
       assert_raises NotPossibleToChangeDiscount do
         run_command(
-          Pricing::ChangePercentageDiscount.new(order_id: order_id, amount: 20)
+          Pricing::ChangePercentageDiscount.new(order_id, 20)
         )
       end
     end
@@ -197,7 +197,7 @@ module Pricing
       add_item(order_id, product_1_id)
       stream = stream_name(order_id)
       run_command(
-        Pricing::SetPercentageDiscount.new(order_id: order_id, amount: 10)
+        Pricing::SetPercentageDiscount.new(order_id, 10)
       )
 
       assert_events_contain(
@@ -211,7 +211,7 @@ module Pricing
         )
       ) do
         run_command(
-          Pricing::ChangePercentageDiscount.new(order_id: order_id, amount: 100)
+          Pricing::ChangePercentageDiscount.new(order_id, 100)
         )
       end
     end
@@ -223,10 +223,10 @@ module Pricing
       add_item(order_id, product_1_id)
       stream = stream_name(order_id)
       run_command(
-        Pricing::SetPercentageDiscount.new(order_id: order_id, amount: 10)
+        Pricing::SetPercentageDiscount.new(order_id, 10)
       )
       run_command(
-        Pricing::ChangePercentageDiscount.new(order_id: order_id, amount: 20)
+        Pricing::ChangePercentageDiscount.new(order_id, 20)
       )
 
       assert_events_contain(
@@ -240,7 +240,7 @@ module Pricing
         )
       ) do
         run_command(
-          Pricing::ChangePercentageDiscount.new(order_id: order_id, amount: 100)
+          Pricing::ChangePercentageDiscount.new(order_id, 100)
         )
       end
     end
@@ -252,10 +252,10 @@ module Pricing
       add_item(order_id, product_1_id)
       stream = stream_name(order_id)
       run_command(
-        Pricing::SetPercentageDiscount.new(order_id: order_id, type: Discounts::GENERAL_DISCOUNT,amount: 10)
+        Pricing::SetPercentageDiscount.new(order_id, 10)
       )
       run_command(
-        Pricing::ChangePercentageDiscount.new(order_id: order_id, type: Discounts::GENERAL_DISCOUNT, amount: 20)
+        Pricing::ChangePercentageDiscount.new(order_id, 20)
       )
 
       assert_events_contain(
@@ -268,7 +268,7 @@ module Pricing
         )
       ) do
         run_command(
-          Pricing::RemovePercentageDiscount.new(order_id: order_id, type: Discounts::GENERAL_DISCOUNT)
+          Pricing::RemovePercentageDiscount.new(order_id)
         )
       end
     end
@@ -280,18 +280,18 @@ module Pricing
       add_item(order_id, product_1_id)
       assert_raises NotPossibleToRemoveWithoutDiscount do
         run_command(
-          Pricing::RemovePercentageDiscount.new(order_id: order_id)
+          Pricing::RemovePercentageDiscount.new(order_id)
         )
       end
       run_command(
-        Pricing::SetPercentageDiscount.new(order_id: order_id, amount: 10)
+        Pricing::SetPercentageDiscount.new(order_id, 10)
       )
       run_command(
-        Pricing::RemovePercentageDiscount.new(order_id: order_id)
+        Pricing::RemovePercentageDiscount.new(order_id)
       )
       assert_raises NotPossibleToRemoveWithoutDiscount do
         run_command(
-          Pricing::RemovePercentageDiscount.new(order_id: order_id)
+          Pricing::RemovePercentageDiscount.new(order_id)
         )
       end
     end
@@ -306,11 +306,11 @@ module Pricing
     def create_active_time_promotion(discount)
       run_command(
         Pricing::CreateTimePromotion.new(
-          time_promotion_id: SecureRandom.uuid,
-          discount: discount,
-          start_time: Time.current - 1.minute,
-          end_time: Time.current + 1.minute,
-          label: "Last Minute"
+          SecureRandom.uuid,
+          discount,
+          Time.current - 1.minute,
+          Time.current + 1.minute,
+          "Last Minute"
         )
       )
     end

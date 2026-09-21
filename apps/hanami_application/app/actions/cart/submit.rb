@@ -13,7 +13,7 @@ module HanamiApplication
             response.redirect_to routes.path(:root)
           end
 
-          command_bus.call(Pricing::AcceptOffer.new(order_id: order_id))
+          command_bus.call(Pricing::AcceptOffer.new(order_id))
           request.session[:order_id] = nil
           response.redirect_to routes.path(:order, id: order_id)
         end

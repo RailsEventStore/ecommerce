@@ -21,9 +21,9 @@ module Processes
       discount = PromotionsCalendar.new(event_store, state.store_id).current_time_promotions_discount
 
       if discount.exists?
-        command_bus.call(Pricing::SetTimePromotionDiscount.new(order_id: id, amount: discount.value))
+        command_bus.call(Pricing::SetTimePromotionDiscount.new(id, discount.value))
       else
-        command_bus.call(Pricing::RemoveTimePromotionDiscount.new(order_id: id))
+        command_bus.call(Pricing::RemoveTimePromotionDiscount.new(id))
       end
     rescue Pricing::NotPossibleToAssignDiscountTwice, Pricing::NotPossibleToRemoveWithoutDiscount
     end

@@ -12,7 +12,7 @@ class OrdersController < ApplicationController
   def new
     order_id = SecureRandom.uuid
     ActiveRecord::Base.transaction do
-      command_bus.(Pricing::DraftOffer.new(order_id: order_id))
+      command_bus.(Pricing::DraftOffer.new(order_id))
       command_bus.(Stores::RegisterOffer.new(current_store_id, order_id))
     end
     redirect_to edit_order_path(order_id)
@@ -38,16 +38,16 @@ class OrdersController < ApplicationController
 
   def update_discount
     if @order.percentage_discount
-      command_bus.(Pricing::ChangePercentageDiscount.new(order_id: params[:id], amount: params[:amount]))
+      command_bus.(Pricing::ChangePercentageDiscount.new(params[:id], params[:amount]))
     else
-      command_bus.(Pricing::SetPercentageDiscount.new(order_id: params[:id], amount: params[:amount]))
+      command_bus.(Pricing::SetPercentageDiscount.new(params[:id], params[:amount]))
     end
 
     redirect_to edit_order_path(params[:id])
   end
 
   def remove_discount
-    command_bus.(Pricing::RemovePercentageDiscount.new(order_id: params[:id]))
+    command_bus.(Pricing::RemovePercentageDiscount.new(params[:id]))
 
     redirect_to edit_order_path(params[:id])
   end
@@ -60,13 +60,13 @@ class OrdersController < ApplicationController
     end
     price = Products.find_product(params[:product_id]).price
     ActiveRecord::Base.transaction do
-      command_bus.(Pricing::AddPriceItem.new(order_id: params[:id], product_id: params[:product_id], price:))
+      command_bus.(Pricing::AddPriceItem.new(params[:id], params[:product_id], price))
     end
     head :ok
   end
 
   def remove_item
-    command_bus.(Pricing::RemovePriceItem.new(order_id: params[:id], product_id: params[:product_id]))
+    command_bus.(Pricing::RemovePriceItem.new(params[:id], params[:product_id]))
     head :ok
   end
 
@@ -84,7 +84,7 @@ class OrdersController < ApplicationController
   end
 
   def expire
-    OrderHeader.draft_orders(current_store_id).find_each { |order| command_bus.(Pricing::ExpireOffer.new(order_id: order.uid)) }
+    OrderHeader.draft_orders(current_store_id).find_each { |order| command_bus.(Pricing::ExpireOffer.new(order.uid)) }
     redirect_to root_path
   end
 

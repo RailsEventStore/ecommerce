@@ -26,11 +26,11 @@ class TimePromotionsController < ApplicationController
   def create_time_promotion(id)
     command_bus.(
       Pricing::CreateTimePromotion.new(
-        time_promotion_id: id,
-        discount: params[:discount],
-        start_time: Time.zone.parse(params[:start_time]),
-        end_time: Time.zone.parse(params[:end_time]),
-        label: params[:label]
+        id,
+        params[:discount],
+        Time.zone.parse(params[:start_time]),
+        Time.zone.parse(params[:end_time]),
+        params[:label]
       )
     )
     command_bus.(

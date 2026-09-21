@@ -37,10 +37,10 @@ end
 ].each do |coupon|
   command_bus.call(
     Pricing::RegisterCoupon.new(
-      coupon_id: SecureRandom.uuid,
-      name: coupon[0],
-      code: coupon[1],
-      discount: coupon[2]
+      SecureRandom.uuid,
+      coupon[0],
+      coupon[1],
+      coupon[2]
     )
   )
 end
@@ -73,7 +73,7 @@ end
   [
     ProductCatalog::RegisterProduct.new(product_id),
     ProductCatalog::NameProduct.new(product_id, name),
-    Pricing::SetPrice.new(product_id: product_id, price: price),
+    Pricing::SetPrice.new(product_id, price),
     Taxes::SetVatRate.new(product_id, "20"),
     Stores::RegisterProduct.new(store_id, product_id)
   ].each do |command|

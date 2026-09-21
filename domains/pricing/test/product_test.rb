@@ -27,7 +27,7 @@ module Pricing
     private
 
     def set_price(product_id, amount)
-      run_command(SetPrice.new(product_id: product_id, price: amount))
+      run_command(SetPrice.new(product_id, amount))
     end
   end
 end

@@ -18,11 +18,11 @@ module Pricing
     private
 
     def set_price(product_id, amount)
-      run_command(SetPrice.new(product_id: product_id, price: amount))
+      run_command(SetPrice.new(product_id, amount))
     end
 
     def set_future_price(product_id, amount, valid_since)
-      run_command(SetFuturePrice.new(product_id: product_id, price: amount, valid_since: valid_since))
+      run_command(SetFuturePrice.new(product_id, amount, valid_since))
     end
 
     def calculate_total_value(order_id)
@@ -31,26 +31,26 @@ module Pricing
 
     def add_item(order_id, product_id)
       run_command(
-        AddPriceItem.new(order_id: order_id, product_id: product_id, price: find_price(product_id))
+        AddPriceItem.new(order_id, product_id, find_price(product_id))
       )
     end
 
     def remove_item(order_id, product_id)
       run_command(
-        RemovePriceItem.new(order_id: order_id, product_id: product_id)
+        RemovePriceItem.new(order_id, product_id)
       )
     end
 
     def register_coupon(uid, name, code, discount)
-      run_command(RegisterCoupon.new(coupon_id: uid, name: name, code: code, discount: discount))
+      run_command(RegisterCoupon.new(uid, name, code, discount))
     end
 
     def set_time_promotion_discount(order_id, amount)
-      run_command(SetTimePromotionDiscount.new(order_id: order_id, amount: amount))
+      run_command(SetTimePromotionDiscount.new(order_id, amount))
     end
 
     def remove_time_promotion_discount(order_id)
-      run_command(RemoveTimePromotionDiscount.new(order_id: order_id))
+      run_command(RemoveTimePromotionDiscount.new(order_id))
     end
 
     def fake_name

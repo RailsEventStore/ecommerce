@@ -33,7 +33,13 @@ module Pricing
     private
 
     def create_time_promotion(**kwargs)
-      run_command(CreateTimePromotion.new(kwargs))
+      run_command(CreateTimePromotion.new(
+        kwargs.fetch(:time_promotion_id),
+        kwargs.fetch(:discount),
+        kwargs.fetch(:start_time),
+        kwargs.fetch(:end_time),
+        kwargs.fetch(:label)
+      ))
     end
   end
 
@@ -51,7 +57,7 @@ module Pricing
       end_time = Time.current + 1
       set_time_promotion_range(time_promotion_id, start_time, end_time, 50)
 
-      run_command(SetTimePromotionDiscount.new(order_id: order_id, amount: 50))
+      run_command(SetTimePromotionDiscount.new(order_id, 50))
 
       assert_events_contain(
         stream,
@@ -73,27 +79,19 @@ module Pricing
       end_time = Time.utc(2022, 7, 4, 14, 30, 30)
       discount = 25
       label = "Summer Sale"
-      data = {
-        time_promotion_id: uid,
-        discount: discount,
-        start_time: start_time,
-        end_time: end_time,
-        label: label
-      }
-
-      run_command(CreateTimePromotion.new(data))
+      run_command(CreateTimePromotion.new(uid, discount, start_time, end_time, label))
 
       assert_raises(Pricing::TimePromotion::AlreadyCreated) do
-        run_command(CreateTimePromotion.new(data))
+        run_command(CreateTimePromotion.new(uid, discount, start_time, end_time, label))
       end
     end
 
     def test_cannot_set_time_promotion_discount_twice
       order_id = SecureRandom.uuid
-      run_command(SetTimePromotionDiscount.new(order_id: order_id, amount: 50))
+      run_command(SetTimePromotionDiscount.new(order_id, 50))
 
       assert_raises(Pricing::NotPossibleToAssignDiscountTwice) do
-        run_command(SetTimePromotionDiscount.new(order_id: order_id, amount: 30))
+        run_command(SetTimePromotionDiscount.new(order_id, 30))
       end
     end
 
@@ -101,16 +99,16 @@ module Pricing
       order_id = SecureRandom.uuid
 
       assert_raises(Pricing::NotPossibleToRemoveWithoutDiscount) do
-        run_command(RemoveTimePromotionDiscount.new(order_id: order_id))
+        run_command(RemoveTimePromotionDiscount.new(order_id))
       end
     end
 
     def test_cannot_set_coupon_discount_twice
       order_id = SecureRandom.uuid
-      run_command(SetPercentageDiscount.new(order_id: order_id, amount: 10))
+      run_command(SetPercentageDiscount.new(order_id, 10))
 
       assert_raises(Pricing::NotPossibleToAssignDiscountTwice) do
-        run_command(SetPercentageDiscount.new(order_id: order_id, amount: 20))
+        run_command(SetPercentageDiscount.new(order_id, 20))
       end
     end
 
@@ -118,19 +116,19 @@ module Pricing
       order_id = SecureRandom.uuid
 
       assert_raises(Pricing::NotPossibleToRemoveWithoutDiscount) do
-        run_command(RemovePercentageDiscount.new(order_id: order_id))
+        run_command(RemovePercentageDiscount.new(order_id))
       end
     end
 
     def test_can_have_both_discounts_simultaneously
       order_id = SecureRandom.uuid
-      run_command(SetPercentageDiscount.new(order_id: order_id, amount: 10))
-      run_command(SetTimePromotionDiscount.new(order_id: order_id, amount: 50))
+      run_command(SetPercentageDiscount.new(order_id, 10))
+      run_command(SetTimePromotionDiscount.new(order_id, 50))
 
-      run_command(RemovePercentageDiscount.new(order_id: order_id))
+      run_command(RemovePercentageDiscount.new(order_id))
 
       assert_raises(Pricing::NotPossibleToAssignDiscountTwice) do
-        run_command(SetTimePromotionDiscount.new(order_id: order_id, amount: 30))
+        run_command(SetTimePromotionDiscount.new(order_id, 30))
       end
     end
 
@@ -159,7 +157,7 @@ module Pricing
 
     def set_time_promotion_range(time_promotion_id, start_time, end_time, discount)
       run_command(
-        CreateTimePromotion.new(time_promotion_id: time_promotion_id, start_time: start_time, end_time: end_time, discount: discount, label: "test")
+        CreateTimePromotion.new(time_promotion_id, discount, start_time, end_time, "test")
       )
     end
 
