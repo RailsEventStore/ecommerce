@@ -26,7 +26,7 @@ module Authentication
     private
 
     def register_account(account_id)
-      run_command(RegisterAccount.new(account_id: account_id))
+      run_command(RegisterAccount.new(account_id))
     end
   end
 end

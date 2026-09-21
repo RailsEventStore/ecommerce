@@ -20,10 +20,10 @@ command_bus.call(Stores::NameStore.new(store_id: store_2_id, name: Stores::Store
   [
     Crm::RegisterCustomer.new(customer_id: customer_id, name: name),
     Stores::RegisterCustomer.new(customer_id: customer_id, store_id: store_id),
-    Authentication::RegisterAccount.new(account_id: account_id),
-    Authentication::ConnectAccountToClient.new(account_id: account_id, client_id: customer_id),
-    Authentication::SetLogin.new(account_id: account_id, login: login),
-    Authentication::SetPasswordHash.new(account_id: account_id, password_hash: password_hash)
+    Authentication::RegisterAccount.new(account_id),
+    Authentication::ConnectAccountToClient.new(account_id, customer_id),
+    Authentication::SetLogin.new(account_id, login),
+    Authentication::SetPasswordHash.new(account_id, password_hash)
   ].each do |command|
     command_bus.call(command)
   end

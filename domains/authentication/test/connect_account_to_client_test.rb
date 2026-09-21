@@ -8,12 +8,12 @@ module Authentication
       account_id = SecureRandom.uuid
       client_id = SecureRandom.uuid
 
-      act(RegisterAccount.new(account_id: account_id))
+      act(RegisterAccount.new(account_id))
 
       account_connected_to_client = AccountConnectedToClient.new(data: { account_id: account_id, client_id: client_id })
 
       assert_events("Authentication::Account$#{account_id}", account_connected_to_client) do
-        run_command(ConnectAccountToClient.new(account_id: account_id, client_id: client_id))
+        run_command(ConnectAccountToClient.new(account_id, client_id))
       end
     end
   end

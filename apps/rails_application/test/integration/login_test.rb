@@ -58,17 +58,17 @@ class LoginTest < InMemoryRESIntegrationTestCase
     account_id = SecureRandom.uuid
     password_hash = Digest::SHA256.hexdigest(password)
 
-    run_command(Authentication::RegisterAccount.new(account_id: account_id))
+    run_command(Authentication::RegisterAccount.new(account_id))
     run_command(
       Authentication::ConnectAccountToClient.new(
-        account_id: account_id,
-        client_id: customer_id
+        account_id,
+        customer_id
       )
     )
     run_command(
       Authentication::SetPasswordHash.new(
-        account_id: account_id,
-        password_hash: password_hash
+        account_id,
+        password_hash
       )
     )
 
