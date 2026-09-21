@@ -40,10 +40,10 @@ class TimelineDeliveryProcess
   def deliver_post_to(recipient_id)
     command_bus.call(
       Social::DeliverPostToTimeline.new(
-        post_id: state.post.data.fetch(:post_id),
-        recipient_id: recipient_id,
-        author: state.post.data.fetch(:author),
-        body: state.post.data.fetch(:body)
+        state.post.data.fetch(:post_id),
+        recipient_id,
+        state.post.data.fetch(:author),
+        state.post.data.fetch(:body)
       )
     )
   end

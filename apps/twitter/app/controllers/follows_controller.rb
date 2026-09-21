@@ -8,8 +8,8 @@ class FollowsController < ApplicationController
   def create
     command_bus.call(
       Social::FollowUser.new(
-        follower_id: session[:account_id],
-        followee_id: Accounts.id_for(params[:handle])
+        session[:account_id],
+        Accounts.id_for(params[:handle])
       )
     )
     redirect_to follows_path
@@ -18,8 +18,8 @@ class FollowsController < ApplicationController
   def destroy
     command_bus.call(
       Social::UnfollowUser.new(
-        follower_id: session[:account_id],
-        followee_id: Accounts.id_for(params[:id])
+        session[:account_id],
+        Accounts.id_for(params[:id])
       )
     )
     redirect_to follows_path

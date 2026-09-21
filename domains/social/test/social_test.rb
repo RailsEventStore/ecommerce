@@ -8,7 +8,7 @@ module Social
       post_id = SecureRandom.uuid
       author_id = SecureRandom.uuid
       command_bus.call(
-        PublishPost.new(post_id: post_id, author_id: author_id, author: "alice", body: "Hello, fediverse")
+        PublishPost.new(post_id, author_id, "alice", "Hello, fediverse")
       )
 
       assert_event_published(
@@ -21,7 +21,7 @@ module Social
     def test_follow_user
       follower = SecureRandom.uuid
       followee = SecureRandom.uuid
-      command_bus.call(FollowUser.new(follower_id: follower, followee_id: followee))
+      command_bus.call(FollowUser.new(follower, followee))
 
       assert_event_published(UserFollowed.new(data: { follower_id: follower, followee_id: followee }))
     end
@@ -29,10 +29,10 @@ module Social
     def test_cannot_follow_the_same_user_twice
       follower = SecureRandom.uuid
       followee = SecureRandom.uuid
-      command_bus.call(FollowUser.new(follower_id: follower, followee_id: followee))
+      command_bus.call(FollowUser.new(follower, followee))
 
       assert_raises(Following::AlreadyFollowing) do
-        command_bus.call(FollowUser.new(follower_id: follower, followee_id: followee))
+        command_bus.call(FollowUser.new(follower, followee))
       end
     end
 
@@ -40,15 +40,15 @@ module Social
       user = SecureRandom.uuid
 
       assert_raises(Following::CannotFollowSelf) do
-        command_bus.call(FollowUser.new(follower_id: user, followee_id: user))
+        command_bus.call(FollowUser.new(user, user))
       end
     end
 
     def test_unfollow_user
       follower = SecureRandom.uuid
       followee = SecureRandom.uuid
-      command_bus.call(FollowUser.new(follower_id: follower, followee_id: followee))
-      command_bus.call(UnfollowUser.new(follower_id: follower, followee_id: followee))
+      command_bus.call(FollowUser.new(follower, followee))
+      command_bus.call(UnfollowUser.new(follower, followee))
 
       assert_event_published(UserUnfollowed.new(data: { follower_id: follower, followee_id: followee }))
     end
@@ -58,16 +58,16 @@ module Social
       followee = SecureRandom.uuid
 
       assert_raises(Following::NotFollowing) do
-        command_bus.call(UnfollowUser.new(follower_id: follower, followee_id: followee))
+        command_bus.call(UnfollowUser.new(follower, followee))
       end
     end
 
     def test_can_follow_again_after_unfollowing
       follower = SecureRandom.uuid
       followee = SecureRandom.uuid
-      command_bus.call(FollowUser.new(follower_id: follower, followee_id: followee))
-      command_bus.call(UnfollowUser.new(follower_id: follower, followee_id: followee))
-      command_bus.call(FollowUser.new(follower_id: follower, followee_id: followee))
+      command_bus.call(FollowUser.new(follower, followee))
+      command_bus.call(UnfollowUser.new(follower, followee))
+      command_bus.call(FollowUser.new(follower, followee))
 
       assert_equal(2, event_store.read.of_type(UserFollowed).count)
     end
@@ -100,10 +100,10 @@ module Social
 
       command_bus.call(
         DeliverPostToTimeline.new(
-          post_id: post_id,
-          recipient_id: other_recipient_id,
-          author: "bob",
-          body: "hi"
+          post_id,
+          other_recipient_id,
+          "bob",
+          "hi"
         )
       )
 
@@ -115,10 +115,10 @@ module Social
 
       command_bus.call(
         DeliverPostToTimeline.new(
-          post_id: other_post_id,
-          recipient_id: recipient_id,
-          author: "bob",
-          body: "hi"
+          other_post_id,
+          recipient_id,
+          "bob",
+          "hi"
         )
       )
 
@@ -136,10 +136,10 @@ module Social
 
     def deliver_post_to_timeline
       DeliverPostToTimeline.new(
-        post_id: post_id,
-        recipient_id: recipient_id,
-        author: "bob",
-        body: "hi"
+        post_id,
+        recipient_id,
+        "bob",
+        "hi"
       )
     end
 

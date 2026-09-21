@@ -1,9 +1,19 @@
 module Social
-  class PublishPost < Infra::Command
-    attribute :post_id, Infra::Types::UUID
-    attribute :author_id, Infra::Types::UUID
-    attribute :author, Infra::Types::String
-    attribute :body, Infra::Types::String
+  class PublishPost
+    UUID = /\A[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\z/i
+    attr_reader :post_id, :author_id, :author, :body
+
+    def initialize(post_id, author_id, author, body)
+      @post_id = post_id
+      @author_id = author_id
+      @author = author
+      @body = body
+      valid = UUID.match?(@post_id) && UUID.match?(@author_id) && @author.is_a?(String) && @body.is_a?(String)
+    rescue TypeError
+      raise Infra::Command::Invalid
+    else
+      raise Infra::Command::Invalid unless valid
+    end
   end
 
   class PostPublished < Infra::Event
@@ -40,16 +50,36 @@ module Social
     end
   end
 
-  class FollowUser < Infra::Command
-    attribute :follower_id, Infra::Types::UUID
-    attribute :followee_id, Infra::Types::UUID
+  class FollowUser
+    UUID = /\A[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\z/i
+    attr_reader :follower_id, :followee_id
     alias aggregate_id follower_id
+
+    def initialize(follower_id, followee_id)
+      @follower_id = follower_id
+      @followee_id = followee_id
+      valid = UUID.match?(@follower_id) && UUID.match?(@followee_id)
+    rescue TypeError
+      raise Infra::Command::Invalid
+    else
+      raise Infra::Command::Invalid unless valid
+    end
   end
 
-  class UnfollowUser < Infra::Command
-    attribute :follower_id, Infra::Types::UUID
-    attribute :followee_id, Infra::Types::UUID
+  class UnfollowUser
+    UUID = /\A[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\z/i
+    attr_reader :follower_id, :followee_id
     alias aggregate_id follower_id
+
+    def initialize(follower_id, followee_id)
+      @follower_id = follower_id
+      @followee_id = followee_id
+      valid = UUID.match?(@follower_id) && UUID.match?(@followee_id)
+    rescue TypeError
+      raise Infra::Command::Invalid
+    else
+      raise Infra::Command::Invalid unless valid
+    end
   end
 
   class UserFollowed < Infra::Event
@@ -120,11 +150,21 @@ module Social
     end
   end
 
-  class DeliverPostToTimeline < Infra::Command
-    attribute :post_id, Infra::Types::UUID
-    attribute :recipient_id, Infra::Types::UUID
-    attribute :author, Infra::Types::String
-    attribute :body, Infra::Types::String
+  class DeliverPostToTimeline
+    UUID = /\A[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\z/i
+    attr_reader :post_id, :recipient_id, :author, :body
+
+    def initialize(post_id, recipient_id, author, body)
+      @post_id = post_id
+      @recipient_id = recipient_id
+      @author = author
+      @body = body
+      valid = UUID.match?(@post_id) && UUID.match?(@recipient_id) && @author.is_a?(String) && @body.is_a?(String)
+    rescue TypeError
+      raise Infra::Command::Invalid
+    else
+      raise Infra::Command::Invalid unless valid
+    end
 
     def aggregate_id
       "#{post_id}:#{recipient_id}"

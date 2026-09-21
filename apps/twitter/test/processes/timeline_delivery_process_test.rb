@@ -11,14 +11,12 @@ class TimelineDeliveryProcessTest < ProcessTest
   def test_delivers_a_new_post_to_its_author
     process(::Social::PostPublished.new(data: { post_id: post_id, author_id: bob, author: "bob", body: "hi" }))
 
-    assert_all_commands(
-      Social::DeliverPostToTimeline.new(
-        post_id: post_id,
-        recipient_id: bob,
-        author: "bob",
-        body: "hi"
-      )
-    )
+    assert_equal(1, command_bus.all_received.size)
+    assert_instance_of(Social::DeliverPostToTimeline, command_bus.received)
+    assert_equal(post_id, command_bus.received.post_id)
+    assert_equal(bob, command_bus.received.recipient_id)
+    assert_equal("bob", command_bus.received.author)
+    assert_equal("hi", command_bus.received.body)
   end
 
   def test_delivers_a_new_post_to_each_follower_and_the_author
