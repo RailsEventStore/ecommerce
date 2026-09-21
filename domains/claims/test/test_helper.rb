@@ -20,15 +20,15 @@ module Claims
     end
 
     def report_loss(claim_id, policy_id, description = "Flooded kitchen")
-      act(ReportLoss.new(claim_id: claim_id, policy_id: policy_id, description: description))
+      act(ReportLoss.new(claim_id, policy_id, description))
     end
 
     def assess_loss(claim_id, amount = BigDecimal("300"))
-      act(AssessLoss.new(claim_id: claim_id, amount: amount))
+      act(AssessLoss.new(claim_id, amount))
     end
 
     def settle_claim(claim_id)
-      act(SettleClaim.new(claim_id: claim_id))
+      act(SettleClaim.new(claim_id))
     end
   end
 end

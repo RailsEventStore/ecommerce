@@ -12,7 +12,7 @@ module Processes
     private
 
     def act
-      command_bus.call(Claims::SettleClaim.new(claim_id: state.assessed_claim_id)) if payable?
+      command_bus.call(Claims::SettleClaim.new(state.assessed_claim_id)) if payable?
     end
 
     def payable?

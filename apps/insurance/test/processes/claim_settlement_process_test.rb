@@ -7,13 +7,13 @@ module Processes
     def test_settles_claim_when_in_force_policy_has_assessed_loss
       given([policy_in_force, loss_assessed], process: process)
 
-      assert_all_commands(Claims::SettleClaim.new(claim_id: claim_id))
+      assert_settle_claim(claim_id)
     end
 
     def test_pays_compensation_when_policy_activation_comes_last
       given([loss_assessed, policy_in_force], process: process)
 
-      assert_all_commands(Claims::SettleClaim.new(claim_id: claim_id))
+      assert_settle_claim(claim_id)
     end
 
     def test_no_settlement_without_in_force_policy
@@ -49,7 +49,7 @@ module Processes
 
       given([next_loss_assessed], process: process)
 
-      assert_all_commands(Claims::SettleClaim.new(claim_id: next_claim_id))
+      assert_settle_claim(next_claim_id)
     end
 
     def test_claims_of_other_policies_do_not_mix
@@ -59,6 +59,12 @@ module Processes
     end
 
     private
+
+    def assert_settle_claim(claim_id)
+      assert_equal(1, command_bus.all_received.size)
+      assert_instance_of(Claims::SettleClaim, command_bus.received)
+      assert_equal(claim_id, command_bus.received.claim_id)
+    end
 
     def process
       @process ||= ClaimSettlementProcess.new(event_store, command_bus)
