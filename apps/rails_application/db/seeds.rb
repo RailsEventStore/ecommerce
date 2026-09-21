@@ -52,8 +52,8 @@ end
   vat_rate_id = SecureRandom.uuid
   command_bus.call(
     Taxes::AddAvailableVatRate.new(
-      available_vat_rate_id: vat_rate_id,
-      vat_rate: Infra::Types::VatRate.new(code: vat_rate[0], rate: vat_rate[1])
+      vat_rate_id,
+      Infra::Types::VatRate.new(code: vat_rate[0], rate: vat_rate[1])
     )
   )
   command_bus.call(
@@ -77,7 +77,7 @@ end
     ProductCatalog::RegisterProduct.new(product_id: product_id),
     ProductCatalog::NameProduct.new(product_id: product_id, name: name),
     Pricing::SetPrice.new(product_id: product_id, price: price),
-    Taxes::SetVatRate.new(product_id: product_id, vat_rate_code: "20"),
+    Taxes::SetVatRate.new(product_id, "20"),
     Stores::RegisterProduct.new(product_id: product_id, store_id: store_id)
   ].each do |command|
     command_bus.call(command)

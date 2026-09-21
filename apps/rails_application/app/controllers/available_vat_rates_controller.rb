@@ -61,8 +61,8 @@ class AvailableVatRatesController < ApplicationController
 
   def add_available_vat_rate_cmd(code, rate, available_vat_rate_id)
     Taxes::AddAvailableVatRate.new(
-      available_vat_rate_id: available_vat_rate_id,
-      vat_rate: Infra::Types::VatRate.new(code: code, rate: rate)
+      available_vat_rate_id,
+      Infra::Types::VatRate.new(code: code, rate: rate)
     )
   end
 
@@ -78,7 +78,7 @@ class AvailableVatRatesController < ApplicationController
   end
 
   def remove_available_vat_rate_cmd(vat_rate_code)
-    Taxes::RemoveAvailableVatRate.new(vat_rate_code: vat_rate_code)
+    Taxes::RemoveAvailableVatRate.new(vat_rate_code)
   end
 
   def available_vat_rate_params

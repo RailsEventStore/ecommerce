@@ -60,15 +60,15 @@ module Taxes
     private
 
     def set_vat_rate(product_id, vat_rate_code)
-      run_command(SetVatRate.new(product_id: product_id, vat_rate_code: vat_rate_code))
+      run_command(SetVatRate.new(product_id, vat_rate_code))
     end
 
     def add_available_vat_rate(vat_rate, available_vat_rate_id = SecureRandom.uuid)
-      run_command(AddAvailableVatRate.new(available_vat_rate_id: available_vat_rate_id, vat_rate: vat_rate))
+      run_command(AddAvailableVatRate.new(available_vat_rate_id, vat_rate))
     end
 
     def remove_available_vat_rate(vat_rate_code)
-      run_command(RemoveAvailableVatRate.new(vat_rate_code: vat_rate_code))
+      run_command(RemoveAvailableVatRate.new(vat_rate_code))
     end
   end
 end

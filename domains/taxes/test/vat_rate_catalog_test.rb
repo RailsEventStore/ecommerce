@@ -17,7 +17,7 @@ module Taxes
       end
 
       def test_returns_nil_when_vat_rate_was_removed
-        run_command(RemoveAvailableVatRate.new(vat_rate_code: "50"))
+        run_command(RemoveAvailableVatRate.new("50"))
 
         assert_nil catalog.vat_rate_by_code("50")
       end
@@ -30,7 +30,7 @@ module Taxes
     end
 
     def add_available_vat_rate(vat_rate, available_vat_rate_id = SecureRandom.uuid)
-      run_command(AddAvailableVatRate.new(available_vat_rate_id: available_vat_rate_id, vat_rate: vat_rate))
+      run_command(AddAvailableVatRate.new(available_vat_rate_id, vat_rate))
     end
   end
 end
