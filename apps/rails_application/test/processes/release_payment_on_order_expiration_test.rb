@@ -23,7 +23,7 @@ module Processes
       given([order_placed, payment_authorized, order_expired]).each do |event|
         process.call(event)
       end
-      assert_command(Payments::ReleasePayment.new(order_id: order_id),)
+      assert_release_payment
     end
 
     def test_order_expired_after_payment_released
@@ -46,7 +46,14 @@ module Processes
       ]).each { |event| process.call(event) }
 
       given([order_expired]).each { |event| process.call(event) }
-      assert_command(Payments::ReleasePayment.new(order_id: order_id))
+      assert_release_payment
+    end
+
+    private
+
+    def assert_release_payment
+      assert_instance_of(Payments::ReleasePayment, command_bus.received)
+      assert_equal(order_id, command_bus.received.order_id)
     end
   end
 end

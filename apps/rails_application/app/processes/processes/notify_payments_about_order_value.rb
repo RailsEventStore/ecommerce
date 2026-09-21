@@ -5,8 +5,8 @@ module Processes
         ->(event) do
           command_bus.call(
             Payments::SetPaymentAmount.new(
-              order_id: event.data.fetch(:order_id),
-              amount: event.data.fetch(:discounted_amount).to_f
+              event.data.fetch(:order_id),
+              event.data.fetch(:discounted_amount).to_f
             )
           )
         end,

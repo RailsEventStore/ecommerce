@@ -30,7 +30,7 @@ module Processes
     end
 
     def release_payment
-      command_bus.call(Payments::ReleasePayment.new(order_id: id))
+      command_bus.call(Payments::ReleasePayment.new(id))
     end
 
     def fetch_id(event)

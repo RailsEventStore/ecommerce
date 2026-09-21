@@ -5,8 +5,8 @@ class PoliciesController < ApplicationController
 
   def pay_premium
     ActiveRecord::Base.transaction do
-      command_bus.call(Payments::AuthorizePayment.new(order_id: params[:id]))
-      command_bus.call(Payments::CapturePayment.new(order_id: params[:id]))
+      command_bus.call(Payments::AuthorizePayment.new(params[:id]))
+      command_bus.call(Payments::CapturePayment.new(params[:id]))
     end
     redirect_to policies_path, notice: "Premium paid"
   end

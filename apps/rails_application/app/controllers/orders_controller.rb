@@ -125,11 +125,11 @@ class OrdersController < ApplicationController
   end
 
   def authorize_payment_cmd(order_id)
-    Payments::AuthorizePayment.new(order_id: order_id)
+    Payments::AuthorizePayment.new(order_id)
   end
 
   def capture_payment_cmd(order_id)
-    Payments::CapturePayment.new(order_id: order_id)
+    Payments::CapturePayment.new(order_id)
   end
 
 end

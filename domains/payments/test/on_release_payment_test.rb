@@ -9,13 +9,13 @@ module Payments
       stream = "Payments::Payment$#{order_id}"
 
       arrange(
-        AuthorizePayment.new(order_id: order_id)
+        AuthorizePayment.new(order_id)
       )
 
       assert_events(
         stream,
         PaymentReleased.new(data: { order_id: order_id })
-      ) { act(ReleasePayment.new(order_id: order_id)) }
+      ) { act(ReleasePayment.new(order_id)) }
     end
   end
 end

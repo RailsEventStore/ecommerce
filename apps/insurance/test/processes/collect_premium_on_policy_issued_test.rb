@@ -12,7 +12,9 @@ module Processes
         Policies::PolicyIssued.new(data: { policy_id: policy_id, premium: BigDecimal("50") })
       )
 
-      assert_command(Payments::SetPaymentAmount.new(order_id: policy_id, amount: BigDecimal("50")))
+      assert_instance_of(Payments::SetPaymentAmount, command_bus.received)
+      assert_equal(policy_id, command_bus.received.order_id)
+      assert_equal(BigDecimal("50"), command_bus.received.amount)
     end
   end
 end

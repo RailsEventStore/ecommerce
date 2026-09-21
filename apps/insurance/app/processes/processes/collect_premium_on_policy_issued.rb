@@ -7,8 +7,8 @@ module Processes
     def call(event)
       command_bus.call(
         Payments::SetPaymentAmount.new(
-          order_id: event.data.fetch(:policy_id),
-          amount: event.data.fetch(:premium)
+          event.data.fetch(:policy_id),
+          event.data.fetch(:premium)
         )
       )
     end
