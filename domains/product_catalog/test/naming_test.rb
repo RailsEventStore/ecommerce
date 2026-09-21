@@ -14,7 +14,7 @@ module ProductCatalog
     private
 
     def name_product(uid, name)
-      run_command(NameProduct.new(product_id: uid, name: name))
+      run_command(NameProduct.new(uid, name))
     end
 
     def fake_name

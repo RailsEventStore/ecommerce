@@ -7,20 +7,22 @@ module Processes
     def test_requests_moderation_when_name_change_requested
       given([name_change_requested], process:)
 
-      assert_command(
-        ProductCatalog::ModerateProductName.new(product_id: product_id, name: product_name)
-      )
+      assert_command(ProductCatalog::ModerateProductName)
     end
 
     def test_names_product_when_name_approved
       given([name_approved], process:)
 
-      assert_command(
-        ProductCatalog::NameProduct.new(product_id: product_id, name: product_name)
-      )
+      assert_command(ProductCatalog::NameProduct)
     end
 
     private
+
+    def assert_command(command_class)
+      assert_instance_of(command_class, command_bus.received)
+      assert_equal(product_id, command_bus.received.product_id)
+      assert_equal(product_name, command_bus.received.name)
+    end
 
     def process
       ProductNameModeration.new(command_bus)

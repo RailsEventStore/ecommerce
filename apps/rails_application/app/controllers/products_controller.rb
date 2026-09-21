@@ -101,11 +101,11 @@ class ProductsController < ApplicationController
   end
 
   def create_product_cmd(product_id)
-    ProductCatalog::RegisterProduct.new(product_id: product_id)
+    ProductCatalog::RegisterProduct.new(product_id)
   end
 
   def request_product_name_change_cmd(product_id, name)
-    ProductCatalog::RequestProductNameChange.new(product_id: product_id, name: name)
+    ProductCatalog::RequestProductNameChange.new(product_id, name)
   end
 
   def set_product_price_cmd(product_id, price)

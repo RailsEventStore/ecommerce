@@ -13,7 +13,7 @@ class TransactionalityTest < Hanami::Minitest::Test
     unsubscribe = event_store.subscribe(->(_event) { raise "boom" }, to: [ProductCatalog::ProductRegistered])
     begin
       assert_raises(RuntimeError) do
-        command_bus.call(ProductCatalog::RegisterProduct.new(product_id: product_id))
+        command_bus.call(ProductCatalog::RegisterProduct.new(product_id))
       end
     ensure
       unsubscribe.call

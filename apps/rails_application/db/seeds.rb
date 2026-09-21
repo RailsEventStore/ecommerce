@@ -74,8 +74,8 @@ end
 ].each do |name, price, store_id|
   product_id = SecureRandom.uuid
   [
-    ProductCatalog::RegisterProduct.new(product_id: product_id),
-    ProductCatalog::NameProduct.new(product_id: product_id, name: name),
+    ProductCatalog::RegisterProduct.new(product_id),
+    ProductCatalog::NameProduct.new(product_id, name),
     Pricing::SetPrice.new(product_id: product_id, price: price),
     Taxes::SetVatRate.new(product_id, "20"),
     Stores::RegisterProduct.new(product_id: product_id, store_id: store_id)

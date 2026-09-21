@@ -42,7 +42,7 @@ module ProductCatalog
     private
 
     def register_product(uid)
-      run_command(RegisterProduct.new(product_id: uid))
+      run_command(RegisterProduct.new(uid))
     end
 
     def fake_name

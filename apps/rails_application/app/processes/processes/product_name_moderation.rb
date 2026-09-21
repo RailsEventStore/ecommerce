@@ -10,15 +10,15 @@ module Processes
       when ProductCatalog::ProductNameChangeRequested
         command_bus.call(
           ProductCatalog::ModerateProductName.new(
-            product_id: event.data.fetch(:product_id),
-            name: event.data.fetch(:name)
+            event.data.fetch(:product_id),
+            event.data.fetch(:name)
           )
         )
       when ProductCatalog::ProductNameApproved
         command_bus.call(
           ProductCatalog::NameProduct.new(
-            product_id: event.data.fetch(:product_id),
-            name: event.data.fetch(:name)
+            event.data.fetch(:product_id),
+            event.data.fetch(:name)
           )
         )
       end

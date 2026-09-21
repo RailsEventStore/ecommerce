@@ -8,7 +8,7 @@ module ProductCatalog
       uid = SecureRandom.uuid
       name_change_requested = ProductNameChangeRequested.new(data: { product_id: uid, name: allowed_name })
       assert_events("Catalog::ProductName$#{uid}", name_change_requested) do
-        run_command(RequestProductNameChange.new(product_id: uid, name: allowed_name))
+        run_command(RequestProductNameChange.new(uid, allowed_name))
       end
     end
 
@@ -16,7 +16,7 @@ module ProductCatalog
       uid = SecureRandom.uuid
       name_approved = ProductNameApproved.new(data: { product_id: uid, name: allowed_name })
       assert_events("Catalog::ProductName$#{uid}", name_approved) do
-        run_command(ModerateProductName.new(product_id: uid, name: allowed_name))
+        run_command(ModerateProductName.new(uid, allowed_name))
       end
     end
 
@@ -24,7 +24,7 @@ module ProductCatalog
       uid = SecureRandom.uuid
       name_rejected = ProductNameRejected.new(data: { product_id: uid, name: rejected_name })
       assert_events("Catalog::ProductName$#{uid}", name_rejected) do
-        run_command(ModerateProductName.new(product_id: uid, name: rejected_name))
+        run_command(ModerateProductName.new(uid, rejected_name))
       end
     end
 
@@ -33,7 +33,7 @@ module ProductCatalog
       Configuration.new.call(event_store, command_bus)
 
       assert_raises(Arkency::CommandBus::UnregisteredHandler) do
-        command_bus.call(ModerateProductName.new(product_id: SecureRandom.uuid, name: allowed_name))
+        command_bus.call(ModerateProductName.new(SecureRandom.uuid, allowed_name))
       end
     end
 

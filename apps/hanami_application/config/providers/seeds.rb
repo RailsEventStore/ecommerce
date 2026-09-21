@@ -17,8 +17,8 @@ Hanami.app.register_provider :seeds do
       "Blogging for Busy Programmers" => 29
     }.each do |name, price|
       product_id = SecureRandom.uuid
-      command_bus.call(ProductCatalog::RegisterProduct.new(product_id: product_id))
-      command_bus.call(ProductCatalog::NameProduct.new(product_id: product_id, name: name))
+      command_bus.call(ProductCatalog::RegisterProduct.new(product_id))
+      command_bus.call(ProductCatalog::NameProduct.new(product_id, name))
       command_bus.call(Pricing::SetPrice.new(product_id: product_id, price: price))
     end
   end
