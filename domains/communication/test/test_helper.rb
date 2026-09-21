@@ -13,11 +13,11 @@ module Communication
     private
 
     def send_message
-      run_command(SendMessage.new(message_id: message_id, receiver_id: receiver_id, message: message_content))
+      run_command(SendMessage.new(message_id, receiver_id, message_content))
     end
 
     def read_message
-      run_command(ReadMessage.new(message_id: message_id))
+      run_command(ReadMessage.new(message_id))
     end
 
     def message_content

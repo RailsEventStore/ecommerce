@@ -9,10 +9,21 @@ module Communication
     end
   end
 
-  class SendMessage < Infra::Command
-    attribute :message_id, Infra::Types::UUID
-    attribute :receiver_id, Infra::Types::UUID
-    attribute :message, Infra::Types::String
+  class SendMessage
+    UUID = /\A[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\z/i
+
+    attr_reader :message_id, :receiver_id, :message
+
+    def initialize(message_id, receiver_id, message)
+      @message_id = message_id
+      @receiver_id = receiver_id
+      @message = message
+      valid = UUID.match?(@message_id) && UUID.match?(@receiver_id) && @message.is_a?(String)
+    rescue TypeError
+      raise Infra::Command::Invalid
+    else
+      raise Infra::Command::Invalid unless valid
+    end
   end
 
   class MessageSent < Infra::Event
@@ -21,8 +32,19 @@ module Communication
     attribute :message, Infra::Types::String
   end
 
-  class ReadMessage < Infra::Command
-    attribute :message_id, Infra::Types::UUID
+  class ReadMessage
+    UUID = /\A[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\z/i
+
+    attr_reader :message_id
+
+    def initialize(message_id)
+      @message_id = message_id
+      valid = UUID.match?(@message_id)
+    rescue TypeError
+      raise Infra::Command::Invalid
+    else
+      raise Infra::Command::Invalid unless valid
+    end
   end
 
   class MessageRead < Infra::Event

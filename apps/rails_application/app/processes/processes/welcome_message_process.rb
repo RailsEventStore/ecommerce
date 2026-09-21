@@ -10,9 +10,9 @@ module Processes
       when Crm::CustomerRegistered
         @command_bus.call(
           Communication::SendMessage.new(
-            message_id: SecureRandom.uuid,
-            receiver_id: event.data.fetch(:customer_id),
-            message: "Welcome to our platform!")
+            SecureRandom.uuid,
+            event.data.fetch(:customer_id),
+            "Welcome to our platform!")
         )
       end
     end
