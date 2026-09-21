@@ -31,7 +31,7 @@ module Crm
     private
 
     def assign_contact_to_company(position_id, contact_id, company_id)
-      run_command(AssignContactToCompany.new(position_id: position_id, contact_id: contact_id, company_id: company_id))
+      run_command(AssignContactToCompany.new(position_id, contact_id, company_id))
     end
   end
 end

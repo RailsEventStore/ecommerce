@@ -43,11 +43,11 @@ module Crm
     private
 
     def register_company(uid, name)
-      run_command(RegisterCompany.new(company_id: uid, name: name))
+      run_command(RegisterCompany.new(uid, name))
     end
 
     def set_company_linkedin_url(uid, linkedin_url)
-      run_command(SetCompanyLinkedinUrl.new(company_id: uid, linkedin_url: linkedin_url))
+      run_command(SetCompanyLinkedinUrl.new(uid, linkedin_url))
     end
   end
 end

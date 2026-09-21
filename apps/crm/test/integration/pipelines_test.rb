@@ -58,7 +58,7 @@ class PipelinesIntegrationTest < InMemoryRESIntegrationTestCase
     add_stage(pipeline_id, "Negotiation")
     create_deal(pipeline_id, "Deal A")
     deal_b_id = create_deal(pipeline_id, "Deal B")
-    command_bus.call(Crm::MoveDealToStage.new(deal_id: deal_b_id, stage: "Lead"))
+    command_bus.call(Crm::MoveDealToStage.new(deal_b_id, "Lead"))
 
     get "/pipelines/#{pipeline_id}"
     assert_response(:success)
@@ -83,7 +83,7 @@ class PipelinesIntegrationTest < InMemoryRESIntegrationTestCase
 
   def create_deal(pipeline_id, name)
     deal_id = SecureRandom.uuid
-    command_bus.call(Crm::CreateDeal.new(deal_id: deal_id, pipeline_id: pipeline_id, name: name))
+    command_bus.call(Crm::CreateDeal.new(deal_id, pipeline_id, name))
     deal_id
   end
 end

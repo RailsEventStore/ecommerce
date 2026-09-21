@@ -9,8 +9,8 @@ module Crm
 
       arrange(
           RegisterCustomer.new(
-            customer_id: customer_id,
-            name: fake_name
+            customer_id,
+            fake_name
           )
       )
 
@@ -25,8 +25,8 @@ module Crm
 
       arrange(
           RegisterCustomer.new(
-              customer_id: customer_id,
-              name: fake_name
+              customer_id,
+              fake_name
           )
       )
 
@@ -39,7 +39,7 @@ module Crm
     private
 
     def promote_to_vip(uid)
-      run_command(PromoteCustomerToVip.new(customer_id: uid))
+      run_command(PromoteCustomerToVip.new(uid))
     end
   end
 end

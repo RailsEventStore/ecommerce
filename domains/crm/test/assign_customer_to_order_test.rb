@@ -58,7 +58,7 @@ module Crm
     private
 
     def assign_customer_to_order(order_id, customer_id)
-      run_command(AssignCustomerToOrder.new(order_id: order_id, customer_id: customer_id))
+      run_command(AssignCustomerToOrder.new(customer_id, order_id))
     end
   end
 end

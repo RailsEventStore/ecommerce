@@ -84,15 +84,15 @@ module Crm
     private
 
     def create_pipeline(uid, name)
-      run_command(CreatePipeline.new(pipeline_id: uid, name: name))
+      run_command(CreatePipeline.new(uid, name))
     end
 
     def add_stage_to_pipeline(uid, stage_name)
-      run_command(AddStageToPipeline.new(pipeline_id: uid, stage_name: stage_name))
+      run_command(AddStageToPipeline.new(uid, stage_name))
     end
 
     def remove_stage_from_pipeline(uid, stage_name)
-      run_command(RemoveStageFromPipeline.new(pipeline_id: uid, stage_name: stage_name))
+      run_command(RemoveStageFromPipeline.new(uid, stage_name))
     end
   end
 end

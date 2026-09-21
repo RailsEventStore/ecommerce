@@ -5,7 +5,7 @@ command_bus = Rails.configuration.command_bus
   "Bob Smith",
   "Carol White"
 ].each do |name|
-  command_bus.call(Crm::RegisterContact.new(contact_id: SecureRandom.uuid, name: name))
+  command_bus.call(Crm::RegisterContact.new(SecureRandom.uuid, name))
 end
 
 companies = {
@@ -15,14 +15,14 @@ companies = {
 }
 companies.each do |name, linkedin_url|
   company_id = SecureRandom.uuid
-  command_bus.call(Crm::RegisterCompany.new(company_id: company_id, name: name))
-  command_bus.call(Crm::SetCompanyLinkedinUrl.new(company_id: company_id, linkedin_url: linkedin_url)) if linkedin_url
+  command_bus.call(Crm::RegisterCompany.new(company_id, name))
+  command_bus.call(Crm::SetCompanyLinkedinUrl.new(company_id, linkedin_url)) if linkedin_url
 end
 
 pipeline_id = SecureRandom.uuid
-command_bus.call(Crm::CreatePipeline.new(pipeline_id: pipeline_id, name: "Sales"))
+command_bus.call(Crm::CreatePipeline.new(pipeline_id, "Sales"))
 ["Lead", "Qualification", "Proposal", "Negotiation", "Closed Won"].each do |stage|
-  command_bus.call(Crm::AddStageToPipeline.new(pipeline_id: pipeline_id, stage_name: stage))
+  command_bus.call(Crm::AddStageToPipeline.new(pipeline_id, stage))
 end
 
 [
@@ -31,8 +31,8 @@ end
   ["Shopify integration", 30_000, "2026-04-01", "Negotiation"]
 ].each do |name, value, close_date, stage|
   deal_id = SecureRandom.uuid
-  command_bus.call(Crm::CreateDeal.new(deal_id: deal_id, pipeline_id: pipeline_id, name: name))
-  command_bus.call(Crm::SetDealValue.new(deal_id: deal_id, value: value))
-  command_bus.call(Crm::SetDealExpectedCloseDate.new(deal_id: deal_id, expected_close_date: close_date))
-  command_bus.call(Crm::MoveDealToStage.new(deal_id: deal_id, stage: stage))
+  command_bus.call(Crm::CreateDeal.new(deal_id, pipeline_id, name))
+  command_bus.call(Crm::SetDealValue.new(deal_id, value))
+  command_bus.call(Crm::SetDealExpectedCloseDate.new(deal_id, close_date))
+  command_bus.call(Crm::MoveDealToStage.new(deal_id, stage))
 end

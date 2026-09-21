@@ -21,7 +21,7 @@ module Client
         customer_id = SecureRandom.uuid
         product_id = SecureRandom.uuid
 
-        run_command(Crm::RegisterCustomer.new(customer_id: customer_id, name: "John Doe"))
+        run_command(Crm::RegisterCustomer.new(customer_id, "John Doe"))
         prepare_product(product_id, "Async Remote", 49)
         run_command(Pricing::DraftOffer.new(order_id))
         run_command(Pricing::AddPriceItem.new(order_id, product_id, 49))
@@ -40,7 +40,7 @@ module Client
         product_id = SecureRandom.uuid
         another_product_id = SecureRandom.uuid
 
-        run_command(Crm::RegisterCustomer.new(customer_id: customer_id, name: "John Doe"))
+        run_command(Crm::RegisterCustomer.new(customer_id, "John Doe"))
         prepare_product(product_id, "Async Remote", 49)
         run_command(Pricing::DraftOffer.new(order_id))
         run_command(Inventory::Supply.new(product_id, 1))

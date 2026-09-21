@@ -13,7 +13,7 @@ module Crm
     private
 
     def register_customer(uid, name)
-      run_command(RegisterCustomer.new(customer_id: uid, name: name))
+      run_command(RegisterCustomer.new(uid, name))
     end
 
     def fake_name

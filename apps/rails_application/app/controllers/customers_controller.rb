@@ -53,7 +53,7 @@ class CustomersController < ApplicationController
   end
 
   def create_customer_cmd(customer_id, name)
-    Crm::RegisterCustomer.new(customer_id: customer_id, name: name)
+    Crm::RegisterCustomer.new(customer_id, name)
   end
 
   def register_customer_in_store_cmd(customer_id)
@@ -61,10 +61,10 @@ class CustomersController < ApplicationController
   end
 
   def rename_customer_cmd(customer_id, name)
-    Crm::RenameCustomer.new(customer_id: customer_id, name: name)
+    Crm::RenameCustomer.new(customer_id, name)
   end
 
   def promote_to_vip_cmd(customer_id)
-    Crm::PromoteCustomerToVip.new(customer_id: customer_id)
+    Crm::PromoteCustomerToVip.new(customer_id)
   end
 end

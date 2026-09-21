@@ -15,8 +15,8 @@ class CompaniesController < ApplicationController
     company_params = params.require(:company).permit(:name, :linkedin_url)
 
     ActiveRecord::Base.transaction do
-      command_bus.call(Crm::RegisterCompany.new(company_id: company_id, name: company_params[:name]))
-      command_bus.call(Crm::SetCompanyLinkedinUrl.new(company_id: company_id, linkedin_url: company_params[:linkedin_url])) if company_params[:linkedin_url].present?
+      command_bus.call(Crm::RegisterCompany.new(company_id, company_params[:name]))
+      command_bus.call(Crm::SetCompanyLinkedinUrl.new(company_id, company_params[:linkedin_url])) if company_params[:linkedin_url].present?
     end
     redirect_to companies_path
   end
@@ -28,7 +28,7 @@ class CompaniesController < ApplicationController
   def update
     company_params = params.require(:company).permit(:linkedin_url)
 
-    command_bus.call(Crm::SetCompanyLinkedinUrl.new(company_id: params[:id], linkedin_url: company_params[:linkedin_url])) if company_params[:linkedin_url].present?
+    command_bus.call(Crm::SetCompanyLinkedinUrl.new(params[:id], company_params[:linkedin_url])) if company_params[:linkedin_url].present?
     redirect_to company_path(params[:id])
   end
 end

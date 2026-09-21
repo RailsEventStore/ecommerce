@@ -83,19 +83,19 @@ module Crm
     private
 
     def register_contact(uid, name)
-      run_command(RegisterContact.new(contact_id: uid, name: name))
+      run_command(RegisterContact.new(uid, name))
     end
 
     def set_contact_email(uid, email)
-      run_command(SetContactEmail.new(contact_id: uid, email: email))
+      run_command(SetContactEmail.new(uid, email))
     end
 
     def set_contact_phone(uid, phone)
-      run_command(SetContactPhone.new(contact_id: uid, phone: phone))
+      run_command(SetContactPhone.new(uid, phone))
     end
 
     def set_contact_linkedin_url(uid, linkedin_url)
-      run_command(SetContactLinkedinUrl.new(contact_id: uid, linkedin_url: linkedin_url))
+      run_command(SetContactLinkedinUrl.new(uid, linkedin_url))
     end
   end
 end

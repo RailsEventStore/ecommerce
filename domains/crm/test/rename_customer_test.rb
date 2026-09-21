@@ -16,7 +16,7 @@ module Crm
     private
 
     def rename_customer(customer_id, name)
-      run_command(RenameCustomer.new(customer_id: customer_id, name: name))
+      run_command(RenameCustomer.new(customer_id, name))
     end
   end
 end

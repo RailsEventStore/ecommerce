@@ -91,19 +91,19 @@ module Crm
     private
 
     def create_deal(deal_id, pipeline_id, name)
-      run_command(CreateDeal.new(deal_id: deal_id, pipeline_id: pipeline_id, name: name))
+      run_command(CreateDeal.new(deal_id, pipeline_id, name))
     end
 
     def set_deal_value(deal_id, value)
-      run_command(SetDealValue.new(deal_id: deal_id, value: value))
+      run_command(SetDealValue.new(deal_id, value))
     end
 
     def set_deal_expected_close_date(deal_id, expected_close_date)
-      run_command(SetDealExpectedCloseDate.new(deal_id: deal_id, expected_close_date: expected_close_date))
+      run_command(SetDealExpectedCloseDate.new(deal_id, expected_close_date))
     end
 
     def move_deal_to_stage(deal_id, stage)
-      run_command(MoveDealToStage.new(deal_id: deal_id, stage: stage))
+      run_command(MoveDealToStage.new(deal_id, stage))
     end
   end
 end

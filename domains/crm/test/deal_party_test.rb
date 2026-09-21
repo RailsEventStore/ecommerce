@@ -55,11 +55,11 @@ module Crm
     private
 
     def add_company_to_deal(deal_party_id, deal_id, company_id)
-      run_command(AssignCompanyToDeal.new(deal_party_id: deal_party_id, deal_id: deal_id, company_id: company_id))
+      run_command(AssignCompanyToDeal.new(deal_party_id, deal_id, company_id))
     end
 
     def add_contact_to_deal(deal_party_id, deal_id, contact_id)
-      run_command(AssignContactToDeal.new(deal_party_id: deal_party_id, deal_id: deal_id, contact_id: contact_id))
+      run_command(AssignContactToDeal.new(deal_party_id, deal_id, contact_id))
     end
   end
 end

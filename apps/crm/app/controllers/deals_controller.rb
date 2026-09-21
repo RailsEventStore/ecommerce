@@ -19,9 +19,9 @@ class DealsController < ApplicationController
     deal_params = params.require(:deal).permit(:name, :pipeline_id, :value, :expected_close_date)
 
     ActiveRecord::Base.transaction do
-      command_bus.call(Crm::CreateDeal.new(deal_id: deal_id, pipeline_id: deal_params[:pipeline_id], name: deal_params[:name]))
-      command_bus.call(Crm::SetDealValue.new(deal_id: deal_id, value: deal_params[:value].to_i)) if deal_params[:value].present?
-      command_bus.call(Crm::SetDealExpectedCloseDate.new(deal_id: deal_id, expected_close_date: deal_params[:expected_close_date])) if deal_params[:expected_close_date].present?
+      command_bus.call(Crm::CreateDeal.new(deal_id, deal_params[:pipeline_id], deal_params[:name]))
+      command_bus.call(Crm::SetDealValue.new(deal_id, deal_params[:value].to_i)) if deal_params[:value].present?
+      command_bus.call(Crm::SetDealExpectedCloseDate.new(deal_id, deal_params[:expected_close_date])) if deal_params[:expected_close_date].present?
     end
     redirect_to deals_path
   end
@@ -37,11 +37,11 @@ class DealsController < ApplicationController
     deal_params = params.require(:deal).permit(:value, :expected_close_date, :stage, :company_id, :contact_id)
 
     ActiveRecord::Base.transaction do
-      command_bus.call(Crm::SetDealValue.new(deal_id: params[:id], value: deal_params[:value].to_i)) if deal_params[:value].present?
-      command_bus.call(Crm::SetDealExpectedCloseDate.new(deal_id: params[:id], expected_close_date: deal_params[:expected_close_date])) if deal_params[:expected_close_date].present?
-      command_bus.call(Crm::MoveDealToStage.new(deal_id: params[:id], stage: deal_params[:stage])) if deal_params[:stage].present?
-      command_bus.call(Crm::AssignCompanyToDeal.new(deal_party_id: SecureRandom.uuid, deal_id: params[:id], company_id: deal_params[:company_id])) if deal_params[:company_id].present?
-      command_bus.call(Crm::AssignContactToDeal.new(deal_party_id: SecureRandom.uuid, deal_id: params[:id], contact_id: deal_params[:contact_id])) if deal_params[:contact_id].present?
+      command_bus.call(Crm::SetDealValue.new(params[:id], deal_params[:value].to_i)) if deal_params[:value].present?
+      command_bus.call(Crm::SetDealExpectedCloseDate.new(params[:id], deal_params[:expected_close_date])) if deal_params[:expected_close_date].present?
+      command_bus.call(Crm::MoveDealToStage.new(params[:id], deal_params[:stage])) if deal_params[:stage].present?
+      command_bus.call(Crm::AssignCompanyToDeal.new(SecureRandom.uuid, params[:id], deal_params[:company_id])) if deal_params[:company_id].present?
+      command_bus.call(Crm::AssignContactToDeal.new(SecureRandom.uuid, params[:id], deal_params[:contact_id])) if deal_params[:contact_id].present?
     end
     redirect_to deal_path(params[:id])
   end

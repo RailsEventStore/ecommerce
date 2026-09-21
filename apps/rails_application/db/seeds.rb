@@ -18,7 +18,7 @@ command_bus.call(Stores::NameStore.new(store_2_id, Stores::StoreName.new(value: 
   password_hash = Digest::SHA256.hexdigest(password)
 
   [
-    Crm::RegisterCustomer.new(customer_id: customer_id, name: name),
+    Crm::RegisterCustomer.new(customer_id, name),
     Stores::RegisterCustomer.new(store_id, customer_id),
     Authentication::RegisterAccount.new(account_id),
     Authentication::ConnectAccountToClient.new(account_id, customer_id),

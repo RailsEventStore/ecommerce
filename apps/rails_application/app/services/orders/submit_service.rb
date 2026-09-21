@@ -34,7 +34,7 @@ module Orders
     def submit_order
       ActiveRecord::Base.transaction do
         command_bus.(Pricing::AcceptOffer.new(order_id))
-        command_bus.(Crm::AssignCustomerToOrder.new(order_id: order_id, customer_id: customer_id))
+        command_bus.(Crm::AssignCustomerToOrder.new(customer_id, order_id))
       end
     end
 
