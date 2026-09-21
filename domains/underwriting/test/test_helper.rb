@@ -17,19 +17,19 @@ module Underwriting
     end
 
     def submit_application(application_id, coverage_amount = BigDecimal("1000"))
-      act(SubmitApplication.new(application_id: application_id, coverage_amount: coverage_amount))
+      act(SubmitApplication.new(application_id, coverage_amount))
     end
 
     def evaluate_risk(application_id, risk_class = "low")
-      act(EvaluateRisk.new(application_id: application_id, risk_class: risk_class))
+      act(EvaluateRisk.new(application_id, risk_class))
     end
 
     def calculate_premium(application_id)
-      act(CalculatePremium.new(application_id: application_id))
+      act(CalculatePremium.new(application_id))
     end
 
     def accept_offer(application_id)
-      act(AcceptOffer.new(application_id: application_id))
+      act(AcceptOffer.new(application_id))
     end
   end
 end

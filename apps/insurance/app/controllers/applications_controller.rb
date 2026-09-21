@@ -10,8 +10,8 @@ class ApplicationsController < ApplicationController
   def create
     command_bus.call(
       Underwriting::SubmitApplication.new(
-        application_id: params[:application_id],
-        coverage_amount: params[:coverage_amount].to_d
+        params[:application_id],
+        params[:coverage_amount].to_d
       )
     )
     redirect_to applications_path, notice: "Application submitted"
@@ -19,18 +19,18 @@ class ApplicationsController < ApplicationController
 
   def evaluate_risk
     command_bus.call(
-      Underwriting::EvaluateRisk.new(application_id: params[:id], risk_class: params[:risk_class])
+      Underwriting::EvaluateRisk.new(params[:id], params[:risk_class])
     )
     redirect_to applications_path, notice: "Risk evaluated"
   end
 
   def calculate_premium
-    command_bus.call(Underwriting::CalculatePremium.new(application_id: params[:id]))
+    command_bus.call(Underwriting::CalculatePremium.new(params[:id]))
     redirect_to applications_path, notice: "Premium calculated"
   end
 
   def accept_offer
-    command_bus.call(Underwriting::AcceptOffer.new(application_id: params[:id]))
+    command_bus.call(Underwriting::AcceptOffer.new(params[:id]))
     redirect_to applications_path, notice: "Offer accepted"
   end
 end
