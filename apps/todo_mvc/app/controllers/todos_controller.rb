@@ -19,9 +19,9 @@ class TodosController < ApplicationController
     description = params[:description]
 
     ActiveRecord::Base.transaction do
-      command_bus.call(Todo::AddTodo.new(todo_id: todo_id))
+      command_bus.call(Todo::AddTodo.new(todo_id))
       if description.present?
-        command_bus.call(Todo::SetTodoDescription.new(todo_id: todo_id, description: description))
+        command_bus.call(Todo::SetTodoDescription.new(todo_id, description))
       end
     end
 
@@ -30,30 +30,30 @@ class TodosController < ApplicationController
 
   def update
     command_bus.call(
-      Todo::UpdateTodoDescription.new(todo_id: params[:id], description: params[:description])
+      Todo::UpdateTodoDescription.new(params[:id], params[:description])
     )
     redirect_to root_path
   end
 
   def complete
-    command_bus.call(Todo::CompleteTodo.new(todo_id: params[:id]))
+    command_bus.call(Todo::CompleteTodo.new(params[:id]))
     redirect_to root_path
   end
 
   def uncomplete
-    command_bus.call(Todo::UncompleteTodo.new(todo_id: params[:id]))
+    command_bus.call(Todo::UncompleteTodo.new(params[:id]))
     redirect_to root_path
   end
 
   def destroy
-    command_bus.call(Todo::ClearTodo.new(todo_id: params[:id]))
+    command_bus.call(Todo::ClearTodo.new(params[:id]))
     redirect_to root_path
   end
 
   def clear_completed
     ActiveRecord::Base.transaction do
       AllTodos.completed.each do |todo|
-        command_bus.call(Todo::ClearTodo.new(todo_id: todo.uid))
+        command_bus.call(Todo::ClearTodo.new(todo.uid))
       end
     end
     redirect_to root_path

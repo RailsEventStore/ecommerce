@@ -1,28 +1,88 @@
 module Todo
-  class AddTodo < Infra::Command
-    attribute :todo_id, Infra::Types::UUID
+  class AddTodo
+    UUID = /\A[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\z/i
+    attr_reader :todo_id
+
+    def initialize(todo_id)
+      @todo_id = todo_id
+      valid = UUID.match?(@todo_id)
+    rescue TypeError
+      raise Infra::Command::Invalid
+    else
+      raise Infra::Command::Invalid unless valid
+    end
   end
 
-  class SetTodoDescription < Infra::Command
-    attribute :todo_id, Infra::Types::UUID
-    attribute :description, Infra::Types::String
+  class SetTodoDescription
+    UUID = /\A[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\z/i
+    attr_reader :todo_id, :description
+
+    def initialize(todo_id, description)
+      @todo_id = todo_id
+      @description = description
+      valid = UUID.match?(@todo_id) && @description.is_a?(String)
+    rescue TypeError
+      raise Infra::Command::Invalid
+    else
+      raise Infra::Command::Invalid unless valid
+    end
   end
 
-  class UpdateTodoDescription < Infra::Command
-    attribute :todo_id, Infra::Types::UUID
-    attribute :description, Infra::Types::String
+  class UpdateTodoDescription
+    UUID = /\A[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\z/i
+    attr_reader :todo_id, :description
+
+    def initialize(todo_id, description)
+      @todo_id = todo_id
+      @description = description
+      valid = UUID.match?(@todo_id) && @description.is_a?(String)
+    rescue TypeError
+      raise Infra::Command::Invalid
+    else
+      raise Infra::Command::Invalid unless valid
+    end
   end
 
-  class CompleteTodo < Infra::Command
-    attribute :todo_id, Infra::Types::UUID
+  class CompleteTodo
+    UUID = /\A[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\z/i
+    attr_reader :todo_id
+
+    def initialize(todo_id)
+      @todo_id = todo_id
+      valid = UUID.match?(@todo_id)
+    rescue TypeError
+      raise Infra::Command::Invalid
+    else
+      raise Infra::Command::Invalid unless valid
+    end
   end
 
-  class UncompleteTodo < Infra::Command
-    attribute :todo_id, Infra::Types::UUID
+  class UncompleteTodo
+    UUID = /\A[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\z/i
+    attr_reader :todo_id
+
+    def initialize(todo_id)
+      @todo_id = todo_id
+      valid = UUID.match?(@todo_id)
+    rescue TypeError
+      raise Infra::Command::Invalid
+    else
+      raise Infra::Command::Invalid unless valid
+    end
   end
 
-  class ClearTodo < Infra::Command
-    attribute :todo_id, Infra::Types::UUID
+  class ClearTodo
+    UUID = /\A[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\z/i
+    attr_reader :todo_id
+
+    def initialize(todo_id)
+      @todo_id = todo_id
+      valid = UUID.match?(@todo_id)
+    rescue TypeError
+      raise Infra::Command::Invalid
+    else
+      raise Infra::Command::Invalid unless valid
+    end
   end
 
   class TodoAdded < Infra::Event
