@@ -5,16 +5,12 @@ module Infra
       @command_bus = command_bus
     end
 
-    def call(event_name, event_data_keys, command, command_data_keys)
+    def call(event_name, event_data_keys, command)
       @event_store.subscribe(
         ->(event) do
           @command_bus.call(
             command.new(
-              Hash[
-                command_data_keys.zip(
-                  event_data_keys.map { |key| event.data.fetch(key) }
-                )
-              ]
+              *event_data_keys.map { |key| event.data.fetch(key) }
             )
           )
         end,

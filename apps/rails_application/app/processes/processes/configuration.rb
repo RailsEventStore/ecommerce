@@ -112,7 +112,7 @@ module Processes
     def enable_coupon_discount_process(event_store, command_bus)
       Infra::Process.new(event_store, command_bus)
                     .call(Pricing::CouponUsed, [:order_id, :discount],
-                          Pricing::SetPercentageDiscount, [:order_id, :amount])
+                          Pricing::SetPercentageDiscount)
     end
 
     def enable_welcome_message_process(event_store, command_bus)
