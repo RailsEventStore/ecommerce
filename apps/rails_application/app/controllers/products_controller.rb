@@ -125,7 +125,7 @@ class ProductsController < ApplicationController
   end
 
   def register_product_in_store_cmd(product_id)
-    Stores::RegisterProduct.new(product_id: product_id, store_id: current_store_id)
+    Stores::RegisterProduct.new(current_store_id, product_id)
   end
 
   def product_params

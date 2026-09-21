@@ -21,7 +21,7 @@ module Stores
     private
 
     def register_customer(store_id, customer_id)
-      run_command(RegisterCustomer.new(store_id: store_id, customer_id: customer_id))
+      run_command(RegisterCustomer.new(store_id, customer_id))
     end
   end
 end

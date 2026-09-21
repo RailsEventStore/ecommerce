@@ -21,7 +21,7 @@ module Stores
     private
 
     def register_time_promotion(store_id, time_promotion_id)
-      run_command(RegisterTimePromotion.new(store_id: store_id, time_promotion_id: time_promotion_id))
+      run_command(RegisterTimePromotion.new(store_id, time_promotion_id))
     end
   end
 end

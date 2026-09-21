@@ -35,8 +35,8 @@ class TimePromotionsController < ApplicationController
     )
     command_bus.(
       Stores::RegisterTimePromotion.new(
-        time_promotion_id: id,
-        store_id: current_store_id
+        current_store_id,
+        id
       )
     )
   end

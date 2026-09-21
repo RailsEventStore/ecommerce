@@ -50,7 +50,7 @@ module Processes
         process:
       )
       assert_all_commands(
-        Stores::RegisterShipment.new(shipment_id: order_id, store_id: store_id),
+        Stores::RegisterShipment.new(store_id, order_id),
         Shipping::SubmitShipment.new(order_id),
         Shipping::AuthorizeShipment.new(order_id),
       )
@@ -59,7 +59,7 @@ module Processes
     def test_submit_shipment_with_store_registration_when_order_placed
       given([offer_registered, order_placed, shipping_address_added], process:)
       assert_all_commands(
-        Stores::RegisterShipment.new(shipment_id: order_id, store_id: store_id),
+        Stores::RegisterShipment.new(store_id, order_id),
         Shipping::SubmitShipment.new(order_id),
       )
     end
@@ -70,7 +70,7 @@ module Processes
         process:
       )
       assert_all_commands(
-        Stores::RegisterShipment.new(shipment_id: order_id, store_id: store_id),
+        Stores::RegisterShipment.new(store_id, order_id),
         Shipping::SubmitShipment.new(order_id),
         Shipping::AuthorizeShipment.new(order_id),
       )
@@ -82,7 +82,7 @@ module Processes
         process:
       )
       assert_all_commands(
-        Stores::RegisterShipment.new(shipment_id: order_id, store_id: store_id),
+        Stores::RegisterShipment.new(store_id, order_id),
         Shipping::SubmitShipment.new(order_id),
         Shipping::AuthorizeShipment.new(order_id),
       )
@@ -98,6 +98,8 @@ module Processes
       case command
       when Shipping::SubmitShipment, Shipping::AuthorizeShipment
         [command.class, command.order_id]
+      when Stores::RegisterShipment
+        [command.class, command.store_id, command.shipment_id]
       else
         command
       end

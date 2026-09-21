@@ -28,8 +28,8 @@ module Processes
 
       command_bus.call(
         Stores::RegisterInvoice.new(
-          invoice_id: @order_id,
-          store_id: state.store_id
+          state.store_id,
+          @order_id
         )
       )
     end

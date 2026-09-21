@@ -21,7 +21,7 @@ module Stores
     private
 
     def register_product(store_id, product_id)
-      run_command(RegisterProduct.new(store_id: store_id, product_id: product_id))
+      run_command(RegisterProduct.new(store_id, product_id))
     end
   end
 end

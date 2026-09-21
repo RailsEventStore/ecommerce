@@ -42,7 +42,7 @@ module Stores
     private
 
     def register_store(uid)
-      run_command(RegisterStore.new(store_id: uid))
+      run_command(RegisterStore.new(uid))
     end
   end
 end

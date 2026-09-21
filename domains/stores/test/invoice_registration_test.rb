@@ -21,7 +21,7 @@ module Stores
     private
 
     def register_invoice(store_id, invoice_id)
-      run_command(RegisterInvoice.new(store_id: store_id, invoice_id: invoice_id))
+      run_command(RegisterInvoice.new(store_id, invoice_id))
     end
   end
 end

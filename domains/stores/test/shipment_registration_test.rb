@@ -21,7 +21,7 @@ module Stores
     private
 
     def register_shipment(store_id, shipment_id)
-      run_command(RegisterShipment.new(store_id: store_id, shipment_id: shipment_id))
+      run_command(RegisterShipment.new(store_id, shipment_id))
     end
   end
 end

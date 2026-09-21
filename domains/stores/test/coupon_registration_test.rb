@@ -21,7 +21,7 @@ module Stores
     private
 
     def register_coupon(store_id, coupon_id)
-      run_command(RegisterCoupon.new(store_id: store_id, coupon_id: coupon_id))
+      run_command(RegisterCoupon.new(store_id, coupon_id))
     end
   end
 end

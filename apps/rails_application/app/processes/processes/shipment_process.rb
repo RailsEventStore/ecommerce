@@ -43,8 +43,8 @@ module Processes
 
       command_bus.call(
         Stores::RegisterShipment.new(
-          shipment_id: id,
-          store_id: state.store_id
+          state.store_id,
+          id
         )
       )
     end

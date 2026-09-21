@@ -47,11 +47,11 @@ module Admin
     private
 
     def register_store(store_id)
-      command_bus.(::Stores::RegisterStore.new(store_id: store_id))
+      command_bus.(::Stores::RegisterStore.new(store_id))
     end
 
     def name_store(store_id, name)
-      command_bus.(::Stores::NameStore.new(store_id: store_id, name: ::Stores::StoreName.new(value: name)))
+      command_bus.(::Stores::NameStore.new(store_id, ::Stores::StoreName.new(value: name)))
     end
   end
 end

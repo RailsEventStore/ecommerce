@@ -210,7 +210,9 @@ module Processes
       event_store.publish(event)
       @process.call(event)
 
-      assert(@command_bus.all_received.any? { |cmd| cmd == Stores::RegisterInvoice.new(invoice_id: order_id, store_id: store_id) })
+      command = @command_bus.all_received.find { |received| received.is_a?(Stores::RegisterInvoice) }
+      assert_equal(store_id, command.store_id)
+      assert_equal(order_id, command.invoice_id)
     end
 
     private

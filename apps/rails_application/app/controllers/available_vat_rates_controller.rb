@@ -67,10 +67,7 @@ class AvailableVatRatesController < ApplicationController
   end
 
   def register_vat_rate_cmd(available_vat_rate_id)
-    Stores::RegisterVatRate.new(
-      vat_rate_id: available_vat_rate_id,
-      store_id: current_store_id
-    )
+    Stores::RegisterVatRate.new(current_store_id, available_vat_rate_id)
   end
 
   def remove_available_vat_rate(vat_rate_code)

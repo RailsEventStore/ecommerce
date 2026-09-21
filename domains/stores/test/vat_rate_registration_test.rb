@@ -21,7 +21,7 @@ module Stores
     private
 
     def register_vat_rate(store_id, vat_rate_id)
-      run_command(RegisterVatRate.new(store_id: store_id, vat_rate_id: vat_rate_id))
+      run_command(RegisterVatRate.new(store_id, vat_rate_id))
     end
   end
 end

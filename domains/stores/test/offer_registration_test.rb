@@ -21,7 +21,7 @@ module Stores
     private
 
     def register_offer(store_id, order_id)
-      run_command(RegisterOffer.new(store_id: store_id, order_id: order_id))
+      run_command(RegisterOffer.new(store_id, order_id))
     end
   end
 end

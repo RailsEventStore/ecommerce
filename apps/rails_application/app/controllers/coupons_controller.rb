@@ -33,8 +33,8 @@ class CouponsController < ApplicationController
     )
     command_bus.(
       Stores::RegisterCoupon.new(
-        coupon_id: coupon_id,
-        store_id: current_store_id
+        current_store_id,
+        coupon_id
       )
     )
   end

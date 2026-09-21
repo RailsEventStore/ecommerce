@@ -1,12 +1,12 @@
 command_bus = Rails.configuration.command_bus
 
 store_1_id = SecureRandom.uuid
-command_bus.call(Stores::RegisterStore.new(store_id: store_1_id))
-command_bus.call(Stores::NameStore.new(store_id: store_1_id, name: Stores::StoreName.new(value: "Bookstore")))
+command_bus.call(Stores::RegisterStore.new(store_1_id))
+command_bus.call(Stores::NameStore.new(store_1_id, Stores::StoreName.new(value: "Bookstore")))
 
 store_2_id = SecureRandom.uuid
-command_bus.call(Stores::RegisterStore.new(store_id: store_2_id))
-command_bus.call(Stores::NameStore.new(store_id: store_2_id, name: Stores::StoreName.new(value: "E-Learning Platform")))
+command_bus.call(Stores::RegisterStore.new(store_2_id))
+command_bus.call(Stores::NameStore.new(store_2_id, Stores::StoreName.new(value: "E-Learning Platform")))
 
 [
   ["BigCorp Ltd", "bigcorp", "12345", store_1_id],
@@ -19,7 +19,7 @@ command_bus.call(Stores::NameStore.new(store_id: store_2_id, name: Stores::Store
 
   [
     Crm::RegisterCustomer.new(customer_id: customer_id, name: name),
-    Stores::RegisterCustomer.new(customer_id: customer_id, store_id: store_id),
+    Stores::RegisterCustomer.new(store_id, customer_id),
     Authentication::RegisterAccount.new(account_id),
     Authentication::ConnectAccountToClient.new(account_id, customer_id),
     Authentication::SetLogin.new(account_id, login),
@@ -57,10 +57,7 @@ end
     )
   )
   command_bus.call(
-    Stores::RegisterVatRate.new(
-      vat_rate_id: vat_rate_id,
-      store_id: store_1_id
-    )
+    Stores::RegisterVatRate.new(store_1_id, vat_rate_id)
   )
 end
 
@@ -78,7 +75,7 @@ end
     ProductCatalog::NameProduct.new(product_id, name),
     Pricing::SetPrice.new(product_id: product_id, price: price),
     Taxes::SetVatRate.new(product_id, "20"),
-    Stores::RegisterProduct.new(product_id: product_id, store_id: store_id)
+    Stores::RegisterProduct.new(store_id, product_id)
   ].each do |command|
     command_bus.call(command)
   end

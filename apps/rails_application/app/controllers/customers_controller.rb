@@ -57,7 +57,7 @@ class CustomersController < ApplicationController
   end
 
   def register_customer_in_store_cmd(customer_id)
-    Stores::RegisterCustomer.new(customer_id: customer_id, store_id: current_store_id)
+    Stores::RegisterCustomer.new(current_store_id, customer_id)
   end
 
   def rename_customer_cmd(customer_id, name)

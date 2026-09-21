@@ -28,11 +28,11 @@ module Stores
     private
 
     def register_store(uid)
-      run_command(RegisterStore.new(store_id: uid))
+      run_command(RegisterStore.new(uid))
     end
 
     def name_store(uid, name)
-      run_command(NameStore.new(store_id: uid, name: StoreName.new(value: name)))
+      run_command(NameStore.new(uid, StoreName.new(value: name)))
     end
   end
 end

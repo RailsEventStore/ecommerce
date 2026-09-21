@@ -9,7 +9,7 @@ module Client
       order_id = SecureRandom.uuid
       ActiveRecord::Base.transaction do
         command_bus.(Pricing::DraftOffer.new(order_id: order_id))
-        command_bus.(Stores::RegisterOffer.new(order_id: order_id, store_id: current_store_id))
+        command_bus.(Stores::RegisterOffer.new(current_store_id, order_id))
       end
       redirect_to edit_client_order_path(order_id)
     end
