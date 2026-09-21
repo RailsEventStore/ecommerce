@@ -1,8 +1,18 @@
 module Shipping
-  class RemoveItemFromShipmentPickingList < Infra::Command
-    attribute :order_id, Infra::Types::UUID
-    attribute :product_id, Infra::Types::UUID
+  class RemoveItemFromShipmentPickingList
+    UUID = /\A[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\z/i
+    attr_reader :order_id, :product_id
 
     alias aggregate_id order_id
+
+    def initialize(order_id, product_id)
+      @order_id = order_id
+      @product_id = product_id
+      valid = UUID.match?(@order_id) && UUID.match?(@product_id)
+    rescue TypeError
+      raise Infra::Command::Invalid
+    else
+      raise Infra::Command::Invalid unless valid
+    end
   end
 end

@@ -11,8 +11,8 @@ module Shipping
 
       run_command(
         AddShippingAddressToShipment.new(
-          order_id: order_id,
-          postal_address: address
+          order_id,
+          address
         )
       )
 
@@ -23,14 +23,14 @@ module Shipping
             order_id: order_id
           }
         )
-      ) { act(SubmitShipment.new(order_id: order_id)) }
+      ) { act(SubmitShipment.new(order_id)) }
     end
 
     def test_shipment_cannot_be_submitted_when_shipping_address_is_missing
       order_id = SecureRandom.uuid
 
       assert_raises(Shipment::ShippingAddressMissing) do
-        act(SubmitShipment.new(order_id: order_id))
+        act(SubmitShipment.new(order_id))
       end
     end
 
@@ -40,14 +40,14 @@ module Shipping
 
       arrange(
         AddShippingAddressToShipment.new(
-          order_id: order_id,
-          postal_address: address
+          order_id,
+          address
         ),
-        SubmitShipment.new(order_id: order_id)
+        SubmitShipment.new(order_id)
       )
 
       assert_raises(Shipment::AlreadySubmitted) do
-        act(SubmitShipment.new(order_id: order_id))
+        act(SubmitShipment.new(order_id))
       end
     end
   end

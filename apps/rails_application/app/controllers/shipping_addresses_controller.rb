@@ -8,8 +8,8 @@ class ShippingAddressesController < ApplicationController
   def update
     cmd =
       Shipping::AddShippingAddressToShipment.new(
-        order_id: params[:order_id],
-        postal_address: {
+        params[:order_id],
+        {
           line_1: address_params[:address_line_1],
           line_2: address_params[:address_line_2],
           line_3: address_params[:address_line_3],

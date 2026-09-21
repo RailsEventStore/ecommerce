@@ -20,8 +20,8 @@ module Shipping
       ) do
         act(
           AddShippingAddressToShipment.new(
-            order_id: order_id,
-            postal_address: address
+            order_id,
+            address
           )
         )
       end

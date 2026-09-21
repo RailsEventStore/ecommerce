@@ -10,8 +10,8 @@ module Shipping
       stream = "Shipping::Shipment$#{order_id}"
 
       run_command(AddItemToShipmentPickingList.new(
-        order_id: order_id,
-        product_id: product_id
+        order_id,
+        product_id
       ))
 
       assert_events(
@@ -22,7 +22,7 @@ module Shipping
             product_id: product_id
           }
         )
-      ) { act(RemoveItemFromShipmentPickingList.new(order_id: order_id, product_id: product_id)) }
+      ) { act(RemoveItemFromShipmentPickingList.new(order_id, product_id)) }
     end
 
     def test_should_not_allow_removing_non_existing_items
@@ -32,8 +32,8 @@ module Shipping
 
       assert_raises(Shipment::ItemNotFound) do
         act(RemoveItemFromShipmentPickingList.new(
-          order_id: order_id,
-          product_id: product_id
+          order_id,
+          product_id
         ))
       end
     end

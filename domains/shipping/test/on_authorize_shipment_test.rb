@@ -11,10 +11,10 @@ module Shipping
 
       arrange(
         AddShippingAddressToShipment.new(
-          order_id: order_id,
-          postal_address: address
+          order_id,
+          address
         ),
-        SubmitShipment.new(order_id: order_id)
+        SubmitShipment.new(order_id)
       )
 
       assert_events(
@@ -24,14 +24,14 @@ module Shipping
             order_id: order_id
           }
         )
-      ) { act(AuthorizeShipment.new(order_id: order_id)) }
+      ) { act(AuthorizeShipment.new(order_id)) }
     end
 
     def test_shipment_cannot_be_authorized_when_not_submitted
       order_id = SecureRandom.uuid
 
       assert_raises(Shipment::NotSubmitted) do
-        act(AuthorizeShipment.new(order_id: order_id))
+        act(AuthorizeShipment.new(order_id))
       end
     end
 
@@ -41,15 +41,15 @@ module Shipping
 
       arrange(
         AddShippingAddressToShipment.new(
-          order_id: order_id,
-          postal_address: address
+          order_id,
+          address
         ),
-        SubmitShipment.new(order_id: order_id),
-        AuthorizeShipment.new(order_id: order_id)
+        SubmitShipment.new(order_id),
+        AuthorizeShipment.new(order_id)
       )
 
       assert_raises(Shipment::AlreadyAuthorized) do
-        act(AuthorizeShipment.new(order_id: order_id))
+        act(AuthorizeShipment.new(order_id))
       end
     end
   end

@@ -10,22 +10,22 @@ module Processes
         process:
       )
       assert_all_commands(
-        Shipping::SubmitShipment.new(order_id:),
-        Shipping::AuthorizeShipment.new(order_id:),
+        Shipping::SubmitShipment.new(order_id),
+        Shipping::AuthorizeShipment.new(order_id),
       )
     end
 
     def test_submit_shipment_when_order_placed_then_address_set
       given([order_placed, shipping_address_added], process:)
       assert_all_commands(
-        Shipping::SubmitShipment.new(order_id:),
+        Shipping::SubmitShipment.new(order_id),
       )
     end
 
     def test_submit_shipment_when_address_set_then_order_placed
       given([shipping_address_added, order_placed], process:)
       assert_all_commands(
-        Shipping::SubmitShipment.new(order_id:),
+        Shipping::SubmitShipment.new(order_id),
       )
     end
 
@@ -51,8 +51,8 @@ module Processes
       )
       assert_all_commands(
         Stores::RegisterShipment.new(shipment_id: order_id, store_id: store_id),
-        Shipping::SubmitShipment.new(order_id:),
-        Shipping::AuthorizeShipment.new(order_id:),
+        Shipping::SubmitShipment.new(order_id),
+        Shipping::AuthorizeShipment.new(order_id),
       )
     end
 
@@ -60,7 +60,7 @@ module Processes
       given([offer_registered, order_placed, shipping_address_added], process:)
       assert_all_commands(
         Stores::RegisterShipment.new(shipment_id: order_id, store_id: store_id),
-        Shipping::SubmitShipment.new(order_id:),
+        Shipping::SubmitShipment.new(order_id),
       )
     end
 
@@ -71,8 +71,8 @@ module Processes
       )
       assert_all_commands(
         Stores::RegisterShipment.new(shipment_id: order_id, store_id: store_id),
-        Shipping::SubmitShipment.new(order_id:),
-        Shipping::AuthorizeShipment.new(order_id:),
+        Shipping::SubmitShipment.new(order_id),
+        Shipping::AuthorizeShipment.new(order_id),
       )
     end
 
@@ -83,12 +83,25 @@ module Processes
       )
       assert_all_commands(
         Stores::RegisterShipment.new(shipment_id: order_id, store_id: store_id),
-        Shipping::SubmitShipment.new(order_id:),
-        Shipping::AuthorizeShipment.new(order_id:),
+        Shipping::SubmitShipment.new(order_id),
+        Shipping::AuthorizeShipment.new(order_id),
       )
     end
 
     private
+
+    def assert_all_commands(*commands)
+      assert_equal(commands.map { |command| command_data(command) }, command_bus.all_received.map { |command| command_data(command) })
+    end
+
+    def command_data(command)
+      case command
+      when Shipping::SubmitShipment, Shipping::AuthorizeShipment
+        [command.class, command.order_id]
+      else
+        command
+      end
+    end
 
     def process
       ShipmentProcess.new.with(event_store: event_store, command_bus: command_bus)

@@ -17,7 +17,7 @@ module Shipping
             product_id: product_id
           }
         )
-      ) { act(AddItemToShipmentPickingList.new(order_id: order_id, product_id: product_id)) }
+      ) { act(AddItemToShipmentPickingList.new(order_id, product_id)) }
     end
   end
 end

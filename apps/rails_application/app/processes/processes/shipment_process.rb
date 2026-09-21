@@ -51,11 +51,11 @@ module Processes
 
     def register_and_submit_shipment
       register_shipment
-      command_bus.call(Shipping::SubmitShipment.new(order_id: id))
+      command_bus.call(Shipping::SubmitShipment.new(id))
     end
 
     def authorize_shipment
-      command_bus.call(Shipping::AuthorizeShipment.new(order_id: id))
+      command_bus.call(Shipping::AuthorizeShipment.new(id))
     end
 
     def fetch_id(event)
