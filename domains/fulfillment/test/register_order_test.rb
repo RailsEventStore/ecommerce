@@ -12,18 +12,18 @@ module Fulfillment
       assert_events(
         stream,
         OrderRegistered.new(data: { order_id: aggregate_id, order_number: order_number })
-      ) { act(RegisterOrder.new(order_id: aggregate_id)) }
+      ) { act(RegisterOrder.new(aggregate_id)) }
     end
 
     def test_registered_order_can_not_be_registered_again
       aggregate_id = SecureRandom.uuid
 
       arrange(
-        RegisterOrder.new(order_id: aggregate_id),
+        RegisterOrder.new(aggregate_id),
       )
 
       assert_raises(Order::InvalidState) do
-        act(RegisterOrder.new(order_id: aggregate_id))
+        act(RegisterOrder.new(aggregate_id))
       end
     end
   end

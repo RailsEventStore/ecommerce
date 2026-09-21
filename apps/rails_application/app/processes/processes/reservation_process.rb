@@ -70,7 +70,7 @@ module Processes
     end
 
     def accept_order
-      command_bus.(Fulfillment::RegisterOrder.new(order_id: id))
+      command_bus.(Fulfillment::RegisterOrder.new(id))
     end
 
     def reject_order(unavailable_product_ids)

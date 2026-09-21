@@ -12,7 +12,8 @@ module Processes
       assert_equal(3, command_bus.all_received.size)
       assert_inventory_command(0, Inventory::Reserve, product_id, 1)
       assert_inventory_command(1, Inventory::Reserve, another_product_id, 2)
-      assert_equal(Fulfillment::RegisterOrder.new(order_id: order_id), command_bus.all_received.fetch(2))
+      assert_instance_of(Fulfillment::RegisterOrder, command_bus.all_received.fetch(2))
+      assert_equal(order_id, command_bus.all_received.fetch(2).order_id)
     end
 
     def test_rejects_order_and_compensates_stock_when_sth_is_unavailable

@@ -17,11 +17,11 @@ module HanamiApplication
       private
 
       def register_order(event)
-        @command_bus.call(Fulfillment::RegisterOrder.new(order_id: event.data.fetch(:order_id)))
+        @command_bus.call(Fulfillment::RegisterOrder.new(event.data.fetch(:order_id)))
       end
 
       def confirm_order(event)
-        @command_bus.call(Fulfillment::ConfirmOrder.new(order_id: event.data.fetch(:order_id)))
+        @command_bus.call(Fulfillment::ConfirmOrder.new(event.data.fetch(:order_id)))
       end
     end
   end

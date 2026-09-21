@@ -8,7 +8,7 @@ module Fulfillment
       aggregate_id = SecureRandom.uuid
 
       assert_raises(Order::InvalidState) do
-        act(CancelOrder.new(order_id: aggregate_id))
+        act(CancelOrder.new(aggregate_id))
       end
     end
 
@@ -16,25 +16,25 @@ module Fulfillment
       aggregate_id = SecureRandom.uuid
       stream = "Fulfillment::Order$#{aggregate_id}"
       arrange(
-        RegisterOrder.new(order_id: aggregate_id)
+        RegisterOrder.new(aggregate_id)
       )
 
       assert_events(
         stream,
         OrderCancelled.new(data: { order_id: aggregate_id })
-      ) { act(CancelOrder.new(order_id: aggregate_id)) }
+      ) { act(CancelOrder.new(aggregate_id)) }
     end
 
     def test_confirmed_order_can_not_be_cancelled
       aggregate_id = SecureRandom.uuid
 
       arrange(
-        RegisterOrder.new(order_id: aggregate_id),
-        ConfirmOrder.new(order_id: aggregate_id)
+        RegisterOrder.new(aggregate_id),
+        ConfirmOrder.new(aggregate_id)
       )
 
       assert_raises(Order::InvalidState) do
-        act(CancelOrder.new(order_id: aggregate_id))
+        act(CancelOrder.new(aggregate_id))
       end
     end
   end

@@ -9,7 +9,8 @@ module Processes
       given([payment_authorized]).each do |event|
         process.call(event)
       end
-      assert_command(Fulfillment::ConfirmOrder.new(order_id: order_id))
+      assert_instance_of(Fulfillment::ConfirmOrder, command_bus.received)
+      assert_equal(order_id, command_bus.received.order_id)
     end
   end
 end
