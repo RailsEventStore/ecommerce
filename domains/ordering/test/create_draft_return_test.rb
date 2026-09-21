@@ -25,9 +25,9 @@ module Ordering
       assert_events(stream, *expected_events) do
         act(
           CreateDraftReturn.new(
-            return_id: aggregate_id,
-            order_id: order_id,
-            returnable_products: returnable_products
+            aggregate_id,
+            order_id,
+            returnable_products
           )
         )
       end

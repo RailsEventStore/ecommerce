@@ -33,9 +33,9 @@ class ReturnsController < ApplicationController
 
   def create_draft_return_cmd(return_id)
     Ordering::CreateDraftReturn.new(
-      return_id: return_id,
-      order_id: params[:order_id],
-      returnable_products: Returns::ReturnableProducts.new.call(event_store, params[:order_id])
+      return_id,
+      params[:order_id],
+      Returns::ReturnableProducts.new.call(event_store, params[:order_id])
     )
   end
 
@@ -44,7 +44,7 @@ class ReturnsController < ApplicationController
   end
 
   def add_item_to_return_cmd
-    Ordering::AddItemToReturn.new(return_id: params[:id], order_id: params[:order_id], product_id: params[:product_id])
+    Ordering::AddItemToReturn.new(params[:id], params[:order_id], params[:product_id])
   end
 
   def add_item_to_return
@@ -52,7 +52,7 @@ class ReturnsController < ApplicationController
   end
 
   def remove_item_from_return_cmd
-    Ordering::RemoveItemFromReturn.new(return_id: params[:id], order_id: params[:order_id], product_id: params[:product_id])
+    Ordering::RemoveItemFromReturn.new(params[:id], params[:order_id], params[:product_id])
   end
 
   def remove_item_from_return

@@ -19,8 +19,8 @@ module Ordering
       ]
 
       arrange(
-        CreateDraftReturn.new(return_id: aggregate_id, order_id: order_id, returnable_products: returnable_products),
-        AddItemToReturn.new(return_id: aggregate_id, order_id: order_id, product_id: product_2_id)
+        CreateDraftReturn.new(aggregate_id, order_id, returnable_products),
+        AddItemToReturn.new(aggregate_id, order_id, product_2_id)
       )
 
       expected_events = [
@@ -36,9 +36,9 @@ module Ordering
       assert_events(stream, *expected_events) do
         act(
           AddItemToReturn.new(
-            return_id: aggregate_id,
-            order_id: order_id,
-            product_id: product_2_id
+            aggregate_id,
+            order_id,
+            product_2_id
           )
         )
       end
@@ -50,12 +50,12 @@ module Ordering
       product_id = SecureRandom.uuid
 
       arrange(
-        CreateDraftReturn.new(return_id: aggregate_id, order_id: order_id, returnable_products: [{ product_id: product_id, quantity: 1 }]),
-        AddItemToReturn.new(return_id: aggregate_id, order_id: order_id, product_id: product_id)
+        CreateDraftReturn.new(aggregate_id, order_id, [{ product_id: product_id, quantity: 1 }]),
+        AddItemToReturn.new(aggregate_id, order_id, product_id)
       )
 
       assert_raises(Ordering::Return::ExceedsOrderQuantityError) do
-        act(AddItemToReturn.new(return_id: aggregate_id, order_id: order_id, product_id: product_id))
+        act(AddItemToReturn.new(aggregate_id, order_id, product_id))
       end
     end
   end
