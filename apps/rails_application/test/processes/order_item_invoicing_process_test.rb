@@ -24,17 +24,20 @@ module Processes
       event_store.publish(event)
       process.call(event)
 
-      assert_command(Invoicing::AddInvoiceItem.new(
-        invoice_id: order_id,
-        product_id: @product_id,
-        quantity: @quantity,
-        vat_rate: @vat_rate,
-        unit_price: 18.to_d
-      ))
+      assert_invoice_item_command(order_id, @product_id, @quantity, 18.to_d, @vat_rate)
     end
 
 
     private
+
+    def assert_invoice_item_command(invoice_id, product_id, quantity, unit_price, vat_rate)
+      command = @command_bus.all_received.find { |received| received.is_a?(Invoicing::AddInvoiceItem) }
+      assert_equal(invoice_id, command.invoice_id)
+      assert_equal(product_id, command.product_id)
+      assert_equal(quantity, command.quantity)
+      assert_equal(unit_price, command.unit_price)
+      assert_equal(vat_rate, command.vat_rate)
+    end
 
     def publish_total_value_updated(process, items)
       event = Processes::TotalOrderValueUpdated.new(data: {

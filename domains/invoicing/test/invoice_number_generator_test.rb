@@ -21,7 +21,7 @@ module Invoicing
     def issue_random_invoice(issue_date)
       invoice_id = SecureRandom.uuid
       set_billing_address(invoice_id)
-      run_command(IssueInvoice.new(invoice_id: invoice_id, issue_date: issue_date))
+      run_command(IssueInvoice.new(invoice_id, issue_date))
     end
   end
 end

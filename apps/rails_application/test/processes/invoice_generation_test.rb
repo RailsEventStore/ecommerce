@@ -27,25 +27,25 @@ module Processes
 
       expected_commands = [
         Invoicing::AddInvoiceItem.new(
-          invoice_id: order_id,
-          product_id: @product_1_id,
-          quantity: 1,
-          vat_rate: @vat_rate,
-          unit_price: 20.to_d
+          order_id,
+          @product_1_id,
+          1,
+          20.to_d,
+          @vat_rate
         ),
         Invoicing::AddInvoiceItem.new(
-          invoice_id: order_id,
-          product_id: @product_2_id,
-          quantity: 2,
-          vat_rate: @vat_rate,
-          unit_price: 30.to_d
+          order_id,
+          @product_2_id,
+          2,
+          30.to_d,
+          @vat_rate
         )
       ]
       
       actual_commands = @command_bus.all_received.sort_by(&:product_id)
       expected_commands_sorted = expected_commands.sort_by(&:product_id)
       
-      assert_equal(expected_commands_sorted, actual_commands)
+      assert_equal(command_attributes(expected_commands_sorted), command_attributes(actual_commands))
     end
 
     def test_calculates_sub_amounts_with_discount
@@ -59,25 +59,25 @@ module Processes
 
       expected_commands = [
         Invoicing::AddInvoiceItem.new(
-          invoice_id: order_id,
-          product_id: @product_1_id,
-          quantity: 1,
-          vat_rate: @vat_rate,
-          unit_price: 18.to_d
+          order_id,
+          @product_1_id,
+          1,
+          18.to_d,
+          @vat_rate
         ),
         Invoicing::AddInvoiceItem.new(
-          invoice_id: order_id,
-          product_id: @product_2_id,
-          quantity: 2,
-          vat_rate: @vat_rate,
-          unit_price: 27.to_d
+          order_id,
+          @product_2_id,
+          2,
+          27.to_d,
+          @vat_rate
         )
       ]
       
       actual_commands = @command_bus.all_received.sort_by(&:product_id)
       expected_commands_sorted = expected_commands.sort_by(&:product_id)
       
-      assert_equal(expected_commands_sorted, actual_commands)
+      assert_equal(command_attributes(expected_commands_sorted), command_attributes(actual_commands))
     end
 
     def test_calculates_sub_amounts_with_100_percent_discount
@@ -88,13 +88,7 @@ module Processes
       event_store.publish(event)
       @process.call(event)
 
-      assert_command(Invoicing::AddInvoiceItem.new(
-        invoice_id: order_id,
-        product_id: @product_1_id,
-        quantity: 1,
-        vat_rate: @vat_rate,
-        unit_price: 0.to_d
-      ))
+      assert_invoice_item_command(@product_1_id, 1, 0.to_d)
     end
 
     def test_calculates_sub_amounts_with_multiple_discounts
@@ -105,13 +99,7 @@ module Processes
       event_store.publish(event)
       @process.call(event)
 
-      assert_command(Invoicing::AddInvoiceItem.new(
-        invoice_id: order_id,
-        product_id: @product_1_id,
-        quantity: 1,
-        vat_rate: @vat_rate,
-        unit_price: 75.to_d
-      ))
+      assert_invoice_item_command(@product_1_id, 1, 75.to_d)
     end
 
     def test_calculates_sub_amounts_after_item_removal
@@ -125,25 +113,25 @@ module Processes
 
       expected_commands = [
         Invoicing::AddInvoiceItem.new(
-          invoice_id: order_id,
-          product_id: @product_1_id,
-          quantity: 1,
-          vat_rate: @vat_rate,
-          unit_price: 20.to_d
+          order_id,
+          @product_1_id,
+          1,
+          20.to_d,
+          @vat_rate
         ),
         Invoicing::AddInvoiceItem.new(
-          invoice_id: order_id,
-          product_id: @product_2_id,
-          quantity: 1,
-          vat_rate: @vat_rate,
-          unit_price: 30.to_d
+          order_id,
+          @product_2_id,
+          1,
+          30.to_d,
+          @vat_rate
         )
       ]
       
       actual_commands = @command_bus.all_received.sort_by(&:product_id)
       expected_commands_sorted = expected_commands.sort_by(&:product_id)
       
-      assert_equal(expected_commands_sorted, actual_commands)
+      assert_equal(command_attributes(expected_commands_sorted), command_attributes(actual_commands))
     end
 
     def test_calculates_sub_amounts_with_discount_changed
@@ -154,13 +142,7 @@ module Processes
       event_store.publish(event)
       @process.call(event)
 
-      assert_command(Invoicing::AddInvoiceItem.new(
-        invoice_id: order_id,
-        product_id: @product_1_id,
-        quantity: 1,
-        vat_rate: @vat_rate,
-        unit_price: 80.to_d
-      ))
+      assert_invoice_item_command(@product_1_id, 1, 80.to_d)
     end
 
     def test_calculates_sub_amounts_with_discount_removed
@@ -171,13 +153,7 @@ module Processes
       event_store.publish(event)
       @process.call(event)
 
-      assert_command(Invoicing::AddInvoiceItem.new(
-        invoice_id: order_id,
-        product_id: @product_1_id,
-        quantity: 1,
-        vat_rate: @vat_rate,
-        unit_price: 100.to_d
-      ))
+      assert_invoice_item_command(@product_1_id, 1, 100.to_d)
     end
 
     def test_calculates_sub_amounts_with_over_100_percent_discount
@@ -188,13 +164,7 @@ module Processes
       event_store.publish(event)
       @process.call(event)
 
-      assert_command(Invoicing::AddInvoiceItem.new(
-        invoice_id: order_id,
-        product_id: @product_1_id,
-        quantity: 1,
-        vat_rate: @vat_rate,
-        unit_price: 0.to_d
-      ))
+      assert_invoice_item_command(@product_1_id, 1, 0.to_d)
     end
 
     def test_calculates_sub_amounts_with_discount_type_replacement
@@ -205,13 +175,7 @@ module Processes
       event_store.publish(event)
       @process.call(event)
 
-      assert_command(Invoicing::AddInvoiceItem.new(
-        invoice_id: order_id,
-        product_id: @product_1_id,
-        quantity: 1,
-        vat_rate: @vat_rate,
-        unit_price: 50.to_d
-      ))
+      assert_invoice_item_command(@product_1_id, 1, 50.to_d)
     end
 
     def test_discount_removal_preserves_other_discounts
@@ -222,13 +186,7 @@ module Processes
       event_store.publish(event)
       @process.call(event)
 
-      assert_command(Invoicing::AddInvoiceItem.new(
-        invoice_id: order_id,
-        product_id: @product_1_id,
-        quantity: 1,
-        vat_rate: @vat_rate,
-        unit_price: 80.to_d
-      ))
+      assert_invoice_item_command(@product_1_id, 1, 80.to_d)
     end
 
     def test_discount_set_replaces_existing_discount_type
@@ -239,13 +197,7 @@ module Processes
       event_store.publish(event)
       @process.call(event)
 
-      assert_command(Invoicing::AddInvoiceItem.new(
-        invoice_id: order_id,
-        product_id: @product_1_id,
-        quantity: 1,
-        vat_rate: @vat_rate,
-        unit_price: 75.to_d
-      ))
+      assert_invoice_item_command(@product_1_id, 1, 75.to_d)
     end
 
     def test_registers_invoice_with_store
@@ -262,6 +214,19 @@ module Processes
     end
 
     private
+
+    def assert_invoice_item_command(product_id, quantity, unit_price)
+      command = @command_bus.all_received.find { |received| received.is_a?(Invoicing::AddInvoiceItem) }
+      assert_equal(order_id, command.invoice_id)
+      assert_equal(product_id, command.product_id)
+      assert_equal(quantity, command.quantity)
+      assert_equal(unit_price, command.unit_price)
+      assert_equal(@vat_rate, command.vat_rate)
+    end
+
+    def command_attributes(commands)
+      commands.map { |command| [command.invoice_id, command.product_id, command.quantity, command.unit_price, command.vat_rate] }
+    end
 
     def publish_offer_registered(store_id)
       event = Stores::OfferRegistered.new(data: {

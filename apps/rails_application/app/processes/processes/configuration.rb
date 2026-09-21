@@ -68,9 +68,17 @@ module Processes
     end
 
     def enable_product_name_sync(event_store, command_bus)
-      Infra::Process.new(event_store, command_bus)
-                    .call(ProductCatalog::ProductNamed, [:product_id, :name],
-                          Invoicing::SetProductNameDisplayedOnInvoice, [:product_id, :name_displayed])
+      event_store.subscribe(
+        ->(event) do
+          command_bus.call(
+            Invoicing::SetProductNameDisplayedOnInvoice.new(
+              event.data.fetch(:product_id),
+              event.data.fetch(:name)
+            )
+          )
+        end,
+        to: [ProductCatalog::ProductNamed]
+      )
     end
 
     def set_invoice_payment_date_when_order_confirmed(event_store, command_bus)
@@ -78,8 +86,8 @@ module Processes
         ->(event) do
           command_bus.call(
             Invoicing::SetPaymentDate.new(
-              invoice_id: event.data.fetch(:order_id),
-              payment_date: Time.zone.at(event.metadata.fetch(:timestamp)).to_date
+              event.data.fetch(:order_id),
+              Time.zone.at(event.metadata.fetch(:timestamp)).to_date
             )
           )
         end,

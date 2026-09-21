@@ -62,11 +62,11 @@ module Processes
       unit_prices.tally.each do |unit_price, quantity|
         command_bus.call(
           Invoicing::AddInvoiceItem.new(
-            invoice_id: @order_id,
-            product_id: product_id,
-            vat_rate: vat_rate,
-            quantity: quantity,
-            unit_price: unit_price
+            @order_id,
+            product_id,
+            quantity,
+            unit_price,
+            vat_rate
           )
         )
       end

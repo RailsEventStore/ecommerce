@@ -176,11 +176,11 @@ module Invoicing
     )
       set_product_name_displayed(product_id, title)
       run_command(AddInvoiceItem.new(
-        invoice_id: invoice_id,
-        product_id: product_id,
-        vat_rate: vat_rate,
-        unit_price: unit_price,
-        quantity: 1
+        invoice_id,
+        product_id,
+        1,
+        unit_price,
+        vat_rate
       ))
     end
 
@@ -189,11 +189,11 @@ module Invoicing
     end
 
     def issue_invoice_command(invoice_id, issue_date)
-      IssueInvoice.new(invoice_id: invoice_id, issue_date: issue_date)
+      IssueInvoice.new(invoice_id, issue_date)
     end
 
     def set_payment_date(invoice_id, payment_date = Date.new(2021, 1, 5))
-      run_command(SetPaymentDate.new(invoice_id: invoice_id, payment_date: payment_date))
+      run_command(SetPaymentDate.new(invoice_id, payment_date))
     end
   end
 end

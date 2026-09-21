@@ -7,7 +7,7 @@ class InvoicesController < ApplicationController
   def create
     begin
       ActiveRecord::Base.transaction do
-        command_bus.(Invoicing::IssueInvoice.new(invoice_id: params[:order_id], issue_date: Time.zone.now.to_date))
+        command_bus.(Invoicing::IssueInvoice.new(params[:order_id], Time.zone.now.to_date))
       end
     rescue Invoicing::Invoice::BillingAddressNotSpecified
       flash[:alert] = "Billing address is missing"

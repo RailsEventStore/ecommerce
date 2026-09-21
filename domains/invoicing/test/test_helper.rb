@@ -14,14 +14,14 @@ module Invoicing
     private
 
     def set_product_name_displayed(product_id, name_displayed)
-      run_command(SetProductNameDisplayedOnInvoice.new(product_id: product_id, name_displayed: name_displayed))
+      run_command(SetProductNameDisplayedOnInvoice.new(product_id, name_displayed))
     end
 
     def set_billing_address(invoice_id, postal_address = fake_address, tax_id_number = nil)
       run_command(SetBillingAddress.new(
-        invoice_id: invoice_id,
-        postal_address: postal_address,
-        tax_id_number: tax_id_number
+        invoice_id,
+        tax_id_number,
+        postal_address
       ))
     end
 

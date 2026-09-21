@@ -8,9 +8,9 @@ class BillingAddressesController < ApplicationController
   def update
     cmd =
       Invoicing::SetBillingAddress.new(
-        invoice_id: params[:order_id],
-        tax_id_number: address_params[:tax_id_number],
-        postal_address: {
+        params[:order_id],
+        address_params[:tax_id_number],
+        {
           line_1: address_params[:address_line_1],
           line_2: address_params[:address_line_2],
           line_3: address_params[:address_line_3],
