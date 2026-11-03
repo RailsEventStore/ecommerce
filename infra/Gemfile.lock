@@ -1,19 +1,19 @@
 GIT
   remote: https://github.com/RailsEventStore/rails_event_store.git
-  revision: 8ade19762d1394fc6e2784cc1250d0f09d835cc5
+  revision: 01d2f7cef802f69164b1917caeffed1d6c2af965
   branch: master
   glob: aggregate_root/*.gemspec
   specs:
-    aggregate_root (3.1.0)
-      ruby_event_store (= 3.1.0)
+    aggregate_root (3.2.0)
+      ruby_event_store (= 3.2.0)
 
 GIT
   remote: https://github.com/RailsEventStore/rails_event_store.git
-  revision: 8ade19762d1394fc6e2784cc1250d0f09d835cc5
+  revision: 01d2f7cef802f69164b1917caeffed1d6c2af965
   branch: master
   glob: ruby_event_store/*.gemspec
   specs:
-    ruby_event_store (3.1.0)
+    ruby_event_store (3.2.0)
       concurrent-ruby (~> 1.0, >= 1.1.6)
 
 PATH
