@@ -9,39 +9,37 @@ infra = component :infra, in: "infra/lib/**/*.rb"
 composition = component :composition, in: "domains/configuration.rb"
 
 domains = each_directory("domains/*").map do |name, path|
-  component_name = :"domain_#{name}"
-  [component_name, component(component_name, in: "#{path}/lib/**/*.rb")]
+  component :"domain_#{name}", in: "#{path}/lib/**/*.rb"
 end
 
-apps = component :apps, in: "apps/*/{app,config,lib}/**/*.rb"
-
-read_models = architecture.fetch("read_models").map do |definition|
-  path = definition.fetch("path")
-  component_name = :"read_model_#{File.basename(path)}"
-  [component_name, component(component_name, in: "apps/rails_application/#{path}/**/*.rb")]
-end
-
-processes = architecture.fetch("processes").map do |definition|
-  configured_paths = Array(definition.fetch("path"))
-  component_name = :"process_#{File.basename(configured_paths.first, ".rb")}"
-  paths = configured_paths.map do |path|
-    rooted_path = File.join("apps/rails_application", path)
-    path.end_with?(".rb") ? rooted_path : "#{rooted_path}/**/*.rb"
+boundary_paths = { "read_models" => "read_model", "processes" => "process" }.flat_map do |section, type|
+  architecture.fetch(section).map do |definition|
+    paths = Array(definition.fetch("path"))
+    name = :"#{type}_#{File.basename(paths.first, ".rb")}"
+    [name, paths.map do |path|
+      rooted_path = File.join("apps/rails_application", path)
+      path.end_with?(".rb") ? rooted_path : "#{rooted_path}/**/*.rb"
+    end]
   end
-  [component_name, component(component_name, in: paths)]
+end.to_h
+
+boundaries = boundary_paths.map do |name, paths|
+  component name, in: paths
 end
 
-domain_names = domains.map(&:first)
+apps = component :apps, in: "apps/*/{app,config,lib}/**/*.rb", except: boundary_paths.values.flatten
+
+domain_names = domains.map(&:name)
 bounded_context_names = architecture.fetch("bounded_contexts").map do |definition|
   :"domain_#{File.basename(File.dirname(definition.fetch("path")))}"
 end
-boundary_names = (read_models + processes).map(&:first)
+boundary_names = boundaries.map(&:name)
 
-domains.each do |_name, domain|
+domains.each do |domain|
   domain.can_only_use :infra
 end
 
-(read_models + processes).each do |_name, boundary|
+boundaries.each do |boundary|
   boundary.can_only_use :infra, :composition, :apps, *bounded_context_names
 end
 
