@@ -40,6 +40,11 @@
 
 - whenever we access event.data, we should use event.fetch(:product_id) instead of event[:product_id]
 
+# Demo database resets
+
+- After backward-incompatible changes affecting persisted data or events in `apps/rails_application` (including changes in shared domains), remind the user in the final response to run the **Reset demo database** GitHub Actions workflow.
+- Explain what became incompatible and warn that the reset deletes all demo data. Do not run the reset without explicit user approval.
+
 # Git
 
 - Don't mention Claude in the git commit messages.
