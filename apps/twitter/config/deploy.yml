@@ -85,7 +85,7 @@ builder:
   #
   # # Pass arguments and secrets to the Docker build process
   # args:
-  #   RUBY_VERSION: 4.0.7
+  #   RUBY_VERSION: 4.0.9
   # secrets:
   #   - GITHUB_TOKEN
   #   - RAILS_MASTER_KEY

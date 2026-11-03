@@ -2,7 +2,7 @@
 set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-ruby_version="4.0.7"
+ruby_version="4.0.9"
 bundler_version="2.6.9"
 
 echo "Installing system dependencies"
