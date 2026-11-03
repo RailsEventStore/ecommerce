@@ -1,0 +1,31 @@
+name: Reset demo database
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: 'Type res-ecommerce-rails to delete all demo data and reload seeds'
+        required: true
+        type: string
+permissions:
+  contents: read
+jobs:
+  reset:
+    if: ${{ github.ref == 'refs/heads/master' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    concurrency:
+      group: res-ecommerce-rails
+      cancel-in-progress: false
+    steps:
+      - name: Confirm database reset
+        env:
+          CONFIRMATION: ${{ inputs.confirmation }}
+        run: test "$CONFIRMATION" = "res-ecommerce-rails"
+      - uses: actions/checkout@v4
+      - name: Install Heroku CLI
+        shell: bash
+        run: curl -fsS https://cli-assets.heroku.com/install.sh | sh
+      - name: Reset database and load seeds
+        run: apps/rails_application/bin/reset_heroku_db.sh
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}

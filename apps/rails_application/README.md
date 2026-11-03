@@ -42,6 +42,20 @@ you need to update `DATABASE_URL`.
 - run `make test` to run unit and integration tests
 - run `make mutate` to perform mutation coverage
 
+## Resetting the demo database
+
+Deletes all demo data and reloads the deployed schema and seeds.
+
+Open **Actions → Reset demo database → Run workflow**, select `master`, and
+confirm with `res-ecommerce-rails`. Or use GitHub CLI:
+
+```shell
+gh workflow run reset_rails_application_db.yml --repo railseventstore/ecommerce --ref master -f confirmation=res-ecommerce-rails
+```
+
+Uses the `HEROKU_API_KEY` GitHub secret; no local Heroku credentials are needed.
+If the reset fails, check the logs before retrying; maintenance may remain enabled.
+
 ## Big Picture
 
 In event-driven architectures, navigation between events and handlers can be 

@@ -52,6 +52,9 @@ jobs:
           RAILS_ENV: test
   release:
     runs-on: ubuntu-24.04
+    concurrency:
+      group: res-ecommerce-rails
+      cancel-in-progress: false
     strategy:
       fail-fast: false
     env:

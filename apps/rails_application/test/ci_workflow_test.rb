@@ -44,6 +44,27 @@ class CiWorkflowTest < ActiveSupport::TestCase
     assert(workflow_config[true]["push"] || workflow_config[true].include?("push"), "Workflow must trigger on push events")
   end
 
+  def test_database_reset_is_manual_and_only_runs_on_master
+    assert_equal(["workflow_dispatch"], reset_workflow_config.fetch(true).keys)
+    assert_equal(true, reset_workflow_config.dig(true, "workflow_dispatch", "inputs", "confirmation", "required"))
+    assert_equal("${{ github.ref == 'refs/heads/master' }}", reset_workflow_config.dig("jobs", "reset", "if"))
+  end
+
+  def test_database_reset_and_deploy_share_a_non_cancelling_lock
+    assert_equal(
+      { "group" => "res-ecommerce-rails", "cancel-in-progress" => false },
+      reset_workflow_config.dig("jobs", "reset", "concurrency")
+    )
+    assert_equal(
+      reset_workflow_config.dig("jobs", "reset", "concurrency"),
+      workflow_config.dig("jobs", "release", "concurrency")
+    )
+  end
+
+  def reset_workflow_config
+    YAML.load_file(Rails.root.join("../../.github/workflows/reset_rails_application_db.yml"))
+  end
+
   def test_no_orphaned_deploy_job
     assert(workflow_config["jobs"], "Workflow must have jobs")
     if workflow_config["jobs"].key?("deploy")
