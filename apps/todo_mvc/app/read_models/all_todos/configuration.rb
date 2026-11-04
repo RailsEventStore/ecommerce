@@ -21,7 +21,7 @@ module AllTodos
   end
 
   def self.active_count
-    Todo.where(completed: false).count
+    Todo.where(completed: false).size
   end
 
   def self.completed_any?
