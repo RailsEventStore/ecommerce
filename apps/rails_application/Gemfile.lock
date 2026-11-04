@@ -152,8 +152,9 @@ GEM
       uri (>= 0.13.1)
     arbre (2.2.1)
       activesupport (>= 7.0)
-    archspec (1.1.0)
-      prism (>= 1.0)
+    archspec (1.2.0)
+      herb (~> 0.11.0)
+      prism (>= 1.0, < 2)
       rubydex (~> 0.4.0)
     arkency-command_bus (0.4.1)
       concurrent-ruby
@@ -206,14 +207,14 @@ GEM
     ffi (1.15.5)
     globalid (1.4.0)
       activesupport (>= 6.1)
-    herb (0.9.3-aarch64-linux-gnu)
-    herb (0.9.3-aarch64-linux-musl)
-    herb (0.9.3-arm-linux-gnu)
-    herb (0.9.3-arm-linux-musl)
-    herb (0.9.3-arm64-darwin)
-    herb (0.9.3-x86_64-darwin)
-    herb (0.9.3-x86_64-linux-gnu)
-    herb (0.9.3-x86_64-linux-musl)
+    herb (0.11.1-aarch64-linux-gnu)
+    herb (0.11.1-aarch64-linux-musl)
+    herb (0.11.1-arm-linux-gnu)
+    herb (0.11.1-arm-linux-musl)
+    herb (0.11.1-arm64-darwin)
+    herb (0.11.1-x86_64-darwin)
+    herb (0.11.1-x86_64-linux-gnu)
+    herb (0.11.1-x86_64-linux-musl)
     honeybadger (6.5.3)
       logger
       ostruct
@@ -450,7 +451,7 @@ PLATFORMS
 DEPENDENCIES
   aggregate_root!
   arbre
-  archspec (~> 1.1)
+  archspec (~> 1.2)
   bootsnap (>= 1.9.2)
   bundler-audit
   byebug
