@@ -52,8 +52,11 @@ Use this skill when asked to commit changes, group changes into commits, or prep
    - Stage relevant files
    - Verify tests pass with only those changes
    - Draft a commit message following the rules above
-   - Present the staged files and message for user approval
-5. Wait for user confirmation before committing
+   - Commit without requesting user approval
+5. Push to the current branch's configured upstream by default after relevant tests and architecture checks pass, unless the user asks to keep changes local
+6. Report the commits, verification results, and push status
+
+This permission does not cover force-pushes, deleting remote branches, opening or merging pull requests, or manually triggering deployments.
 
 ## Examples of good commit messages
 

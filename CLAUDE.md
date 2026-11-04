@@ -48,3 +48,6 @@
 # Git
 
 - Don't mention Claude in the git commit messages.
+- Commit completed work without requesting approval.
+- Push to the current branch's configured upstream by default after relevant tests and architecture checks pass, unless the user asks to keep changes local.
+- This permission does not cover force-pushes, deleting remote branches, opening or merging pull requests, or manually triggering deployments.
