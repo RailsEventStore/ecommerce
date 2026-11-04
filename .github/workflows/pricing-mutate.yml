@@ -32,4 +32,4 @@ jobs:
       - name: Run incremental mutation testing
         run: make -C domains/pricing mutate-changes
         env:
-          GIT_BASE_SHA: ${{ github.event_name == 'push' && github.event.before || '' }}
+          GIT_BASE_SHA: ${{ github.event_name == 'push' && github.event.before || github.event.pull_request.base.sha }}
