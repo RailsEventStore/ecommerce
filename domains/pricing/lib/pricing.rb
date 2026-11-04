@@ -5,6 +5,7 @@ require_relative "pricing/commands"
 require_relative "pricing/events"
 require_relative "pricing/services"
 require_relative "pricing/offer"
+require_relative "pricing/offer_line"
 require_relative "pricing/price_change"
 require_relative "pricing/time_promotion"
 
