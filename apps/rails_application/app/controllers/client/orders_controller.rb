@@ -57,12 +57,14 @@ module Client
     end
 
     def remove_item
-      command_bus.(
-        Pricing::RemovePriceItem.new(
-          params[:id],
-          params[:product_id]
+      ActiveRecord::Base.transaction do
+        command_bus.(
+          Pricing::RemovePriceItem.new(
+            params[:id],
+            params[:product_id]
+          )
         )
-      )
+      end
     end
 
     def use_coupon

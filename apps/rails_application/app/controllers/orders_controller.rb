@@ -66,7 +66,9 @@ class OrdersController < ApplicationController
   end
 
   def remove_item
-    command_bus.(Pricing::RemovePriceItem.new(params[:id], params[:product_id]))
+    ActiveRecord::Base.transaction do
+      command_bus.(Pricing::RemovePriceItem.new(params[:id], params[:product_id]))
+    end
     head :ok
   end
 
