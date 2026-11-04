@@ -21,8 +21,10 @@
 
 # Architecture
 
-- The current list of architectural components (bounded contexts, read models, processes) is defined in `config/architecture.yml` and loaded by the root `Archspec.rb`
-- Accepted architecture violations are generated in `archspec_todo.yml` with `make architecture-baseline`
+- The homegrown namespace checker uses `config/architecture.yml`; run it with `make architecture`
+- ArchSpec independently defines components and dependency rules in the root `Archspec.rb`; run it with `make archspec`
+- Review exceptions before running `make architecture-baseline` for YAML `known_violations`, or `make archspec-baseline` for root `archspec_todo.yml`
+- Run both architecture checks alongside `make test`; CI reports them separately and requires both before release
 
 # Process managers
 

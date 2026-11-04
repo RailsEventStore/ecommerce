@@ -23,6 +23,14 @@ class CiWorkflowTest < ActiveSupport::TestCase
     assert_includes(Array(workflow_config.dig("jobs", "release", "needs")), "test", "Release job must depend on 'test' job")
   end
 
+  def test_architecture_checks_run_independently_and_gate_release
+    %w[architecture archspec].each do |check|
+      assert_equal("make -C apps/rails_application #{check}", workflow_config.dig("jobs", check, "steps")&.last&.fetch("run"))
+      assert_nil(workflow_config.dig("jobs", check, "needs"))
+      assert_includes(workflow_config.dig("jobs", "release", "needs"), check)
+    end
+  end
+
   def test_release_job_only_runs_on_master
     assert(workflow_config.dig("jobs", "release", "if"), "Release job must have an 'if' condition")
     assert_match(/master/, workflow_config.dig("jobs", "release", "if"), "Release job must be conditional on master branch")

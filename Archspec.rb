@@ -1,9 +1,5 @@
-require "yaml"
-
 source "apps/*/{app,config,lib}/**/*.rb", "domains/*/lib/**/*.rb", "domains/configuration.rb", "infra/lib/**/*.rb"
 todo "archspec_todo.yml"
-
-architecture = YAML.safe_load_file(File.join(__dir__, "apps/rails_application/config/architecture.yml"))
 
 infra = component :infra, in: "infra/lib/**/*.rb"
 composition = component :composition, in: "domains/configuration.rb"
@@ -12,16 +8,28 @@ domains = each_directory("domains/*").map do |name, path|
   component :"domain_#{name}", in: "#{path}/lib/**/*.rb"
 end
 
-boundary_paths = { "read_models" => "read_model", "processes" => "process" }.flat_map do |section, type|
-  architecture.fetch(section).map do |definition|
-    paths = Array(definition.fetch("path"))
-    name = :"#{type}_#{File.basename(paths.first, ".rb")}"
-    [name, paths.map do |path|
-      rooted_path = File.join("apps/rails_application", path)
-      path.end_with?(".rb") ? rooted_path : "#{rooted_path}/**/*.rb"
-    end]
-  end
-end.to_h
+read_model_paths = each_directory("apps/rails_application/app/read_models/*").to_h do |name, path|
+  [:"read_model_#{name}", ["#{path}/**/*.rb"]]
+end
+
+process_paths = %w[
+  apply_time_promotion
+  confirm_order_on_payment_captured
+  invoice_generation
+  notify_payments_about_order_value
+  release_payment_on_order_expiration
+  reservation_process
+  shipment_process
+  sync_shipment_from_pricing
+  three_plus_one_free
+  total_order_value
+  welcome_message_process
+].to_h do |name|
+  [:"process_#{name}", ["apps/rails_application/app/processes/processes/#{name}.rb"]]
+end
+process_paths.fetch(:process_invoice_generation) << "apps/rails_application/app/processes/processes/invoices/**/*.rb"
+
+boundary_paths = read_model_paths.merge(process_paths)
 
 boundaries = boundary_paths.map do |name, paths|
   component name, in: paths
@@ -30,8 +38,11 @@ end
 apps = component :apps, in: "apps/*/{app,config,lib}/**/*.rb", except: boundary_paths.values.flatten
 
 domain_names = domains.map(&:name)
-bounded_context_names = architecture.fetch("bounded_contexts").map do |definition|
-  :"domain_#{File.basename(File.dirname(definition.fetch("path")))}"
+bounded_context_names = %w[
+  authentication communication crm fulfillment inventory invoicing ordering
+  payments pricing product_catalog shipping stores taxes todo
+].map do |name|
+  :"domain_#{name}"
 end
 boundary_names = boundaries.map(&:name)
 

@@ -4,6 +4,28 @@ on:
   pull_request:
     types: [opened, reopened]
 jobs:
+  architecture:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ruby-4.0.9
+          bundler-cache: true
+          working-directory: apps/rails_application
+      - name: Check namespace boundaries
+        run: make -C apps/rails_application architecture
+  archspec:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ruby-4.0.9
+          bundler-cache: true
+          working-directory: apps/rails_application
+      - name: Check component dependencies
+        run: make -C apps/rails_application archspec
   test:
     runs-on: ubuntu-24.04
     services:
@@ -59,7 +81,7 @@ jobs:
       fail-fast: false
     env:
       WORKING_DIRECTORY: apps/rails_application
-    needs: [ test ]
+    needs: [ test, architecture, archspec ]
     if: ${{ github.ref == 'refs/heads/master' }}
     steps:
       - name: Install Heroku CLI

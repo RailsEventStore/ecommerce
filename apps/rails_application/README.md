@@ -42,6 +42,30 @@ you need to update `DATABASE_URL`.
 - run `make test` to run unit and integration tests
 - run `make mutate` to perform mutation coverage
 
+### Architecture checks
+
+Run these independently from `apps/rails_application`:
+
+| Command | Configuration | Checks |
+| --- | --- | --- |
+| `make architecture` | `config/architecture.yml` | Homegrown namespace boundaries |
+| `make archspec` | Root `Archspec.rb` | ArchSpec component dependencies |
+
+ArchSpec uses its native Ruby DSL and does not load the homegrown checker's YAML.
+Read-model directories are discovered automatically; process files and the domains
+available to Rails boundaries are listed explicitly. Invoice generation owns its
+`processes/invoices` helpers. The checkers intentionally retain their different
+semantics: namespace prefixes versus indexed definitions and file ownership.
+
+After reviewing violations, `make architecture-baseline` updates the homegrown
+checker's `known_violations` in YAML; `make archspec-baseline` updates the root
+`archspec_todo.yml`. Neither command updates the other checker's exceptions.
+
+CI runs `architecture` and `archspec` as separate jobs, and both gate release.
+`make test` no longer invokes the ArchSpec CLI; the existing homegrown architecture
+test remains part of the Rails suite. Run both commands above as well as `make test`
+before submitting changes. Baselines are never regenerated automatically in CI.
+
 ## Resetting the demo database
 
 Deletes all demo data and reloads the deployed schema and seeds.
