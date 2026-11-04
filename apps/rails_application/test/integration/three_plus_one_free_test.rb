@@ -1,6 +1,8 @@
 require "test_helper"
 
 class ThreePlusOneFreeTest < InMemoryRESIntegrationTestCase
+  include ActionCable::TestHelper
+
   def setup
     super
     Rails.configuration.payment_gateway.call.reset
@@ -63,6 +65,53 @@ class ThreePlusOneFreeTest < InMemoryRESIntegrationTestCase
 
     post "/orders/#{order_id}/remove_item?product_id=#{product_id}"
     assert_no_promotion(order_id)
+  end
+
+  def test_versions_live_totals_and_initial_html_in_both_baskets
+    customer_id = register_customer("Shopify")
+    product_id = register_product("Product", 20, 10)
+    supply_product(product_id, 8)
+    login(customer_id)
+
+    %w[orders client_orders].each do |scope|
+      get "/#{scope}/new"
+      follow_redirect!
+      order_id = request.path.split("/")[2]
+      prefix = scope == "orders" ? "orders_order" : "client_orders"
+      stream = "#{prefix}_#{order_id}"
+      3.times { post "/#{scope}/#{order_id}/add_item?product_id=#{product_id}" }
+
+      added = capture_broadcasts(stream) { post "/#{scope}/#{order_id}/add_item?product_id=#{product_id}" }
+      get "/#{scope}/#{order_id}/edit"
+      assert_select("##{prefix}_#{order_id}_discounted_value", "$60.00")
+      assert_select("##{prefix}_#{order_id}_savings", "$20.00")
+      version = css_select("table[data-discounts-order='#{order_id}']").sole["data-discounts-version"]
+      assert_match(/\A\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{6}Z\z/, version)
+      {
+        "#{order_id}_discounted_value" => "$60.00",
+        "#{order_id}_savings" => "$20.00",
+        "#{order_id}_total_value" => "$80.00",
+        "#{product_id}_discounted_value" => "$60.00"
+      }.each do |target, value|
+        update = added.map { |message| Nokogiri::HTML5.fragment(message).at_css("turbo-stream") }
+          .select { |message| message["target"] == "#{prefix}_#{target}" }.last
+        assert_equal(value, update.at_css("template").text)
+        assert_equal(order_id, update["data-discounts-order"])
+        assert_equal(version, update["data-discounts-version"])
+      end
+
+      removed = capture_broadcasts(stream) { post "/#{scope}/#{order_id}/remove_item?product_id=#{product_id}" }
+      get "/#{scope}/#{order_id}/edit"
+      assert_select("##{prefix}_#{order_id}_discounted_value", "$60.00")
+      assert_select("##{prefix}_#{order_id}_savings", "$0.00")
+      assert_select("##{prefix}_#{order_id}_free_product_saving_row:empty")
+      removed_version = css_select("table[data-discounts-order='#{order_id}']").sole["data-discounts-version"]
+      assert_operator(removed_version, :>, version)
+      total_update = removed.map { |message| Nokogiri::HTML5.fragment(message).at_css("turbo-stream") }
+        .select { |message| message["target"] == "#{prefix}_#{order_id}_discounted_value" }.last
+      assert_equal("$60.00", total_update.at_css("template").text)
+      assert_equal(removed_version, total_update["data-discounts-version"])
+    end
   end
 
   def test_line_total_matches_invoice_when_discounted_units_require_rounding

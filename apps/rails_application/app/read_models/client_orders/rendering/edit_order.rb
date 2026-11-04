@@ -29,7 +29,7 @@ module ClientOrders
       private
 
       def products_table(order, products, order_lines, time_promotions)
-        table class: "w-full" do
+        table class: "w-full", "data-discounts-order": order.order_uid, "data-discounts-version": order.discounts_version do
           headers_row
           products_rows(order, products, order_lines)
           footer_rows(order, time_promotions)
@@ -41,7 +41,7 @@ module ClientOrders
           tr do
             th(class: "text-left py-2") { "Product" }
             th(class: "text-left py-2") { "" }
-            th(class: "text-left py-2") { "Quantity" }
+            th(class: "text-left py-2 pr-4") { "Quantity" }
             th(class: "text-left py-2") { "Unit price before discounts" }
             th(class: "text-left py-2") { "Line total before discounts" }
             th(class: "text-left py-2", colspan: 3) { "Line total after discounts" }

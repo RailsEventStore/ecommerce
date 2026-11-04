@@ -26,12 +26,12 @@
   <% end %>
 <% end %>
 
-<table class="w-full">
+<table class="w-full" data-discounts-order="<%= @order_id %>" data-discounts-version="<%= @order.discounts_version %>">
   <thead>
     <tr class="border-b">
       <th class="text-left py-2">Product</th>
-      <th class="text-left py-2">Stock</th>
-      <th class="text-left py-2">Quantity</th>
+      <th class="text-left py-2 pr-4">Stock</th>
+      <th class="text-left py-2 pr-4">Quantity</th>
       <th class="text-left py-2">Unit price before discounts</th>
       <th class="text-left py-2">Line total before discounts</th>
       <th class="text-left py-2" colspan="3">Line total after discounts</th>

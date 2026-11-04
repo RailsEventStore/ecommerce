@@ -46,6 +46,7 @@ archspec-baseline: ## Update accepted violations in archspec_todo.yml
 
 test: ## Run all tests
 	@echo "Running all tests..."
+	@node --test test/javascript/*_test.mjs
 	@BROWSERSLIST_IGNORE_OLD_DATA=1 bin/rails test
 
 help:

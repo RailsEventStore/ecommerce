@@ -24,7 +24,7 @@ module Orders
 
       attr_accessor :result
 
-      def call(stream_id, target_id, target, content)
+      def call(stream_id, target_id, target, content, version: nil)
         result << { stream_id: stream_id, target_id: target_id, target: target, content: content }
       end
     end

@@ -35,6 +35,7 @@ module ClientOrders
         turbo_stream_action_tag(
           action: "update",
           target: "client_orders_#{order_id}_total_value",
+          order_id: order_id,
           template: "$10.00"
         )
       )
@@ -43,6 +44,7 @@ module ClientOrders
         turbo_stream_action_tag(
           action: "update",
           target: "client_orders_#{order_id}_discounted_value",
+          order_id: order_id,
           template: "$0.00"
         )
       )
@@ -90,6 +92,7 @@ module ClientOrders
         turbo_stream_action_tag(
           action: "update",
           target: "client_orders_#{order_id}_free_product_saving_row",
+          order_id: order_id,
           template: ""
         )
       )
@@ -114,10 +117,10 @@ module ClientOrders
       assert_equal(110, ClientOrders.find_order(order_id).value_before_discounts)
       assert_equal(36.79.to_d, ClientOrders.find_order(order_id).savings)
       assert_broadcast_on("client_orders_#{order_id}", turbo_stream_action_tag(
-        action: "update", target: "client_orders_#{product_id}_discounted_value", template: "$51.11"
+        action: "update", target: "client_orders_#{product_id}_discounted_value", template: "$51.11", order_id: order_id
       ))
       assert_broadcast_on("client_orders_#{order_id}", turbo_stream_action_tag(
-        action: "update", target: "client_orders_#{order_id}_savings", template: "$36.79"
+        action: "update", target: "client_orders_#{order_id}_savings", template: "$36.79", order_id: order_id
       ))
 
       event_store.publish(Processes::TotalOrderValueUpdated.new(data: {
@@ -129,7 +132,7 @@ module ClientOrders
       assert_equal(27, ClientOrders.find_order(order_id).discounted_line_value(other_product_id))
       assert_equal(3, ClientOrders.find_order(order_id).savings)
       assert_broadcast_on("client_orders_#{order_id}", turbo_stream_action_tag(
-        action: "update", target: "client_orders_#{product_id}_discounted_value", template: "—"
+        action: "update", target: "client_orders_#{product_id}_discounted_value", template: "—", order_id: order_id
       ))
     end
 
@@ -140,6 +143,29 @@ module ClientOrders
       }))
       assert_equal("Draft", ClientOrders.find_order(order_id).state)
       assert_nil(ClientOrders.find_order(order_id).discounted_line_value(SecureRandom.uuid))
+    end
+
+    def test_exposes_save_time_while_still_accepting_equal_event_timestamps
+      order_id = SecureRandom.uuid
+      assert_nil(Order.new.discounts_version)
+      timestamp = Time.iso8601("2026-11-04T15:00:00.000000Z")
+
+      Time.use_zone("Warsaw") do
+        travel_to(Time.iso8601("2026-11-04T16:00:00.123456+01:00"), with_usec: true) do
+          event_store.publish(Processes::TotalOrderValueUpdated.new(
+            data: { order_id: order_id, total_amount: 80, discounted_amount: 60, items: [] },
+            metadata: { timestamp: timestamp }))
+        end
+        travel_to(Time.iso8601("2026-11-04T16:00:00.123457+01:00"), with_usec: true) do
+          event_store.publish(Processes::TotalOrderValueUpdated.new(
+            data: { order_id: order_id, total_amount: 80, discounted_amount: 54, items: [] },
+            metadata: { timestamp: timestamp }))
+        end
+
+        order = ClientOrders.find_order(order_id)
+        assert_equal("2026-11-04T15:00:00.123457Z", order.discounts_version)
+        assert_equal(54, order.discounted_value)
+      end
     end
 
     private
@@ -165,6 +191,7 @@ module ClientOrders
         turbo_stream_action_tag(
           action: "update",
           target: "client_orders_#{order_id}_free_product_saving_row",
+          order_id: order_id,
           template: %(<td class="py-2" colspan="5">3+1 — cheapest item free</td>\n<td class="py-2">-#{saving}</td>\n)
         )
       )
@@ -188,8 +215,9 @@ module ClientOrders
       Rails.configuration.event_store
     end
 
-    def turbo_stream_action_tag(action:, target:, template:)
-      "<turbo-stream action=\"#{action}\" target=\"#{target}\"><template>#{template}</template></turbo-stream>"
+    def turbo_stream_action_tag(action:, target:, template:, order_id:)
+      version = ClientOrders.find_order(order_id).updated_at.utc.iso8601(6)
+      "<turbo-stream data-discounts-order=\"#{order_id}\" data-discounts-version=\"#{version}\" action=\"#{action}\" target=\"#{target}\"><template>#{template}</template></turbo-stream>"
     end
   end
 end

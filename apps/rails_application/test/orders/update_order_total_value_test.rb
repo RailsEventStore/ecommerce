@@ -2,6 +2,7 @@ require "test_helper"
 
 module Orders
   class UpdateOrderTotalValueTest < InMemoryTestCase
+    include ActionCable::TestHelper
     cover "Orders*"
 
     def configure(event_store, _command_bus)
@@ -111,6 +112,51 @@ module Orders
         order_id: order_id, total_amount: 12, discounted_amount: 10
       }))
       assert_nil(Orders.find_order_in_store(order_id, store_id).discounted_line_value(SecureRandom.uuid))
+    end
+
+    def test_exposes_the_persisted_event_timestamp_without_changing_freshness_policy
+      order_id = SecureRandom.uuid
+      store_id = SecureRandom.uuid
+      draft_order_in_store(order_id, store_id)
+      assert_nil(Orders.find_order_in_store(order_id, store_id).discounts_version)
+
+      Time.use_zone("Warsaw") do
+        timestamp = Time.iso8601("2026-11-04T16:00:00.123456+01:00")
+        event_store.publish(Processes::TotalOrderValueUpdated.new(
+          data: { order_id: order_id, total_amount: 80, discounted_amount: 60, items: [] },
+          metadata: { timestamp: timestamp }))
+        event_store.publish(Processes::TotalOrderValueUpdated.new(
+          data: { order_id: order_id, total_amount: 80, discounted_amount: 54, items: [] },
+          metadata: { timestamp: timestamp }))
+
+        order = Orders.find_order_in_store(order_id, store_id)
+        assert_equal("2026-11-04T15:00:00.123456Z", order.discounts_version)
+        assert_equal(60, order.discounted_value)
+      end
+    end
+
+    def test_all_discount_stream_targets_share_the_persisted_snapshot_version
+      order_id = SecureRandom.uuid
+      product_id = SecureRandom.uuid
+      messages = capture_broadcasts("orders_order_#{order_id}") do
+        event_store.publish(Processes::TotalOrderValueUpdated.new(
+          data: { order_id: order_id, total_amount: 60, discounted_amount: 54,
+            free_product_id: product_id, free_product_saving: 20,
+            items: [{ product_id: product_id, quantity: 4, amount: 54 }] },
+          metadata: { timestamp: Time.iso8601("2026-11-04T15:00:00.123456Z") }))
+      end
+      updates = messages.map { |message| Nokogiri::HTML5.fragment(message).at_css("turbo-stream") }
+      assert_equal([
+        "orders_order_#{order_id}_total_value",
+        "orders_order_#{order_id}_savings",
+        "orders_order_#{order_id}_discounted_value",
+        "orders_order_#{order_id}_free_product_saving_row",
+        "orders_order_#{product_id}_discounted_value"
+      ].sort, updates.map { |update| update["target"] }.sort)
+      updates.each do |update|
+        assert_equal(order_id, update["data-discounts-order"])
+        assert_equal("2026-11-04T15:00:00.123456Z", update["data-discounts-version"])
+      end
     end
 
     private

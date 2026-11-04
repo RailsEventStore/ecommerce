@@ -13,12 +13,12 @@ module Orders
         order.total_value_updated_at = event.metadata.fetch(:timestamp)
         order.save!
 
-        broadcaster.call(order.uid, order.uid, "total_value", number_to_currency(order.value_before_discounts))
-        broadcaster.call(order.uid, order.uid, "savings", number_to_currency(order.savings))
-        broadcaster.call(order.uid, order.uid, "discounted_value", number_to_currency(order.discounted_value))
-        broadcaster.call(order.uid, order.uid, "free_product_saving_row", free_product_saving_row(order))
+        broadcaster.call(order.uid, order.uid, "total_value", number_to_currency(order.value_before_discounts), version: order.discounts_version)
+        broadcaster.call(order.uid, order.uid, "savings", number_to_currency(order.savings), version: order.discounts_version)
+        broadcaster.call(order.uid, order.uid, "discounted_value", number_to_currency(order.discounted_value), version: order.discounts_version)
+        broadcaster.call(order.uid, order.uid, "free_product_saving_row", free_product_saving_row(order), version: order.discounts_version)
         (order.discounted_line_values.keys | order.discounted_line_values_before_last_save.keys).each do |product_id|
-          broadcaster.call(order.uid, product_id, "discounted_value", number_to_currency(order.discounted_line_value(product_id)) || "—")
+          broadcaster.call(order.uid, product_id, "discounted_value", number_to_currency(order.discounted_line_value(product_id)) || "—", version: order.discounts_version)
         end
       end
 

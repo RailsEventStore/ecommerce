@@ -14,6 +14,10 @@ module Orders
       value_before_discounts - discounted_value.to_d
     end
 
+    def discounts_version
+      total_value_updated_at&.utc&.iso8601(6)
+    end
+
     has_many :order_lines,
              -> { order(id: :asc) },
              class_name: "Orders::OrderLine",
