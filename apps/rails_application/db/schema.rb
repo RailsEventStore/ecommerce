@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_31_121258) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_04_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -88,6 +88,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_31_121258) do
     t.jsonb "time_promotion_discount"
     t.decimal "total_value", precision: 8, scale: 2
     t.datetime "updated_at", null: false
+    t.jsonb "discounted_line_values", default: {}, null: false
   end
 
   create_table "client_orders_time_promotions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -258,6 +259,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_31_121258) do
     t.decimal "total_value", precision: 8, scale: 2
     t.datetime "total_value_updated_at"
     t.uuid "uid", null: false
+    t.jsonb "discounted_line_values", default: {}, null: false
     t.index ["uid"], name: "index_orders_on_uid", unique: true
   end
 

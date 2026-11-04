@@ -6,6 +6,7 @@ module ClientOrders
     cover "ClientOrders*"
 
     def configure(event_store, _command_bus)
+      event_store.subscribe(OrderHandlers::DraftOrder.new, to: [Pricing::OfferDrafted])
       event_store.subscribe(
         OrderHandlers::UpdateOrderTotalValue.new,
         to: [Processes::TotalOrderValueUpdated]
@@ -16,7 +17,6 @@ module ClientOrders
       customer_id = SecureRandom.uuid
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
-      draft_order(order_id)
       customer_registered(customer_id)
       prepare_product(product_id)
 
@@ -95,6 +95,53 @@ module ClientOrders
       )
     end
 
+    def test_projects_line_totals_without_order_lines_and_clears_removed_products
+      order_id = SecureRandom.uuid
+      product_id = SecureRandom.uuid
+      other_product_id = SecureRandom.uuid
+      draft_order(order_id)
+      assert_equal(0, ClientOrders.find_order(order_id).value_before_discounts)
+      assert_equal(0, ClientOrders.find_order(order_id).savings)
+      event_store.publish(Processes::TotalOrderValueUpdated.new(data: {
+        order_id: order_id, total_amount: 90, discounted_amount: 73.21,
+        free_product_id: product_id, free_product_saving: 20,
+        items: [{ product_id: product_id, quantity: 4, amount: 51.11 },
+                { product_id: other_product_id, quantity: 1, amount: 22.10 }]
+      }))
+
+      assert_equal(51.11.to_d, ClientOrders.find_order(order_id).discounted_line_value(product_id))
+      assert_equal(22.10.to_d, ClientOrders.find_order(order_id).discounted_line_value(other_product_id))
+      assert_equal(110, ClientOrders.find_order(order_id).value_before_discounts)
+      assert_equal(36.79.to_d, ClientOrders.find_order(order_id).savings)
+      assert_broadcast_on("client_orders_#{order_id}", turbo_stream_action_tag(
+        action: "update", target: "client_orders_#{product_id}_discounted_value", template: "$51.11"
+      ))
+      assert_broadcast_on("client_orders_#{order_id}", turbo_stream_action_tag(
+        action: "update", target: "client_orders_#{order_id}_savings", template: "$36.79"
+      ))
+
+      event_store.publish(Processes::TotalOrderValueUpdated.new(data: {
+        order_id: order_id, total_amount: 30, discounted_amount: 27,
+        items: [{ product_id: other_product_id, quantity: 1, amount: 27 }]
+      }))
+
+      assert_nil(ClientOrders.find_order(order_id).discounted_line_value(product_id))
+      assert_equal(27, ClientOrders.find_order(order_id).discounted_line_value(other_product_id))
+      assert_equal(3, ClientOrders.find_order(order_id).savings)
+      assert_broadcast_on("client_orders_#{order_id}", turbo_stream_action_tag(
+        action: "update", target: "client_orders_#{product_id}_discounted_value", template: "—"
+      ))
+    end
+
+    def test_accepts_legacy_totals_without_items
+      order_id = SecureRandom.uuid
+      event_store.publish(Processes::TotalOrderValueUpdated.new(data: {
+        order_id: order_id, total_amount: 12, discounted_amount: 10
+      }))
+      assert_equal("Draft", ClientOrders.find_order(order_id).state)
+      assert_nil(ClientOrders.find_order(order_id).discounted_line_value(SecureRandom.uuid))
+    end
+
     private
 
     def draft_order(order_id)
@@ -118,7 +165,7 @@ module ClientOrders
         turbo_stream_action_tag(
           action: "update",
           target: "client_orders_#{order_id}_free_product_saving_row",
-          template: %(<td class="py-2" colspan="4">3+1 — cheapest item free</td>\n<td class="py-2">-#{saving}</td>\n)
+          template: %(<td class="py-2" colspan="5">3+1 — cheapest item free</td>\n<td class="py-2">-#{saving}</td>\n)
         )
       )
     end

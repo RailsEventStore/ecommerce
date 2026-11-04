@@ -32,8 +32,9 @@
       <th class="text-left py-2">Product</th>
       <th class="text-left py-2">Stock</th>
       <th class="text-left py-2">Quantity</th>
-      <th class="text-left py-2">Price</th>
-      <th class="text-left py-2" colspan="3">Value</th>
+      <th class="text-left py-2">Unit price before discounts</th>
+      <th class="text-left py-2">Line total before discounts</th>
+      <th class="text-left py-2" colspan="3">Line total after discounts</th>
     </tr>
   </thead>
 
@@ -48,6 +49,7 @@
       <td class="py-2" id="<%= "orders_order_#{product.id}_quantity" %>"><%= order_line.try(&:quantity) || 0 %></td>
       <td class="py-2"><%= number_to_currency(product.price) %></td>
       <td class="py-2" id="<%= "orders_order_#{product.id}_value" %>"><%= number_to_currency(order_line.try(&:value)) %></td>
+      <td class="py-2 font-bold" id="<%= "orders_order_#{product.id}_discounted_value" %>"><%= number_to_currency(@order.discounted_line_value(product.id)) || "—" %></td>
       <td class="py-2"><%= button_to "Add", add_item_order_path(id: @order_id, product_id: product.id), class: "hover:underline text-blue-500" %></td>
       <% if order_line.nil? %>
         <td class="py-2 text-right" id="<%= "orders_order_#{product.id}_remove_item_button" %>"></td>
@@ -58,16 +60,14 @@
   <% end %>
   </tbody>
   <tfoot class="border-t-4">
-    <tr class="border-t" id="<%= "orders_order_#{@order_id}_free_product_saving_row" %>"><%= render("free_product_saving", saving: number_to_currency(@order.free_product_saving)) if @order.free_product_id %></tr>
-    <% if discounted_value != total_value %>
-      <tr class="border-t">
-        <td class="py-2" colspan="3">Before discounts</td>
-        <td class="py-2" id="<%= "orders_order_#{@order_id}_total_value" %>"><%= number_to_currency(total_value) %></td>
-      </tr>
-    <% end %>
+    <tr class="border-t">
+      <td class="py-2" colspan="5">Before discounts</td>
+      <td class="py-2" id="<%= "orders_order_#{@order_id}_total_value" %>"><%= number_to_currency(@order.value_before_discounts) %></td>
+    </tr>
+    <tr class="border-t" id="<%= "orders_order_#{@order_id}_free_product_saving_row" %>"><%= render("free_product_saving", saving: number_to_currency(@order.free_product_saving), colspan: 5) if @order.free_product_id %></tr>
     <% if percentage_discount %>
       <tr class="border-t">
-        <td class="py-2" colspan="3">General discount</td>
+        <td class="py-2" colspan="5">General discount</td>
         <td class="py-2" id="<%= "orders_order_#{@order_id}_percentage_discount" %>"><%= percentage_discount %>%</td>
         <td class="py-2 text-right" colspan="2"><%= button_to "Remove", remove_discount_order_path(id: @order_id), {method: :post, class: "hover:underline text-blue-500"} %></td>
       </tr>
@@ -75,17 +75,22 @@
     <% if @time_promotions.present? %>
       <% @time_promotions.each do |time_promotion| %>
         <tr class="border-t">
-          <td class="py-2" colspan="3">Promotion: <%= time_promotion.label %> (if you buy before <%= time_promotion.end_time %>)</td>
+          <td class="py-2" colspan="5">Promotion: <%= time_promotion.label %> (if you buy before <%= time_promotion.end_time %>)</td>
           <td class="py-2"><%= time_promotion.discount %>%</td>
         </tr>
       <% end %>
     <% end %>
     <tr class="border-t">
-      <td class="py-2" colspan="3">Total</td>
+      <td class="py-2" colspan="5">You save</td>
+      <td class="py-2" id="<%= "orders_order_#{@order_id}_savings" %>"><%= number_to_currency(@order.savings) %></td>
+    </tr>
+    <tr class="border-t">
+      <td class="py-2" colspan="5">Total</td>
       <td class="py-2 font-bold" id="<%= "orders_order_#{@order_id}_discounted_value" %>"><%= number_to_currency(discounted_value) %></td>
     </tr>
   </tfoot>
 </table>
+<p class="mt-4 text-sm">Final line totals include all discounts. Percentage discounts apply after 3+1. On invoices, discounts are distributed across unit prices.</p>
 
 <%= form_tag(submit_order_path(@order_id), method: "post", id: "form") do %>
 

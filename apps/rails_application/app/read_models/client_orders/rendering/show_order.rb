@@ -23,6 +23,7 @@ module ClientOrders
             end
 
             order_table(order_lines, order)
+            para(class: "mt-4 text-sm") { "Final line totals include all discounts. Percentage discounts apply after 3+1. On invoices, discounts are distributed across unit prices." }
           end
         end
       end
@@ -47,7 +48,7 @@ module ClientOrders
           headers_row
           tbody do
             order_lines.each do |item|
-              item_row(item)
+              item_row(item, order)
             end
           end
           footer_rows(order)
@@ -57,64 +58,73 @@ module ClientOrders
       def headers_row
         thead do
           tr do
-            %w[Product Quantity Price Value].each do |header|
+            ["Product", "Quantity", "Unit price before discounts", "Line total before discounts", "Line total after discounts"].each do |header|
               th(class: "text-left py-2") { header }
             end
           end
         end
       end
 
-      def item_row(item)
+      def item_row(item, order)
         tr class: "border-t" do
           td(class: "py-2") { item.product_name }
           td(class: "py-2") { item.product_quantity }
           td(class: "py-2") { number_to_currency(item.product_price) }
           td(class: "py-2 text-right") { number_to_currency(item.value) }
+          td(class: "py-2 text-right font-bold") { number_to_currency(order.discounted_line_value(item.product_id)) || "—" }
         end
       end
 
       def footer_rows(order)
         tfoot class: "border-t-4" do
+          before_discounts_row(order)
           free_product_saving_row(order) if order.free_product_id
-          before_discounts_row(order) if order.discounted_value != order.total_value
           general_discount_row(order) if order.percentage_discount
           time_promotion_row(order) if order.time_promotion_discount
+          savings_row(order)
           total_row(order)
         end
       end
 
       def free_product_saving_row(order)
         tr class: "border-t" do
-          td(class: "py-2", colspan: 3) { "3+1 — cheapest item free" }
+          td(class: "py-2", colspan: 4) { "3+1 — cheapest item free" }
           td(class: "py-2 text-right") { "-#{number_to_currency(order.free_product_saving)}" }
         end
       end
 
       def before_discounts_row(order)
         tr class: "border-t" do
-          td(class: "py-2", colspan: 3) { "Before discounts" }
-          td(class: "py-2 text-right", id: "before-discounts-value") { number_to_currency(order.total_value) }
+          td(class: "py-2", colspan: 4) { "Before discounts" }
+          td(class: "py-2 text-right", id: "before-discounts-value") { number_to_currency(order.value_before_discounts) }
         end
       end
 
       def general_discount_row(order)
         tr class: "border-t" do
-          td(class: "py-2", colspan: 3) { "General discount" }
+          td(class: "py-2", colspan: 4) { "General discount" }
           td(class: "py-2 text-right") { "#{order.percentage_discount}%" }
         end
       end
 
       def time_promotion_row(order)
         tr class: "border-t" do
-          td(class: "py-2", colspan: 3) { "Time promotion discount" }
+          td(class: "py-2", colspan: 4) { "Time promotion discount" }
           td(class: "py-2 text-right") { "#{order.time_promotion_discount["discount_value"]}%" }
         end
       end
 
       def total_row(order)
         tr class: "border-t" do
-          td(class: "py-2", colspan: 3) { "Total" }
+          td(class: "py-2", colspan: 4) { "Total" }
           td(class: "py-2 text-right font-bold") { number_to_currency(order.discounted_value) }
+        end
+      end
+
+      def savings_row(order)
+        tr class: "border-t" do
+          td(class: "py-2", colspan: 4) { "You save" }
+          td(class: "py-2 text-right") { number_to_currency(order.savings) }
         end
       end
     end

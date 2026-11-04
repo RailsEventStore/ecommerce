@@ -142,14 +142,25 @@ class ClientOrdersTest < InMemoryRESIntegrationTestCase
     order_id = create_client_order
 
     4.times { as_client_add_item_to_basket_for_order(product_id, order_id) }
+    register_coupon("Ten percent", "ten", 10)
+    as_client_use_coupon(order_id, "ten")
+    get "/client_orders/#{order_id}/edit"
+    assert_select("tbody tr", text: /Product/) do
+      assert_select("td", "$80.00")
+      assert_select("td", "$54.00")
+    end
+    assert_select("tfoot tr", text: /You save/) { assert_select("td", "$26.00") }
     as_client_submit_order_for_customer(order_id)
 
     assert_select("tfoot tr", text: /3\+1 — cheapest item free/) do
       assert_select("td", "-$20.00")
     end
     assert_select("tfoot tr", text: /Total/) do
-      assert_select("td", "$60.00")
+      assert_select("td", "$54.00")
     end
+    assert_select("tbody tr", text: /Product/) { assert_select("td", "$54.00") }
+    assert_select("tfoot tr", text: /Before discounts/) { assert_select("td", "$80.00") }
+    assert_select("tfoot tr", text: /You save/) { assert_select("td", "$26.00") }
   end
 
   def test_adding_product_which_is_not_available_anymore

@@ -80,8 +80,9 @@
     <tr>
       <th class="text-left py-2">Product</th>
       <th class="text-left py-2">Quantity</th>
-      <th class="text-left py-2">Price</th>
-      <th class="text-right py-2">Value</th>
+      <th class="text-left py-2">Unit price before discounts</th>
+      <th class="text-right py-2">Line total before discounts</th>
+      <th class="text-right py-2">Line total after discounts</th>
     </tr>
   </thead>
 
@@ -92,35 +93,39 @@
       <td class="py-2"><%= item.quantity %></td>
       <td class="py-2"><%= number_to_currency(item.price) %></td>
       <td class="py-2 text-right"><%= number_to_currency(item.value) %></td>
+      <td class="py-2 text-right font-bold"><%= number_to_currency(@order.discounted_line_value(item.product_id)) || "—" %></td>
     </tr>
   <% end %>
   </tbody>
   <tfoot class="border-t-4">
+    <tr class="border-t">
+      <td class="py-2" colspan="4">Before discounts</td>
+      <td class="py-2 text-right" id="before-discounts-value"><%= number_to_currency(@order.value_before_discounts) %></td>
+    </tr>
     <% if @order.free_product_id %>
-      <tr class="border-t"><%= render("free_product_saving", saving: number_to_currency(@order.free_product_saving)) %></tr>
-    <% end %>
-    <% if @order.discounted_value != @order.total_value %>
-      <tr class="border-t">
-        <td class="py-2" colspan="3">Before discounts</td>
-        <td class="py-2 text-right" id="before-discounts-value"><%= number_to_currency(@order.total_value) %></td>
-      </tr>
+      <tr class="border-t"><%= render("free_product_saving", saving: number_to_currency(@order.free_product_saving), colspan: 4) %></tr>
     <% end %>
     <% if @order.percentage_discount %>
     <tr class="border-t">
-      <td class="py-2" colspan="3">General discount</td>
+      <td class="py-2" colspan="4">General discount</td>
       <td class="py-2 text-right"><%= @order.percentage_discount %>%</td>
     </tr>
     <% end %>
     <% if @order.time_promotion_discount_value %>
     <tr class="border-t">
-      <td class="py-2" colspan="3">Time Promotion discount</td>
+      <td class="py-2" colspan="4">Time Promotion discount</td>
       <td class="py-2 text-right"><%= @order.time_promotion_discount_value %>%</td>
     </tr>
     <% end %>
 
     <tr class="border-t">
-      <td class="py-2" colspan="3">Total</td>
+      <td class="py-2" colspan="4">You save</td>
+      <td class="py-2 text-right"><%= number_to_currency(@order.savings) %></td>
+    </tr>
+    <tr class="border-t">
+      <td class="py-2" colspan="4">Total</td>
       <td class="py-2 text-right font-bold"><%= number_to_currency(@order.discounted_value) %></td>
     </tr>
   </tfoot>
 </table>
+<p class="mt-4 text-sm">Final line totals include all discounts. Percentage discounts apply after 3+1. On invoices, discounts are distributed across unit prices.</p>

@@ -50,19 +50,24 @@ module ClientOrders
         order.total_value = event.data.fetch(:total_amount)
         order.free_product_id = event.data.fetch(:free_product_id, nil)
         order.free_product_saving = event.data.fetch(:free_product_saving, 0)
+        order.discounted_line_values = event.data.fetch(:items, nil).to_h { |item| [item.fetch(:product_id), item.fetch(:amount)] }
         order.save!
 
-        broadcast_update(order.order_uid, "total_value", number_to_currency(order.total_value))
+        broadcast_update(order.order_uid, "total_value", number_to_currency(order.value_before_discounts))
+        broadcast_update(order.order_uid, "savings", number_to_currency(order.savings))
         broadcast_update(order.order_uid, "discounted_value", number_to_currency(order.discounted_value))
         broadcast_update(order.order_uid, "free_product_saving_row", free_product_saving_row(order))
+        (order.discounted_line_values.keys | order.discounted_line_values_before_last_save.keys).each do |product_id|
+          broadcast_update(product_id, "discounted_value", number_to_currency(order.discounted_line_value(product_id)) || "—", order.order_uid)
+        end
       end
 
       private
 
-      def broadcast_update(order_id, target, content)
+      def broadcast_update(target_id, target, content, order_id = target_id)
         Turbo::StreamsChannel.broadcast_update_to(
           "client_orders_#{order_id}",
-          target: "client_orders_#{order_id}_#{target}",
+          target: "client_orders_#{target_id}_#{target}",
           html: content)
       end
 

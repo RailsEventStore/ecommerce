@@ -72,6 +72,47 @@ module Orders
       assert event_store.event_in_stream?(event.event_id, "Orders$all")
     end
 
+    def test_projects_line_totals_without_order_lines_and_replaces_the_snapshot
+      order_id = SecureRandom.uuid
+      store_id = SecureRandom.uuid
+      product_id = SecureRandom.uuid
+      other_product_id = SecureRandom.uuid
+      draft_order_in_store(order_id, store_id)
+
+      assert_equal(0, Orders.find_order_in_store(order_id, store_id).value_before_discounts)
+      assert_equal(0, Orders.find_order_in_store(order_id, store_id).savings)
+      event_store.publish(Processes::TotalOrderValueUpdated.new(data: {
+        order_id: order_id, total_amount: 90, discounted_amount: 73.21,
+        free_product_id: product_id, free_product_saving: 20,
+        items: [{ product_id: product_id, quantity: 4, amount: 51.11 },
+                { product_id: other_product_id, quantity: 1, amount: 22.10 }]
+      }))
+
+      assert_equal(51.11.to_d, Orders.find_order_in_store(order_id, store_id).discounted_line_value(product_id))
+      assert_equal(22.10.to_d, Orders.find_order_in_store(order_id, store_id).discounted_line_value(other_product_id))
+      assert_equal(110, Orders.find_order_in_store(order_id, store_id).value_before_discounts)
+      assert_equal(36.79.to_d, Orders.find_order_in_store(order_id, store_id).savings)
+
+      event_store.publish(Processes::TotalOrderValueUpdated.new(data: {
+        order_id: order_id, total_amount: 30, discounted_amount: 27,
+        items: [{ product_id: other_product_id, quantity: 1, amount: 27 }]
+      }))
+
+      assert_nil(Orders.find_order_in_store(order_id, store_id).discounted_line_value(product_id))
+      assert_equal(27, Orders.find_order_in_store(order_id, store_id).discounted_line_value(other_product_id))
+      assert_equal(3, Orders.find_order_in_store(order_id, store_id).savings)
+    end
+
+    def test_accepts_legacy_totals_without_items
+      order_id = SecureRandom.uuid
+      store_id = SecureRandom.uuid
+      draft_order_in_store(order_id, store_id)
+      event_store.publish(Processes::TotalOrderValueUpdated.new(data: {
+        order_id: order_id, total_amount: 12, discounted_amount: 10
+      }))
+      assert_nil(Orders.find_order_in_store(order_id, store_id).discounted_line_value(SecureRandom.uuid))
+    end
+
     private
 
     def total_order_value_updated(order_id)

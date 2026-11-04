@@ -195,8 +195,10 @@ module Orders
         )
       )
 
-      assert_equal 3, in_memory_broadcast.result.size
+      assert_equal(5, in_memory_broadcast.result.size)
       [
+        { stream_id: order_id, target_id: product_id, target: "discounted_value", content: "$30.00" },
+        { stream_id: order_id, target_id: order_id, target: "savings", content: "$0.00" },
         { :stream_id => order_id, :target_id => order_id, :target => "total_value", :content => "$30.00" },
         { :stream_id => order_id, :target_id => order_id, :target => "discounted_value", :content => "$30.00" },
         { :stream_id => order_id, :target_id => order_id, :target => "free_product_saving_row", :content => "" }
@@ -311,12 +313,28 @@ module Orders
         )
       )
 
-      assert_equal 4, in_memory_broadcast.result.size
+      assert_equal(6, in_memory_broadcast.result.size)
       [
         { :stream_id => order_id, :target_id => order_id, :target => "percentage_discount", :content => 30 },
       ].each do |expected_broadcast|
         assert_includes in_memory_broadcast.result, expected_broadcast
       end
+    end
+
+    def test_broadcast_clears_removed_line_totals
+      order_id = SecureRandom.uuid
+      product_id = SecureRandom.uuid
+      Rails.configuration.event_store.publish(Processes::TotalOrderValueUpdated.new(data: {
+        order_id: order_id, total_amount: 20, discounted_amount: 18,
+        items: [{ product_id: product_id, quantity: 1, amount: 18 }]
+      }))
+      in_memory_broadcast.result.clear
+      Rails.configuration.event_store.publish(Processes::TotalOrderValueUpdated.new(data: {
+        order_id: order_id, total_amount: 0, discounted_amount: 0, items: []
+      }))
+      assert_includes(in_memory_broadcast.result, {
+        stream_id: order_id, target_id: product_id, target: "discounted_value", content: "—"
+      })
     end
 
     private
@@ -337,7 +355,7 @@ module Orders
         stream_id: order_id,
         target_id: order_id,
         target: "free_product_saving_row",
-        content: %(<td class="py-2" colspan="3">3+1 — cheapest item free</td><td class="py-2">-#{saving}</td>)
+        content: %(<td class="py-2" colspan="5">3+1 — cheapest item free</td><td class="py-2">-#{saving}</td>)
       }
     end
 

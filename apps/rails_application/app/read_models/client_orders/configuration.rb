@@ -20,6 +20,18 @@ module ClientOrders
   class Order < ApplicationRecord
     self.table_name = "client_orders"
 
+    def discounted_line_value(product_id)
+      discounted_line_values.fetch(product_id, nil)&.to_d
+    end
+
+    def value_before_discounts
+      total_value.to_d + free_product_saving
+    end
+
+    def savings
+      value_before_discounts - discounted_value.to_d
+    end
+
     has_many :order_lines,
              -> { order(id: :asc) },
              class_name: "ClientOrders::OrderLine",

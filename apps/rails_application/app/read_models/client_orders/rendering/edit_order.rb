@@ -20,6 +20,7 @@ module ClientOrders
         super(attributes)
         div do
           products_table(order, products, order_lines, time_promotions)
+          para(class: "mt-4 text-sm") { "Final line totals include all discounts. Percentage discounts apply after 3+1. On invoices, discounts are distributed across unit prices." }
           coupon_form(order)
           submit_form(order)
         end
@@ -41,8 +42,9 @@ module ClientOrders
             th(class: "text-left py-2") { "Product" }
             th(class: "text-left py-2") { "" }
             th(class: "text-left py-2") { "Quantity" }
-            th(class: "text-left py-2") { "Price" }
-            th(class: "text-left py-2", colspan: 3) { "Value" }
+            th(class: "text-left py-2") { "Unit price before discounts" }
+            th(class: "text-left py-2") { "Line total before discounts" }
+            th(class: "text-left py-2", colspan: 3) { "Line total after discounts" }
           end
         end
       end
@@ -64,6 +66,7 @@ module ClientOrders
           td(class: "py-2", id: "client_orders_#{product.uid}_product_quantity") { order_line.try(&:product_quantity) || 0 }
           td(class: "py-2") { number_to_currency(product.price) }
           td(class: "py-2", id: "client_orders_#{product.uid}_value") { number_to_currency(order_line.try(&:value)) || "$0.00" }
+          td(class: "py-2 font-bold", id: "client_orders_#{product.uid}_discounted_value") { number_to_currency(order.discounted_line_value(product.uid)) || "—" }
           td(class: "py-2 text-right") { add_item_button(order.order_uid, product.uid) }
           td(class: "py-2 text-right", id: "client_orders_#{product.uid}_remove_item_button") { remove_item_button(order, product.uid) if order_line }
         end
@@ -71,10 +74,11 @@ module ClientOrders
 
       def footer_rows(order, time_promotions)
         tfoot class:"border-t-4" do
+          before_discounts_row(order)
           free_product_saving_row(order)
-          before_discounts_row(order) if order.percentage_discount || time_promotions.any?
           coupon_discount_row(order) if order.percentage_discount
           time_promotions_rows(time_promotions)
+          savings_row(order)
           total_row(order)
         end
       end
@@ -99,14 +103,14 @@ module ClientOrders
 
       def before_discounts_row(order)
         tr(class: "border-t") do
-          td(class: "py-2", colspan: 4) { "Before discounts" }
-          td(class: "py-2", id: "client_orders_#{order.order_uid}_total_value") { number_to_currency(order.total_value) }
+          td(class: "py-2", colspan: 5) { "Before discounts" }
+          td(class: "py-2", id: "client_orders_#{order.order_uid}_total_value") { number_to_currency(order.value_before_discounts) }
         end
       end
 
       def coupon_discount_row(order)
         tr(class: "border-t") do
-          td(class: "py-2", colspan: 4) { "Coupon discount" }
+          td(class: "py-2", colspan: 5) { "Coupon discount" }
           td(class: "py-2", id: "client_orders_#{order.order_uid}_percentage_discount") { "#{order.percentage_discount}%" }
         end
       end
@@ -114,7 +118,7 @@ module ClientOrders
       def time_promotions_rows(time_promotions)
         time_promotions.each do |time_promotion|
           tr(class: "border-t") do
-            td(class: "py-2", colspan: 4) { "Promotion: #{time_promotion.label} (if you buy before #{time_promotion.end_time})"}
+            td(class: "py-2", colspan: 5) { "Promotion: #{time_promotion.label} (if you buy before #{time_promotion.end_time})"}
             td(class: "py-2") { "#{time_promotion.discount}%" }
           end
         end
@@ -122,8 +126,15 @@ module ClientOrders
 
       def total_row(order)
         tr(class: "border-t") do
-          td(class: "py-2", colspan: 4) { "Total" }
+          td(class: "py-2", colspan: 5) { "Total" }
           td(class: "py-2 font-bold", id: "client_orders_#{order.order_uid}_discounted_value") { number_to_currency(order.discounted_value) }
+        end
+      end
+
+      def savings_row(order)
+        tr(class: "border-t") do
+          td(class: "py-2", colspan: 5) { "You save" }
+          td(class: "py-2", id: "client_orders_#{order.order_uid}_savings") { number_to_currency(order.savings) }
         end
       end
 
