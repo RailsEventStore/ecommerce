@@ -58,7 +58,6 @@ module Orders
           data: {
             order_id: order_id,
             product_id: product_id,
-            base_price: 20,
             price: 20,
             base_total_value: 20,
             total_value: 20,
@@ -99,7 +98,6 @@ module Orders
           data: {
             order_id: order_id,
             product_id: product_id,
-            base_price: 20,
             price: 20,
             base_total_value: 20,
             total_value: 20,
@@ -113,7 +111,6 @@ module Orders
           data: {
             order_id: order_id,
             product_id: product_id,
-            base_price: 20,
             price: 20,
             base_total_value: 0,
             total_value: 0,
@@ -156,7 +153,6 @@ module Orders
           data: {
             order_id: order_id,
             product_id: product_id,
-            base_price: 20,
             price: 20,
             base_total_value: 20,
             total_value: 20,
@@ -168,7 +164,6 @@ module Orders
           data: {
             order_id: order_1_id,
             product_id: product_id,
-            base_price: 20,
             price: 20,
             base_total_value: 40,
             total_value: 40,
@@ -266,7 +261,6 @@ module Orders
           data: {
             order_id: order_id,
             product_id: product_id,
-            base_price: 20,
             price: 20,
             base_total_value: 20,
             total_value: 20,
@@ -278,7 +272,6 @@ module Orders
           data: {
             order_id: order_1_id,
             product_id: product_id,
-            base_price: 20,
             price: 20,
             base_total_value: 40,
             total_value: 40,

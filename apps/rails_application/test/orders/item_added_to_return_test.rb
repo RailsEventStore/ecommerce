@@ -58,7 +58,6 @@ module Returns
           data: {
             order_id: order_id,
             product_id: product_id,
-            base_price: price,
             price: price,
             base_total_value: price,
             total_value: price

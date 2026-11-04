@@ -69,6 +69,12 @@ module Pricing
         assert_equal(100, NoPercentageDiscount.new.apply(100))
       end
 
+      def test_can_add_another_discount
+        combined = NoPercentageDiscount.new.add(PercentageDiscount.new(25))
+
+        assert_equal(60, combined.apply(80))
+      end
+
       def test_exists_returns_nil
         discount = NoPercentageDiscount.new
         assert_nil(discount.exists?)

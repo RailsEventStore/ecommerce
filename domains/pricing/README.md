@@ -12,6 +12,17 @@ After each successful action an appropriate event is published in the Coupon str
 |:---------------:|:-----:|:----------------------|
 | RegisterCoupon  | CouponRegistered | OnCouponRegister |
 
+## Captured item prices
+
+Commands are unchanged. Item events now contain only `price`, the captured unit
+price before offer discounts. Items do not recalculate their prices when offer
+discounts change. Removal chooses the cheapest captured unit price, even when the
+offer has a 100% discount. Historical item payloads are not supported; no
+compatibility adapters or migrations are provided.
+
+The Rails total-value process applies discounts to the basket separately and sends
+discounted product totals to invoicing.
+
 #### Up and running
 
 ```

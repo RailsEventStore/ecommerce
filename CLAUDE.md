@@ -19,6 +19,12 @@
 
 - Process managers are tested via asserting that specific commands are issued, when certain events input is given
 
+# Read models
+
+- Build and update projections in event handlers. Query methods read projected state; never replay events or load aggregates to complete a query.
+- When a query needs additional domain data, subscribe to the relevant events and persist that data within the read model.
+- Test this boundary by feeding the projection events and verifying that its queries work without event-store reads or knowledge of aggregate stream names.
+
 # Other
 
 - Even though the project is event-driven, it's never async. All calls are synchronous, so no need to think about concurrency.

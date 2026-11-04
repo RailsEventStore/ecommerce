@@ -61,7 +61,6 @@ module Processes
       event_3 = Pricing::PriceItemRemoved.new(data: {
         order_id: order_id,
         product_id: product_id,
-        base_price: 100,
         price: 100,
         base_total_value: 100,
         total_value: 100
@@ -126,7 +125,6 @@ module Processes
       event_3 = Pricing::PriceItemRemoved.new(data: {
         order_id: order_id,
         product_id: product_id_1,
-        base_price: 100,
         price: 100,
         base_total_value: 100,
         total_value: 100
@@ -746,7 +744,6 @@ module Processes
         order_id: order_id,
         price: price,
         product_id: product_id,
-        base_price: price,
         base_total_value: price,
         total_value: price
       })

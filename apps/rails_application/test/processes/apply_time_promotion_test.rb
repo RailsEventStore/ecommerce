@@ -82,7 +82,6 @@ module Processes
       Pricing::PriceItemAdded.new(data: {
         order_id: order_id,
         product_id: SecureRandom.uuid,
-        base_price: 100,
         price: 100
       })
     end

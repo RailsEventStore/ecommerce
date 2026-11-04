@@ -30,7 +30,6 @@ module ClientOrders
           data: {
             order_id: order_id,
             product_id: product_id,
-            base_price: 30,
             price: 30,
             base_total_value: 30,
             total_value: 30,

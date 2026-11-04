@@ -92,7 +92,6 @@ module ClientOrders
         data: {
           order_id: order_id,
           product_id: product_id,
-          base_price: 50,
           price: 50
         }
       ))

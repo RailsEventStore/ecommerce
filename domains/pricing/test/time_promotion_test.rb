@@ -47,7 +47,7 @@ module Pricing
     cover "Pricing::Offer*"
     cover "Pricing::TimePromotion*"
 
-    def test_calculates_total_value_with_time_promotion
+    def test_time_promotion_does_not_change_captured_item_price
       order_id = SecureRandom.uuid
       product_1_id = SecureRandom.uuid
       set_price(product_1_id, 20)
@@ -65,8 +65,7 @@ module Pricing
           data: {
             order_id: order_id,
             product_id: product_1_id,
-            base_price: 20,
-            price: 10
+            price: 20
           }
         )
       ) { add_item(order_id, product_1_id) }

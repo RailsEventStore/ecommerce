@@ -127,7 +127,7 @@ module Pricing
       end
     end
 
-    def test_free_product_keeps_its_discounted_price
+    def test_free_product_keeps_its_captured_price
       product_id = SecureRandom.uuid
       order_id = SecureRandom.uuid
       set_price(product_id, 20)
@@ -141,8 +141,7 @@ module Pricing
           data: {
             order_id: order_id,
             product_id: product_id,
-            base_price: 20,
-            price: 18
+            price: 20
           }
         )
       ) do

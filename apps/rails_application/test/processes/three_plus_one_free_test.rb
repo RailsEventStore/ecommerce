@@ -79,8 +79,8 @@ module Processes
       process = ThreePlusOneFree.new.with(event_store: event_store, command_bus: command_bus)
 
       given([
-        item_added_event(order_id, product_id, 20, price: 0, times: 3),
-        item_added_event(order_id, cheapest_product_id, 10, price: 0)
+        item_added_event(order_id, product_id, 20, discounted_price: 0, times: 3),
+        item_added_event(order_id, cheapest_product_id, 10, discounted_price: 0)
       ], process:)
 
       assert_command(Pricing::MakeProductFreeForOrder.new(order_id, cheapest_product_id))
@@ -144,10 +144,10 @@ module Processes
       Pricing::PriceSet.new(data: { product_id:, price: amount })
     end
 
-    def item_added_event(order_id, product_id, base_price, price: base_price, times: 1)
+    def item_added_event(order_id, product_id, price, discounted_price: price, times: 1)
       times.times.collect do |i|
         Pricing::PriceItemAdded.new(
-          data: { order_id:, product_id:, price:, base_price:, base_total_value: (i+1) * base_price, total_value: (i+1) * price }
+          data: { order_id:, product_id:, price:, base_total_value: (i+1) * price, total_value: (i+1) * discounted_price }
         )
       end
     end
@@ -155,7 +155,7 @@ module Processes
     def item_removed_event(order_id, product_id, price, times: 1)
       times.times.collect do |i|
         Pricing::PriceItemRemoved.new(
-          data: { order_id:, product_id:, price:, base_price: price, base_total_value: (i+1)*price, total_value: (i+i)*price }
+          data: { order_id:, product_id:, price:, base_total_value: (i+1)*price, total_value: (i+i)*price }
         )
       end
     end

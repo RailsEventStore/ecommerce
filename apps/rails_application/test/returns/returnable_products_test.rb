@@ -36,7 +36,7 @@ module Returns
             }
           ),
           Pricing::PriceItemAdded.new(
-            data: { order_id: order_id, product_id: product_1_id, base_price: 10, price: 10 }
+            data: { order_id: order_id, product_id: product_1_id, price: 10 }
           ),
         ],
         stream_name: "Pricing::Offer$#{order_id}"

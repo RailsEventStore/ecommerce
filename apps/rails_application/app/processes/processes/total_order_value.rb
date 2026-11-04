@@ -66,8 +66,8 @@ module Processes
 
     def apply_price_item_added(event)
       product_id = event.data.fetch(:product_id)
-      base_price = event.data.fetch(:base_price)
-      lines = (state.lines + [{ product_id:, price: base_price }])
+      price = event.data.fetch(:price)
+      lines = (state.lines + [{ product_id:, price: }])
       state.with(lines:)
     end
 

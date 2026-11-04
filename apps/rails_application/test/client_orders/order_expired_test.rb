@@ -29,7 +29,6 @@ module ClientOrders
           data: {
             order_id: order_id,
             product_id: product_id,
-            base_price: 39,
             price: 39,
             base_total_value: 39,
             total_value: 39,

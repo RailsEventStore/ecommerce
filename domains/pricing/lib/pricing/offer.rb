@@ -16,13 +16,11 @@ module Pricing
       apply OfferDrafted.new(data: { order_id: @id })
     end
 
-    def add_item(product_id, base_price)
-      price = @discounts.inject(Discounts::NoPercentageDiscount.new, :add).apply(base_price)
+    def add_item(product_id, price)
       apply PriceItemAdded.new(
         data: {
           order_id: @id,
           product_id: product_id,
-          base_price: base_price,
           price: price
         }
       )
@@ -34,7 +32,6 @@ module Pricing
         data: {
           order_id: @id,
           product_id: product_id,
-          base_price: item.base_price,
           price: item.price
         }
       )
@@ -133,7 +130,7 @@ module Pricing
     end
 
     on PriceItemAdded do |event|
-      @list.add_item(event.data.fetch(:product_id), event.data.fetch(:base_price), event.data.fetch(:price))
+      @list.add_item(event.data.fetch(:product_id), event.data.fetch(:price))
     end
 
     on PriceItemRemoved do |event|
@@ -142,18 +139,15 @@ module Pricing
 
     on PercentageDiscountSet do |event|
       @discounts << Discounts::PercentageDiscount.new(event.data.fetch(:type), event.data.fetch(:amount))
-      @list.apply_discounts(@discounts)
     end
 
     on PercentageDiscountChanged do |event|
       @discounts.delete_if { |discount| discount.type == event.data.fetch(:type) }
       @discounts << Discounts::PercentageDiscount.new(event.data.fetch(:type), event.data.fetch(:amount))
-      @list.apply_discounts(@discounts)
     end
 
     on PercentageDiscountRemoved do |event|
       @discounts.delete_if { |discount| discount.type == event.data.fetch(:type) }
-      @list.apply_discounts(@discounts)
     end
 
     on ProductMadeFreeForOrder do |event|
@@ -184,26 +178,19 @@ module Pricing
     end
 
     class List
-      Item = Data.define(:product_id, :quantity, :base_price, :price)
+      Item = Data.define(:product_id, :quantity, :price)
 
       def initialize
         @items = []
       end
 
-      def add_item(product_id, base_price, price)
-        @items << Item.new(product_id:, base_price:, price:, quantity: 1)
+      def add_item(product_id, price)
+        @items << Item.new(product_id:, price:, quantity: 1)
       end
 
       def remove_item(product_id, price)
         index_of_item_to_remove = @items.index { |item| item.product_id == product_id && item.price == price }
         @items.delete_at(index_of_item_to_remove)
-      end
-
-      def apply_discounts(discounts)
-        @items = @items.map do |item|
-          price = discounts.inject(Discounts::NoPercentageDiscount.new, :add).apply(item.base_price)
-          item.with(price:)
-        end
       end
 
       def lowest_price_item(product_id)

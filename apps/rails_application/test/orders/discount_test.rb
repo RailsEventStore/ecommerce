@@ -263,7 +263,6 @@ module Orders
         data: {
           order_id: order_id,
           product_id: product_id,
-          base_price: 50,
           price: 50,
           base_total_value: 50,
           total_value: 50

@@ -16,7 +16,6 @@ module Pricing
           data: {
             order_id: order_id,
             product_id: product_id,
-            base_price: 20,
             price: 20
           }
         )
@@ -28,7 +27,6 @@ module Pricing
           data: {
             order_id: order_id,
             product_id: product_id,
-            base_price: 20,
             price: 20
           }
         )
@@ -50,7 +48,6 @@ module Pricing
           data: {
             order_id: order_id,
             product_id: product_id,
-            base_price: 20,
             price: 20
           }
         )
@@ -62,7 +59,6 @@ module Pricing
           data: {
             order_id: order_id,
             product_id: product_id,
-            base_price: 20,
             price: 20
           }
         )
