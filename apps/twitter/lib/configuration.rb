@@ -49,7 +49,7 @@ class Configuration
 
   def enable_timeline_delivery_process(event_store, command_bus)
     event_store.subscribe(
-      TimelineDeliveryProcess.new(event_store, command_bus),
+      TimelineDeliveryProcess.new.with(event_store: event_store, command_bus: command_bus),
       to: TimelineDeliveryProcess.subscribed_events
     )
   end

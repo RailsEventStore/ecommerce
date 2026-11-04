@@ -67,7 +67,7 @@ module Processes
     end
 
     def process
-      @process ||= ClaimSettlementProcess.new(event_store, command_bus)
+      @process ||= ClaimSettlementProcess.new.with(event_store: event_store, command_bus: command_bus)
     end
 
     def policy_id

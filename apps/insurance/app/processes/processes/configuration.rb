@@ -14,7 +14,7 @@ module Processes
         to: [Payments::PaymentCaptured]
       )
       event_store.subscribe(
-        ClaimSettlementProcess.new(event_store, command_bus),
+        ClaimSettlementProcess.new.with(event_store: event_store, command_bus: command_bus),
         to: ClaimSettlementProcess.subscribed_events
       )
     end

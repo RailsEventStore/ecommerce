@@ -5,7 +5,7 @@ class TimelineDeliveryProcessTest < ProcessTest
 
   def setup
     super
-    @process = TimelineDeliveryProcess.new(event_store, command_bus)
+    @process = TimelineDeliveryProcess.new.with(event_store: event_store, command_bus: command_bus)
   end
 
   def test_delivers_a_new_post_to_its_author
