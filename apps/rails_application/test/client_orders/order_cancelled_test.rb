@@ -40,8 +40,7 @@ module ClientOrders
       event_store.publish(
         Pricing::OfferAccepted.new(
           data: {
-            order_id: order_id,
-            order_lines: [{ product_id: product_id, quantity: 1 }]
+            order_id: order_id
           }
         )
       )

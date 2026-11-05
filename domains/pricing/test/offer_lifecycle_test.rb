@@ -14,14 +14,7 @@ module Pricing
 
       assert_events(
         stream,
-        OfferAccepted.new(
-          data: {
-            order_id: order_id,
-            order_lines: [
-              { product_id:, quantity: 1 },
-            ]
-          }
-        )
+        OfferAccepted.new(data: { order_id: order_id })
       ) { accept_offer(order_id) }
     end
 

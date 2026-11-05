@@ -186,7 +186,7 @@ module Deals
       event_store.publish(Pricing::PriceSet.new(data: { product_id: product_id, price: 100 }))
       event_store.publish(Taxes::VatRateSet.new(data: { product_id: product_id, vat_rate: Infra::Types::VatRate.new(rate: 20, code: "20") }))
       event_store.publish(Pricing::PriceItemAdded.new(data: { order_id: oid, product_id: product_id, price: 100, base_total_value: 100, total_value: 100 }))
-      event_store.publish(Pricing::OfferAccepted.new(data: { order_id: oid, order_lines: [{ product_id: product_id, quantity: 1 }] }))
+      event_store.publish(Pricing::OfferAccepted.new(data: { order_id: oid }))
       assign_customer(cid, oid)
       update_value(oid, 100)
     end

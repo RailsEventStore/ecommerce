@@ -71,10 +71,6 @@ module Pricing
 
   class OfferAccepted < Infra::Event
     attribute :order_id, Infra::Types::UUID
-    attribute :order_lines, Infra::Types::Array do
-      attribute :product_id, Infra::Types::UUID
-      attribute :quantity, Infra::Types::Quantity
-    end
   end
 
   class OfferRejected < Infra::Event

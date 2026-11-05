@@ -102,12 +102,7 @@ module Pricing
     def accept
       raise IsEmpty if @list.empty?
       raise InvalidState.new("Only draft offer can be accepted") unless @state == :draft
-      apply OfferAccepted.new(
-        data: {
-          order_id: @id,
-          order_lines: @list.quantities
-        }
-      )
+      apply OfferAccepted.new(data: { order_id: @id })
     end
 
     def reject(reason, unavailable_product_ids)
@@ -178,14 +173,14 @@ module Pricing
     end
 
     class List
-      Item = Data.define(:product_id, :quantity, :price)
+      Item = Data.define(:product_id, :price)
 
       def initialize
         @items = []
       end
 
       def add_item(product_id, price)
-        @items << Item.new(product_id:, price:, quantity: 1)
+        @items << Item.new(product_id:, price:)
       end
 
       def remove_item(product_id, price)
@@ -198,15 +193,6 @@ module Pricing
           .select { |item| item.product_id == product_id }
           .sort_by(&:price)
           .first
-      end
-
-      def quantities
-        @items.each_with_object({}) do |item, memo|
-          memo[item.product_id] ||= 0
-          memo[item.product_id] += item.quantity
-        end.map do |product_id, quantity|
-          { product_id:, quantity: }
-        end
       end
 
       def empty?

@@ -142,15 +142,7 @@ module Processes
     end
 
     def offer_accepted(order = order_id)
-      Pricing::OfferAccepted.new(
-        data: {
-          order_id: order,
-          order_lines: [
-            { product_id: product_id, quantity: 1 },
-            { product_id: another_product_id, quantity: 2 },
-          ]
-        }
-      )
+      Pricing::OfferAccepted.new(data: { order_id: order })
     end
 
     def order_cancelled
