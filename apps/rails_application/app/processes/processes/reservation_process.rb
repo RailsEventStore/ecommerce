@@ -3,6 +3,8 @@ module Processes
     include RubyEventStore::ProcessManager.with_state { ProcessState }
 
     subscribes_to(
+      Pricing::PriceItemAdded,
+      Pricing::PriceItemRemoved,
       Pricing::OfferAccepted,
       Fulfillment::OrderCancelled,
       Fulfillment::OrderConfirmed
@@ -12,39 +14,40 @@ module Processes
 
     def act
       case state
-      in order: :accepted
+      in action: :reserve
         unavailable = reserve_stock
         if unavailable.any?
           reject_order(unavailable)
         else
           accept_order
         end
-      in order: :cancelled
+      in action: :release
         release_stock(state.reserved_product_ids)
-      in order: :confirmed
+      in action: :dispatch
         dispatch_stock
+      in action: nil
       end
     end
 
     def apply(event)
       case event
+      when Pricing::PriceItemAdded
+        state.add_item(event.data.fetch(:product_id))
+      when Pricing::PriceItemRemoved
+        state.remove_item(event.data.fetch(:product_id))
       when Pricing::OfferAccepted
-        order_lines_hash = event.data.fetch(:order_lines).map { |ol| [ol.fetch(:product_id), ol.fetch(:quantity)] }.to_h
-        state.with(
-          order: :accepted,
-          order_lines: order_lines_hash
-        )
+        state.with(order: :accepted, action: :reserve, accepted_order_lines: state.order_lines)
       when Fulfillment::OrderCancelled
-        state.with(order: :cancelled)
+        state.with(order: :cancelled, action: :release)
       when Fulfillment::OrderConfirmed
-        state.with(order: :confirmed)
+        state.with(order: :confirmed, action: :dispatch)
       end
     end
 
     def reserve_stock
       unavailable_products = []
       reserved_products = []
-      state.order_lines.each do |product_id, quantity|
+      state.accepted_order_lines.each do |product_id, quantity|
         command_bus.(Inventory::Reserve.new(product_id, quantity))
         reserved_products << product_id
       rescue Inventory::InventoryEntry::InventoryNotAvailable
@@ -58,13 +61,13 @@ module Processes
     end
 
     def release_stock(product_ids)
-      state.order_lines.slice(*product_ids).each do |product_id, quantity|
+      state.accepted_order_lines.slice(*product_ids).each do |product_id, quantity|
         command_bus.(Inventory::Release.new(product_id, quantity))
       end
     end
 
     def dispatch_stock
-      state.order_lines.each do |product_id, quantity|
+      state.accepted_order_lines.each do |product_id, quantity|
         command_bus.(Inventory::Dispatch.new(product_id, quantity))
       end
     end
@@ -83,12 +86,23 @@ module Processes
       event.data.fetch(:order_id)
     end
 
-    ProcessState = Data.define(:order, :order_lines) do
-      def initialize(order: nil, order_lines: [])
-        super(order:, order_lines: order_lines.freeze)
+    ProcessState = Data.define(:order, :action, :order_lines, :accepted_order_lines) do
+      def initialize(order: nil, action: nil, order_lines: {}, accepted_order_lines: {})
+        super(order:, action:, order_lines: order_lines.freeze, accepted_order_lines: accepted_order_lines.freeze)
       end
 
-      def reserved_product_ids = order_lines.keys
+      def add_item(product_id)
+        with(action: nil, order_lines: order_lines.merge(product_id => order_lines.fetch(product_id, 0) + 1))
+      end
+
+      def remove_item(product_id)
+        with(
+          action: nil,
+          order_lines: order_lines.merge(product_id => order_lines.fetch(product_id) - 1).reject { |_, quantity| quantity.zero? }
+        )
+      end
+
+      def reserved_product_ids = accepted_order_lines.keys
     end
 
   end
