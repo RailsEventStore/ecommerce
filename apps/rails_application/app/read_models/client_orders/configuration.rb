@@ -69,6 +69,10 @@ module ClientOrders
     Order.find_by_order_uid(order_id)
   end
 
+  def self.item_count(order_id)
+    OrderLine.where(order_uid: order_id).sum(:product_quantity)
+  end
+
   class Configuration
     def call(event_store)
       event_store.subscribe(OrderHandlers::DraftOrder.new, to: [Pricing::OfferDrafted])

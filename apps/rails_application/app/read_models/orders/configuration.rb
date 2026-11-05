@@ -59,6 +59,10 @@ module Orders
     OrderLine.where(order_uid: order_uid, product_id: product_id).first
   end
 
+  def self.item_count(order_id)
+    OrderLine.where(order_uid: order_id).sum(:quantity)
+  end
+
   def self.all_orders
     Order.all
   end

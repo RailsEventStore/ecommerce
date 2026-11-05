@@ -131,8 +131,8 @@ module Pricing
     end
 
     def call(command)
-      @repository.with_aggregate(Offer, command.aggregate_id) do |order|
-        order.add_item(command.product_id, command.price)
+      @repository.with_aggregate(OfferLine, command.aggregate_id) do |line|
+        line.add_item(command.price)
       end
     end
   end
@@ -143,8 +143,8 @@ module Pricing
     end
 
     def call(command)
-      @repository.with_aggregate(Offer, command.aggregate_id) do |order|
-        order.remove_item(command.product_id)
+      @repository.with_aggregate(OfferLine, command.aggregate_id) do |line|
+        line.remove_item
       end
     end
   end
@@ -205,7 +205,7 @@ module Pricing
 
     def call(command)
       @repository.with_aggregate(Offer, command.aggregate_id) do |order|
-        order.accept
+        order.accept(command.item_count)
       end
     end
   end

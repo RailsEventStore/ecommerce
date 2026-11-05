@@ -7,34 +7,12 @@ module Pricing
 
     def initialize(id)
       @id = id
-      @list = List.new
       @discounts = []
       @state = :draft
     end
 
     def draft
       apply OfferDrafted.new(data: { order_id: @id })
-    end
-
-    def add_item(product_id, price)
-      apply PriceItemAdded.new(
-        data: {
-          order_id: @id,
-          product_id: product_id,
-          price: price
-        }
-      )
-    end
-
-    def remove_item(product_id)
-      item = @list.lowest_price_item(product_id)
-      apply PriceItemRemoved.new(
-        data: {
-          order_id: @id,
-          product_id: product_id,
-          price: item.price
-        }
-      )
     end
 
     def apply_discount(discount)
@@ -99,8 +77,8 @@ module Pricing
       )
     end
 
-    def accept
-      raise IsEmpty if @list.empty?
+    def accept(item_count)
+      raise IsEmpty if item_count.zero?
       raise InvalidState.new("Only draft offer can be accepted") unless @state == :draft
       apply OfferAccepted.new(data: { order_id: @id })
     end
@@ -122,14 +100,6 @@ module Pricing
     private
 
     on OfferDrafted do |event|
-    end
-
-    on PriceItemAdded do |event|
-      @list.add_item(event.data.fetch(:product_id), event.data.fetch(:price))
-    end
-
-    on PriceItemRemoved do |event|
-      @list.remove_item(event.data.fetch(:product_id), event.data.fetch(:price))
     end
 
     on PercentageDiscountSet do |event|
@@ -170,34 +140,6 @@ module Pricing
 
     def discount_exists?(type)
       @discounts.find { |discount| discount.type == type }
-    end
-
-    class List
-      Item = Data.define(:product_id, :price)
-
-      def initialize
-        @items = []
-      end
-
-      def add_item(product_id, price)
-        @items << Item.new(product_id:, price:)
-      end
-
-      def remove_item(product_id, price)
-        index_of_item_to_remove = @items.index { |item| item.product_id == product_id && item.price == price }
-        @items.delete_at(index_of_item_to_remove)
-      end
-
-      def lowest_price_item(product_id)
-        @items
-          .select { |item| item.product_id == product_id }
-          .sort_by(&:price)
-          .first
-      end
-
-      def empty?
-        @items.empty?
-      end
     end
   end
 end

@@ -17,7 +17,6 @@ module Pricing
   class AddPriceItem
     UUID = /\A[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\z/i
     attr_reader :order_id, :product_id, :price
-    alias aggregate_id order_id
 
     def initialize(order_id, product_id, price)
       @order_id = order_id
@@ -29,12 +28,15 @@ module Pricing
     else
       raise Infra::Command::Invalid unless valid
     end
+
+    def aggregate_id
+      "#{order_id}:#{product_id}"
+    end
   end
 
   class RemovePriceItem
     UUID = /\A[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\z/i
     attr_reader :order_id, :product_id
-    alias aggregate_id order_id
 
     def initialize(order_id, product_id)
       @order_id = order_id
@@ -44,6 +46,10 @@ module Pricing
       raise Infra::Command::Invalid
     else
       raise Infra::Command::Invalid unless valid
+    end
+
+    def aggregate_id
+      "#{order_id}:#{product_id}"
     end
   end
 
@@ -245,12 +251,13 @@ module Pricing
 
   class AcceptOffer
     UUID = /\A[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\z/i
-    attr_reader :order_id
+    attr_reader :order_id, :item_count
     alias aggregate_id order_id
 
-    def initialize(order_id)
+    def initialize(order_id, item_count)
       @order_id = order_id
-      valid = UUID.match?(@order_id)
+      @item_count = item_count
+      valid = UUID.match?(@order_id) && @item_count.instance_of?(Integer) && @item_count >= 0
     rescue TypeError
       raise Infra::Command::Invalid
     else

@@ -136,7 +136,7 @@ module Pricing
       run_command(MakeProductFreeForOrder.new(order_id, product_id))
 
       assert_events_contain(
-        stream_name(order_id),
+        "Pricing::OfferLine$#{order_id}:#{product_id}",
         PriceItemRemoved.new(
           data: {
             order_id: order_id,

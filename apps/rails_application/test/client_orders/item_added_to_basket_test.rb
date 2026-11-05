@@ -148,9 +148,30 @@ module ClientOrders
       assert_equal(order.state, "Draft")
       assert_nil(order.client_uid)
       assert_nil(order.number)
+
+      draft_order(another_order_id)
+      [order_id, another_order_id].each do |id|
+        event_store.publish(Pricing::PriceItemAdded.new(data: { order_id: id, product_id: product_id, price: 20 }))
+      end
+
+      assert_equal(3, ClientOrders.item_count(order_id))
+      assert_equal(1, ClientOrders.item_count(another_order_id))
+
+      [product_id, product_id, another_product_id].each do |id|
+        event_store.publish(Pricing::PriceItemRemoved.new(data: { order_id: order_id, product_id: id, price: 20 }))
+      end
+      event_store.define_singleton_method(:read) { raise "Item counts must use projected state" }
+
+      assert_equal(0, ClientOrders.item_count(order_id))
+      assert_equal(1, ClientOrders.item_count(another_order_id))
+      assert_equal(0, ClientOrders.item_count(SecureRandom.uuid))
     end
 
     private
+
+    def another_order_id
+      @another_order_id ||= SecureRandom.uuid
+    end
 
     def draft_order(order_id)
       event_store.publish(Pricing::OfferDrafted.new(data: { order_id: order_id }))

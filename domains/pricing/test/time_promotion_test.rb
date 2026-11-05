@@ -51,7 +51,7 @@ module Pricing
       order_id = SecureRandom.uuid
       product_1_id = SecureRandom.uuid
       set_price(product_1_id, 20)
-      stream = stream_name(order_id)
+      stream = "Pricing::OfferLine$#{order_id}:#{product_1_id}"
       time_promotion_id = SecureRandom.uuid
       start_time = Time.current - 1
       end_time = Time.current + 1
@@ -148,10 +148,6 @@ module Pricing
       start_time = timestamp - 1
       end_time = timestamp
       set_time_promotion_range(time_promotion_id, start_time, end_time, 90)
-    end
-
-    def stream_name(order_id)
-      "Pricing::Offer$#{order_id}"
     end
 
     def set_time_promotion_range(time_promotion_id, start_time, end_time, discount)

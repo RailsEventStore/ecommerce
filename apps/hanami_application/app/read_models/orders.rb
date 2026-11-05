@@ -32,6 +32,10 @@ module HanamiApplication
         Order.new(id: row[:id], state: row[:state].to_sym, number: row[:number], lines: lines_for(order_id))
       end
 
+      def item_count(order_id)
+        @order_lines.where(order_id: order_id).sum(:quantity) || 0
+      end
+
       private
 
       def handlers

@@ -52,6 +52,7 @@ module Orders
 
       register_product(product_id_1, "Product 1", 10)
       add_item_to_order(order_id_1, product_id_1, 10)
+      add_item_to_order(order_id_1, product_id_1, 10)
 
       register_product(product_id_2, "Product 2", 20)
       add_item_to_order(order_id_1, product_id_2, 20)
@@ -63,6 +64,17 @@ module Orders
 
       assert_equal(2, result.count)
       assert_equal([product_id_1, product_id_2].sort, result.pluck(:product_id).sort)
+      assert_equal(3, Orders.item_count(order_id_1))
+      assert_equal(1, Orders.item_count(order_id_2))
+
+      [[product_id_1, 10], [product_id_1, 10], [product_id_2, 20]].each do |product_id, price|
+        event_store.publish(Pricing::PriceItemRemoved.new(data: { order_id: order_id_1, product_id: product_id, price: price }))
+      end
+      event_store.define_singleton_method(:read) { raise "Item counts must use projected state" }
+
+      assert_equal(0, Orders.item_count(order_id_1))
+      assert_equal(1, Orders.item_count(order_id_2))
+      assert_equal(0, Orders.item_count(SecureRandom.uuid))
     end
 
     def test_paginated_orders_returns_paginated_results

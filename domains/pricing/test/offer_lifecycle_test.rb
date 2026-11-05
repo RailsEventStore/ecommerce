@@ -15,14 +15,14 @@ module Pricing
       assert_events(
         stream,
         OfferAccepted.new(data: { order_id: order_id })
-      ) { accept_offer(order_id) }
+      ) { accept_offer(order_id, 1) }
     end
 
     def test_empty_offer_cant_be_accepted
       order_id = SecureRandom.uuid
 
       assert_raises(Pricing::Offer::IsEmpty) do
-        accept_offer(order_id)
+        accept_offer(order_id, 0)
       end
     end
 
@@ -32,7 +32,7 @@ module Pricing
 
       set_price(product_id, 33)
       add_item(order_id, product_id)
-      accept_offer(order_id)
+      accept_offer(order_id, 1)
       stream = "Pricing::Offer$#{order_id}"
 
 
@@ -86,7 +86,7 @@ module Pricing
 
       set_price(product_id, 33)
       add_item(order_id, product_id)
-      accept_offer(order_id)
+      accept_offer(order_id, 1)
 
       exp = assert_raises(Pricing::Offer::InvalidState) do
         expire_offer(order_id)
@@ -100,18 +100,18 @@ module Pricing
 
       set_price(product_id, 33)
       add_item(order_id, product_id)
-      accept_offer(order_id)
+      accept_offer(order_id, 1)
 
       exp = assert_raises(Pricing::Offer::InvalidState) do
-        accept_offer(order_id)
+        accept_offer(order_id, 1)
       end
       assert_equal("Only draft offer can be accepted", exp.message)
     end
 
     private
 
-    def accept_offer(order_id)
-      run_command(AcceptOffer.new(order_id))
+    def accept_offer(order_id, item_count)
+      run_command(AcceptOffer.new(order_id, item_count))
     end
 
     def reject_offer(order_id, *product_ids)
