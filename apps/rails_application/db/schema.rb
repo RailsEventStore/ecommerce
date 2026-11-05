@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_04_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_05_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -312,31 +312,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_04_120000) do
     t.text "price_history"
     t.uuid "store_id"
     t.datetime "updated_at", null: false
-  end
-
-  create_table "return_items", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.decimal "price", precision: 8, scale: 2, null: false
-    t.uuid "product_uid", null: false
-    t.integer "quantity", null: false
-    t.uuid "return_uid", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "returns", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.string "order_number"
-    t.uuid "order_uid", null: false
-    t.string "status", null: false
-    t.decimal "total_value", precision: 8, scale: 2, null: false
-    t.uuid "uid", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "returns_products", force: :cascade do |t|
-    t.decimal "price", precision: 8, scale: 2
-    t.uuid "uid", null: false
-    t.index ["uid"], name: "index_returns_products_on_uid", unique: true
   end
 
   create_table "shipment_items", force: :cascade do |t|
