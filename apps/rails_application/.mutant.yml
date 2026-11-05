@@ -35,7 +35,6 @@ matcher:
     - PublicOffer*
     - PurgoMalumClient*
     - TimePromotions*
-    - Returns*
     - Architecture*
   ignore:
     - Architecture::Boundaries#matching_prefix
@@ -61,9 +60,6 @@ matcher:
     - TimePromotions::CreateTimePromotion#call
     - TimePromotions::CreateTimePromotion#broadcast_new_row
     - TimePromotions::CreateTimePromotion#row_html
-    - Returns::Configuration#call
-    - Returns::AddItemToReturn#call
-    - Returns::RemoveItemFromReturn#call
     - Coupons::Configuration#call
     - Orders::Configuration#call
     - Orders::Configuration#broadcast_order_state_change

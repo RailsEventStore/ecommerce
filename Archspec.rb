@@ -39,7 +39,7 @@ apps = component :apps, in: "apps/*/{app,config,lib}/**/*.rb", except: boundary_
 
 domain_names = domains.map(&:name)
 bounded_context_names = %w[
-  authentication communication crm fulfillment inventory invoicing ordering
+  authentication communication crm fulfillment inventory invoicing
   payments pricing product_catalog shipping stores taxes todo
 ].map do |name|
   :"domain_#{name}"

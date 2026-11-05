@@ -20,7 +20,6 @@ class Configuration
     enable_availability_read_model(event_store)
     enable_authentication_read_model(event_store)
     enable_vat_rates_read_model(event_store)
-    enable_returns_read_model(event_store)
     enable_admin_read_model(event_store)
     enable_deals_read_model(event_store)
     configure_processes(event_store, command_bus)
@@ -96,10 +95,6 @@ class Configuration
 
   def enable_vat_rates_read_model(event_store)
     VatRates::Configuration.new.call(event_store)
-  end
-
-  def enable_returns_read_model(event_store)
-    Returns::Configuration.new.call(event_store)
   end
 
   def enable_admin_read_model(event_store)

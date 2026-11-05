@@ -219,14 +219,6 @@ class InMemoryRESIntegrationTestCase < ActionDispatch::IntegrationTest
     post "/orders/#{order_id}/add_item?product_id=#{product_id}"
   end
 
-  def add_item_to_return(order_id, return_id, product_id)
-    post "/orders/#{order_id}/returns/#{return_id}/add_item?product_id=#{product_id}"
-  end
-
-  def remove_item_from_return(order_id, return_id, product_id)
-    post "/orders/#{order_id}/returns/#{return_id}/remove_item?product_id=#{product_id}"
-  end
-
   def create_order
     get "/orders/new"
     follow_redirect!

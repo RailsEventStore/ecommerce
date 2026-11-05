@@ -39,9 +39,6 @@ read_models:
   - name: PublicOffer
     path: app/read_models/public_offer
 
-  - name: Returns
-    path: app/read_models/returns
-
   - name: Shipments
     path: app/read_models/shipments
 
@@ -70,9 +67,6 @@ bounded_contexts:
 
   - name: Invoicing
     path: ../../domains/invoicing/lib
-
-  - name: Ordering
-    path: ../../domains/ordering/lib
 
   - name: Payments
     path: ../../domains/payments/lib

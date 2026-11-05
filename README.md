@@ -40,7 +40,6 @@ domains/
 ├── crm
 ├── inventory
 ├── invoicing
-├── ordering
 ├── payments
 ├── pricing
 ├── product_catalog
@@ -53,7 +52,6 @@ domains/
 * [CRM](domains/crm/README.md)
 * [Inventory](domains/inventory/README.md)
 * [Invoicing](domains/invoicing/README.md)
-* [Ordering](domains/ordering/README.md)
 * [Payments](domains/payments/README.md)
 * [Pricing](domains/pricing/README.md)
 * [Product Catalog](domains/product_catalog/README.md)

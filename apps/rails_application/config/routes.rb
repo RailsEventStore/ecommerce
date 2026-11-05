@@ -21,12 +21,6 @@ Rails.application.routes.draw do
     resource :shipping_address, only: [:edit, :update]
     resource :billing_address, only: [:edit, :update]
     resource :invoice, only: [:create]
-    resources :returns, only: [:edit, :create] do
-      member do
-        post :add_item
-        post :remove_item
-      end
-    end
   end
 
   get "crm", to: "crm#index"

@@ -141,6 +141,16 @@ class OrdersTest < InMemoryRESIntegrationTestCase
     get "/orders/#{order_id}"
     assert_select("button", text: "History")
     assert_select("button", text: "Cancel Order", count: 0)
+    assert_select("button", text: "Return", count: 0)
+
+    post "/orders/#{order_id}/returns"
+    assert_response(:not_found)
+    get "/orders/#{order_id}/returns/#{SecureRandom.uuid}/edit"
+    assert_response(:not_found)
+    post "/orders/#{order_id}/returns/#{SecureRandom.uuid}/add_item"
+    assert_response(:not_found)
+    post "/orders/#{order_id}/returns/#{SecureRandom.uuid}/remove_item"
+    assert_response(:not_found)
   end
 
   def test_order_value_doesnt_change_after_changing_price
