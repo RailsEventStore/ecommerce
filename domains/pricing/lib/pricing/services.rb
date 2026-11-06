@@ -210,6 +210,18 @@ module Pricing
     end
   end
 
+  class OnRejectEmptyOrderAcceptance
+    def initialize(event_store)
+      @repository = Infra::AggregateRootRepository.new(event_store)
+    end
+
+    def call(command)
+      @repository.with_aggregate(OrderAcceptance, command.aggregate_id) do |acceptance|
+        acceptance.reject_empty_order
+      end
+    end
+  end
+
   class OnAcceptOffer
     def initialize(event_store)
       @repository = Infra::AggregateRootRepository.new(event_store)

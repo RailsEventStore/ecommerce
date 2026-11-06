@@ -68,7 +68,6 @@ matcher:
     - Orders::Broadcaster*
     - Orders::AddItemToOrder#broadcast_to_ui
     - Orders::RemoveItemFromOrder#broadcast_to_ui
-    - Orders::SubmitService#submit_order
     - ClientOrders::Configuration#call
     - ClientOrders::Configuration#mark_as_submitted
     - ClientOrders::Configuration#subscribe_and_link_to_stream

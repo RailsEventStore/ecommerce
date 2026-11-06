@@ -73,6 +73,10 @@ module Pricing
     attribute :order_id, Infra::Types::UUID
   end
 
+  class EmptyOrderAcceptanceRejected < Infra::Event
+    attribute :order_id, Infra::Types::UUID
+  end
+
   class OfferAccepted < Infra::Event
     attribute :order_id, Infra::Types::UUID
   end

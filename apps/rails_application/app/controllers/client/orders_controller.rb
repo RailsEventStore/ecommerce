@@ -15,14 +15,7 @@ module Client
     end
 
     def create
-      Client::Orders::SubmitService.call(order_id: params[:order_id], customer_id: current_client_id)
-    rescue Orders::OrderHasUnavailableProducts => e
-      unavailable_products = e.unavailable_products.join(", ")
-      redirect_to edit_client_order_path(params[:order_id]), alert: "Order can not be submitted! #{unavailable_products} not available in requested quantity!"
-    rescue Processes::OrderAcceptance::IsEmpty
-      redirect_to edit_client_order_path(params[:order_id]), alert: "You can't submit an empty order"
-    else
-      redirect_to client_order_path(params[:order_id]), notice: "Your order has been submitted"
+      respond_to_submission(::Orders::SubmitService.new(params[:order_id], current_client_id).call)
     end
 
     def show
@@ -83,6 +76,17 @@ module Client
     end
 
     private
+
+    def respond_to_submission(result)
+      case result
+      when Pricing::EmptyOrderAcceptanceRejected
+        redirect_to edit_client_order_path(params[:order_id]), alert: "You can't submit an empty order"
+      when Pricing::OfferRejected
+        redirect_to edit_client_order_path(params[:order_id]), alert: "Order can not be submitted! #{Products.product_names_for_ids(result.data.fetch(:unavailable_product_ids)).join(", ")} not available in requested quantity!"
+      when Fulfillment::OrderRegistered
+        redirect_to client_order_path(params[:order_id]), notice: "Your order has been submitted"
+      end
+    end
 
     def use_coupon_cmd(order_id, coupon_id, discount)
       Pricing::UseCoupon.new(order_id, coupon_id, discount)

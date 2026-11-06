@@ -2,8 +2,6 @@ module Processes
   class OrderAcceptance
     include RubyEventStore::ProcessManager.with_state { ProcessState }
 
-    IsEmpty = Class.new(StandardError)
-
     subscribes_to(
       Pricing::PriceItemAdded,
       Pricing::PriceItemRemoved,
@@ -14,9 +12,12 @@ module Processes
 
     def act
       return unless state.acceptance_requested
-      raise IsEmpty if state.item_count.zero?
 
-      command_bus.call(Pricing::AcceptOffer.new(id))
+      if state.item_count.zero?
+        command_bus.call(Pricing::RejectEmptyOrderAcceptance.new(id))
+      else
+        command_bus.call(Pricing::AcceptOffer.new(id))
+      end
     end
 
     def apply(event)

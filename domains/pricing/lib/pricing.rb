@@ -72,6 +72,10 @@ module Pricing
         OnRequestOrderAcceptance.new(event_store)
       )
       command_bus.register(
+        RejectEmptyOrderAcceptance,
+        OnRejectEmptyOrderAcceptance.new(event_store)
+      )
+      command_bus.register(
         AcceptOffer,
         OnAcceptOffer.new(event_store)
       )

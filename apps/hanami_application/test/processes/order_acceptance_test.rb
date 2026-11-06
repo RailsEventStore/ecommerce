@@ -17,7 +17,7 @@ class OrderAcceptanceTest < Minitest::Test
     assert_equal(order_id, commands.first.order_id)
   end
 
-  def test_does_not_issue_commands_for_an_empty_order
+  def test_issues_rejection_for_an_empty_order
     commands = []
     order_id = SecureRandom.uuid
     event_store = Infra::EventStore.in_memory
@@ -26,11 +26,11 @@ class OrderAcceptanceTest < Minitest::Test
     )
     process.subscribe(event_store)
 
-    assert_raises(HanamiApplication::Processes::OrderAcceptance::IsEmpty) do
-      event_store.publish(Pricing::OrderAcceptanceRequested.new(data: { order_id: order_id }))
-    end
+    event_store.publish(Pricing::OrderAcceptanceRequested.new(data: { order_id: order_id }))
 
-    assert_empty(commands)
+    assert_equal(1, commands.size)
+    assert_instance_of(Pricing::RejectEmptyOrderAcceptance, commands.first)
+    assert_equal(order_id, commands.first.order_id)
   end
 
   Orders = Data.define(:counts) do

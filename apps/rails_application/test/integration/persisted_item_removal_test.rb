@@ -3,6 +3,7 @@ require "test_helper"
 class PersistedItemRemovalTest < RealRESIntegrationTestCase
   cover "OrdersController#remove_item"
   cover "Client::OrdersController#remove_item"
+  cover "Orders::SubmitService#submit_order"
 
   BroadcastUnavailable = Class.new(StandardError)
 
@@ -31,6 +32,7 @@ class PersistedItemRemovalTest < RealRESIntegrationTestCase
     assert_redirected_to("/orders/#{@order_id}/edit")
     follow_redirect!
     assert_select("#alert", "You can't submit an empty order")
+    assert_recorded_empty_order_rejection
 
     post "/orders/#{@order_id}/add_item", params: { product_id: @product_id }
     post "/orders/#{@order_id}/submit", params: { customer_id: @customer_id }
@@ -48,6 +50,7 @@ class PersistedItemRemovalTest < RealRESIntegrationTestCase
     assert_redirected_to("/client_orders/#{@order_id}/edit")
     follow_redirect!
     assert_select("#alert", "You can't submit an empty order")
+    assert_recorded_empty_order_rejection
 
     post "/client_orders/#{@order_id}/add_item", params: { product_id: @product_id }
     post "/client_orders", params: { order_id: @order_id }
@@ -57,7 +60,32 @@ class PersistedItemRemovalTest < RealRESIntegrationTestCase
     assert_select("#notice", "Your order has been submitted")
   end
 
+  def test_submission_rolls_back_when_assigning_the_customer_fails
+    get "/orders/new"
+    follow_redirect!
+    @order_id = request.path.split("/")[2]
+    post "/orders/#{@order_id}/add_item", params: { product_id: @product_id }
+
+    post "/orders/#{@order_id}/submit", params: { customer_id: SecureRandom.uuid }
+    follow_redirect!
+
+    assert_select("#alert", "Order can not be submitted! Customer does not exist.")
+
+    post "/orders/#{@order_id}/submit", params: { customer_id: @customer_id }
+    follow_redirect!
+
+    assert_select("#notice", "Your order has been submitted")
+  end
+
   private
+
+  def assert_recorded_empty_order_rejection
+    get "/res/streams/#{Rack::Utils.escape("Pricing::OrderAcceptance$#{@order_id}")}"
+
+    assert_response(:success)
+    assert_select("a", text: "Pricing::OrderAcceptanceRequested")
+    assert_select("a", text: "Pricing::EmptyOrderAcceptanceRejected")
+  end
 
   def assert_removal_can_be_retried(orders_path, response_status)
     get "#{orders_path}/new"

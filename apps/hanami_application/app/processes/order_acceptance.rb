@@ -1,8 +1,6 @@
 module HanamiApplication
   module Processes
     class OrderAcceptance
-      IsEmpty = Class.new(StandardError)
-
       def initialize(command_bus, orders)
         @command_bus = command_bus
         @orders = orders
@@ -14,9 +12,12 @@ module HanamiApplication
 
       def call(event)
         order_id = event.data.fetch(:order_id)
-        raise IsEmpty if @orders.item_count(order_id).zero?
 
-        @command_bus.call(Pricing::AcceptOffer.new(order_id))
+        if @orders.item_count(order_id).zero?
+          @command_bus.call(Pricing::RejectEmptyOrderAcceptance.new(order_id))
+        else
+          @command_bus.call(Pricing::AcceptOffer.new(order_id))
+        end
       end
     end
   end

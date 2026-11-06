@@ -34,7 +34,10 @@ without accepting the offer. Requests may be repeated after correcting the baske
 Each application owns an order acceptance process. In Rails,
 `Processes::OrderAcceptance` builds its state from `PriceItemAdded` and
 `PriceItemRemoved`. Only `OrderAcceptanceRequested` triggers a decision: an empty
-basket raises `IsEmpty`; a nonempty basket issues `AcceptOffer.new(order_id)`.
+basket issues `RejectEmptyOrderAcceptance.new(order_id)`; a nonempty basket issues
+`AcceptOffer.new(order_id)`. The rejection command makes `OrderAcceptance` record
+`EmptyOrderAcceptanceRejected`, with only `order_id` as its payload. This is a
+refusal of acceptance, not `OfferRejected`, which reverses an already accepted offer.
 Basket edits never trigger acceptance by themselves. The process uses its own
 event stream, not the UI read models or aggregate streams.
 
@@ -48,8 +51,26 @@ remain in the existing Rails reservation process. `AcceptOffer` is the process's
 output, not an application entry point; calling it directly bypasses eligibility.
 
 Item edits and acceptance requests must share a transaction with their synchronous
-subscribers. An empty-order error rolls back the request rather than recording a
-durable refusal. After refilling the basket, the user must request acceptance again.
+subscribers. An empty-order refusal commits both the request and rejection events
+and leaves the offer in draft without assigning a customer. After refilling the
+basket, the user must request acceptance again. Unexpected failures still roll back
+the transaction.
+
+Rails uses one `Orders::SubmitService` for both panels. It temporarily subscribes
+with `event_store.within { ... }.subscribe(...).call`, captures the outcome for the
+requested `order_id`, and returns the event after the transaction completes. The
+outcomes are `EmptyOrderAcceptanceRejected`, `OfferRejected`, and
+`Fulfillment::OrderRegistered`. Success is observed after stock reservation, not at
+`OfferAccepted`, which can still lead to rejection. Controllers translate the event
+into a redirect and UI message; domain events do not contain presentation text.
+Hanami similarly captures an empty-order rejection around its submit command.
+
+Temporary subscriptions observe the entire synchronous chain of nested commands
+and events, and RubyEventStore removes them in an `ensure` block, including on an
+unexpected exception. They are scoped to that invocation, not historical events;
+the order ID filter also excludes other orders processed within it. This approach
+depends on synchronous processing. A persisted submission-status read model would
+be an alternative if the UI needed to retrieve outcomes in a later request.
 
 Existing Rails baskets have no history in the new `Processes::OrderAcceptance`
 streams. Reset the demo database after deploying this change; otherwise those

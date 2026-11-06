@@ -49,6 +49,10 @@ class CartFlowTest < Hanami::Minitest::RequestTest
 
     assert_includes(last_response.body, "Your cart is empty")
     assert_equal(:draft, Hanami.app["read_models.orders"].find(order_id).state)
+    assert_equal(
+      [Pricing::OrderAcceptanceRequested, Pricing::EmptyOrderAcceptanceRejected],
+      Hanami.app["event_store"].read.stream("Pricing::OrderAcceptance$#{order_id}").map(&:class)
+    )
 
     post "/cart/items", product_id: product_id, _csrf_token: csrf_token
     follow_redirect!

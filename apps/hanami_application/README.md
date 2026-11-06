@@ -10,6 +10,13 @@ A minimal cart built with [Hanami 3](https://hanakai.org) on top of **RubyEventS
 
 Pick a product, add it to the cart, submit the order. Submitting sends `Pricing::RequestOrderAcceptance`; the `OrderAcceptance` process reacts to `OrderAcceptanceRequested`, checks the projected basket and issues `Pricing::AcceptOffer` only when it is nonempty. The `OrderFulfillment` process reacts to `OfferAccepted` with `Fulfillment::RegisterOrder`, then to `OrderRegistered` with `Fulfillment::ConfirmOrder`. All handlers run synchronously, so the order page already shows the delivery confirmation.
 
+For an empty basket, the process issues `Pricing::RejectEmptyOrderAcceptance`.
+The acceptance aggregate records `Pricing::EmptyOrderAcceptanceRejected` without
+raising an exception. The submit action captures that event using a temporary
+RubyEventStore subscription, scoped to the current order, and displays the empty
+cart message. The request and refusal remain persisted, and the cart can be refilled
+and submitted again.
+
 ## The wiring
 
 Everything is wired with Hanami providers ([config/providers](config/providers)):

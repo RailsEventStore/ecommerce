@@ -73,16 +73,9 @@ class OrdersController < ApplicationController
   end
 
   def submit
-    Orders::SubmitService.new(params[:id], params[:customer_id]).call
-  rescue Orders::OrderHasUnavailableProducts => e
-    unavailable_products = e.unavailable_products.join(", ")
-    redirect_to edit_order_path(params[:id]), alert: "Order can not be submitted! #{unavailable_products} not available in requested quantity!"
-  rescue Processes::OrderAcceptance::IsEmpty
-    redirect_to edit_order_path(params[:id]), alert: "You can't submit an empty order"
+    respond_to_submission(Orders::SubmitService.new(params[:id], params[:customer_id]).call)
   rescue Crm::Customer::NotExists
     redirect_to order_path(params[:id]), alert: "Order can not be submitted! Customer does not exist."
-  else
-    redirect_to order_path(params[:id]), notice: "Your order has been submitted"
   end
 
   def expire
@@ -113,6 +106,17 @@ class OrdersController < ApplicationController
   end
 
   private
+
+  def respond_to_submission(result)
+    case result
+    when Pricing::EmptyOrderAcceptanceRejected
+      redirect_to edit_order_path(params[:id]), alert: "You can't submit an empty order"
+    when Pricing::OfferRejected
+      redirect_to edit_order_path(params[:id]), alert: "Order can not be submitted! #{Products.product_names_for_ids(result.data.fetch(:unavailable_product_ids)).join(", ")} not available in requested quantity!"
+    when Fulfillment::OrderRegistered
+      redirect_to order_path(params[:id]), notice: "Your order has been submitted"
+    end
+  end
 
   def verify_order_ownership
     verify_order_in_store(params[:id])

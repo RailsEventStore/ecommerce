@@ -1,12 +1,4 @@
 module Orders
-  class OrderHasUnavailableProducts < StandardError
-    attr_reader :unavailable_products
-
-    def initialize(unavailable_products)
-      @unavailable_products = unavailable_products
-    end
-  end
-
   class SubmitService
     def initialize(order_id, customer_id)
       @order_id = order_id
@@ -14,27 +6,32 @@ module Orders
     end
 
     def call
-      unavailable_products = []
       event_store
         .within { submit_order }
-        .subscribe(to: Pricing::OfferRejected) do |event|
-          unavailable_products = Products.product_names_for_ids(event.data.fetch(:unavailable_product_ids))
-        end
+        .subscribe(method(:record_result), to: [
+          Pricing::EmptyOrderAcceptanceRejected,
+          Pricing::OfferRejected,
+          Fulfillment::OrderRegistered
+        ])
         .call
 
-      if unavailable_products.any?
-        raise OrderHasUnavailableProducts.new(unavailable_products)
-      end
+      result
     end
 
     private
 
-    attr_reader :order_id, :customer_id
+    attr_reader :order_id, :customer_id, :result
+
+    def record_result(event)
+      @result = event if event.data.fetch(:order_id) == order_id
+    end
 
     def submit_order
       ActiveRecord::Base.transaction do
         command_bus.(Pricing::RequestOrderAcceptance.new(order_id))
-        command_bus.(Crm::AssignCustomerToOrder.new(customer_id, order_id))
+        unless result.instance_of?(Pricing::EmptyOrderAcceptanceRejected)
+          command_bus.(Crm::AssignCustomerToOrder.new(customer_id, order_id))
+        end
       end
     end
 

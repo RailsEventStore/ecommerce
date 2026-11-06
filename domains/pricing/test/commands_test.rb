@@ -63,6 +63,7 @@ module Pricing
 
     def test_acceptance_commands_only_need_the_order_id
       assert_equal(ORDER_ID, RequestOrderAcceptance.new(ORDER_ID).order_id)
+      assert_equal(ORDER_ID, RejectEmptyOrderAcceptance.new(ORDER_ID).order_id)
       assert_equal(ORDER_ID, AcceptOffer.new(ORDER_ID).order_id)
     end
 
@@ -156,6 +157,7 @@ module Pricing
         ->(id) { RemoveFreeProductFromOrder.new(id, ENTITY_ID) },
         ->(id) { UseCoupon.new(id, ENTITY_ID, 10) },
         ->(id) { RequestOrderAcceptance.new(id) },
+        ->(id) { RejectEmptyOrderAcceptance.new(id) },
         ->(id) { AcceptOffer.new(id) },
         ->(id) { RejectOffer.new(id, "Unavailable") },
         ->(id) { ExpireOffer.new(id) }
@@ -203,6 +205,7 @@ module Pricing
         RemoveFreeProductFromOrder.new(ORDER_ID, ENTITY_ID),
         UseCoupon.new(ORDER_ID, ENTITY_ID, 10),
         RequestOrderAcceptance.new(ORDER_ID),
+        RejectEmptyOrderAcceptance.new(ORDER_ID),
         AcceptOffer.new(ORDER_ID),
         RejectOffer.new(ORDER_ID, "Unavailable"),
         ExpireOffer.new(ORDER_ID)
