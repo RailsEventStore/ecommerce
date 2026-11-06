@@ -154,8 +154,8 @@ module ClientOrders
       def submit_form(order)
         form(id: "form", action: client_orders_path, method: :post) do
           input(type: :hidden, name: :order_id, value: order.order_uid)
-          div(class: "mt-8") do
-            input type: :submit, value: "Create Order", class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-xs"
+          div(id: "client_orders_#{order.order_uid}_submit_button") do
+            text_node(SubmitButton.call(order.order_uid))
           end
         end
       end

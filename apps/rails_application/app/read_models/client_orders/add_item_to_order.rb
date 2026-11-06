@@ -26,6 +26,7 @@ module ClientOrders
       broadcast_update(order_id, product_id, "product_quantity", item.product_quantity)
       broadcast_update(order_id, product_id, "value", ActiveSupport::NumberHelper.number_to_currency(item.value))
       show_remove_item_button(order_id, product_id)
+      broadcast_update(order_id, order_id, "submit_button", Rendering::SubmitButton.call(order_id))
     end
 
     def show_remove_item_button(order_id, product_id)

@@ -17,6 +17,7 @@ module Orders
       broadcaster.call(order_id, product_id, "quantity", item.quantity)
       broadcaster.call(order_id, product_id, "value", ActiveSupport::NumberHelper.number_to_currency(item.value))
       broadcaster.call(order_id, product_id, "remove_item_button", "") if item.quantity.zero?
+      broadcaster.call(order_id, order_id, "submit_button", SubmitButtonRenderer.call(order_id))
     end
 
     def find(order_uid, product_id)

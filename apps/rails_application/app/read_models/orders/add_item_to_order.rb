@@ -25,6 +25,7 @@ module Orders
       broadcaster.call(order_id, product_id, "quantity", item.quantity)
       broadcaster.call(order_id, product_id, "value", ActiveSupport::NumberHelper.number_to_currency(item.value))
       broadcaster.call(order_id, product_id, "remove_item_button", button_to("Remove", remove_item_order_path(id: order_id, product_id: product_id), class: "hover:underline text-blue-500"))
+      broadcaster.call(order_id, order_id, "submit_button", SubmitButtonRenderer.call(order_id))
     end
 
     def event_store

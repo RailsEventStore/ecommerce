@@ -18,6 +18,7 @@ module ClientOrders
       broadcast_update(order_id, product_id, "product_quantity", item.product_quantity)
       broadcast_update(order_id, product_id, "value", ActiveSupport::NumberHelper.number_to_currency(item.value))
       broadcast_update(order_id, product_id, "remove_item_button", "") if zero_quantity?(item)
+      broadcast_update(order_id, order_id, "submit_button", Rendering::SubmitButton.call(order_id))
       event_store.link_event_to_stream(event, "ClientOrders$all")
     end
 
