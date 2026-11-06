@@ -28,9 +28,9 @@ endif
 
 GIT_BASE_SHA ?= $(shell git merge-base HEAD origin/master)
 
-mutate-changes: ## Run incremental mutation tests on changes
+mutate-changes: tailwind ## Run incremental mutation tests on changes
 	@echo "Running incremental mutation tests against $(GIT_BASE_SHA)..."
-	@RAILS_ENV=test bundle exec mutant run --since $(GIT_BASE_SHA)
+	@RAILS_ENV=test bundle exec mutant run $(MUTANT_OPTS) --since $(GIT_BASE_SHA)
 
 architecture: ## Check namespace boundaries with the homegrown checker
 	@bundle exec ruby bin/architecture-check
