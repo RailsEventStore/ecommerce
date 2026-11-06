@@ -31,6 +31,13 @@ class PersistedItemRemovalTest < RealRESIntegrationTestCase
     assert_redirected_to("/orders/#{@order_id}/edit")
     follow_redirect!
     assert_select("#alert", "You can't submit an empty order")
+
+    post "/orders/#{@order_id}/add_item", params: { product_id: @product_id }
+    post "/orders/#{@order_id}/submit", params: { customer_id: @customer_id }
+
+    assert_redirected_to("/orders/#{@order_id}")
+    follow_redirect!
+    assert_select("#notice", "Your order has been submitted")
   end
 
   def test_client_can_retry_failed_removal_and_cannot_submit_the_emptied_order
@@ -41,6 +48,13 @@ class PersistedItemRemovalTest < RealRESIntegrationTestCase
     assert_redirected_to("/client_orders/#{@order_id}/edit")
     follow_redirect!
     assert_select("#alert", "You can't submit an empty order")
+
+    post "/client_orders/#{@order_id}/add_item", params: { product_id: @product_id }
+    post "/client_orders", params: { order_id: @order_id }
+
+    assert_redirected_to("/client_orders/#{@order_id}")
+    follow_redirect!
+    assert_select("#notice", "Your order has been submitted")
   end
 
   private

@@ -61,13 +61,9 @@ module Pricing
       assert_equal(coupon.coupon_id, coupon.aggregate_id)
     end
 
-    def test_acceptance_requires_a_nonnegative_integer_item_count
-      [0, 1, 3].each do |count|
-        assert_equal(count, AcceptOffer.new(ORDER_ID, count).item_count)
-      end
-      [-1, 1.5, "1", nil, Object.new].each do |count|
-        assert_raises(Infra::Command::Invalid) { AcceptOffer.new(ORDER_ID, count) }
-      end
+    def test_acceptance_commands_only_need_the_order_id
+      assert_equal(ORDER_ID, RequestOrderAcceptance.new(ORDER_ID).order_id)
+      assert_equal(ORDER_ID, AcceptOffer.new(ORDER_ID).order_id)
     end
 
     def test_rejects_invalid_primary_ids
@@ -159,7 +155,8 @@ module Pricing
         ->(id) { MakeProductFreeForOrder.new(id, ENTITY_ID) },
         ->(id) { RemoveFreeProductFromOrder.new(id, ENTITY_ID) },
         ->(id) { UseCoupon.new(id, ENTITY_ID, 10) },
-        ->(id) { AcceptOffer.new(id, 1) },
+        ->(id) { RequestOrderAcceptance.new(id) },
+        ->(id) { AcceptOffer.new(id) },
         ->(id) { RejectOffer.new(id, "Unavailable") },
         ->(id) { ExpireOffer.new(id) }
       ]
@@ -205,7 +202,8 @@ module Pricing
         MakeProductFreeForOrder.new(ORDER_ID, ENTITY_ID),
         RemoveFreeProductFromOrder.new(ORDER_ID, ENTITY_ID),
         UseCoupon.new(ORDER_ID, ENTITY_ID, 10),
-        AcceptOffer.new(ORDER_ID, 1),
+        RequestOrderAcceptance.new(ORDER_ID),
+        AcceptOffer.new(ORDER_ID),
         RejectOffer.new(ORDER_ID, "Unavailable"),
         ExpireOffer.new(ORDER_ID)
       ]

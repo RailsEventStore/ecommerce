@@ -3,7 +3,6 @@ module Pricing
     include AggregateRoot
 
     InvalidState = Class.new(StandardError)
-    IsEmpty = Class.new(StandardError)
 
     def initialize(id)
       @id = id
@@ -77,8 +76,7 @@ module Pricing
       )
     end
 
-    def accept(item_count)
-      raise IsEmpty if item_count.zero?
+    def accept
       raise InvalidState.new("Only draft offer can be accepted") unless @state == :draft
       apply OfferAccepted.new(data: { order_id: @id })
     end

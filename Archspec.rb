@@ -85,6 +85,7 @@ def process_paths
     confirm_order_on_payment_captured
     invoice_generation
     notify_payments_about_order_value
+    order_acceptance
     release_payment_on_order_expiration
     reservation_process
     shipment_process

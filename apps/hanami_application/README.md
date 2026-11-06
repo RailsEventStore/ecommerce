@@ -3,12 +3,12 @@
 A minimal cart built with [Hanami 3](https://hanakai.org) on top of **RubyEventStore** (no Rails, no ActiveRecord), reusing the bounded contexts from [domains/](../../domains):
 
 - `product_catalog` — registering and naming products
-- `pricing` — the `Offer` aggregate acts as the cart (`DraftOffer`, `AddPriceItem`, `AcceptOffer`)
+- `pricing` — offers, cart lines and acceptance requests (`DraftOffer`, `AddPriceItem`, `RequestOrderAcceptance`)
 - `fulfillment` — `RegisterOrder` and `ConfirmOrder`
 
 ## The flow
 
-Pick a product, add it to the cart, submit the order. Submitting sends `Pricing::AcceptOffer`; the `OrderFulfillment` process reacts to `OfferAccepted` with `Fulfillment::RegisterOrder`, then to `OrderRegistered` with `Fulfillment::ConfirmOrder`. All handlers run synchronously, so the order page already shows the delivery confirmation.
+Pick a product, add it to the cart, submit the order. Submitting sends `Pricing::RequestOrderAcceptance`; the `OrderAcceptance` process reacts to `OrderAcceptanceRequested`, checks the projected basket and issues `Pricing::AcceptOffer` only when it is nonempty. The `OrderFulfillment` process reacts to `OfferAccepted` with `Fulfillment::RegisterOrder`, then to `OrderRegistered` with `Fulfillment::ConfirmOrder`. All handlers run synchronously, so the order page already shows the delivery confirmation.
 
 ## The wiring
 
@@ -18,7 +18,7 @@ Everything is wired with Hanami providers ([config/providers](config/providers))
 - `event_store` — a `RubyEventStore::Client` on `RubyEventStore::Sequel::EventRepository`, borrowing the Sequel connection from `db.gateway`
 - `command_bus` — `Arkency::CommandBus` with each domain's `Configuration` registered against it
 - `read_models` — read models ([app/read_models](app/read_models)) projecting domain events into the `products`, `orders` and `order_lines` tables through ROM relations ([app/relations](app/relations)); registered as `read_models.catalog` and `read_models.orders`
-- `processes` — the `OrderFulfillment` process manager
+- `processes` — the `OrderAcceptance` and `OrderFulfillment` process managers
 - `seeds` — seeds the catalog with a few products, skipped when the catalog already has any
 
 Actions and views resolve these through `Deps`, e.g. `include Deps["command_bus", "read_models.catalog"]`. The current cart id lives in the (cookie) session.

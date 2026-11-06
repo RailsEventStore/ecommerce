@@ -36,6 +36,29 @@ class CartFlowTest < Hanami::Minitest::RequestTest
     assert_includes(last_response.body, "Your cart is empty")
   end
 
+  test "requesting acceptance again after an emptied cart is refilled" do
+    get "/"
+    product_id = first_product_id
+    post "/cart/items", product_id: product_id, _csrf_token: csrf_token
+    follow_redirect!
+    order_id = last_request.session[:order_id]
+    Hanami.app["command_bus"].call(Pricing::RemovePriceItem.new(order_id, product_id))
+
+    post "/cart/submit", _csrf_token: csrf_token
+    follow_redirect!
+
+    assert_includes(last_response.body, "Your cart is empty")
+    assert_equal(:draft, Hanami.app["read_models.orders"].find(order_id).state)
+
+    post "/cart/items", product_id: product_id, _csrf_token: csrf_token
+    follow_redirect!
+    post "/cart/submit", _csrf_token: csrf_token
+    follow_redirect!
+
+    assert_includes(last_response.body, "Your order has been delivered.")
+    assert_equal(:delivered, Hanami.app["read_models.orders"].find(order_id).state)
+  end
+
   test "counting projected order items after additions and removals without reading events" do
     event_store = Hanami.app["event_store"]
     orders = Hanami.app["read_models.orders"]

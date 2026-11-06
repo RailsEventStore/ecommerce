@@ -14,6 +14,7 @@ module Processes
       enable_release_payment_on_order_expiration(event_store, command_bus)
       enable_shipment_process(event_store, command_bus)
       enable_reservation_process(event_store, command_bus)
+      enable_order_acceptance_process(event_store, command_bus)
       enable_welcome_message_process(event_store, command_bus)
       enable_total_order_value_process(event_store, command_bus)
       enable_three_plus_one_free_process(event_store, command_bus)
@@ -106,6 +107,13 @@ module Processes
       event_store.subscribe(
         ReservationProcess.new.with(event_store: event_store, command_bus: command_bus),
         to: ReservationProcess.subscribed_events
+      )
+    end
+
+    def enable_order_acceptance_process(event_store, command_bus)
+      event_store.subscribe(
+        OrderAcceptance.new.with(event_store: event_store, command_bus: command_bus),
+        to: OrderAcceptance.subscribed_events
       )
     end
 

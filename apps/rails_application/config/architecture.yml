@@ -105,6 +105,9 @@ processes:
   - name: Processes::NotifyPaymentsAboutOrderValue
     path: app/processes/processes/notify_payments_about_order_value.rb
 
+  - name: Processes::OrderAcceptance
+    path: app/processes/processes/order_acceptance.rb
+
   - name: Processes::ReleasePaymentOnOrderExpiration
     path: app/processes/processes/release_payment_on_order_expiration.rb
 

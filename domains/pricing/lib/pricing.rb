@@ -6,6 +6,7 @@ require_relative "pricing/events"
 require_relative "pricing/services"
 require_relative "pricing/offer"
 require_relative "pricing/offer_line"
+require_relative "pricing/order_acceptance"
 require_relative "pricing/price_change"
 require_relative "pricing/time_promotion"
 
@@ -65,6 +66,10 @@ module Pricing
       command_bus.register(
         UseCoupon,
         UseCouponHandler.new(event_store)
+      )
+      command_bus.register(
+        RequestOrderAcceptance,
+        OnRequestOrderAcceptance.new(event_store)
       )
       command_bus.register(
         AcceptOffer,

@@ -154,17 +154,16 @@ module ClientOrders
         event_store.publish(Pricing::PriceItemAdded.new(data: { order_id: id, product_id: product_id, price: 20 }))
       end
 
-      assert_equal(3, ClientOrders.item_count(order_id))
-      assert_equal(1, ClientOrders.item_count(another_order_id))
+      assert_equal(3, ClientOrders.find_order(order_id).order_lines.sum(:product_quantity))
+      assert_equal(1, ClientOrders.find_order(another_order_id).order_lines.sum(:product_quantity))
 
       [product_id, product_id, another_product_id].each do |id|
         event_store.publish(Pricing::PriceItemRemoved.new(data: { order_id: order_id, product_id: id, price: 20 }))
       end
       event_store.define_singleton_method(:read) { raise "Item counts must use projected state" }
 
-      assert_equal(0, ClientOrders.item_count(order_id))
-      assert_equal(1, ClientOrders.item_count(another_order_id))
-      assert_equal(0, ClientOrders.item_count(SecureRandom.uuid))
+      assert_equal(0, ClientOrders.find_order(order_id).order_lines.sum(:product_quantity))
+      assert_equal(1, ClientOrders.find_order(another_order_id).order_lines.sum(:product_quantity))
     end
 
     private

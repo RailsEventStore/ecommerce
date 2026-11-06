@@ -27,15 +27,35 @@ discounted product totals to invoicing.
 
 ## Offer acceptance
 
-`AcceptOffer.new(order_id, item_count)` requires the current number of units from
-the application's existing order projection. `Offer` rejects a zero count and
-acceptance outside the draft state. It does not reload lines to verify the supplied
-count, and `OfferAccepted` contains only `order_id`.
+Applications submit `RequestOrderAcceptance.new(order_id)`. The small
+`OrderAcceptance` aggregate records `OrderAcceptanceRequested` in its own stream,
+without accepting the offer. Requests may be repeated after correcting the basket.
 
-Rails and Hanami derive the count from their projected line quantities, without
-replaying events. Item commands and their synchronous subscribers must share a
-transaction so that failed edits do not leave the projection behind the line stream.
-The existing Rails submit transaction also contains the count query.
+Each application owns an order acceptance process. In Rails,
+`Processes::OrderAcceptance` builds its state from `PriceItemAdded` and
+`PriceItemRemoved`. Only `OrderAcceptanceRequested` triggers a decision: an empty
+basket raises `IsEmpty`; a nonempty basket issues `AcceptOffer.new(order_id)`.
+Basket edits never trigger acceptance by themselves. The process uses its own
+event stream, not the UI read models or aggregate streams.
+
+Hanami's smaller process checks its existing order projection when the request
+arrives. Neither application passes an item count to a command or aggregate.
+Application-specific acceptance criteria belong in these processes.
+
+`Offer` still guards its own lifecycle: only a draft can be accepted.
+`OfferAccepted` still contains only `order_id`. Stock reservation and compensation
+remain in the existing Rails reservation process. `AcceptOffer` is the process's
+output, not an application entry point; calling it directly bypasses eligibility.
+
+Item edits and acceptance requests must share a transaction with their synchronous
+subscribers. An empty-order error rolls back the request rather than recording a
+durable refusal. After refilling the basket, the user must request acceptance again.
+
+Existing Rails baskets have no history in the new `Processes::OrderAcceptance`
+streams. Reset the demo database after deploying this change; otherwise those
+streams need their historical item events linked before acceptance is enabled.
+No automatic backfill is provided. Like the existing basket processes, this process
+replays its order history; splitting the aggregates does not bound that replay.
 
 Old `Offer` streams containing item events are not supported. Reset demo data after
 deploying this change; no compatibility migration is provided. The split bounds
