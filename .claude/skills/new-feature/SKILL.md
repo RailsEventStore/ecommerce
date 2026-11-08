@@ -1,6 +1,6 @@
 ---
 name: new-feature
-description: Plan a new feature end-to-end — impact analysis across all layers, start-from-the-middle slicing into deployable steps, then delegating to /domain, /read-model, /controller skills
+description: Plan a new feature end-to-end — impact analysis across all layers, start-from-the-middle slicing into deployable steps, then delegating to /domain, /process-manager, /read-model, /controller skills
 ---
 
 # New Feature
@@ -11,7 +11,7 @@ Use this skill when asked to add a new user-facing feature. It ensures you think
 
 ## What this skill does
 
-This skill is a **planning and coordination** step. It does NOT contain implementation details — those live in `/domain`, `/read-model`, and `/controller`. This skill ensures you:
+This skill is a **planning and coordination** step. It does NOT contain implementation details — those live in `/domain`, `/process-manager`, `/read-model`, and `/controller`. This skill ensures you:
 
 1. Identify everything that needs to change
 2. Slice the work start-from-the-middle into releasable steps
@@ -46,10 +46,22 @@ grep -r "affected_attribute" apps/rails_application/app/views/
 - **Status changes** — displayed across list views in different read models
 - **Reassignment** — entity associations denormalized in multiple places
 
+Also search the target app's processes and their subscriptions for affected events and commands. For the main Rails app:
+
+```bash
+rg -n 'DomainModule::RelatedEvent|DomainModule::RelatedCommand' apps/rails_application/app/processes/
+```
+
+**For each affected process, identify:**
+- Which events change its state and which events trigger commands.
+- The correlation ID, prerequisites, and completion or cancellation events.
+- Whether changed event data or domain commands require changes to the process and its tests.
+
 ### 2. Produce a plan
 
 List every change needed:
 - **Domain:** new command, event, aggregate method, handler
+- **Processes:** coordination, input events, correlation IDs, output commands, tests, and subscriptions
 - **Read models:** which read models need new event handlers (list each one)
 - **Controller:** which actions change, new routes
 - **Views:** which templates change
@@ -106,10 +118,11 @@ that shows it**.
 
 Use the existing skills:
 - `/domain` — for commands, events, aggregates, handlers
+- `/process-manager` — for event-to-command coordination, state reconstruction, process tests, and subscriptions
 - `/read-model` — for read model event handlers and configuration
 - `/controller` — for controller actions, routes, views
 
-### 6. Verify each affected read model individually
+### 6. Verify each affected read model and process individually
 
 For **every** read model that was touched (not just the primary one):
 
@@ -123,21 +136,27 @@ For **every** read model that was touched (not just the primary one):
    ```
 5. 100% mutation score required before moving on
 
+For **every** process that was touched, follow `/process-manager`: test input events against issued commands, including no-command cases and isolation between process IDs; verify subscription wiring and require 100% mutation coverage for the affected process namespace.
+
 ### 7. Final verification
 
 1. Integration test passes
 2. `rails test test/integration/` — all integration tests pass
 3. `make test` — all tests green
 4. Mutant passes for all affected namespaces
+5. For `apps/rails_application`, `make architecture` and `make archspec` pass from that app directory
 
 ## Checklist
 
 - [ ] Searched all read models for the affected entity's data
+- [ ] Searched processes and subscriptions for affected events and commands
 - [ ] Searched all views for display of the affected data
 - [ ] Listed every read model that needs a new handler
+- [ ] Listed every process that needs changes and delegated to `/process-manager`
 - [ ] Work sliced start-from-the-middle; slice list accepted by the user
 - [ ] Each slice green, deployable, committed, and accepted before the next
 - [ ] Integration test covers all affected pages
 - [ ] Denormalized copies of data are updated (not just the primary table)
 - [ ] **Unit tests added for every new/modified read model handler**
-- [ ] **Mutant run for each affected read model namespace at 100%**
+- [ ] **Process tests cover issued commands, no-command cases, and correlation IDs**
+- [ ] **Mutant run for each affected read model and process namespace at 100%**
