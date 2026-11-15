@@ -1,6 +1,24 @@
 module Processes
   class ShipmentProcess
-    include RubyEventStore::ProcessManager.with_state { ProcessState }
+    include RubyEventStore::ProcessManager.with_state { JoinDefinition::State }
+    include JoinProcess
+
+    Definition = JoinDefinition.new(
+      [
+        JoinDefinition::Rule.new(
+          JoinDefinition.event(Fulfillment::OrderRegistered) & JoinDefinition.event(Shipping::ShippingAddressAddedToShipment),
+          :register_and_submit_shipment,
+          JoinDefinition.event(Shipping::ShipmentSubmitted)
+        ),
+        JoinDefinition::Rule.new(
+          JoinDefinition.event(Fulfillment::OrderConfirmed) & JoinDefinition.event(Shipping::ShipmentSubmitted),
+          :authorize_shipment,
+          JoinDefinition.event(Shipping::ShipmentAuthorized)
+        )
+      ],
+      {},
+      JoinDefinition.event(Shipping::ShipmentAuthorized)
+    )
 
     subscribes_to(
       Shipping::ShippingAddressAddedToShipment,
@@ -13,37 +31,16 @@ module Processes
 
     private
 
-    def act
-      if state.ready_to_submit?
-        register_and_submit_shipment
-      elsif state.ready_to_authorize?
-        authorize_shipment
-      end
-    end
-
-    def apply(event)
-      case event
-      when Shipping::ShippingAddressAddedToShipment
-        state.with(shipping_address_set: true)
-      when Shipping::ShipmentSubmitted
-        state.with(shipment_submitted: true)
-      when Shipping::ShipmentAuthorized
-        state.with(shipment_authorized: true)
-      when Fulfillment::OrderRegistered
-        state.with(order_placed: true)
-      when Fulfillment::OrderConfirmed
-        state.with(order_confirmed: true)
-      when Stores::OfferRegistered
-        state.with(store_id: event.data.fetch(:store_id))
-      end
+    def store_id
+      state.events.fetch(Stores::OfferRegistered, nil)&.data&.fetch(:store_id)
     end
 
     def register_shipment
-      return unless state.store_id
+      return unless store_id
 
       command_bus.call(
         Stores::RegisterShipment.new(
-          state.store_id,
+          store_id,
           id
         )
       )
@@ -56,38 +53,6 @@ module Processes
 
     def authorize_shipment
       command_bus.call(Shipping::AuthorizeShipment.new(id))
-    end
-
-    def fetch_id(event)
-      event.data.fetch(:order_id)
-    end
-
-    ProcessState = Data.define(
-      :order_placed,
-      :order_confirmed,
-      :shipping_address_set,
-      :shipment_submitted,
-      :shipment_authorized,
-      :store_id
-    ) do
-      def initialize(
-        order_placed: false,
-        order_confirmed: false,
-        shipping_address_set: false,
-        shipment_submitted: false,
-        shipment_authorized: false,
-        store_id: nil
-      )
-        super
-      end
-
-      def ready_to_submit?
-        order_placed && shipping_address_set && !shipment_submitted
-      end
-
-      def ready_to_authorize?
-        order_confirmed && shipment_submitted && !shipment_authorized
-      end
     end
   end
 end
