@@ -53,7 +53,7 @@ Use this skill when asked to commit changes, group changes into commits, or prep
    - Verify tests pass with only those changes
    - Draft a commit message following the rules above
    - Commit without requesting user approval
-5. Push to the current branch's configured upstream by default after relevant tests and architecture checks pass, unless the user asks to keep changes local
+5. Push to the current branch's configured upstream by default after relevant tests and architecture checks pass, unless the user asks to keep changes local. This covers features and refactors that don't change the codebase in a big way. Proposals ("propozycja", "proposal") and new experiments, such as a new DSL, new infrastructure, prototypes, or exploratory scripts, are not committed or pushed: iterate on them locally and ask first
 6. Report the commits, verification results, and push status
 
 This permission does not cover force-pushes, deleting remote branches, opening or merging pull requests, or manually triggering deployments.

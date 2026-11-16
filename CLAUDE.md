@@ -60,5 +60,6 @@
 
 - Don't mention Claude in the git commit messages.
 - Commit completed work without requesting approval.
-- Push to the current branch's configured upstream by default after relevant tests and architecture checks pass, unless the user asks to keep changes local.
+- Push to the current branch's configured upstream by default after relevant tests and architecture checks pass, unless the user asks to keep changes local. This covers features and refactors that don't change the codebase in a big way.
+- Proposals ("propozycja", "proposal") and new experiments, such as a new DSL, new infrastructure, prototypes, or exploratory scripts, stay local. Iterate on them without committing or pushing, and ask before anything leaves the machine.
 - This permission does not cover force-pushes, deleting remote branches, opening or merging pull requests, or manually triggering deployments.
