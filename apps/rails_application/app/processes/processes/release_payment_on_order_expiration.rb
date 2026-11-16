@@ -1,17 +1,6 @@
 module Processes
   class ReleasePaymentOnOrderExpiration
-    include RubyEventStore::ProcessManager.with_state { JoinDefinition::State }
-    include JoinProcess
-
-    Definition = JoinDefinition.new(
-      [JoinDefinition::Rule.new(
-        JoinDefinition.event(Payments::PaymentAuthorized) & JoinDefinition.event(Pricing::OfferExpired),
-        :release_payment,
-        JoinDefinition::Pattern.new([])
-      )],
-      { Payments::PaymentReleased => Payments::PaymentAuthorized },
-      JoinDefinition.event(Payments::PaymentReleased)
-    )
+    include RubyEventStore::ProcessManager.with_state { ProcessState }
 
     subscribes_to(
       Payments::PaymentAuthorized,
@@ -23,8 +12,37 @@ module Processes
 
     private
 
+    def act
+      release_payment if state.release?
+    end
+
+    def apply(event)
+      case event
+      when Payments::PaymentAuthorized
+        state.with(payment_authorized: true)
+      when Payments::PaymentReleased
+        state.with(payment_authorized: false)
+      when Pricing::OfferExpired
+        state.with(order_expired: true)
+      else
+        state
+      end
+    end
+
     def release_payment
       command_bus.call(Payments::ReleasePayment.new(id))
+    end
+
+    def fetch_id(event)
+      event.data.fetch(:order_id)
+    end
+
+    ProcessState = Data.define(:payment_authorized, :order_expired) do
+      def initialize(payment_authorized: false, order_expired: false) = super
+
+      def release?
+        payment_authorized && order_expired
+      end
     end
   end
 end
