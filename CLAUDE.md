@@ -51,6 +51,11 @@
 - After backward-incompatible changes affecting persisted data or events in `apps/rails_application` (including changes in shared domains), remind the user in the final response to run the **Reset demo database** GitHub Actions workflow.
 - Explain what became incompatible and warn that the reset deletes all demo data. Do not run the reset without explicit user approval.
 
+# Language
+
+- Everything committed to the repository is in English: code, tests, comments, READMEs and other docs, and commit messages.
+- Polish is used only in prompts and conversations with the agent, never in repository content.
+
 # Git
 
 - Don't mention Claude in the git commit messages.
