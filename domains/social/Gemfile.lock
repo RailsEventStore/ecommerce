@@ -59,7 +59,7 @@ GEM
       dry-inflector (~> 1.0)
       dry-logic (~> 1.4)
       zeitwerk (~> 2.6)
-    erb (6.0.4)
+    erb (6.0.7)
     i18n (1.15.2)
       concurrent-ruby (~> 1.0)
     ice_nine (0.11.2)
